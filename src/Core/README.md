@@ -1,0 +1,1 @@
+Contient les **Modèles** (ex: `Joueur.cs`, `Stat.cs`) et les interfaces. Ce projet est référencé par TOUS les autres.
