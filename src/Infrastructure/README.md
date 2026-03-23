@@ -1,0 +1,1 @@
+Gère la **Base de Données SQL**. Contient le `DbContext` d'Entity Framework et les migrations.
