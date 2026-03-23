@@ -1,0 +1,1 @@
+Le moteur de jeu. Gère le gameplay et envoie les données à l'API via le Core.
