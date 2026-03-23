@@ -1,11 +1,11 @@
 # **Définition** de la cible du projet pour la session
 
 ## **Participants**
-1. Nom1 : Charles-Philippe Warren
-2. Nom2 : Delphine Martin
-3. Nom3 : Edouard Couture
-4. Nom4 : Kévin Houle
-5. Nom5 : Antoine Masson
+1. Charles-Philippe Warren
+2. Delphine Martin
+3. Edouard Couture
+4. Kévin Houle
+5. Antoine Masson
 
 ## **Énumération des besoins exprimés par le client, soit en rencontre formelle ou en fonction de la documentation disponible.**
 - Réalisation d’une liste de vérification de l’état du projet en fonction des besoins connus (À Faire, En Cours et Fait)
