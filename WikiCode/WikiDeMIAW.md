@@ -88,6 +88,11 @@ L'équipe applique des règles de révision strictes pour garantir la qualité d
 
     * Tests de non-régression obligatoires.
 
+#Notre "Definition of done"
+- Développement terminé
+- Tests unitaires et d'intégration continue passent (aucune erreur)
+- Documentation est mise à jour
+- Le code ajouté et ses tests sont revus et validés par au moins 2 autres personnes
 
 ## **État de situation**
 - Statut du projet 
