@@ -54,9 +54,43 @@
 *Note : Aucun dossier de test ou données de test n'est envoyé lors de la création de l'image de production.*
 
 - [ ] Estimation des coûts
+
+#Gestion des Sources (Git)
+
+  
+
+### Branches principales
+
+* **`master` (ou `main`) :** Branche de production. Code stable et testé.
+
+* `dev` : Branche d'intégration. Regroupe les fonctionnalités terminées avant le passage en production.
+
+  
+
+### Procédures de fusion (Merge Requests)
+
+L'équipe applique des règles de révision strictes pour garantir la qualité du code :
+
+  
+
+1.  **Vers la branche `dev` :**
+
+    * Nécessite **une (1) revue** par un membre n'ayant pas contribué à la tâche.
+
+    * Validation obligatoire par **Jules**.
+
+2.  **Vers la branche `master` :**
+
+    * Nécessite **deux (2) revues** par des membres tiers (excluant l'auteur).
+
+    * Validation obligatoire par **Jules**.
+
+    * Tests de non-régression obligatoires.
+
+
 ## **État de situation**
 - Statut du projet 
-- [ ] État actuel
+- [X] État actuel
     1. Ce qui est fonctionnel en production: Rien n'est fonctionnel en production nous commençons un nouveau projet de zéros.
     2. Ce qui est en développement: Rien n'est fonctionnel en développement nous commençons un nouveau projet de zéros.
     3. Ce qui est en déploiement ou près du déploiement: Rien n'est fonctionnel en déploiement nous commençons un nouveau projet de zéros.
