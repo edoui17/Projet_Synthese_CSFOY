@@ -68,7 +68,8 @@ L'équipe applique des règles de révision strictes pour garantir la qualité d
     * Nécessite **une (1) revue** par un membre n'ayant pas contribué à la tâche.
     * Validation obligatoire par **Jules**.
 2.  **Vers la branche `master` :**
-    * Nécessite **deux (2) revues** par des membres tiers (excluant l'auteur et Jules).
+    * Nécessite **deux (2) revues** par des membres tiers (excluant l'auteur).
+    * Validation obligatoire par **Jules**.
     * Tests de non-régression obligatoires.
 
 ---
