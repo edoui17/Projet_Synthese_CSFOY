@@ -1,0 +1,20 @@
+## [ Visual Studio ]
+.vs/
+[Bb]in/
+[Oo]bj/
+*.user
+*.userosscache
+*.sln.docstates
+
+## [ Godot ]
+.godot/
+*.translation
+*.core
+*.mono/
+IslandSurvivor/export_presets.cfg
+IslandSurvivor/Exports/
+
+## [ OS / Divers ]
+.DS_Store
+Thumbs.db
+desktop.ini
