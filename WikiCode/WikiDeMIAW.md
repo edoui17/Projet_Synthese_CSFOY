@@ -8,6 +8,13 @@
 5. Antoine Masson
 
 ## **Énumération des besoins exprimés par le client**
+- [ ] Mise en place d’un personnage principal **- À faire**
+- [ ] Mise en place d’un systeme de stats pour les entités **- À faire**
+- [ ] Mise en place d’un systeme de collection de resosurces **- À faire**
+- [ ] Mise en place d’un systeme de d'enemie NPC **- À faire**
+- [ ] Mise en place d’un systeme de gestion du temps de jeu (effet en jeu) **- À faire**
+- [ ] Mise en place d’un systeme d'un système d'utilisation de ressources **- À faire**
+- [ ] Mise en place d’un systeme d'une fin de partie (victoire / mort) **- À faire**
 - [ ] Mise en place d’un système de calcul de score en jeu **- À faire**
 - [ ] Transmission des scores vers un service web **- À faire**
 - [ ] Intégration d’un tableau des scores (scoreboard) accessible depuis un site web **- À faire**
@@ -81,15 +88,20 @@ Total 28,61$ CAD
 
 L'équipe applique des règles de révision strictes pour garantir la qualité du code :
 
-  
+1. **Création de branche par récit :**
+    * Chaque récitt nécessite une branch individuel basé sur `dev`
 
-1.  **Vers la branche `dev` :**
+    * Effectuer un commit par tache complèter
+
+    * Fournir une description brève du contenu modifier
+
+2.  **Vers la branche `dev` :**
 
     * Nécessite **une (1) revue** par un membre n'ayant pas contribué à la tâche.
 
     * Validation obligatoire par **Jules**.
 
-2.  **Vers la branche `master` :**
+3.  **Vers la branche `master` :**
 
     * Nécessite **deux (2) revues** par des membres tiers (excluant l'auteur).
 
