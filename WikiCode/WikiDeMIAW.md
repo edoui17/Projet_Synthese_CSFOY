@@ -14,7 +14,8 @@
 ## **Technologies utilisées.**
 
 - #En production 
-- [ ] Diagramme de l’architecture de production (serveurs, services et liens entre eux)
+- [X] Diagramme de l’architecture de production (serveurs, services et liens entre eux)
+![Diagramme de l'architecture de production](../Images/DiagrammeArchitectureProduction.jpg)
 - [X] Services utilisés
 
 * Base de données : Microsoft SQL Server (MSSQL). Stockage persistant des joueurs, scores et statistiques.
@@ -29,7 +30,8 @@
 
 
 - #En développement
-- [ ] Diagramme de l’architecture de production (serveurs, services et liens entre eux)
+- [X] Diagramme de l’architecture de production (serveurs, services et liens entre eux)
+![Diagramme de l'architecture de production](../Images/DiagrammeArchitectureDeveloppement.jpg)
 - [X] Services utilisés (peut y en avoir plusieurs et doivent être documentés)
 * IDE : Visual Studio (C#) pour le développement backend et web.
 
