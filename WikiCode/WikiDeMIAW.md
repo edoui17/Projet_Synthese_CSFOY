@@ -9,6 +9,7 @@
 
 ## **Énumération des besoins exprimés par le client**
 - [ ] Mise en place d’un personnage principal **- À faire**
+- [ ] Mise en place d’un systeme de navigation (changement) d'îles **- À faire**
 - [ ] Mise en place d’un systeme de stats pour les entités **- À faire**
 - [ ] Mise en place d’un systeme de collection de resosurces **- À faire**
 - [ ] Mise en place d’un systeme de d'enemie NPC **- À faire**
