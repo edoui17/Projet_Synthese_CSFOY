@@ -10,6 +10,9 @@
 ## **Énumération des besoins exprimés par le client, soit en rencontre formelle ou en fonction de la documentation disponible.**
 - Réalisation d’une liste de vérification de l’état du projet en fonction des besoins connus (À Faire, En Cours et Fait)
 - Priorisation des besoins à combler pour la session
+- Mise en place d’un système de calcul de score en jeu
+- Transmission des scores vers un service web
+- Intégration d’un tableau des scores (scoreboard) accessible depuis un site web
 ## **Technologies utilisées.**
 
 - #En production 
