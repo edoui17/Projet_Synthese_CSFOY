@@ -12,8 +12,6 @@ Ce document détaille l'infrastructure technique, les choix technologiques et le
 
 ![Diagramme de l'architecture de production](../Images/DiagrammeArchitectureProduction.jpg)
 
-<img src="../Images/DiagrammeArchitectureProduction.jpg" alt="Diagramme de l'architecture de production" width="500" height="300">
-
 ### Services utilisés
 * **Base de données :** Microsoft SQL Server (MSSQL). Stockage persistant des joueurs, scores et statistiques.
 * **Backend / API :** ASP.NET Core. Sert de pont entre le jeu (Godot) et la base de données pour sécuriser les transactions.
@@ -29,6 +27,8 @@ Le jeu communique avec l'API via des requêtes sécurisées pour mettre à jour 
 
 ### Diagramme de l'architecture de développement
 > *Note : Représente les postes locaux des développeurs utilisant Visual Studio et Docker Desktop.*
+
+![Diagramme de l'architecture de production](../Images/DiagrammeArchitectureDeveloppement.jpg)
 
 ### Services utilisés
 * **IDE :** Visual Studio (C#) pour le développement backend et web.
