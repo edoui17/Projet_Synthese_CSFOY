@@ -14,7 +14,8 @@
 ## **Technologies utilisées.**
 
 - #En production 
-- [ ] Diagramme de l’architecture de production (serveurs, services et liens entre eux)
+- [X] Diagramme de l’architecture de production (serveurs, services et liens entre eux)
+![Diagramme de l'architecture de production](../Images/DiagrammeArchitectureProduction.jpg)
 - [X] Services utilisés
 
 * Base de données : Microsoft SQL Server (MSSQL). Stockage persistant des joueurs, scores et statistiques.
@@ -29,7 +30,8 @@
 
 
 - #En développement
-- [ ] Diagramme de l’architecture de production (serveurs, services et liens entre eux)
+- [X] Diagramme de l’architecture de production (serveurs, services et liens entre eux)
+![Diagramme de l'architecture de production](../Images/DiagrammeArchitectureDeveloppement.jpg)
 - [X] Services utilisés (peut y en avoir plusieurs et doivent être documentés)
 * IDE : Visual Studio (C#) pour le développement backend et web.
 
@@ -55,7 +57,13 @@
 
 *Note : Aucun dossier de test ou données de test n'est envoyé lors de la création de l'image de production.*
 
-- [ ] Estimation des coûts
+- [x] Estimation des coûts
+
+Prix vm bd SQL server: Standard_B2ats_v2 - 2 processeurs virtuels, 1 Gio de mémoire (7,67 $USD)
+
+Web App: Essentiel B1 100 1 1.75 10 3 99.95% 0,018 USD 13,14 USD 
+
+Total 28,61$ CAD
 
 #Gestion des Sources (Git)
 
