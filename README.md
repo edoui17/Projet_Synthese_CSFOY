@@ -62,8 +62,8 @@ Pour assurer la stabilité du projet, nous appliquons une approche de **tests au
 ---
 
 ## Auteur
-**Kevin Houle** - Étudiant en programmation au Cégep de Sainte-Foy.
-**Edouard Couture** - Étudiant en programmation au Cégep de Sainte-Foy.
-**Antoine Masson** - Étudiant en programmation au Cégep de Sainte-Foy.
-**Delphine Martin** - Étudiante en programmation au Cégep de Sainte-Foy.
+**Kevin Houle** - Étudiant en programmation au Cégep de Sainte-Foy.<br>
+**Edouard Couture** - Étudiant en programmation au Cégep de Sainte-Foy.<br>
+**Antoine Masson** - Étudiant en programmation au Cégep de Sainte-Foy.<br>
+**Delphine Martin** - Étudiante en programmation au Cégep de Sainte-Foy.<br>
 **Charles-Phillipe Warren** - Étudiant en programmation au Cégep de Sainte-Foy.
