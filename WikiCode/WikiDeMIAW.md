@@ -55,7 +55,12 @@
 
 *Note : Aucun dossier de test ou données de test n'est envoyé lors de la création de l'image de production.*
 
-- [ ] Estimation des coûts
+- [x] Estimation des coûts
+
+Prix vm bd SQL server: Standard_B2ats_v2 - 2 processeurs virtuels, 1 Gio de mémoire (7,67 $USD)
+Web App: Essentiel B1 100 1 1.75 10 3 99.95% 0,018 USD 13,14 USD 
+
+Total 28,61$ CAD
 
 #Gestion des Sources (Git)
 
