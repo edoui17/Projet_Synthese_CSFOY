@@ -28,6 +28,8 @@ Le jeu communique avec l'API via des requêtes sécurisées pour mettre à jour 
 ### Diagramme de l'architecture de développement
 > *Note : Représente les postes locaux des développeurs utilisant Visual Studio et Docker Desktop.*
 
+![Diagramme de l'architecture de production](../Images/DiagrammeArchitectureDeveloppement.jpg)
+
 ### Services utilisés
 * **IDE :** Visual Studio (C#) pour le développement backend et web.
 * **Moteur de jeu :** Godot (version .NET/C#).
