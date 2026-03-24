@@ -1,69 +1,69 @@
-# IslandSurvivor - Écosystème Complet
+# IslandSurvivor
 
-Bienvenue dans le projet **IslandSurvivor**. Il s'agit d'un projet de jeu vidéo de survie intégrant une architecture moderne en couches (N-Tier) pour la collecte et l'affichage de statistiques en temps intéractif.
+Bienvenue dans le projet **IslandSurvivor**. Il s'agit d'un projet de jeu vidÃ©o de survie intÃ©grant une architecture moderne en couches (N-Tier) pour la collecte et l'affichage de statistiques en temps intÃ©ractif.
 
 ---
 
 ## Architecture de la Solution
 
-Le projet est structuré pour maximiser le partage de code entre le client de jeu et les services web, garantissant une cohérence des données.
+Le projet est structurÃ© pour maximiser le partage de code entre le client de jeu et les services web, garantissant une cohÃ©rence des donnÃ©es.
 
 
 
 ### Organisation des dossiers
 * **`/Src`** : Contient tous les projets de production.
     * `IslandSurvivor` : Le client de jeu (Godot 4.x .NET).
-    * `API` : Backend ASP.NET Core pour la gestion des données.
-    * `Core` : Bibliothèque de classes partagée (Modèles et Logique).
+    * `API` : Backend ASP.NET Core pour la gestion des donnÃ©es.
+    * `Core` : BibliothÃ¨que de classes partagÃ©e (ModÃ¨les et Logique).
     * `Infrastructure` : Persistance SQL avec Entity Framework Core.
     * `Web` : Dashboard de statistiques (Blazor).
-* **`/Tests`** : Projets de tests unitaires et d'intégration (xUnit).
+* **`/Tests`** : Projets de tests unitaires et d'intÃ©gration (xUnit).
 * **`/Convention`** : Normes de codage et guides de style du projet.
-* **`/WikiCode`** : Documentation technique détaillée.
+* **`/WikiCode`** : Documentation technique dÃ©taillÃ©e.
 
 ---
 
-## Technologies utilisées
+## Technologies utilisÃ©es
 
 * **Moteur de jeu :** Godot 4.6.1 (C# / .NET 8)
 * **Backend :** ASP.NET Core Web API
 * **Frontend Web :** Blazor Web App
-* **Base de données :** SQL Server (EF Core)
+* **Base de donnÃ©es :** SQL Server (EF Core)
 * **Tests :** xUnit
 * **IDE :** Visual Studio 2022
 
 ---
 
-## Stratégie de Qualité (CI/CD Ready)
+## StratÃ©gie de QualitÃ© (CI/CD Ready)
 
-Pour assurer la stabilité du projet, nous appliquons une approche de **tests automatisés** :
-1. **Tests Unitaires** : Validation de la logique mathématique et des règles métier dans le projet `Core`.
-2. **Tests d'Intégration** : Vérification des flux de données entre l'API et la base de données SQL.
-3. **Architecture Partagée** : L'utilisation du projet `Core` empêche toute divergence de modèle entre le Jeu et le Web.
+Pour assurer la stabilitÃ© du projet, nous appliquons une approche de **tests automatisÃ©s** :
+1. **Tests Unitaires** : Validation de la logique mathÃ©matique et des rÃ¨gles mÃ©tier dans le projet `Core`.
+2. **Tests d'IntÃ©gration** : VÃ©rification des flux de donnÃ©es entre l'API et la base de donnÃ©es SQL.
+3. **Architecture PartagÃ©e** : L'utilisation du projet `Core` empÃªche toute divergence de modÃ¨le entre le Jeu et le Web.
 
 ---
 
 ## Installation et Lancement
 
-### Prérequis
+### PrÃ©requis
 * Visual Studio 2022 (avec la charge de travail .NET)
 * Godot 4.x (Version .NET)
 * SDK .NET 8.0+
 
-### Étapes
-1. Cloner le dépôt.
+### Ã‰tapes
+1. Cloner le dÃ©pÃ´t.
 2. Ouvrir `ProjetJeu.sln` dans Visual Studio 2022.
 3. Restaurer les packages NuGet.
 4. Appliquer les migrations SQL :
    `Update-Database -Project Infrastructure`
-5. Lancer la solution (Projets de démarrage multiples : API + Web).
+5. Lancer la solution (Projets de dÃ©marrage multiples : API + Web).
 6. Ouvrir Godot pour lancer le client `IslandSurvivor`.
 
 ---
 
 ## Auteur
-**Kevin Houle** - Étudiant en programmation au Cégep de Sainte-Foy.
-**Edouard Couture** - Étudiant en programmation au Cégep de Sainte-Foy.
-**Antoine Masson** - Étudiant en programmation au Cégep de Sainte-Foy.
-**Delphine Martin** - Étudiant en programmation au Cégep de Sainte-Foy.
-**Charles-Phillipe Warren** - Étudiant en programmation au Cégep de Sainte-Foy.
+**Kevin Houle** - Ã‰tudiant en programmation au CÃ©gep de Sainte-Foy.<br>
+**Edouard Couture** - Ã‰tudiant en programmation au CÃ©gep de Sainte-Foy.<br>
+**Antoine Masson** - Ã‰tudiant en programmation au CÃ©gep de Sainte-Foy.<br>
+**Delphine Martin** - Ã‰tudiante en programmation au CÃ©gep de Sainte-Foy.<br>
+**Charles-Phillipe Warren** - Ã‰tudiant en programmation au CÃ©gep de Sainte-Foy.

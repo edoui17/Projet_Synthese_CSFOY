@@ -9,6 +9,9 @@ Ce document détaille l'infrastructure technique, les choix technologiques et le
 ### Diagramme de l'architecture de production
 > *Note : Un diagramme visuel montrant le client Godot communiquant avec l'API ASP.NET Core, qui elle-même interroge la base de données MSSQL, devrait être inséré ici.*
 
+![Diagramme de l'architecture de production](../Images/DiagrammeArchitectureProduction.jpg)
+
+
 ### Services utilisés
 * **Base de données :** Microsoft SQL Server (MSSQL). Stockage persistant des joueurs, scores et statistiques.
 * **Backend / API :** ASP.NET Core. Sert de pont entre le jeu (Godot) et la base de données pour sécuriser les transactions.
