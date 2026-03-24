@@ -65,5 +65,5 @@ Pour assurer la stabilité du projet, nous appliquons une approche de **tests au
 **Kevin Houle** - Étudiant en programmation au Cégep de Sainte-Foy.
 **Edouard Couture** - Étudiant en programmation au Cégep de Sainte-Foy.
 **Antoine Masson** - Étudiant en programmation au Cégep de Sainte-Foy.
-**Delphine Martin** - Étudiant en programmation au Cégep de Sainte-Foy.
+**Delphine Martin** - Étudiante en programmation au Cégep de Sainte-Foy.
 **Charles-Phillipe Warren** - Étudiant en programmation au Cégep de Sainte-Foy.
