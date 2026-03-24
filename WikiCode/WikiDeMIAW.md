@@ -47,7 +47,8 @@
 
 * Registre d'images : Docker Hub (pour stocker et versionner les images du serveur web et de la BD).
 
-- [ ] Localisation de l’hébergement des services
+- [X] Localisation de l’hébergement des services
+* Canada Central.
 - [X] Méthodologie d’utilisation des services
 * Le déploiement automatisé (CI/CD) est privilégié. Lors d'un merge sur `Master`, une image Docker est construite et poussée sur le registre, puis déployée sur le serveur de production. 
 
