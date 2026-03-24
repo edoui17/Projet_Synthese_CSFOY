@@ -27,6 +27,6 @@
 ## **État de situation**
 - Statut du projet 
 - [ ] État actuel
-    1. Ce qui est fonctionnel en production
-    2. Ce qui est en développement 
-    3. Ce qui est en déploiement ou près du déploiement
+    1. Ce qui est fonctionnel en production: Rien n'est fonctionnel en production nous commençons un nouveau projet de zéros.
+    2. Ce qui est en développement: Rien n'est fonctionnel en développement nous commençons un nouveau projet de zéros.
+    3. Ce qui est en déploiement ou près du déploiement: Rien n'est fonctionnel en déploiement nous commençons un nouveau projet de zéros.
