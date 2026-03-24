@@ -22,7 +22,7 @@
 
 * Frontend Web : Blazor (ASP.NET). Interface utilisateur pour la consultation des classements et du profil.
 
-* **Client de jeu :** Godot Engine (C#). Application lourde exécutée par l'utilisateur final.
+**Client de jeu :** Godot Engine (C#). Application lourde exécutée par l'utilisateur final.
 - [X] Méthodologie d’utilisation des services
 * Le jeu communique avec l'API via des requêtes sécurisées pour mettre à jour le `HighScore` et les ressources. L'accès direct à la base de données est réservé à l'API pour garantir l'intégrité des données (prévention de la triche).
 
