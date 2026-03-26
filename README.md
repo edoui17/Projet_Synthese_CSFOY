@@ -34,6 +34,33 @@ Le projet est structuré pour maximiser le partage de code entre le client de je
 
 ---
 
+##  Nomenclature complète des Tags
+
+###  Gameplay & Monde
+* **`Gameplay`** : Utilisé pour toutes les mécaniques de jeu actives (mouvement, récolte, combat).
+* **`Mouvement`** : Spécifique à la locomotion du personnage et aux contrôles de déplacement.
+* **`Interaction`** : Concerne le système de détection (Triggers) et l'activation d'objets dans le monde.
+* **`Map`** : Tout ce qui touche à l'environnement, aux niveaux et aux îles.
+* **`Procedural`** : Identifie les algorithmes de génération aléatoire de terrain.
+* **`Spawning`** : Logique d'apparition dynamique des ressources et des entités sur la carte.
+* **`Navigation`** : Gestion des transitions entre les scènes et du voyage entre les îles.
+
+###  Systèmes & Données
+* **`Statistique`** : Calculs des points de vie (PV), de la force et des modificateurs de progression.
+* **`Ressource`** : Logique de collecte (Ajout) et de dépense (Améliorations/Déblocages).
+* **`Score`** : Système de points, calcul du High Score et préparation pour les classements.
+* **`Système`** : Architecture logicielle globale, gestionnaires (Managers) et persistance des données.
+* **`Algorithme`** : Tâches nécessitant une logique mathématique complexe (Génération, Distribution).
+
+###  Interface & Contrôles
+* **`UI`** : (User Interface) Tous les éléments graphiques, boutons et fenêtres.
+* **`ATH`** : (Affichage Tête Haute) Éléments de l'interface visibles en jeu (Barres de vie, compteurs).
+* **`Menu`** : Navigation dans les écrans hors-jeu (Principal, Pause, Gestion).
+* **`Input`** : Gestion des entrées utilisateur (Clavier, Souris, Manette).
+* **`Physique`** : Tout ce qui implique les collisions (Collider2D) et les interactions avec le moteur physique.
+
+---
+
 ## Stratégie de Qualité (CI/CD Ready)
 
 Pour assurer la stabilité du projet, nous appliquons une approche de **tests automatisés** :
