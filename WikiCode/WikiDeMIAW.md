@@ -110,7 +110,7 @@ L'équipe applique des règles de révision strictes pour garantir la qualité d
 
     * Tests de non-régression obligatoires.
 
-#Notre "Definition of done"
+## **Notre "Definition of done"**
 - Développement terminé
 - Tests unitaires et d'intégration continue passent (aucune erreur)
 - Documentation est mise à jour
@@ -122,3 +122,10 @@ L'équipe applique des règles de révision strictes pour garantir la qualité d
     1. Ce qui est fonctionnel en production: Rien n'est fonctionnel en production nous commençons un nouveau projet de zéros.
     2. Ce qui est en développement: Rien n'est fonctionnel en développement nous commençons un nouveau projet de zéros.
     3. Ce qui est en déploiement ou près du déploiement: Rien n'est fonctionnel en déploiement nous commençons un nouveau projet de zéros.
+
+## **Création et Attribution des récits utilisateurs et tâches**
+- Delphine Martin :
+- Kevin Houle : 
+- Edouard Couture :
+- Antoine Masson : 
+- Charles Philippe Warren :
