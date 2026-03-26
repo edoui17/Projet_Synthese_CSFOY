@@ -8,13 +8,22 @@
 5. Antoine Masson
 
 ## **Énumération des besoins exprimés par le client**
+- [ ] Mise en place d’un personnage principal **- À faire**
+- [ ] Mise en place d’un systeme de navigation (changement) d'îles **- À faire**
+- [ ] Mise en place d’un systeme de stats pour les entités **- À faire**
+- [ ] Mise en place d’un systeme de collection de resosurces **- À faire**
+- [ ] Mise en place d’un systeme de d'enemie NPC **- À faire**
+- [ ] Mise en place d’un systeme de gestion du temps de jeu (effet en jeu) **- À faire**
+- [ ] Mise en place d’un systeme d'un système d'utilisation de ressources **- À faire**
+- [ ] Mise en place d’un systeme d'une fin de partie (victoire / mort) **- À faire**
 - [ ] Mise en place d’un système de calcul de score en jeu **- À faire**
 - [ ] Transmission des scores vers un service web **- À faire**
 - [ ] Intégration d’un tableau des scores (scoreboard) accessible depuis un site web **- À faire**
 ## **Technologies utilisées.**
 
 - #En production 
-- [ ] Diagramme de l’architecture de production (serveurs, services et liens entre eux)
+- [X] Diagramme de l’architecture de production (serveurs, services et liens entre eux)
+![Diagramme de l'architecture de production](../Images/DiagrammeArchitectureProduction.jpg)
 - [X] Services utilisés
 
 * Base de données : Microsoft SQL Server (MSSQL). Stockage persistant des joueurs, scores et statistiques.
@@ -29,7 +38,8 @@
 
 
 - #En développement
-- [ ] Diagramme de l’architecture de production (serveurs, services et liens entre eux)
+- [X] Diagramme de l’architecture de production (serveurs, services et liens entre eux)
+![Diagramme de l'architecture de production](../Images/DiagrammeArchitectureDeveloppement.jpg)
 - [X] Services utilisés (peut y en avoir plusieurs et doivent être documentés)
 * IDE : Visual Studio (C#) pour le développement backend et web.
 
@@ -55,7 +65,13 @@
 
 *Note : Aucun dossier de test ou données de test n'est envoyé lors de la création de l'image de production.*
 
-- [ ] Estimation des coûts
+- [x] Estimation des coûts
+
+Prix vm bd SQL server: Standard_B2ats_v2 - 2 processeurs virtuels, 1 Gio de mémoire (7,67 $USD)
+
+Web App: Essentiel B1 100 1 1.75 10 3 99.95% 0,018 USD 13,14 USD 
+
+Total 28,61$ CAD
 
 #Gestion des Sources (Git)
 
@@ -73,15 +89,20 @@
 
 L'équipe applique des règles de révision strictes pour garantir la qualité du code :
 
-  
+1. **Création de branche par récit :**
+    * Chaque récitt nécessite une branch individuel basé sur `dev`
 
-1.  **Vers la branche `dev` :**
+    * Effectuer un commit par tache complèter
+
+    * Fournir une description brève du contenu modifier
+
+2.  **Vers la branche `dev` :**
 
     * Nécessite **une (1) revue** par un membre n'ayant pas contribué à la tâche.
 
     * Validation obligatoire par **Jules**.
 
-2.  **Vers la branche `master` :**
+3.  **Vers la branche `master` :**
 
     * Nécessite **deux (2) revues** par des membres tiers (excluant l'auteur).
 
