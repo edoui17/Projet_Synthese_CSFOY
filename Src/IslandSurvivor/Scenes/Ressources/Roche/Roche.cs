@@ -27,8 +27,6 @@ public partial class Roche : Area2D
         if (_timerSinceLastDamage > 0) _timerSinceLastDamage -= delta;
     }
 
-
-
     public void DestroyRock()
     {
         Random random = new();

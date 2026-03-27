@@ -3,13 +3,36 @@ using System;
 
 public partial class Or : Area2D
 {
-	// Called when the node enters the scene tree for the first time.
-	public override void _Ready()
-	{
-	}
+    [Signal] public delegate void GoldBrokenEventHandler(int quantity);
+    [Export] public string EntityId = "gold";
 
-	// Called every frame. 'delta' is the elapsed time since the previous frame.
-	public override void _Process(double delta)
-	{
-	}
+    private double _damageCooldown = 0.2;
+    private double _timerSinceLastDamage = 0.0;
+
+    public override void _Ready()
+    {
+        AreaEntered += OnAreaEntered;
+    }
+
+    private void OnAreaEntered(Area2D area)
+    {
+        if (_timerSinceLastDamage <= 0 && area.IsInGroup("Tool"))
+        {
+            StatManager.Instance.ApplyDamage(this, 1);
+            _timerSinceLastDamage = _damageCooldown;
+        }
+    }
+    public override void _Process(double delta)
+    {
+        if (_timerSinceLastDamage > 0) _timerSinceLastDamage -= delta;
+    }
+
+    public void DestroyRock()
+    {
+        Random random = new();
+        int quantity = random.Next(1, 5);
+
+        EmitSignal(SignalName.GoldBroken, quantity);
+        QueueFree();
+    }
 }
