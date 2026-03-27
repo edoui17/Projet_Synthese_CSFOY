@@ -134,13 +134,13 @@ L'équipe applique des règles de révision strictes pour garantir la qualité d
 
 - Edouard Couture :
   * [Ajouter la création de la map de base](https://dev.azure.com/csf-dfc/Projet%20Jeu/_workitems/edit/8466)
-  * [Implementer l'ATH du joueur](https://dev.azure.com/csf-dfc/Projet%20Jeu/_workitems/edit/8396)
-
-- Antoine Masson : 
-  * [Implementer l'affichages des menus](https://dev.azure.com/csf-dfc/Projet%20Jeu/_workitems/edit/8397)
   * [Implementer la génération d'une map](https://dev.azure.com/csf-dfc/Projet%20Jeu/_workitems/edit/8400)
   * [Implementer l'apparition d'éléments sur la map](https://dev.azure.com/csf-dfc/Projet%20Jeu/_workitems/edit/8402)
 
+- Antoine Masson : 
+  * [Ajouter des ressources dans le jeu](https://dev.azure.com/csf-dfc/Projet%20Jeu/_workitems/edit/8394)
+  * [Mettre en place un manager d'inventaire](https://dev.azure.com/csf-dfc/Projet%20Jeu/_workitems/edit/8394)
+
 - Charles Philippe Warren :
-  * [Implementer l'affichages des menus](https://dev.azure.com/csf-dfc/Projet%20Jeu/_workitems/edit/8397)
-  * [Implementer l'ATH du joueur](https://dev.azure.com/csf-dfc/Projet%20Jeu/_workitems/edit/8396)
+  * [Implementer le mouvement du joueur](https://dev.azure.com/csf-dfc/Projet%20Jeu/_workitems/edit/8398)
+  * [Implementer l'intéractions du joueur](https://dev.azure.com/csf-dfc/Projet%20Jeu/_workitems/edit/8399)
