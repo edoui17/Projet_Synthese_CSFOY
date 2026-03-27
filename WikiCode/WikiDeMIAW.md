@@ -139,7 +139,7 @@ L'équipe applique des règles de révision strictes pour garantir la qualité d
 
 - Antoine Masson : 
   * [Ajouter des ressources dans le jeu](https://dev.azure.com/csf-dfc/Projet%20Jeu/_workitems/edit/8394)
-  * [Mettre en place un manager d'inventaire](https://dev.azure.com/csf-dfc/Projet%20Jeu/_workitems/edit/8394)
+  * [Mettre en place un manager d'inventaire](https://dev.azure.com/csf-dfc/Projet%20Jeu/_workitems/edit/8600)
 
 - Charles Philippe Warren :
   * [Implementer le mouvement du joueur](https://dev.azure.com/csf-dfc/Projet%20Jeu/_workitems/edit/8398)
