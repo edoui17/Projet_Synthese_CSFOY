@@ -125,7 +125,22 @@ L'équipe applique des règles de révision strictes pour garantir la qualité d
 
 ## **Création et Attribution des récits utilisateurs et tâches**
 - Delphine Martin :
+  * [Implementer l'affichages des menus](https://dev.azure.com/csf-dfc/Projet%20Jeu/_workitems/edit/8397)
+  * [Implementer l'ATH du joueur](https://dev.azure.com/csf-dfc/Projet%20Jeu/_workitems/edit/8396)
+
 - Kevin Houle : 
+  * [Implementer le système de point](https://dev.azure.com/csf-dfc/Projet%20Jeu/_workitems/edit/8404)
+  * [Implementer le gestionnaire de statistique](https://dev.azure.com/csf-dfc/Projet%20Jeu/_workitems/edit/8403)
+
 - Edouard Couture :
+  * [Ajouter la création de la map de base](https://dev.azure.com/csf-dfc/Projet%20Jeu/_workitems/edit/8466)
+  * [Implementer l'ATH du joueur](https://dev.azure.com/csf-dfc/Projet%20Jeu/_workitems/edit/8396)
+
 - Antoine Masson : 
+  * [Implementer l'affichages des menus](https://dev.azure.com/csf-dfc/Projet%20Jeu/_workitems/edit/8397)
+  * [Implementer la génération d'une map](https://dev.azure.com/csf-dfc/Projet%20Jeu/_workitems/edit/8400)
+  * [Implementer l'apparition d'éléments sur la map](https://dev.azure.com/csf-dfc/Projet%20Jeu/_workitems/edit/8402)
+
 - Charles Philippe Warren :
+  * [Implementer l'affichages des menus](https://dev.azure.com/csf-dfc/Projet%20Jeu/_workitems/edit/8397)
+  * [Implementer l'ATH du joueur](https://dev.azure.com/csf-dfc/Projet%20Jeu/_workitems/edit/8396)
