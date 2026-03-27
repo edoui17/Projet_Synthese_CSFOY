@@ -1,11 +1,13 @@
 using Godot;
+using IslandSurvivor.Classes;
 using System;
 
-public partial class Or : Area2D
+public partial class Rock : Area2D , Ore
 {
-    [Signal] public delegate void GoldBrokenEventHandler(int quantity);
-    [Export] public string m_entityId = "gold";
-    [Export] public Timer m_timer;
+    [Signal] public delegate void RockBrokenEventHandler(int quantity);
+
+    [Export] public string m_entityId { get; set; } = "rock";
+    [Export] public Timer m_timer { get; set; }
 
     public override void _Ready()
     {
@@ -21,12 +23,19 @@ public partial class Or : Area2D
         }
     }
 
-    public void DestroyRock()
+    void Ore.OnAreaEntered(Area2D area)
+    {
+        OnAreaEntered(area);
+    }
+
+    public void DestroyOre()
     {
         Random random = new();
         int quantity = random.Next(1, 5);
 
-        EmitSignal(SignalName.GoldBroken, quantity);
+        EmitSignal(SignalName.RockBroken, quantity);
         QueueFree();
     }
+
+  
 }
