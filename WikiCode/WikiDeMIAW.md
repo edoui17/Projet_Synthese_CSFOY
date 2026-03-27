@@ -112,7 +112,7 @@ L'équipe applique des règles de révision strictes pour garantir la qualité d
 
 ## **Notre "Definition of done"**
 - Développement terminé
-- Tests unitaires et d'intégration continue passent (aucune erreur)
+- Tests unitaires,d'intégration continue passent et tests manuels (aucune erreur)
 - Documentation est mise à jour
 - Le code ajouté et ses tests sont revus et validés par au moins 2 autres personnes
 
