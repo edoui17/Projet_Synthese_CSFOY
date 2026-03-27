@@ -4,10 +4,8 @@ using System;
 public partial class Roche : Area2D
 {
     [Signal] public delegate void RockBrokenEventHandler(int quantity);
-    [Export] public string EntityId = "rock";
-
-    private double _damageCooldown = 0.2;
-    private double _timerSinceLastDamage = 0.0;
+    [Export] public string m_entityId = "rock";
+    [Export] public Timer m_timer;
 
     public override void _Ready()
     {
@@ -16,15 +14,11 @@ public partial class Roche : Area2D
 
     private void OnAreaEntered(Area2D area)
     {
-        if (_timerSinceLastDamage <= 0 && area.IsInGroup("Tool"))
+        if (m_timer.IsStopped() && area.IsInGroup("Tool"))
         {
-            StatManager.Instance.ApplyDamage(this, 1);
-            _timerSinceLastDamage = _damageCooldown;
+            //StatManager.Instance.ApplyDamage(this, 1);
+            m_timer.Start();
         }
-    }
-    public override void _Process(double delta)
-    {
-        if (_timerSinceLastDamage > 0) _timerSinceLastDamage -= delta;
     }
 
     public void DestroyRock()

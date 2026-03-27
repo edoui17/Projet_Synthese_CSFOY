@@ -18,7 +18,7 @@ public partial class Or : Area2D
     {
         if (_timerSinceLastDamage <= 0 && area.IsInGroup("Tool"))
         {
-            StatManager.Instance.ApplyDamage(this, 1);
+            //StatManager.Instance.ApplyDamage(this, 1);
             _timerSinceLastDamage = _damageCooldown;
         }
     }
