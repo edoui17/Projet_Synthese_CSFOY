@@ -1,0 +1,63 @@
+[gd_scene format=3 uid="uid://cqj0slyvkda77"]
+
+[ext_resource type="Script" uid="uid://nwjpac5l48wr" path="res://Scenes/MainMenu/MainMenu/MainMenu.cs" id="1_4ebcy"]
+
+[node name="MainMenu" type="Control" unique_id=327941898 node_paths=PackedStringArray("_startGameButton", "_optionsGameButton", "_quitGameButton")]
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_4ebcy")
+_startGameButton = NodePath("MenuTab/VBoxContainer/StartGameBtn")
+_optionsGameButton = NodePath("MenuTab/VBoxContainer/OptionsBtn")
+_quitGameButton = NodePath("MenuTab/VBoxContainer/QuitGameBtn")
+
+[node name="MenuTab" type="PanelContainer" parent="." unique_id=1573798446]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MenuTab" unique_id=117694114]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MenuTab/VBoxContainer" unique_id=1639614787]
+layout_mode = 2
+theme_override_font_sizes/font_size = 60
+text = "Main Menu"
+
+[node name="StartGameBtn" type="Button" parent="MenuTab/VBoxContainer" unique_id=1793793902]
+layout_mode = 2
+theme_override_font_sizes/font_size = 35
+text = "Démarrer"
+
+[node name="ScoreboardBtn" type="Button" parent="MenuTab/VBoxContainer" unique_id=782291826]
+layout_mode = 2
+theme_override_font_sizes/font_size = 35
+text = "Options"
+
+[node name="OptionsBtn" type="Button" parent="MenuTab/VBoxContainer" unique_id=1896194148]
+layout_mode = 2
+theme_override_font_sizes/font_size = 35
+text = "Options"
+
+[node name="QuitGameBtn" type="Button" parent="MenuTab/VBoxContainer" unique_id=394256619]
+layout_mode = 2
+theme_override_font_sizes/font_size = 35
+text = "Quit"
+
+[connection signal="pressed" from="MenuTab/VBoxContainer/StartGameBtn" to="." method="_on_start_game_btn_pressed"]
+[connection signal="pressed" from="MenuTab/VBoxContainer/OptionsBtn" to="." method="_on_options_btn_pressed"]
+[connection signal="pressed" from="MenuTab/VBoxContainer/QuitGameBtn" to="." method="_on_quitgame_btn_pressed"]
