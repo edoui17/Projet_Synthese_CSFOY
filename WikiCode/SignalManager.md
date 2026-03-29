@@ -4,16 +4,25 @@
 Le `SignalManager` sert de point de communication global (Observer Pattern) pour tous les systèmes du jeu. Il est conçu pour respecter l'architecture N-Tier du projet :
 
 - **Core (`Src/Core/Interfaces/ISignalManager.cs`)** : Définit les contrats (Interfaces) que tout gestionnaire de signaux doit implémenter.
-- **Utils (`Src/Core/Utils/WeakEvent.cs`)** : Implémente le pattern **Weak Event** avec `WeakReference`. Cela garantit que si une scène est détruite dans Godot et qu'un `Node` n'est plus en mémoire, le système de signaux ne causera pas de fuite de mémoire ou de plantage (car le *Garbage Collector* pourra détruire le nœud abonné).
+- **Utils (`Src/Core/Utils/WeakEvent.cs` et `Src/Core/Utils/WeakEventNonGeneric.cs`)** : Implémente le pattern **Weak Event** avec `WeakReference`. Cela garantit que si une scène est détruite dans Godot et qu'un `Node` n'est plus en mémoire, le système de signaux ne causera pas de fuite de mémoire ou de plantage (car le *Garbage Collector* pourra détruire le nœud abonné). Le pattern est séparé en deux fichiers pour la version générique (`<TEventArgs>`) et non générique.
 - **Core Implementation (`Src/Core/Managers/SignalManagerCore.cs`)** : Gère la logique pure C# de l'envoi de signaux.
 - **Godot (`Src/IslandSurvivor/Globals/SignalManager.cs`)** : Fait le pont entre l'architecture `Core` et le moteur Godot. Défini en tant qu'**Autoload**, il expose la logique `Core` via délégation.
 
+## Conventions de code appliquées
+
+Afin de respecter les standards stricts du projet, le code implémenté suit ces règles :
+- **Typage explicite** : Le mot-clé `var` n'est **jamais** utilisé.
+- **Ordre des membres** : Toutes les données membres (champs `m_`) sont déclarées tout en haut de chaque classe.
+- **Ordre des propriétés** : Toutes les propriétés publiques/privées sont déclarées juste en dessous des données membres, avant les constructeurs et méthodes.
+- **Séparation par fichier** : Chaque classe (même utilitaire) est isolée dans son propre fichier (ex: `WeakEvent.cs` et `WeakEventNonGeneric.cs`).
+- **Interfaces abstraites** : L'interface `ISignalManager` et ses implémentations ne contiennent pas de signaux prédéfinis pour le moment, seulement des exemples en commentaire pour guider les futurs développements.
+
 ## Comment ajouter un signal
 
-Pour ajouter un nouveau signal global, suivez ces étapes :
+Pour ajouter un nouveau signal global, suivez ces étapes (en gardant les conventions ci-dessus à l'esprit) :
 
-1.  **Dans `ISignalManager.cs`** : Déclarez votre type `EventArgs` et ajoutez la propriété `WeakEvent` ainsi que la méthode `Emit` associée.
-2.  **Dans `SignalManagerCore.cs`** : Implémentez l'instanciation de l'événement et sa méthode `Invoke`.
+1.  **Dans `ISignalManager.cs`** : Déclarez votre type `EventArgs` (dans son propre fichier si public) et ajoutez la propriété `WeakEvent` ainsi que la méthode `Emit` associée dans l'interface.
+2.  **Dans `SignalManagerCore.cs`** : Implémentez l'instanciation de l'événement (donnée membre en haut) et sa méthode `Emit`.
 3.  **Dans `SignalManager.cs` (Autoload)** : Déléguez les appels vers la classe `SignalManagerCore`.
 
 ### Exemple
