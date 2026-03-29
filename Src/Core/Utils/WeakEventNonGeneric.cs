@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-public class WeakEvent<TEventArgs> where TEventArgs : EventArgs
+public class WeakEvent
 {
     private readonly List<WeakDelegate> m_listeners = new List<WeakDelegate>();
 
@@ -33,7 +33,7 @@ public class WeakEvent<TEventArgs> where TEventArgs : EventArgs
             return p_delegate.Target == null && Method == p_delegate.Method;
         }
 
-        public void Invoke(object p_sender, TEventArgs p_args)
+        public void Invoke(object p_sender, EventArgs p_args)
         {
             if (TargetReference != null)
             {
@@ -51,23 +51,23 @@ public class WeakEvent<TEventArgs> where TEventArgs : EventArgs
         }
     }
 
-    public void AddListener(EventHandler<TEventArgs> p_listener)
+    public void AddListener(EventHandler p_listener)
     {
         if (p_listener == null) return;
         m_listeners.Add(new WeakDelegate(p_listener));
     }
 
-    public void RemoveListener(EventHandler<TEventArgs> p_listener)
+    public void RemoveListener(EventHandler p_listener)
     {
         if (p_listener == null) return;
         m_listeners.RemoveAll(p_weakDelegate => p_weakDelegate.IsMatch(p_listener) || !p_weakDelegate.IsAlive);
     }
 
-    public void Invoke(object p_sender, TEventArgs p_args)
+    public void Invoke(object p_sender, EventArgs p_args)
     {
         List<WeakDelegate> toRemove = new List<WeakDelegate>();
 
-        foreach (WeakDelegate weakDelegate in m_listeners.ToList()) // Copy to allow modification
+        foreach (WeakDelegate weakDelegate in m_listeners.ToList())
         {
             if (weakDelegate.IsAlive)
             {
