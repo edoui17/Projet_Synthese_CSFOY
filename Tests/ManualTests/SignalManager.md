@@ -4,7 +4,7 @@ Afin de valider l'intégrité et le bon fonctionnement du `SignalManager` dans l
 
 ---
 
-## ⚠️ Prérequis de test
+## Prérequis de test
 * Avoir implémenté temporairement au moins **un (1)** signal concret dans le `Core` (ex: `OnScoreChanged`) et l'avoir délégué dans l'Autoload `SignalManager.cs`.
 * Avoir une scène de jeu (Godot) comportant un émetteur de signal (ex: Un bouton "Gagner des points") et un ou plusieurs receveurs (ex: `Label` affichant le score).
 
@@ -20,8 +20,8 @@ Afin de valider l'intégrité et le bon fonctionnement du `SignalManager` dans l
 3. Observer les interfaces réceptrices (ex: Les Labels de score, la barre de santé).
 
 **Résultat attendu :**
-* ✅ Les interfaces se mettent à jour **immédiatement**.
-* ✅ Aucun délai, ralentissement, ou décalage (lag) n'est perçu par le joueur.
+* Les interfaces se mettent à jour **immédiatement**.
+* Aucun délai, ralentissement, ou décalage (lag) n'est perçu par le joueur.
 
 ---
 
@@ -35,9 +35,9 @@ Afin de valider l'intégrité et le bon fonctionnement du `SignalManager` dans l
 3. Une fois l'objet détruit (vérifier l'arbre des nœuds *Remote*), émettre le signal (ex: Cliquer sur "Gagner des points").
 
 **Résultat attendu :**
-* ✅ Le jeu **ne plante pas**.
-* ✅ Aucune erreur (`NullReferenceException` ou `ObjectDisposedException`) n'est affichée dans la console de Godot.
-* ✅ L'objet a bien été nettoyé par le Garbage Collector de .NET.
+* Le jeu **ne plante pas**.
+* Aucune erreur (`NullReferenceException` ou `ObjectDisposedException`) n'est affichée dans la console de Godot.
+* L'objet a bien été nettoyé par le Garbage Collector de .NET.
 
 ---
 
@@ -51,5 +51,5 @@ Afin de valider l'intégrité et le bon fonctionnement du `SignalManager` dans l
 3. Mettre le jeu en pause ou observer attentivement les affichages.
 
 **Résultat attendu :**
-* ✅ Toutes les interfaces affichent la valeur **exacte** (999) transmise.
-* ✅ La mise à jour est simultanée sur l'ensemble des écrans.
+* Toutes les interfaces affichent la valeur **exacte** (999) transmise.
+* La mise à jour est simultanée sur l'ensemble des écrans.
