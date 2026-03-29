@@ -36,7 +36,7 @@ layout_mode = 2
 [node name="Label" type="Label" parent="MenuTab/VBoxContainer" unique_id=1639614787]
 layout_mode = 2
 theme_override_font_sizes/font_size = 60
-text = "Main Menu"
+text = "Projet Jeu Video"
 
 [node name="StartGameBtn" type="Button" parent="MenuTab/VBoxContainer" unique_id=1793793902]
 layout_mode = 2
@@ -46,7 +46,7 @@ text = "Démarrer"
 [node name="ScoreboardBtn" type="Button" parent="MenuTab/VBoxContainer" unique_id=782291826]
 layout_mode = 2
 theme_override_font_sizes/font_size = 35
-text = "Options"
+text = "Scoreboard"
 
 [node name="OptionsBtn" type="Button" parent="MenuTab/VBoxContainer" unique_id=1896194148]
 layout_mode = 2
@@ -59,5 +59,6 @@ theme_override_font_sizes/font_size = 35
 text = "Quit"
 
 [connection signal="pressed" from="MenuTab/VBoxContainer/StartGameBtn" to="." method="_on_start_game_btn_pressed"]
+[connection signal="pressed" from="MenuTab/VBoxContainer/ScoreboardBtn" to="." method="_on_scoreboard_btn_pressed"]
 [connection signal="pressed" from="MenuTab/VBoxContainer/OptionsBtn" to="." method="_on_options_btn_pressed"]
 [connection signal="pressed" from="MenuTab/VBoxContainer/QuitGameBtn" to="." method="_on_quitgame_btn_pressed"]
