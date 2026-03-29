@@ -7,6 +7,8 @@ using System.Reflection;
 
 public class WeakEvent<TEventArgs> where TEventArgs : EventArgs
 {
+    private readonly List<WeakDelegate> m_listeners = new List<WeakDelegate>();
+
     private class WeakDelegate
     {
         public WeakReference? TargetReference { get; }
@@ -50,8 +52,6 @@ public class WeakEvent<TEventArgs> where TEventArgs : EventArgs
         }
     }
 
-    private readonly List<WeakDelegate> m_listeners = new List<WeakDelegate>();
-
     public void AddListener(EventHandler<TEventArgs> p_listener)
     {
         if (p_listener == null) return;
@@ -89,6 +89,8 @@ public class WeakEvent<TEventArgs> where TEventArgs : EventArgs
 
 public class WeakEvent
 {
+    private readonly List<WeakDelegate> m_listeners = new List<WeakDelegate>();
+
     private class WeakDelegate
     {
         public WeakReference? TargetReference { get; }
@@ -131,8 +133,6 @@ public class WeakEvent
             }
         }
     }
-
-    private readonly List<WeakDelegate> m_listeners = new List<WeakDelegate>();
 
     public void AddListener(EventHandler p_listener)
     {
