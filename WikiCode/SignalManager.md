@@ -1,0 +1,48 @@
+# SignalManager
+
+## Architecture
+Le `SignalManager` sert de point de communication global (Observer Pattern) pour tous les systèmes du jeu. Il est conçu pour respecter l'architecture N-Tier du projet :
+
+- **Core (`Src/Core/Interfaces/ISignalManager.cs`)** : Définit les contrats (Interfaces) que tout gestionnaire de signaux doit implémenter.
+- **Utils (`Src/Core/Utils/WeakEvent.cs`)** : Implémente le pattern **Weak Event** avec `WeakReference`. Cela garantit que si une scène est détruite dans Godot et qu'un `Node` n'est plus en mémoire, le système de signaux ne causera pas de fuite de mémoire ou de plantage (car le *Garbage Collector* pourra détruire le nœud abonné).
+- **Core Implementation (`Src/Core/Managers/SignalManagerCore.cs`)** : Gère la logique pure C# de l'envoi de signaux.
+- **Godot (`Src/IslandSurvivor/Globals/SignalManager.cs`)** : Fait le pont entre l'architecture `Core` et le moteur Godot. Défini en tant qu'**Autoload**, il expose la logique `Core` via délégation.
+
+## Comment ajouter un signal
+
+Pour ajouter un nouveau signal global, suivez ces étapes :
+
+1.  **Dans `ISignalManager.cs`** : Déclarez votre type `EventArgs` et ajoutez la propriété `WeakEvent` ainsi que la méthode `Emit` associée.
+2.  **Dans `SignalManagerCore.cs`** : Implémentez l'instanciation de l'événement et sa méthode `Invoke`.
+3.  **Dans `SignalManager.cs` (Autoload)** : Déléguez les appels vers la classe `SignalManagerCore`.
+
+### Exemple
+
+**Déclaration dans le Core (ISignalManager.cs) :**
+```csharp
+public class ScoreChangedEventArgs : EventArgs
+{
+    public int NewScore { get; }
+    public ScoreChangedEventArgs(int p_newScore) => NewScore = p_newScore;
+}
+
+WeakEvent<ScoreChangedEventArgs> OnScoreChanged { get; }
+void EmitScoreChanged(object p_sender, int p_newScore);
+```
+
+**Implémentation dans le Client Godot :**
+```csharp
+// S'abonner à un événement (Dans un Node, par ex. _Ready)
+SignalManager.Instance.OnScoreChanged.AddListener(OnScoreChangedHandler);
+
+// Émettre un événement
+SignalManager.Instance.EmitScoreChanged(this, 1500);
+
+// Méthode de réception
+private void OnScoreChangedHandler(object p_sender, ISignalManager.ScoreChangedEventArgs p_args)
+{
+    // Mettre à jour l'UI avec p_args.NewScore
+}
+```
+
+*Note : Bien que `WeakEvent` utilise des références faibles, il est toujours recommandé de se désabonner (`RemoveListener`) lors de la destruction d'un objet (`_ExitTree`) pour des raisons de performance et de bonnes pratiques.*
