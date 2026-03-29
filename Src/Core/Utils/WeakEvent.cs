@@ -13,6 +13,7 @@ public class WeakEvent<TEventArgs> where TEventArgs : EventArgs
     {
         public WeakReference? TargetReference { get; }
         public MethodInfo Method { get; }
+        public bool IsAlive => TargetReference == null || TargetReference.IsAlive;
 
         public WeakDelegate(Delegate p_delegate)
         {
@@ -22,8 +23,6 @@ public class WeakEvent<TEventArgs> where TEventArgs : EventArgs
             }
             Method = p_delegate.Method;
         }
-
-        public bool IsAlive => TargetReference == null || TargetReference.IsAlive;
 
         public bool IsMatch(Delegate p_delegate)
         {
@@ -95,6 +94,7 @@ public class WeakEvent
     {
         public WeakReference? TargetReference { get; }
         public MethodInfo Method { get; }
+        public bool IsAlive => TargetReference == null || TargetReference.IsAlive;
 
         public WeakDelegate(Delegate p_delegate)
         {
@@ -104,8 +104,6 @@ public class WeakEvent
             }
             Method = p_delegate.Method;
         }
-
-        public bool IsAlive => TargetReference == null || TargetReference.IsAlive;
 
         public bool IsMatch(Delegate p_delegate)
         {
