@@ -1,5 +1,22 @@
 # SignalManager
 
+## Comprendre le Pattern "Weak Event" (Evenements Faibles)
+
+Étant donné que nous utilisons une architecture C# pure pour la logique, nous rencontrons un defi classique de la programmation orientee objet : le **Lapsed Listener Problem** (le probleme de l'abonne fantome).
+
+### Qu'est-ce qu'une reference forte vs faible ?
+*   **Reference Forte (Strong Reference) :** En C# standard, quand vous vous abonnez a un evenement (`OnScoreChanged += MaMethode;`), l'emetteur de l'evenement garde une reference "forte" vers l'objet qui ecoute. Le ramasse-miettes (Garbage Collector) de .NET ne detruira **jamais** cet objet tant que l'emetteur existe et pointe vers lui.
+*   **Reference Faible (Weak Reference) :** Une reference faible permet de pointer vers un objet, mais sans interdire au Garbage Collector de le detruire. Si personne d'autre n'utilise l'objet, il sera supprime de la memoire de facon securisee.
+
+### Le probleme dans notre jeu (Godot)
+Imaginez que vous ouvrez le Menu de Pause. Ce menu s'abonne au `SignalManager` pour mettre a jour l'affichage. Ensuite, vous fermez le menu, et Godot le detruit (`QueueFree()`).
+Cependant, si nous utilisions un evenement C# standard (`event Action`), le `SignalManager` (qui est un Autoload global et ne meurt jamais) garderait une reference forte vers le menu detruit. Resultat : **Fuite de memoire (Memory Leak)**, l'objet reste en memoire C# a l'infini, et le jeu plantera la prochaine fois que le `SignalManager` essaiera d'envoyer un signal au menu detruit.
+
+### La solution : Nos classes `WeakEvent` et `WeakEvent<TEventArgs>`
+Pour regler cela, nous n'utilisons pas le mot-cle `event` de C#. Nous avons cree nos propres classes : `WeakEvent` (pour les evenements sans arguments) et `WeakEvent<TEventArgs>` (pour les evenements avec des donnees, comme le nouveau score).
+
+Ces classes enveloppent l'abonne dans une `WeakReference`. Ainsi, quand Godot detruit un element de l'interface graphique (UI) ou un ennemi, la reference faible dans le `WeakEvent` devient nulle. Le Garbage Collector nettoie la memoire, et le `SignalManager` detectera automatiquement que l'abonne est mort (`IsAlive == false`) et le retirera de la liste silencieusement. Cela rend notre systeme robuste, evite les plantages, et libere les developpeurs de l'obligation absolue de se desabonner manuellement lors de la destruction des objets (bien que cela reste une bonne pratique).
+
 ## Architecture
 Le `SignalManager` sert de point de communication global (Observer Pattern) pour tous les systèmes du jeu. Il est conçu pour respecter l'architecture N-Tier du projet :
 
