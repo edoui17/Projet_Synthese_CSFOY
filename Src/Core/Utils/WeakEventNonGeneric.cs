@@ -11,10 +11,6 @@ public class WeakEvent
 
     private class WeakDelegate
     {
-        public WeakReference? TargetReference { get; }
-        public MethodInfo Method { get; }
-        public bool IsAlive => TargetReference == null || TargetReference.IsAlive;
-
         public WeakDelegate(Delegate p_delegate)
         {
             if (p_delegate.Target != null)
@@ -23,6 +19,10 @@ public class WeakEvent
             }
             Method = p_delegate.Method;
         }
+
+        public WeakReference? TargetReference { get; }
+        public MethodInfo Method { get; }
+        public bool IsAlive => TargetReference == null || TargetReference.IsAlive;
 
         public bool IsMatch(Delegate p_delegate)
         {
