@@ -22,8 +22,9 @@ Pour ajouter un nouveau signal global, suivez ces étapes :
 ```csharp
 public class ScoreChangedEventArgs : EventArgs
 {
-    public int NewScore { get; }
     public ScoreChangedEventArgs(int p_newScore) => NewScore = p_newScore;
+
+    public int NewScore { get; }
 }
 
 WeakEvent<ScoreChangedEventArgs> OnScoreChanged { get; }
