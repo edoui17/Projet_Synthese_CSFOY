@@ -31,13 +31,9 @@ public class Stat
     {
         m_additionalValue += p_amount;
 
-        // When max value changes, current value might need adjustment or we might want to heal proportionately,
-        // but for now, we just ensure it doesn't exceed the new max.
-        // Wait, if maximum health increases, typically current health increases by the same amount or stays the same.
-        // Let's keep it simple: Current value is clamped to the new EffectiveMaxValue.
-        // But what if it was full health?
-        // Scenario 4: "Alors la valeur totale calculée doit être mise à jour immédiatement"
-        // Let's adjust current value by the same amount if it's an additive bonus, so max and current increase together.
+        // When the max value changes (e.g. from 100 to 150),
+        // the current value heals by the exact same amount (+50)
+        // so 50/100 HP becomes 100/150 HP.
         m_currentValue += p_amount;
 
         ClampCurrentValue();
