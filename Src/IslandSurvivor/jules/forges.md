@@ -28,3 +28,11 @@ This file tracks critical architectural decisions, Godot 4.6.1 quirks, and N-Tie
      - **2. Constructors** immediately following the member variables.
      - **3. Properties** (e.g., `public int Value { get; set; }`) immediately following the constructors.
      - **4. Methods** at the end.
+
+### Architecture - Stats Management and The Bridge Pattern
+- **Context:** Implementing the Entity Stat System (User Story 5.1).
+- **Finding:** Coupling stat definitions to Godot `Resource` instances can cause widespread data mutations if instances are shared (e.g. 10 enemy instances sharing the same base `EntityStats` config). Relying strictly on C# pure events limits Editor capability for VFX triggers via the Editor.
+- **Resolution:**
+  1. **Bridge Pattern:** `StatTracker` lives entirely in `Core` and handles all complex math, scaling, capping, and the `WeakEvent` firing.
+  2. **Read-Only Config:** `EntityStats` Godot `[GlobalClass] Resource` acts strictly as an immutable config Template injected to `StatTracker` by the `StatManager` node on `_Ready()`.
+  3. **Hybrid Events:** The `StatManager` listens to the Core `WeakEvent` and proxies it via Godot `[Signal]` to make Node-based Inspector integration (VFX, sounds, UI bars) simple and flexible.
