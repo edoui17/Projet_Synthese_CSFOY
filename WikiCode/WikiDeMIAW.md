@@ -112,7 +112,7 @@ L'équipe applique des règles de révision strictes pour garantir la qualité d
 
 ## **Notre "Definition of done"**
 - Développement terminé
-- Tests unitaires et d'intégration continue passent (aucune erreur)
+- Tests unitaires,d'intégration continue passent et tests manuels (aucune erreur)
 - Documentation est mise à jour
 - Le code ajouté et ses tests sont revus et validés par au moins 2 autres personnes
 
@@ -125,7 +125,22 @@ L'équipe applique des règles de révision strictes pour garantir la qualité d
 
 ## **Création et Attribution des récits utilisateurs et tâches**
 - Delphine Martin :
+  * [Implementer l'affichages des menus](https://dev.azure.com/csf-dfc/Projet%20Jeu/_workitems/edit/8397)
+  * [Implementer l'ATH du joueur](https://dev.azure.com/csf-dfc/Projet%20Jeu/_workitems/edit/8396)
+
 - Kevin Houle : 
+  * [Implementer le système de point](https://dev.azure.com/csf-dfc/Projet%20Jeu/_workitems/edit/8404)
+  * [Implementer le gestionnaire de statistique](https://dev.azure.com/csf-dfc/Projet%20Jeu/_workitems/edit/8403)
+
 - Edouard Couture :
+  * [Ajouter la création de la map de base](https://dev.azure.com/csf-dfc/Projet%20Jeu/_workitems/edit/8466)
+  * [Implementer la génération d'une map](https://dev.azure.com/csf-dfc/Projet%20Jeu/_workitems/edit/8400)
+  * [Implementer l'apparition d'éléments sur la map](https://dev.azure.com/csf-dfc/Projet%20Jeu/_workitems/edit/8402)
+
 - Antoine Masson : 
+  * [Ajouter des ressources dans le jeu](https://dev.azure.com/csf-dfc/Projet%20Jeu/_workitems/edit/8394)
+  * [Mettre en place un manager d'inventaire](https://dev.azure.com/csf-dfc/Projet%20Jeu/_workitems/edit/8600)
+
 - Charles Philippe Warren :
+  * [Implementer le mouvement du joueur](https://dev.azure.com/csf-dfc/Projet%20Jeu/_workitems/edit/8398)
+  * [Implementer l'intéractions du joueur](https://dev.azure.com/csf-dfc/Projet%20Jeu/_workitems/edit/8399)
