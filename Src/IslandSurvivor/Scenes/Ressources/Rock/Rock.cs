@@ -10,7 +10,7 @@ public partial class Rock : Area2D, IOre
 
     [Export] public string MaterialName { get; set; } = "Roche";
     [Export] public string MaterialType { get; set; } = "Rock";
-    [Export] public string IconPath { get; set; } = "res://Assets/Tiny Swords/Tiny Swords (Update 010)/Deco/06.png";
+    [Export] public string IconPath { get; set; } = "res://Assets/TinySwords/TinySwords(Update010)/Deco/06.png";
 
     public override void _Ready()
     {

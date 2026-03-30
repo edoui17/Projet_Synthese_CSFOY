@@ -9,7 +9,7 @@ public partial class AutomnTree : Area2D, ITree
 
     [Export] public string MaterialName { get; set; } = "Bois d'automne";
     [Export] public string MaterialType { get; set; } = "Wood";
-    [Export] public string IconPath { get; set; } = "res://Assets/Tiny Swords (Free Pack)/Tiny Swords (Free Pack)/Terrain/Resources/Wood/Trees/Tree4.png";
+    [Export] public string IconPath { get; set; } = "res://Assets/TinySwords(FreePack)/TinySwords(FreePack)/Terrain/Resources/Wood/Trees/Tree4.png";
 
     public override void _Ready()
     {
