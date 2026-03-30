@@ -5,10 +5,10 @@ namespace IslandSurvivor.Interfaces
 {
     public interface IGatheringMaterials
     {
-        string m_materialName { get; }
-        string m_materialType { get; }
-        string m_entityId { get; }
-        Timer m_timer { get; }
+        string MaterialName { get; }
+        string MaterialType { get; }
+        string EntityId { get; }
+        Timer Timer { get; }
 
         void OnAreaEntered(Area2D area);
         void DestroyRessource();

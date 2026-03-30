@@ -7,11 +7,11 @@ public partial class Gold : Area2D, IOre
 {
     [Signal] public delegate void GoldBrokenEventHandler(int quantity);
 
-    [Export] public string m_entityId { get; set; } = "gold_01";
-    [Export] public Timer m_timer { get; set; }
+    [Export] public string EntityId { get; set; } = "gold_01";
+    [Export] public Timer Timer { get; set; }
 
-    [Export] public string m_materialName { get; set; } = "Or";
-    [Export] public string m_materialType { get; set; } = "Gold";
+    [Export] public string MaterialName { get; set; } = "Or";
+    [Export] public string MaterialType { get; set; } = "Gold";
 
 
 
