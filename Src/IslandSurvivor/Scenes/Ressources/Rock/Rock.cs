@@ -10,6 +10,7 @@ public partial class Rock : Area2D, IOre
 
     [Export] public string MaterialName { get; set; } = "Roche";
     [Export] public string MaterialType { get; set; } = "Rock";
+    [Export] public string IconPath { get; set; } = "res://Assets/Tiny Swords/Tiny Swords (Update 010)/Deco/06.png";
 
     public override void _Ready()
     {
@@ -33,7 +34,8 @@ public partial class Rock : Area2D, IOre
         Random random = new();
         int quantity = random.Next(1, 5);
 
-        SignalManager.Instance.EmitMaterialDestroyed(this, MaterialType, quantity);
+        var item = new Core.Domain.ResourceItem(EntityId, MaterialName, MaterialType, IconPath);
+        SignalManager.Instance.EmitMaterialDestroyed(this, item, quantity);
         QueueFree();
     }
 

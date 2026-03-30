@@ -9,6 +9,7 @@ public partial class AutomnTree : Area2D, ITree
 
     [Export] public string MaterialName { get; set; } = "Bois d'automne";
     [Export] public string MaterialType { get; set; } = "Wood";
+    [Export] public string IconPath { get; set; } = "res://Assets/Tiny Swords (Free Pack)/Tiny Swords (Free Pack)/Terrain/Resources/Wood/Trees/Tree4.png";
 
     public override void _Ready()
     {
@@ -32,7 +33,8 @@ public partial class AutomnTree : Area2D, ITree
         Random random = new();
         int quantity = random.Next(1, 5);
 
-        SignalManager.Instance.EmitMaterialDestroyed(this, MaterialType, quantity);
+        var item = new Core.Domain.ResourceItem(EntityId, MaterialName, MaterialType, IconPath);
+        SignalManager.Instance.EmitMaterialDestroyed(this, item, quantity);
         QueueFree();
     }
 }

@@ -24,9 +24,9 @@ public partial class SignalManager : Node, ISignalManager
 
     public WeakEvent<ISignalManager.MaterialDestroyedEventArgs> OnMaterialDestroyed => m_coreManager.OnMaterialDestroyed;
 
-    public void EmitMaterialDestroyed(object p_sender, string p_type, int p_quantity)
+    public void EmitMaterialDestroyed(object p_sender, Core.Domain.ResourceItem p_item, int p_quantity)
     {
-        m_coreManager.EmitMaterialDestroyed(p_sender, p_type, p_quantity);
+        m_coreManager.EmitMaterialDestroyed(p_sender, p_item, p_quantity);
     }
 
     // === EXAMPLE OF HOW TO IMPLEMENT A SIGNAL IN GODOT ===

@@ -10,6 +10,7 @@ public partial class Gold : Area2D, IOre
 
     [Export] public string MaterialName { get; set; } = "Or";
     [Export] public string MaterialType { get; set; } = "Gold";
+    [Export] public string IconPath { get; set; } = "res://Assets/Tiny Swords (Free Pack)/Tiny Swords (Free Pack)/Terrain/Resources/Gold/Gold Stones/Gold Stone 5.png";
 
     public override void _Ready()
     {
@@ -33,7 +34,8 @@ public partial class Gold : Area2D, IOre
         Random random = new();
         int quantity = random.Next(1, 5);
 
-        SignalManager.Instance.EmitMaterialDestroyed(this, MaterialType, quantity);
+        var item = new Core.Domain.ResourceItem(EntityId, MaterialName, MaterialType, IconPath);
+        SignalManager.Instance.EmitMaterialDestroyed(this, item, quantity);
         QueueFree();
     }
 
