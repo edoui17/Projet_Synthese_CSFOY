@@ -3,7 +3,8 @@
 *   **AI Contribution:**
     *   Designed `IInventoryManager` and `InventoryManager` inside `Src/Core` to be totally decoupled from Godot.
     *   Refactored `ISignalManager` and its implementations (`SignalManagerCore` and the Godot singleton `SignalManager`) to pass string `MaterialType` and `int quantity` when materials are destroyed.
-    *   Added `m_isPlayerNear` flag in each resource node (`Gold`, `Rock`, `AutomnTree`, `ConiferTree`) tracked via `AreaEntered`/`AreaExited` for the "Player" group.
-    *   Implemented `_Input` to detect `"interact"`, firing the Global `SignalManager.EmitMaterialDestroyed()`.
+    *   Refactored resource nodes (`Gold`, `Rock`, `AutomnTree`, `ConiferTree`) to rely on Godot collision layers (`AreaEntered`) checking against the `"Tool"` group instead of native inputs.
+    *   Added `Timer.IsStopped()` validation combined with `Timer.Start()` to prevent multi-hit frame abuse by tools overlapping the shape multiple times.
+    *   Fired the Global `SignalManager.EmitMaterialDestroyed()`.
     *   Renamed misnamed classes and updated `.tscn` scripts respectively.
-*   **Decision Reasoning:** The user explicitly stated no enums were to be used and the `Inventory` should be a `Manager`. The approach safely maintains boundaries by using dependency injection principles for signals. The Godot layer observes events to bind Input Map checks ("interact") directly to the global C# standard library signals within Core.
+*   **Decision Reasoning:** The user explicitly stated no enums were to be used and the `Inventory` should be a `Manager`. Furthermore, a colleague code review resulted in reverting manual inputs (`interact`) on resources to use the combat tool-hit style. The approach uses Godot's group checks on `AreaEntered` against `"Tool"`. It ensures smooth scaling alongside the eventual combat system. The Godot layer observers update the core data independently.

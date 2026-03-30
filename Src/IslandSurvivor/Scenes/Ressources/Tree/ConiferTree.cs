@@ -11,36 +11,18 @@ public partial class ConiferTree : Area2D, ITree
     [Export] public string MaterialName { get; set; } = "Conifère";
     [Export] public string MaterialType { get; set; } = "Wood";
 
-    private bool m_isPlayerNear = false;
-
     public override void _Ready()
     {
         AreaEntered += OnAreaEntered;
-        AreaExited += OnAreaExited;
     }
 
     public void OnAreaEntered(Area2D p_area)
     {
-        if (p_area.IsInGroup("Player"))
-        {
-            m_isPlayerNear = true;
-        }
-    }
-
-    private void OnAreaExited(Area2D p_area)
-    {
-        if (p_area.IsInGroup("Player"))
-        {
-            m_isPlayerNear = false;
-        }
-    }
-
-    public override void _Input(InputEvent @event)
-    {
-        if (m_isPlayerNear && @event.IsActionPressed("interact"))
+        if (p_area.IsInGroup("Tool"))
         {
             if (Timer == null || Timer.IsStopped())
             {
+                Timer?.Start();
                 DestroyResource();
             }
         }
