@@ -2,37 +2,55 @@ using Godot;
 using IslandSurvivor.Interfaces;
 using System;
 
-public partial class ArbreAutomne : Area2D, ITree
+public partial class AutomnTree : Area2D, ITree
 {
-    public string m_materialName => throw new NotImplementedException();
+    [Export] public string EntityId { get; set; } = "tree_automn_01";
+    [Export] public Timer Timer { get; set; }
 
-    public string m_materialType => throw new NotImplementedException();
+    [Export] public string MaterialName { get; set; } = "Bois d'automne";
+    [Export] public string MaterialType { get; set; } = "Wood";
 
-    public string m_entityId => throw new NotImplementedException();
+    private bool m_isPlayerNear = false;
 
-    public Timer m_timer => throw new NotImplementedException();
-
-    // Called when the node enters the scene tree for the first time.
     public override void _Ready()
-	{
-	}
-
-	// Called every frame. 'delta' is the elapsed time since the previous frame.
-	public override void _Process(double delta)
-	{
-	}
-
-    public void OnAreaEntered(Area2D area)
     {
-        throw new NotImplementedException();
+        AreaEntered += OnAreaEntered;
+        AreaExited += OnAreaExited;
     }
 
-    public void DestroyRessource()
+    public void OnAreaEntered(Area2D p_area)
+    {
+        if (p_area.IsInGroup("Player"))
+        {
+            m_isPlayerNear = true;
+        }
+    }
+
+    private void OnAreaExited(Area2D p_area)
+    {
+        if (p_area.IsInGroup("Player"))
+        {
+            m_isPlayerNear = false;
+        }
+    }
+
+    public override void _Input(InputEvent @event)
+    {
+        if (m_isPlayerNear && @event.IsActionPressed("interact"))
+        {
+            if (Timer == null || Timer.IsStopped())
+            {
+                DestroyResource();
+            }
+        }
+    }
+
+    public void DestroyResource()
     {
         Random random = new();
         int quantity = random.Next(1, 5);
 
-        EmitSignal(SignalName.GoldBroken, quantity);
+        SignalManager.Instance.EmitMaterialDestroyed(this, MaterialType, quantity);
         QueueFree();
     }
 }
