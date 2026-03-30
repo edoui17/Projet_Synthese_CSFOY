@@ -71,7 +71,7 @@ animations = [{
 "speed": 5.0
 }]
 
-[node name="ArbreAutomne" type="Area2D" unique_id=1636812557]
+[node name="AutomnTree" type="Area2D" unique_id=1636812557]
 script = ExtResource("1_sd2x1")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=500406667]

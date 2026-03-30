@@ -11,6 +11,6 @@ namespace IslandSurvivor.Interfaces
         Timer Timer { get; }
 
         void OnAreaEntered(Area2D area);
-        void DestroyRessource();
+        void DestroyResource();
     }
 }
