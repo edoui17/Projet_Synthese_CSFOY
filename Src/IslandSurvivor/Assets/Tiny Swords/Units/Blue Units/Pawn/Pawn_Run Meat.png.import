@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://d4f275og1mncu"
-path="res://.godot/imported/Pawn_Run Meat.png-73612e5381e9185c5a15301a3fcdbebc.ctex"
+path="res://.godot/imported/Pawn_Run Meat.png-c035acf1fbb3adf1e6dbc7244ec455eb.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://asset pack/Tiny Swords/Units/Blue Units/Pawn/Pawn_Run Meat.png"
-dest_files=["res://.godot/imported/Pawn_Run Meat.png-73612e5381e9185c5a15301a3fcdbebc.ctex"]
+source_file="res://Assets/Tiny Swords/Units/Blue Units/Pawn/Pawn_Run Meat.png"
+dest_files=["res://.godot/imported/Pawn_Run Meat.png-c035acf1fbb3adf1e6dbc7244ec455eb.ctex"]
 
 [params]
 

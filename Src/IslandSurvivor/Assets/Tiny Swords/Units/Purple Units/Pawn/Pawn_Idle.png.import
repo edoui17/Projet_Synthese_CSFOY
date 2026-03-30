@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://dw7gadlth1ol7"
-path="res://.godot/imported/Pawn_Idle.png-3f48a80317ba6193f568ede50a080968.ctex"
+path="res://.godot/imported/Pawn_Idle.png-ba2c57dca637267f06a70b7772515b9c.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://asset pack/Tiny Swords/Units/Purple Units/Pawn/Pawn_Idle.png"
-dest_files=["res://.godot/imported/Pawn_Idle.png-3f48a80317ba6193f568ede50a080968.ctex"]
+source_file="res://Assets/Tiny Swords/Units/Purple Units/Pawn/Pawn_Idle.png"
+dest_files=["res://.godot/imported/Pawn_Idle.png-ba2c57dca637267f06a70b7772515b9c.ctex"]
 
 [params]
 

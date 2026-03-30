@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://c8w25m3k1l8mr"
-path="res://.godot/imported/WoodTable_Slots.png-1dc4bc90a9ebfe0edadca18e56f731ac.ctex"
+path="res://.godot/imported/WoodTable_Slots.png-76782e901993aabeb813e8c49e6dc2aa.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://asset pack/Tiny Swords/UI Elements/UI Elements/Wood Table/WoodTable_Slots.png"
-dest_files=["res://.godot/imported/WoodTable_Slots.png-1dc4bc90a9ebfe0edadca18e56f731ac.ctex"]
+source_file="res://Assets/Tiny Swords/UI Elements/UI Elements/Wood Table/WoodTable_Slots.png"
+dest_files=["res://.godot/imported/WoodTable_Slots.png-76782e901993aabeb813e8c49e6dc2aa.ctex"]
 
 [params]
 

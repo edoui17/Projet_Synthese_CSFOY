@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://cbttivhi7dk6f"
-path="res://.godot/imported/Sheep_Grass.png-d6ddd6529b7a0a19bef822f0ff77fee2.ctex"
+path="res://.godot/imported/Sheep_Grass.png-64ee732d42d297cdc50a3865e16b9ba7.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://asset pack/Tiny Swords/Terrain/Resources/Meat/Sheep/Sheep_Grass.png"
-dest_files=["res://.godot/imported/Sheep_Grass.png-d6ddd6529b7a0a19bef822f0ff77fee2.ctex"]
+source_file="res://Assets/Tiny Swords/Terrain/Resources/Meat/Sheep/Sheep_Grass.png"
+dest_files=["res://.godot/imported/Sheep_Grass.png-64ee732d42d297cdc50a3865e16b9ba7.ctex"]
 
 [params]
 

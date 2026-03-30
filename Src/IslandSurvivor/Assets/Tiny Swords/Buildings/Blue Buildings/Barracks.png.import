@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://cnky31up7hdll"
-path="res://.godot/imported/Barracks.png-9c5efc12821dafbf164360ccf16c39b9.ctex"
+path="res://.godot/imported/Barracks.png-ab98b4c1f27d59a699c1b1d1abb8fc18.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://asset pack/Tiny Swords/Buildings/Blue Buildings/Barracks.png"
-dest_files=["res://.godot/imported/Barracks.png-9c5efc12821dafbf164360ccf16c39b9.ctex"]
+source_file="res://Assets/Tiny Swords/Buildings/Blue Buildings/Barracks.png"
+dest_files=["res://.godot/imported/Barracks.png-ab98b4c1f27d59a699c1b1d1abb8fc18.ctex"]
 
 [params]
 

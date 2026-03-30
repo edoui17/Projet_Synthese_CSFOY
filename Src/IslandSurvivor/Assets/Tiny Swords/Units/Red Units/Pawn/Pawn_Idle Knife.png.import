@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://ctegueak4fbii"
-path="res://.godot/imported/Pawn_Idle Knife.png-6aa0ee99594c3ef00e510c46a888bdfc.ctex"
+path="res://.godot/imported/Pawn_Idle Knife.png-ef4994fe60ac0963fe288ab19d95505a.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://asset pack/Tiny Swords/Units/Red Units/Pawn/Pawn_Idle Knife.png"
-dest_files=["res://.godot/imported/Pawn_Idle Knife.png-6aa0ee99594c3ef00e510c46a888bdfc.ctex"]
+source_file="res://Assets/Tiny Swords/Units/Red Units/Pawn/Pawn_Idle Knife.png"
+dest_files=["res://.godot/imported/Pawn_Idle Knife.png-ef4994fe60ac0963fe288ab19d95505a.ctex"]
 
 [params]
 

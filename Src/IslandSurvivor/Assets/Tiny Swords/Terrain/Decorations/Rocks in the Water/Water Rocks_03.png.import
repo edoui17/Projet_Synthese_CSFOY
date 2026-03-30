@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://drplsqjovjgpw"
-path="res://.godot/imported/Water Rocks_03.png-91dea10a3f39c6edbfe18e675caf1772.ctex"
+path="res://.godot/imported/Water Rocks_03.png-10a49f1227b5d9ab841a4cf1d57dabb3.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://asset pack/Tiny Swords/Terrain/Decorations/Rocks in the Water/Water Rocks_03.png"
-dest_files=["res://.godot/imported/Water Rocks_03.png-91dea10a3f39c6edbfe18e675caf1772.ctex"]
+source_file="res://Assets/Tiny Swords/Terrain/Decorations/Rocks in the Water/Water Rocks_03.png"
+dest_files=["res://.godot/imported/Water Rocks_03.png-10a49f1227b5d9ab841a4cf1d57dabb3.ctex"]
 
 [params]
 

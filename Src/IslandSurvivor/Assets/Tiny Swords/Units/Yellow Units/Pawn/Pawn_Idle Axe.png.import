@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://d3yb3hk2nxqdv"
-path="res://.godot/imported/Pawn_Idle Axe.png-1753853dc223bf78480773daa3dffa8b.ctex"
+path="res://.godot/imported/Pawn_Idle Axe.png-372cc911ba7cdab63e4191223cd7dc91.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://asset pack/Tiny Swords/Units/Yellow Units/Pawn/Pawn_Idle Axe.png"
-dest_files=["res://.godot/imported/Pawn_Idle Axe.png-1753853dc223bf78480773daa3dffa8b.ctex"]
+source_file="res://Assets/Tiny Swords/Units/Yellow Units/Pawn/Pawn_Idle Axe.png"
+dest_files=["res://.godot/imported/Pawn_Idle Axe.png-372cc911ba7cdab63e4191223cd7dc91.ctex"]
 
 [params]
 

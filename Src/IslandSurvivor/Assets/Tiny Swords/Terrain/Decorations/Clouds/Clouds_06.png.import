@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://mknumxyysje8"
-path="res://.godot/imported/Clouds_06.png-bf7219aca96150dafa949b607c16a8c5.ctex"
+path="res://.godot/imported/Clouds_06.png-0aa36f9088966ea8003d66100c5371f3.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://asset pack/Tiny Swords/Terrain/Decorations/Clouds/Clouds_06.png"
-dest_files=["res://.godot/imported/Clouds_06.png-bf7219aca96150dafa949b607c16a8c5.ctex"]
+source_file="res://Assets/Tiny Swords/Terrain/Decorations/Clouds/Clouds_06.png"
+dest_files=["res://.godot/imported/Clouds_06.png-0aa36f9088966ea8003d66100c5371f3.ctex"]
 
 [params]
 

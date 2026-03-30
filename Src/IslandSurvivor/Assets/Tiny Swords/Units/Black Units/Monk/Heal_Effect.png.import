@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://lrlhxcbpr8jo"
-path="res://.godot/imported/Heal_Effect.png-533542d2e1222410a0eb9e9a55417167.ctex"
+path="res://.godot/imported/Heal_Effect.png-7eedcb96f7b97697ab7cd135e245e088.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://asset pack/Tiny Swords/Units/Black Units/Monk/Heal_Effect.png"
-dest_files=["res://.godot/imported/Heal_Effect.png-533542d2e1222410a0eb9e9a55417167.ctex"]
+source_file="res://Assets/Tiny Swords/Units/Black Units/Monk/Heal_Effect.png"
+dest_files=["res://.godot/imported/Heal_Effect.png-7eedcb96f7b97697ab7cd135e245e088.ctex"]
 
 [params]
 

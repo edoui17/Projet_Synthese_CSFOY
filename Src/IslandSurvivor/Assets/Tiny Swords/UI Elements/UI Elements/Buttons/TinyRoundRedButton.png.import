@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://csa4ivy0nq45"
-path="res://.godot/imported/TinyRoundRedButton.png-38868d2b59ae13c52b9f9aabc9e51da0.ctex"
+path="res://.godot/imported/TinyRoundRedButton.png-83743714aaf00b00ac8252997331f1d3.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://asset pack/Tiny Swords/UI Elements/UI Elements/Buttons/TinyRoundRedButton.png"
-dest_files=["res://.godot/imported/TinyRoundRedButton.png-38868d2b59ae13c52b9f9aabc9e51da0.ctex"]
+source_file="res://Assets/Tiny Swords/UI Elements/UI Elements/Buttons/TinyRoundRedButton.png"
+dest_files=["res://.godot/imported/TinyRoundRedButton.png-83743714aaf00b00ac8252997331f1d3.ctex"]
 
 [params]
 

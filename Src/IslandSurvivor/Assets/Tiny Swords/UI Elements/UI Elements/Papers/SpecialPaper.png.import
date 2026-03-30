@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://dxd6mscrxmqpy"
-path="res://.godot/imported/SpecialPaper.png-65a71aa6bb775906e1205f61147e50fb.ctex"
+path="res://.godot/imported/SpecialPaper.png-9e7beaa56eb12633c506729bcc8188e1.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://asset pack/Tiny Swords/UI Elements/UI Elements/Papers/SpecialPaper.png"
-dest_files=["res://.godot/imported/SpecialPaper.png-65a71aa6bb775906e1205f61147e50fb.ctex"]
+source_file="res://Assets/Tiny Swords/UI Elements/UI Elements/Papers/SpecialPaper.png"
+dest_files=["res://.godot/imported/SpecialPaper.png-9e7beaa56eb12633c506729bcc8188e1.ctex"]
 
 [params]
 

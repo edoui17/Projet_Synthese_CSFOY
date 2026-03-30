@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://cb0tbsohbjeq8"
-path="res://.godot/imported/Ribbon_Black.png-a878f2ea0b0977e981088094ce611019.ctex"
+path="res://.godot/imported/Ribbon_Black.png-a1a7ba7cb203488dadc8db8b13c61157.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://asset pack/Tiny Swords/UI Elements/UI Banners from the store page/Ribbons/Ribbon_Black.png"
-dest_files=["res://.godot/imported/Ribbon_Black.png-a878f2ea0b0977e981088094ce611019.ctex"]
+source_file="res://Assets/Tiny Swords/UI Elements/UI Banners from the store page/Ribbons/Ribbon_Black.png"
+dest_files=["res://.godot/imported/Ribbon_Black.png-a1a7ba7cb203488dadc8db8b13c61157.ctex"]
 
 [params]
 
