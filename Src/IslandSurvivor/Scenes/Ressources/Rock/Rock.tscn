@@ -9,9 +9,9 @@ size = Vector2(37, 11)
 [sub_resource type="CircleShape2D" id="CircleShape2D_pv240"]
 radius = 19.026299
 
-[node name="Roche" type="Area2D" unique_id=2011989865]
+[node name="Roche" type="Area2D" unique_id=2011989865 node_paths=PackedStringArray("m_timer")]
 script = ExtResource("1_pv240")
-Healt = 6
+m_timer = NodePath("Timer")
 
 [node name="StaticBody2D" type="StaticBody2D" parent="." unique_id=2091260846]
 
