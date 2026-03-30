@@ -15,13 +15,14 @@ run/main_scene="uid://cs7lisiu7vc7y"
 config/features=PackedStringArray("4.6", "C#", "Mobile")
 config/icon="res://icon.svg"
 
+[autoload]
+
+SignalManager="*res://Globals/SignalManager.cs"
+
 [display]
 
 window/size/viewport_width=1920
 window/size/viewport_height=1080
-[autoload]
-
-SignalManager="*res://Globals/SignalManager.cs"
 
 [dotnet]
 
