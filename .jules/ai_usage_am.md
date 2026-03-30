@@ -8,3 +8,12 @@
     *   Fired the Global `SignalManager.EmitMaterialDestroyed()`.
     *   Renamed misnamed classes and updated `.tscn` scripts respectively.
 *   **Decision Reasoning:** The user explicitly stated no enums were to be used and the `Inventory` should be a `Manager`. Furthermore, a colleague code review resulted in reverting manual inputs (`interact`) on resources to use the combat tool-hit style. The approach uses Godot's group checks on `AreaEntered` against `"Tool"`. It ensures smooth scaling alongside the eventual combat system. The Godot layer observers update the core data independently.
+
+### 2024-05-24 - [User Story 4.3] | Inventory Manager Setup | Item Properties, Slot Management, Singleton Persistance | Decision Reasoning
+*   **Request:** Implement a full inventory system allowing players to collect, view, and consume resources (gold, rocks, trees) while maintaining this list across different scenes.
+*   **AI Contribution:**
+    *   Created `ResourceItem` and `InventorySlot` classes inside `Src/Core/Domain`.
+    *   Refactored `InventoryManager` (`Src/Core/Managers`) to hold a Dictionary of `InventorySlot` rather than raw primitive counts. Added `GetAllSlots()` to expose readonly details to future UI components.
+    *   Added string `IconPath` configurations natively mapped into Godot resources (`Gold`, `Rock`, `AutomnTree`, `ConiferTree`) without pulling `Texture2D` instances across into the Core library.
+    *   Refactored Godot `InventoryNode` into an Autoload (Singleton) format using `_EnterTree` Instance assignments so that the underlying Core logic survives scene transitions. Added a `ConsumeItem` helper.
+*   **Decision Reasoning:** The `Core` tier must remain pure. Therefore, `IconPath` is stored as a Godot Engine asset path (`res://...`) within a string property rather than attempting to pass an explicit `Godot.Texture2D` object directly to `InventoryManager`, violating N-Tier logic. Converting the primitive counts over to an `InventorySlot` object encapsulates future additions like weights, conditions, or equip logic organically. Making `InventoryNode` a Godot Singleton satisfies Scenario 4 (scene persistence).

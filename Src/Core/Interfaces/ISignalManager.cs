@@ -22,16 +22,16 @@ public interface ISignalManager
 
     public class MaterialDestroyedEventArgs : EventArgs
     {
-        public string MaterialType { get; }
+        public Core.Domain.ResourceItem Item { get; }
         public int MaterialQuantity { get; }
 
-        public MaterialDestroyedEventArgs(string p_type, int p_quantity)
+        public MaterialDestroyedEventArgs(Core.Domain.ResourceItem p_item, int p_quantity)
         {
-            MaterialType = p_type;
+            Item = p_item;
             MaterialQuantity = p_quantity;
         }
     }
 
     WeakEvent<MaterialDestroyedEventArgs> OnMaterialDestroyed { get; }
-    void EmitMaterialDestroyed(object p_sender, string p_type, int p_quantity);
+    void EmitMaterialDestroyed(object p_sender, Core.Domain.ResourceItem p_item, int p_quantity);
 }

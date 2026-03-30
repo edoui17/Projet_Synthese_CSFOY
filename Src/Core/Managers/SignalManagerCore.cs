@@ -9,9 +9,9 @@ public class SignalManagerCore : ISignalManager
     private readonly WeakEvent<ISignalManager.MaterialDestroyedEventArgs> m_onMaterialDestroyed = new WeakEvent<ISignalManager.MaterialDestroyedEventArgs>();
     public WeakEvent<ISignalManager.MaterialDestroyedEventArgs> OnMaterialDestroyed => m_onMaterialDestroyed;
 
-    public void EmitMaterialDestroyed(object p_sender, string p_type, int p_quantity)
+    public void EmitMaterialDestroyed(object p_sender, Core.Domain.ResourceItem p_item, int p_quantity)
     {
-        m_onMaterialDestroyed.Invoke(p_sender, new ISignalManager.MaterialDestroyedEventArgs(p_type, p_quantity));
+        m_onMaterialDestroyed.Invoke(p_sender, new ISignalManager.MaterialDestroyedEventArgs(p_item, p_quantity));
     }
 
     // === EXAMPLE OF HOW TO IMPLEMENT A SIGNAL IN CORE ===
