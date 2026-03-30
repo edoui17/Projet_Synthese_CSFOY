@@ -18,6 +18,7 @@ public partial class MainMenu : Control
     private void _on_scoreboard_btn_pressed()
     {
         GD.Print("Bouton score appuyé");
+        GetTree().ChangeSceneToFile("res://Scenes/MainMenu/ScoreboardMenu/ScoreboardMenu.tscn");
     }
 
     private void _on_options_btn_pressed()
