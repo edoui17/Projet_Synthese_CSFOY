@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="IslandSurvivor"
-run/main_scene="uid://cs7lisiu7vc7y"
+run/main_scene="uid://5kp0j31xrejs"
 config/features=PackedStringArray("4.6", "C#", "Mobile")
 config/icon="res://icon.svg"
 
@@ -19,9 +19,18 @@ config/icon="res://icon.svg"
 
 SignalManager="*res://Globals/SignalManager.cs"
 
+[display]
+
+window/size/viewport_width=1920
+window/size/viewport_height=1080
+
 [dotnet]
 
 project/assembly_name="IslandSurvivor"
+
+[layer_names]
+
+2d_physics/layer_1="Evironnment"
 
 [physics]
 

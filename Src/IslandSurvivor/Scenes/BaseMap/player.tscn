@@ -1,0 +1,24 @@
+[gd_scene format=3 uid="uid://ge7ibe30caal"]
+
+[ext_resource type="Script" uid="uid://cflook6p7o4ju" path="res://Scenes/BaseMap/CharacterBody2d.cs" id="1_3b2fw"]
+[ext_resource type="Texture2D" uid="uid://b5fg1af3ipgop" path="res://Assets/TinySwords(FreePack)/Units/Purple Units/Pawn/Pawn_Idle Axe.png" id="2_v4trc"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_4nnh0"]
+radius = 31.257
+
+[node name="Player" type="Node2D" unique_id=1396663237]
+
+[node name="Node2D" type="Node2D" parent="." unique_id=1932440805]
+
+[node name="CharacterBody2D" type="CharacterBody2D" parent="Node2D" unique_id=1340236982]
+motion_mode = 1
+script = ExtResource("1_3b2fw")
+
+[node name="Sprite2D" type="Sprite2D" parent="Node2D/CharacterBody2D" unique_id=1774063687]
+texture = ExtResource("2_v4trc")
+hframes = 8
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Node2D/CharacterBody2D" unique_id=962095091]
+shape = SubResource("CircleShape2D_4nnh0")
+
+[node name="Camera2D" type="Camera2D" parent="Node2D/CharacterBody2D" unique_id=1508494086]
