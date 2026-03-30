@@ -1,11 +1,13 @@
 [gd_scene format=3 uid="uid://rtx0k5qfaymn"]
 
 [ext_resource type="Script" uid="uid://tvjivvqe0caf" path="res://Scenes/Ressources/Tree/ConiferTree.cs" id="1_dkrse"]
-[ext_resource type="Texture2D" uid="uid://pr42it55tc3f" path="res://Assets/Tiny Swords/Tiny Swords (Update 010)/Resources/Trees/Tree.png" id="2_ttmo2"]
+[ext_resource type="Texture2D" uid="uid://pr42it55tc3f" path="res://Assets/TinySwords(Update010)/Resources/Trees/Tree.png" id="2_ttmo2"]
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ybac0"]
+size = Vector2(29, 14)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_gyewy"]
-size = Vector2(46.375, 136.4375)
+size = Vector2(26, 57)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_03smp"]
 atlas = ExtResource("2_ttmo2")
@@ -50,14 +52,23 @@ animations = [{
 "speed": 3.0
 }]
 
-[node name="ConiferTree" type="Area2D" unique_id=169002865]
+[node name="ConiferTree" type="Area2D" unique_id=169002865 node_paths=PackedStringArray("Timer")]
 script = ExtResource("1_dkrse")
+Timer = NodePath("Timer")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1581479158]
-position = Vector2(1.1875, -7.78125)
+[node name="StaticBody2D" type="StaticBody2D" parent="." unique_id=1567773277]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D" unique_id=2002021830]
+position = Vector2(1.5, 70)
+shape = SubResource("RectangleShape2D_ybac0")
+
+[node name="HitBox" type="CollisionShape2D" parent="." unique_id=1581479158]
+position = Vector2(0, 45.5)
 shape = SubResource("RectangleShape2D_gyewy")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1348993800]
 sprite_frames = SubResource("SpriteFrames_j77k5")
 animation = &"Arbre"
 frame_progress = 0.5379155
+
+[node name="Timer" type="Timer" parent="." unique_id=3877963]
