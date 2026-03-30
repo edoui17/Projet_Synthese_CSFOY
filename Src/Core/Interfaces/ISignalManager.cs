@@ -19,4 +19,13 @@ public interface ISignalManager
     //     public int NewScore { get; }
     //     public ScoreChangedEventArgs(int p_newScore) => NewScore = p_newScore;
     // }
+
+    public class MaterialDestroyedEventArgs : EventArgs
+    {
+        public int MaterialQuantity { get; }
+        public MaterialDestroyedEventArgs(int p_quantity) => MaterialQuantity = p_quantity;
+    }
+
+    WeakEvent<MaterialDestroyedEventArgs> OnMaterialDestroyed { get; }
+    void EmitMaterialDestroyed(object p_sender, int p_quantity);
 }
