@@ -14,6 +14,14 @@ config/name="IslandSurvivor"
 config/features=PackedStringArray("4.6", "C#", "Mobile")
 config/icon="res://icon.svg"
 
+[audio]
+
+buses/default_bus_layout="uid://dr80y288fhe65"
+
+[autoload]
+
+MusicPlayer="*uid://cmbtn736rnfhu"
+
 [dotnet]
 
 project/assembly_name="IslandSurvivor"

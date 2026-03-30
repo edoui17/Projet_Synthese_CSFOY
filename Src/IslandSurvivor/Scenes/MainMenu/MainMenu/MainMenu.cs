@@ -3,29 +3,32 @@ using System;
 
 public partial class MainMenu : Control
 {
-    [Export] public Button _startGameButton;
-    [Export] public Button _optionsGameButton;
-    [Export] public Button _quitGameButton;
-
     public override void _Ready()
     {
-        _startGameButton.Pressed += OnBtnStartGamePressed;
-        _optionsGameButton.Pressed += OnBtnOptionsGamePressed;
-        _quitGameButton.Pressed += OnBtnQuitGamePressed;
+        //
     }
 
-    private void OnBtnStartGamePressed()
+    private void _on_start_game_btn_pressed()
     {
         GD.Print("Bouton start appuyé");
+        GetTree().ChangeSceneToFile("res://Scenes/MainMenu/TestGameShow/Game.tscn");
+
     }
 
-    private void OnBtnOptionsGamePressed()
+    private void _on_scoreboard_btn_pressed()
+    {
+        GD.Print("Bouton score appuyé");
+    }
+
+    private void _on_options_btn_pressed()
     {
         GD.Print("Bouton options appuyé");
+        GetTree().ChangeSceneToFile("res://Scenes/MainMenu/OptionsMenu/OptionsMenu.tscn");
     }
 
-    private void OnBtnQuitGamePressed()
+    private void _on_quitgame_btn_pressed()
     {
         GD.Print("Bouton quit appuyé");
+        GetTree().Quit();
     }
 }

@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://nwjpac5l48wr" path="res://Scenes/MainMenu/MainMenu/MainMenu.cs" id="1_4ebcy"]
 
-[node name="MainMenu" type="Control" unique_id=327941898 node_paths=PackedStringArray("_startGameButton", "_optionsGameButton", "_quitGameButton")]
+[node name="MainMenu" type="Control" unique_id=327941898]
 layout_mode = 3
 anchors_preset = 8
 anchor_left = 0.5
@@ -12,9 +12,6 @@ anchor_bottom = 0.5
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_4ebcy")
-_startGameButton = NodePath("MenuTab/VBoxContainer/StartGameBtn")
-_optionsGameButton = NodePath("MenuTab/VBoxContainer/OptionsBtn")
-_quitGameButton = NodePath("MenuTab/VBoxContainer/QuitGameBtn")
 
 [node name="MenuTab" type="PanelContainer" parent="." unique_id=1573798446]
 layout_mode = 1
@@ -33,15 +30,15 @@ grow_vertical = 2
 [node name="VBoxContainer" type="VBoxContainer" parent="MenuTab" unique_id=117694114]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="MenuTab/VBoxContainer" unique_id=1639614787]
+[node name="GameNameLabel" type="Label" parent="MenuTab/VBoxContainer" unique_id=1639614787]
 layout_mode = 2
 theme_override_font_sizes/font_size = 60
-text = "Projet Jeu Video"
+text = "IslandSurvivor"
 
 [node name="StartGameBtn" type="Button" parent="MenuTab/VBoxContainer" unique_id=1793793902]
 layout_mode = 2
 theme_override_font_sizes/font_size = 35
-text = "Démarrer"
+text = "Start"
 
 [node name="ScoreboardBtn" type="Button" parent="MenuTab/VBoxContainer" unique_id=782291826]
 layout_mode = 2
