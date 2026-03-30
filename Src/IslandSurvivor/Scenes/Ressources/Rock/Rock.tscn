@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://cs7lisiu7vc7y"]
 
 [ext_resource type="Texture2D" uid="uid://5tc71kmi20kh" path="res://Assets/Tiny Swords/Tiny Swords (Update 010)/Deco/06.png" id="1_h7t5w"]
-[ext_resource type="Script" uid="uid://bl6ncwce1sxfo" path="res://Scenes/Ressources/Roche/Roche.cs" id="1_pv240"]
+[ext_resource type="Script" uid="uid://tmgku7dgegxr" path="res://Scenes/Ressources/Rock/Rock.cs" id="1_pv240"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_pv240"]
 size = Vector2(37, 11)
@@ -9,9 +9,9 @@ size = Vector2(37, 11)
 [sub_resource type="CircleShape2D" id="CircleShape2D_pv240"]
 radius = 19.026299
 
-[node name="Roche" type="Area2D" unique_id=2011989865 node_paths=PackedStringArray("m_timer")]
+[node name="Rock" type="Area2D" unique_id=2011989865 node_paths=PackedStringArray("Timer")]
 script = ExtResource("1_pv240")
-m_timer = NodePath("Timer")
+Timer = NodePath("Timer")
 
 [node name="StaticBody2D" type="StaticBody2D" parent="." unique_id=2091260846]
 
