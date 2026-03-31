@@ -362,22 +362,6 @@ terrain_set_0/terrain_1/name = "cliff"
 terrain_set_0/terrain_1/color = Color(0.76618856, 0.17311704, 0.39413103, 1)
 sources/1 = SubResource("TileSetAtlasSource_ymkp7")
 
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_g38my"]
-texture = ExtResource("12_j3wwi")
-texture_region_size = Vector2i(190, 317)
-0:0/0 = 0
-0:0/0/texture_origin = Vector2i(0, 110)
-0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-74.66667, -21.333332, -64, -117.333336, 64, -117.333336, 0, -74.66667, 64, -117.333336, 74.66667, -21.333332, 53.333336, 32, -53.333336, 32)
-1:0/0 = 0
-0:1/0 = 0
-1:1/0 = 0
-
-[sub_resource type="TileSet" id="TileSet_6r8yr"]
-tile_size = Vector2i(64, 64)
-physics_layer_0/collision_layer = 1
-physics_layer_0/collision_mask = 0
-sources/0 = SubResource("TileSetAtlasSource_g38my")
-
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_f8k51"]
 texture = ExtResource("13_36e7r")
 texture_region_size = Vector2i(576, 256)
@@ -423,6 +407,22 @@ sources/4 = SubResource("TileSetAtlasSource_dttrb")
 sources/5 = SubResource("TileSetAtlasSource_q7qh4")
 sources/6 = SubResource("TileSetAtlasSource_exhti")
 
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_g38my"]
+texture = ExtResource("12_j3wwi")
+texture_region_size = Vector2i(190, 317)
+0:0/0 = 0
+0:0/0/texture_origin = Vector2i(0, 110)
+0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-74.66667, -21.333332, -64, -117.333336, 64, -117.333336, 0, -74.66667, 64, -117.333336, 74.66667, -21.333332, 53.333336, 32, -53.333336, 32)
+1:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_6r8yr"]
+tile_size = Vector2i(64, 64)
+physics_layer_0/collision_layer = 1
+physics_layer_0/collision_mask = 0
+sources/0 = SubResource("TileSetAtlasSource_g38my")
+
 [node name="BaseMapIsland" type="Node2D" unique_id=468228307]
 y_sort_enabled = true
 
@@ -452,11 +452,6 @@ y_sort_enabled = true
 tile_map_data = PackedByteArray("AAAiAA8ABAAAAAAAAAAdAAkABAAAAAAAAAARABAABQAAAAAAAAAPAAcABQAAAAAAAAAkABAABgAAAAAAAAAMAA4ABgAAAAAAAAAnAAoABgAAAAAAAAAeAAwABgAAAAAAAAAQAAoAAgAAAAAAAAAcABEAAgAAAAAAAAAeAAsAAgAAAAAAAAAaAAQAAAAAAAAAAAAeAAcAAAAAAAAAAAAMAAwAAAAAAAAAAAAKABAAAAAAAAAAAAARAAcAAgAAAAAAAAAVAA0AAgAAAAAAAAAZAAwAAAAAAAAAAAA=")
 tile_set = ExtResource("7_t6485")
 
-[node name="CampTileMap" type="TileMapLayer" parent="." unique_id=1735096419]
-y_sort_enabled = true
-tile_map_data = PackedByteArray("AAALAAQAAAAAAAAAAAA=")
-tile_set = SubResource("TileSet_6r8yr")
-
 [node name="CloudTileMap" type="TileMapLayer" parent="." unique_id=2025396475]
 tile_map_data = PackedByteArray("AAD//wEAAAAAAAAAAAAFAP7/AAAAAAAAAAAIAAoAAQAAAAAAAAANAAwAAQAAAAAAAAAUAAgAAgAAAAAAAAAaAAcAAwAAAAAAAAAZAP//AwAAAAAAAAARAP7/AwAAAAAAAAAIAA8AAwAAAAAAAAD9/w8AAwAAAAAAAAD8/woAAwAAAAAAAAD8/wkAAwAAAAAAAAD8/wUABAAAAAAAAAACAAkABQAAAAAAAAARAAwABQAAAAAAAAAVAAoABQAAAAAAAAD7//7/AwAAAAAAAAD3/wEAAwAAAAAAAAD3/wcAAwAAAAAAAAD5/wMAAwAAAAAAAAD6/w0AAwAAAAAAAAD4/w8ABAAAAAAAAAAdAA0ABAAAAAAAAAAbAAoABAAAAAAAAAAMAA0ABgAAAAAAAAAeAAIAAAAAAAAAAAAgAAgAAAAAAAAAAAAdAAUAAAAAAAAAAAAYAA8AAAAAAAAAAAARAA4AAAAAAAAAAAAjAAsAAAAAAAAAAAAkAP3/AwAAAAAAAAAlAAYAAwAAAAAAAAA=")
 tile_set = SubResource("TileSet_telec")
@@ -466,6 +461,11 @@ z_index = 1
 y_sort_enabled = true
 tile_map_data = PackedByteArray("AAAGAAsABQAAAAAAAAAiAAcABQAAAAAAAAAkAAkABQAAAAAAAAAIAAgABAAAAAAAAAAmAAYAAgAAAAAAAAAIAAwAAgAAAAAAAAAEAAsABgAAAAAAAAAGAAgAAAAAAAAAAAALAAcAAAAAAAAAAAA=")
 tile_set = ExtResource("7_t6485")
+
+[node name="CampTileMap" type="TileMapLayer" parent="." unique_id=1735096419]
+y_sort_enabled = true
+tile_map_data = PackedByteArray("AAALAAQAAAAAAAAAAAA=")
+tile_set = SubResource("TileSet_6r8yr")
 
 [node name="CharacterBody2D" parent="." unique_id=1340236982 instance=ExtResource("21_6r8yr")]
 position = Vector2(745, 488)
