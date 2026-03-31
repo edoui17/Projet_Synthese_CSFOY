@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://c3vw2dh108q15"
-path="res://.godot/imported/Tool_03.png-deb800ba41d969a1f91c1a1c18dcac8c.ctex"
+path="res://.godot/imported/Tool_03.png-e4f5e2b59c859ebfd51580826ccf8255.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/TinySwords(FreePack)/Terrain/Resources/Tools/Tool_03.png"
-dest_files=["res://.godot/imported/Tool_03.png-deb800ba41d969a1f91c1a1c18dcac8c.ctex"]
+source_file="res://Assets/TinySwords/Terrain/Tools/Tool_03.png"
+dest_files=["res://.godot/imported/Tool_03.png-e4f5e2b59c859ebfd51580826ccf8255.ctex"]
 
 [params]
 

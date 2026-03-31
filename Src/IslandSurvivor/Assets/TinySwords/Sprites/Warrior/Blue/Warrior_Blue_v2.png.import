@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://1vfvwh0ekjt0"
-path="res://.godot/imported/Warrior_Blue_v2.png-e200209739bd081667639bb07b21bdb2.ctex"
+path="res://.godot/imported/Warrior_Blue_v2.png-275f0917ec092ff0e019f9f765d08e1b.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/TinySwords(Update010)/Factions/Knights/Troops/Warrior/Blue/Warrior_Blue_v2.png"
-dest_files=["res://.godot/imported/Warrior_Blue_v2.png-e200209739bd081667639bb07b21bdb2.ctex"]
+source_file="res://Assets/TinySwords/Sprites/Warrior/Blue/Warrior_Blue_v2.png"
+dest_files=["res://.godot/imported/Warrior_Blue_v2.png-275f0917ec092ff0e019f9f765d08e1b.ctex"]
 
 [params]
 

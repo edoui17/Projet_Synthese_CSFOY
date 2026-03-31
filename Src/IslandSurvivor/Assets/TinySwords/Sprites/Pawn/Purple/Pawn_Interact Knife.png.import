@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://6qq3s81hvcdi"
-path="res://.godot/imported/Pawn_Interact Knife.png-a969908536a6b035719824930c1fd173.ctex"
+path="res://.godot/imported/Pawn_Interact Knife.png-857e71e9001b0e146ef7a7f93e0e9711.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/TinySwords(FreePack)/Units/Purple Units/Pawn/Pawn_Interact Knife.png"
-dest_files=["res://.godot/imported/Pawn_Interact Knife.png-a969908536a6b035719824930c1fd173.ctex"]
+source_file="res://Assets/TinySwords/Sprites/Pawn/Purple/Pawn_Interact Knife.png"
+dest_files=["res://.godot/imported/Pawn_Interact Knife.png-857e71e9001b0e146ef7a7f93e0e9711.ctex"]
 
 [params]
 

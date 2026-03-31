@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://cdoug26a3m2t5"
-path="res://.godot/imported/Pawn_Run Pickaxe.png-44f3b5cb6ab2198f14cd1c6c75d453ba.ctex"
+path="res://.godot/imported/Pawn_Run Pickaxe.png-4a3f5428ceb3a0bf23b3ef1205931aef.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/TinySwords(FreePack)/Units/Purple Units/Pawn/Pawn_Run Pickaxe.png"
-dest_files=["res://.godot/imported/Pawn_Run Pickaxe.png-44f3b5cb6ab2198f14cd1c6c75d453ba.ctex"]
+source_file="res://Assets/TinySwords/Sprites/Pawn/Purple/Pawn_Run Pickaxe.png"
+dest_files=["res://.godot/imported/Pawn_Run Pickaxe.png-4a3f5428ceb3a0bf23b3ef1205931aef.ctex"]
 
 [params]
 

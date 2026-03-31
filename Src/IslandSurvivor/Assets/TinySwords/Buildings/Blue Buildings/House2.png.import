@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://c1p4nj415xxq7"
-path="res://.godot/imported/House2.png-fd63932f13440e3ea8f7fa945b576f80.ctex"
+path="res://.godot/imported/House2.png-0774269ef6a45ef3b3b9a757ff9978f2.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/TinySwords(FreePack)/Buildings/Blue Buildings/House2.png"
-dest_files=["res://.godot/imported/House2.png-fd63932f13440e3ea8f7fa945b576f80.ctex"]
+source_file="res://Assets/TinySwords/Buildings/Blue Buildings/House2.png"
+dest_files=["res://.godot/imported/House2.png-0774269ef6a45ef3b3b9a757ff9978f2.ctex"]
 
 [params]
 

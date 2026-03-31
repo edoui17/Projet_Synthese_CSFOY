@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://dr2nbkrhgetl3"
-path="res://.godot/imported/Water.png-7a67c4e5b756d2aee5b846830b5c4eb7.ctex"
+path="res://.godot/imported/Water.png-a59c06b7d226db9aea55dfff82fd6759.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/TinySwords(Update010)/Terrain/Water/Water.png"
-dest_files=["res://.godot/imported/Water.png-7a67c4e5b756d2aee5b846830b5c4eb7.ctex"]
+source_file="res://Assets/TinySwords/Terrain/Water/Water.png"
+dest_files=["res://.godot/imported/Water.png-a59c06b7d226db9aea55dfff82fd6759.ctex"]
 
 [params]
 

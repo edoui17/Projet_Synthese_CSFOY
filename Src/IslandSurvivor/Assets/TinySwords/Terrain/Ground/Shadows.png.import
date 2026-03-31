@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://b6qvslqfdrbnq"
-path="res://.godot/imported/Shadows.png-dbf392cff0b871485a71158cc563773a.ctex"
+path="res://.godot/imported/Shadows.png-f5153ddc5d539e72dbfe93c692ed2e13.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/TinySwords(Update010)/Terrain/Ground/Shadows.png"
-dest_files=["res://.godot/imported/Shadows.png-dbf392cff0b871485a71158cc563773a.ctex"]
+source_file="res://Assets/TinySwords/Terrain/Ground/Shadows.png"
+dest_files=["res://.godot/imported/Shadows.png-f5153ddc5d539e72dbfe93c692ed2e13.ctex"]
 
 [params]
 

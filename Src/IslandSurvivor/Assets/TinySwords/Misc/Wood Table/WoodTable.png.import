@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://drjas1imwndql"
-path="res://.godot/imported/WoodTable.png-ea15cd27f7e50801a76eb3e0e229e660.ctex"
+path="res://.godot/imported/WoodTable.png-9e82642e9ac9afef866b6a69bbc0dcf2.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/TinySwords(FreePack)/UIElements/UI Elements/Wood Table/WoodTable.png"
-dest_files=["res://.godot/imported/WoodTable.png-ea15cd27f7e50801a76eb3e0e229e660.ctex"]
+source_file="res://Assets/TinySwords/Misc/Wood Table/WoodTable.png"
+dest_files=["res://.godot/imported/WoodTable.png-9e82642e9ac9afef866b6a69bbc0dcf2.ctex"]
 
 [params]
 

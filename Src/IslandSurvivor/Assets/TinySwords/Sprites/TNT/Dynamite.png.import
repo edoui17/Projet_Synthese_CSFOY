@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://df4supwrr7dxu"
-path="res://.godot/imported/Dynamite.png-f23dffd0035ba27118d064de3adf23a1.ctex"
+path="res://.godot/imported/Dynamite.png-69c04c1d09fda0c22c6afced76feed06.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/TinySwords(Update010)/Factions/Goblins/Troops/TNT/Dynamite/Dynamite.png"
-dest_files=["res://.godot/imported/Dynamite.png-f23dffd0035ba27118d064de3adf23a1.ctex"]
+source_file="res://Assets/TinySwords/Sprites/TNT/Dynamite.png"
+dest_files=["res://.godot/imported/Dynamite.png-69c04c1d09fda0c22c6afced76feed06.ctex"]
 
 [params]
 

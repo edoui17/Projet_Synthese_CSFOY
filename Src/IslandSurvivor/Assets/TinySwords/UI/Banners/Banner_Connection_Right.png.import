@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://cf8673cw5b1g3"
-path="res://.godot/imported/Banner_Connection_Right.png-2dc4837bcad037457807fa3f310e593f.ctex"
+path="res://.godot/imported/Banner_Connection_Right.png-3321fd7cc3d229683f00de077ccbac78.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/TinySwords(Update010)/UI/Banners/Banner_Connection_Right.png"
-dest_files=["res://.godot/imported/Banner_Connection_Right.png-2dc4837bcad037457807fa3f310e593f.ctex"]
+source_file="res://Assets/TinySwords/UI/Banners/Banner_Connection_Right.png"
+dest_files=["res://.godot/imported/Banner_Connection_Right.png-3321fd7cc3d229683f00de077ccbac78.ctex"]
 
 [params]
 

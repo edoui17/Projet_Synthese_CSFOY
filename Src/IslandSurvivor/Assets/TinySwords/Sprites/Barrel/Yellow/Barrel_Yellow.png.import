@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://bocfxmpifculo"
-path="res://.godot/imported/Barrel_Yellow.png-bac023beb72356d6ff5825cf3fa8893b.ctex"
+path="res://.godot/imported/Barrel_Yellow.png-24ecd23b6c4de00a07c29d2ddfacdc58.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/TinySwords(Update010)/Factions/Goblins/Troops/Barrel/Yellow/Barrel_Yellow.png"
-dest_files=["res://.godot/imported/Barrel_Yellow.png-bac023beb72356d6ff5825cf3fa8893b.ctex"]
+source_file="res://Assets/TinySwords/Sprites/Barrel/Yellow/Barrel_Yellow.png"
+dest_files=["res://.godot/imported/Barrel_Yellow.png-24ecd23b6c4de00a07c29d2ddfacdc58.ctex"]
 
 [params]
 

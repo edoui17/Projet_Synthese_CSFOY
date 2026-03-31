@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://b5wf4anbcnaq3"
-path="res://.godot/imported/Torch_Yellow.png-606e38302256b96bbfd012f2bdaa8551.ctex"
+path="res://.godot/imported/Torch_Yellow.png-3acf1be7c5ff08e8e6a29bfd7498ec47.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/TinySwords(Update010)/Factions/Goblins/Troops/Torch/Yellow/Torch_Yellow.png"
-dest_files=["res://.godot/imported/Torch_Yellow.png-606e38302256b96bbfd012f2bdaa8551.ctex"]
+source_file="res://Assets/TinySwords/Sprites/Torch/Yellow/Torch_Yellow.png"
+dest_files=["res://.godot/imported/Torch_Yellow.png-3acf1be7c5ff08e8e6a29bfd7498ec47.ctex"]
 
 [params]
 

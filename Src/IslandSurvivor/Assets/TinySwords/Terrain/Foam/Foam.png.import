@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://db2tb2lvdhnfj"
-path="res://.godot/imported/Foam.png-955cfeea30b4d983531935c430a6af23.ctex"
+path="res://.godot/imported/Foam.png-8238efb3964c8a2b7e3eff328a83e1fc.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/TinySwords(Update010)/Terrain/Water/Foam/Foam.png"
-dest_files=["res://.godot/imported/Foam.png-955cfeea30b4d983531935c430a6af23.ctex"]
+source_file="res://Assets/TinySwords/Terrain/Foam/Foam.png"
+dest_files=["res://.godot/imported/Foam.png-8238efb3964c8a2b7e3eff328a83e1fc.ctex"]
 
 [params]
 

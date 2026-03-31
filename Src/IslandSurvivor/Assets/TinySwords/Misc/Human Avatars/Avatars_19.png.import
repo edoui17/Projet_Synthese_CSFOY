@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://c5sbl534i3jjq"
-path="res://.godot/imported/Avatars_19.png-4b1e08c522533f2fc333455ae924eb6d.ctex"
+path="res://.godot/imported/Avatars_19.png-a17bd248c4a50d8a773dea4fe05f33cf.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/TinySwords(FreePack)/UIElements/UI Elements/Human Avatars/Avatars_19.png"
-dest_files=["res://.godot/imported/Avatars_19.png-4b1e08c522533f2fc333455ae924eb6d.ctex"]
+source_file="res://Assets/TinySwords/Misc/Human Avatars/Avatars_19.png"
+dest_files=["res://.godot/imported/Avatars_19.png-a17bd248c4a50d8a773dea4fe05f33cf.ctex"]
 
 [params]
 

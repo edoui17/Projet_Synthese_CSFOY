@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://m4506udhmd1g"
-path="res://.godot/imported/Monastery.png-f6e102671fc6f8ce8b98acd083f3be37.ctex"
+path="res://.godot/imported/Monastery.png-608c188ef3ba425c1bb1fdc9f4874da1.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/TinySwords(FreePack)/Buildings/Purple Buildings/Monastery.png"
-dest_files=["res://.godot/imported/Monastery.png-f6e102671fc6f8ce8b98acd083f3be37.ctex"]
+source_file="res://Assets/TinySwords/Buildings/Purple Buildings/Monastery.png"
+dest_files=["res://.godot/imported/Monastery.png-608c188ef3ba425c1bb1fdc9f4874da1.ctex"]
 
 [params]
 

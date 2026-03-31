@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://dgwy2a7irgi1d"
-path="res://.godot/imported/Pawn_Idle Hammer.png-edfe12b5e308e05a41a6d2fb80e52520.ctex"
+path="res://.godot/imported/Pawn_Idle Hammer.png-3458f4dd2bb0274f92d7b02080403ba5.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/TinySwords(FreePack)/Units/Red Units/Pawn/Pawn_Idle Hammer.png"
-dest_files=["res://.godot/imported/Pawn_Idle Hammer.png-edfe12b5e308e05a41a6d2fb80e52520.ctex"]
+source_file="res://Assets/TinySwords/Sprites/Pawn/Red/Pawn_Idle Hammer.png"
+dest_files=["res://.godot/imported/Pawn_Idle Hammer.png-3458f4dd2bb0274f92d7b02080403ba5.ctex"]
 
 [params]
 

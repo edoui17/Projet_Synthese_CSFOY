@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://d0slseornvm71"
-path="res://.godot/imported/Pawn_Run Wood.png-fc068021d61d3c20dbc99d64c7586cfb.ctex"
+path="res://.godot/imported/Pawn_Run Wood.png-f0ee2b5ac39c5c7868d053870c1fceb2.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/TinySwords(FreePack)/Units/Yellow Units/Pawn/Pawn_Run Wood.png"
-dest_files=["res://.godot/imported/Pawn_Run Wood.png-fc068021d61d3c20dbc99d64c7586cfb.ctex"]
+source_file="res://Assets/TinySwords/Sprites/Pawn/Yellow/Pawn_Run Wood.png"
+dest_files=["res://.godot/imported/Pawn_Run Wood.png-f0ee2b5ac39c5c7868d053870c1fceb2.ctex"]
 
 [params]
 

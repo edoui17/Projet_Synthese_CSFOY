@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://blfysmexpw6bu"
-path="res://.godot/imported/Tree1.png-e4287eb9d596db2508e5b0e3171f8bd8.ctex"
+path="res://.godot/imported/Tree1.png-90c03b1caf4c68f5b378b497d1d4e77b.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/TinySwords(FreePack)/Terrain/Resources/Wood/Trees/Tree1.png"
-dest_files=["res://.godot/imported/Tree1.png-e4287eb9d596db2508e5b0e3171f8bd8.ctex"]
+source_file="res://Assets/TinySwords/Terrain/Trees/Tree1.png"
+dest_files=["res://.godot/imported/Tree1.png-90c03b1caf4c68f5b378b497d1d4e77b.ctex"]
 
 [params]
 

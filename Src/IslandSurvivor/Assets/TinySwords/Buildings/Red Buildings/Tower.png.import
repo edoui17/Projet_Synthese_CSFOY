@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://i1ejb5ytr4pv"
-path="res://.godot/imported/Tower.png-4d433dee39a80f14f197829bcea564fa.ctex"
+path="res://.godot/imported/Tower.png-6f980e78387e28ca294fe9642a30f80c.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/TinySwords(FreePack)/Buildings/Red Buildings/Tower.png"
-dest_files=["res://.godot/imported/Tower.png-4d433dee39a80f14f197829bcea564fa.ctex"]
+source_file="res://Assets/TinySwords/Buildings/Red Buildings/Tower.png"
+dest_files=["res://.godot/imported/Tower.png-6f980e78387e28ca294fe9642a30f80c.ctex"]
 
 [params]
 
