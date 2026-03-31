@@ -1,10 +1,14 @@
+using Core.Managers.Stats;
 using Godot;
-using System;
-
 using IslandSurvivor.Interfaces;
+using IslandSurvivor.Nodes;
+using IslandSurvivor.Resources;
+using System;
 
 public partial class ConiferTree : Area2D, ITree
 {
+    [Export] public StatManager Stats { get; set; }
+
     [Export] public string EntityId { get; set; } = "tree_conifer_01";
     [Export] public Timer Timer { get; set; }
 
@@ -14,6 +18,10 @@ public partial class ConiferTree : Area2D, ITree
 
     public override void _Ready()
     {
+        if (Stats != null)
+        {
+            Stats.SetCurrentValue(StatType.Health, 2500);
+        }
         AreaEntered += OnAreaEntered;
     }
 
@@ -37,5 +45,15 @@ public partial class ConiferTree : Area2D, ITree
         var item = new Core.Domain.ResourceItem(EntityId, MaterialName, MaterialType, IconPath);
         SignalManager.Instance.EmitMaterialDestroyed(this, item, quantity);
         QueueFree();
+    }
+
+    public void TakeDamage(float p_damage)
+    {
+        Stats.ModifyCurrentValue(StatType.Health, -p_damage);
+
+        if (Stats.GetCurrentValue(StatType.Health) <= 0)
+        {
+            DestroyResource();
+        }
     }
 }

@@ -1,6 +1,6 @@
 [gd_scene format=4 uid="uid://5kp0j31xrejs"]
 
-[ext_resource type="Texture2D" path="res://Assets/Tiny Swords (Free Pack)/Tiny Swords (Free Pack)/Terrain/Tileset/Water Background color.png" id="1_e1yey"]
+[ext_resource type="Texture2D" uid="uid://dr2nbkrhgetl3" path="res://Assets/Tiny Swords/Tiny Swords/Tiny Swords (Update 010)/Terrain/Water/Water.png" id="1_e1yey"]
 [ext_resource type="Texture2D" uid="uid://c48sxjc4lwebv" path="res://Assets/TinySwords(FreePack)/Terrain/Tileset/Water Foam.png" id="2_hfx6n"]
 [ext_resource type="Texture2D" uid="uid://cyf2vblpr7wh4" path="res://Assets/TinySwords(FreePack)/Terrain/Decorations/Rocks in the Water/Water Rocks_01.png" id="3_p1xmv"]
 [ext_resource type="Texture2D" uid="uid://cdn2awmneu3kj" path="res://Assets/TinySwords(FreePack)/Terrain/Tileset/Tilemap_color2.png" id="4_p1xmv"]
@@ -21,6 +21,7 @@
 [ext_resource type="Texture2D" uid="uid://d3dhc1ja483rm" path="res://Assets/TinySwords(FreePack)/Terrain/Decorations/Clouds/Clouds_08.png" id="19_q7qh4"]
 [ext_resource type="Script" uid="uid://bcck2xu2q5syh" path="res://Scenes/BaseMap/Spawn.cs" id="20_g38my"]
 [ext_resource type="PackedScene" uid="uid://ge7ibe30caal" path="res://Scenes/BaseMap/player.tscn" id="21_6r8yr"]
+
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_u6kmt"]
 texture = ExtResource("1_e1yey")

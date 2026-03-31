@@ -2,6 +2,8 @@
 
 [ext_resource type="Texture2D" uid="uid://qljs2tditm8y" path="res://Assets/TinySwords(FreePack)/Terrain/Resources/Wood/Trees/Tree4.png" id="1_amoml"]
 [ext_resource type="Script" uid="uid://d2sqd5ttge0c1" path="res://Scenes/Ressources/Tree/AutomnTree.cs" id="1_sd2x1"]
+[ext_resource type="PackedScene" uid="uid://biqhbrp7fjfyj" path="res://Nodes/StatsManager/StatsManager.tscn" id="3_2xutj"]
+[ext_resource type="Resource" uid="uid://dcigqom8pfk3u" path="res://Resources/Stats/AutomnTreeStats.tres" id="4_sw6xs"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_y1hdp"]
 size = Vector2(20, 8)
@@ -94,3 +96,6 @@ frame = 2
 frame_progress = 0.18821257
 
 [node name="Timer" type="Timer" parent="." unique_id=699587518]
+
+[node name="StatsManager" parent="." unique_id=1475410971 instance=ExtResource("3_2xutj")]
+BaseStatsResource = ExtResource("4_sw6xs")

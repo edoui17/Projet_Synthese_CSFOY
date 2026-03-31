@@ -1,10 +1,15 @@
+using Core.Managers.Stats;
 using Godot;
 using IslandSurvivor.Classes;
 using IslandSurvivor.Interfaces;
+using IslandSurvivor.Nodes;
+using IslandSurvivor.Resources;
 using System;
 
 public partial class Rock : Area2D, IOre
 {
+    [Export] public StatManager Stats { get; set; }
+
     [Export] public string EntityId { get; set; } = "rock_01";
     [Export] public Timer Timer { get; set; }
 
@@ -14,6 +19,10 @@ public partial class Rock : Area2D, IOre
 
     public override void _Ready()
     {
+        if (Stats != null)
+        {
+            Stats.SetCurrentValue(StatType.Health, 3000);
+        }
         AreaEntered += OnAreaEntered;
     }
 
@@ -42,5 +51,15 @@ public partial class Rock : Area2D, IOre
     void IGatheringMaterials.OnAreaEntered(Area2D p_area)
     {
         OnAreaEntered(p_area);
+    }
+
+    public void TakeDamage(float p_damage)
+    {
+        Stats.ModifyCurrentValue(StatType.Health, -p_damage);
+
+        if (Stats.GetCurrentValue(StatType.Health) <= 0)
+        {
+            DestroyResource();
+        }
     }
 }
