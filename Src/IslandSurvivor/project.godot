@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="IslandSurvivor"
-run/main_scene="uid://5kp0j31xrejs"
+run/main_scene="uid://b30l21wvemtmp"
 config/features=PackedStringArray("4.6", "C#", "Mobile")
 config/icon="res://icon.svg"
 
@@ -31,6 +31,7 @@ project/assembly_name="IslandSurvivor"
 [layer_names]
 
 2d_physics/layer_1="Evironnment"
+2d_physics/layer_2="Interaction"
 
 [physics]
 
