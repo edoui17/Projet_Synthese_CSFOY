@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://cxftj0qybs1cs"]
 
 [ext_resource type="Script" uid="uid://dapenko10scyf" path="res://Scenes/Ressources/Gold/Gold.cs" id="1_hgyh0"]
-[ext_resource type="Texture2D" uid="uid://8u7skqirdnak" path="res://Assets/TinySwords(FreePack)/Terrain/Resources/Gold/Gold Stones/Gold Stone 6.png" id="2_av1go"]
+[ext_resource type="Texture2D" uid="uid://8u7skqirdnak" path="res://Assets/TinySwords/Terrain/Gold Stones/Gold Stone 6.png" id="2_av1go"]
 [ext_resource type="PackedScene" uid="uid://biqhbrp7fjfyj" path="res://Nodes/StatsManager/StatsManager.tscn" id="3_g4wyb"]
 [ext_resource type="Resource" uid="uid://dokxws5co3xt0" path="res://Resources/Stats/GoldStats.tres" id="4_dl6ph"]
 
@@ -11,8 +11,9 @@ size = Vector2(69, 22)
 [sub_resource type="CircleShape2D" id="CircleShape2D_hgyh0"]
 radius = 33.13608
 
-[node name="Gold" type="Area2D" unique_id=1575184113 node_paths=PackedStringArray("Timer")]
+[node name="Gold" type="Area2D" unique_id=1575184113 node_paths=PackedStringArray("Stats", "Timer")]
 script = ExtResource("1_hgyh0")
+Stats = NodePath("StatsManager")
 Timer = NodePath("Timer")
 
 [node name="StaticBody2D" type="StaticBody2D" parent="." unique_id=309020169]

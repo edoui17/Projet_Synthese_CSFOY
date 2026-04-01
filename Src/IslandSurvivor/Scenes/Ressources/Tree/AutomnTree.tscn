@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://c5wdnoymw6mrq"]
 
-[ext_resource type="Texture2D" uid="uid://qljs2tditm8y" path="res://Assets/TinySwords(FreePack)/Terrain/Resources/Wood/Trees/Tree4.png" id="1_amoml"]
+[ext_resource type="Texture2D" uid="uid://qljs2tditm8y" path="res://Assets/TinySwords/Terrain/Trees/Tree4.png" id="1_amoml"]
 [ext_resource type="Script" uid="uid://d2sqd5ttge0c1" path="res://Scenes/Ressources/Tree/AutomnTree.cs" id="1_sd2x1"]
 [ext_resource type="PackedScene" uid="uid://biqhbrp7fjfyj" path="res://Nodes/StatsManager/StatsManager.tscn" id="3_2xutj"]
 [ext_resource type="Resource" uid="uid://dcigqom8pfk3u" path="res://Resources/Stats/AutomnTreeStats.tres" id="4_sw6xs"]
@@ -75,8 +75,9 @@ animations = [{
 "speed": 5.0
 }]
 
-[node name="AutomnTree" type="Area2D" unique_id=1636812557 node_paths=PackedStringArray("Timer")]
+[node name="AutomnTree" type="Area2D" unique_id=1636812557 node_paths=PackedStringArray("Stats", "Timer")]
 script = ExtResource("1_sd2x1")
+Stats = NodePath("StatsManager")
 Timer = NodePath("Timer")
 
 [node name="StaticBody2D" type="StaticBody2D" parent="." unique_id=892363287]
