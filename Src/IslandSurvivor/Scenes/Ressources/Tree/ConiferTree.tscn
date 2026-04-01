@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://rtx0k5qfaymn"]
 
 [ext_resource type="Script" uid="uid://tvjivvqe0caf" path="res://Scenes/Ressources/Tree/ConiferTree.cs" id="1_dkrse"]
-[ext_resource type="Texture2D" uid="uid://pr42it55tc3f" path="res://Assets/TinySwords(Update010)/Resources/Trees/Tree.png" id="2_ttmo2"]
+[ext_resource type="Texture2D" uid="uid://pr42it55tc3f" path="res://Assets/TinySwords/Decorations/Trees/Tree.png" id="2_ttmo2"]
 [ext_resource type="PackedScene" uid="uid://biqhbrp7fjfyj" path="res://Nodes/StatsManager/StatsManager.tscn" id="3_5a382"]
 [ext_resource type="Resource" uid="uid://bgduawnxd4hah" path="res://Resources/Stats/ConiferStats.tres" id="4_moeyj"]
 
@@ -54,8 +54,9 @@ animations = [{
 "speed": 3.0
 }]
 
-[node name="ConiferTree" type="Area2D" unique_id=169002865 node_paths=PackedStringArray("Timer")]
+[node name="ConiferTree" type="Area2D" unique_id=169002865 node_paths=PackedStringArray("Stats", "Timer")]
 script = ExtResource("1_dkrse")
+Stats = NodePath("StatsManager")
 Timer = NodePath("Timer")
 
 [node name="StaticBody2D" type="StaticBody2D" parent="." unique_id=1567773277]
