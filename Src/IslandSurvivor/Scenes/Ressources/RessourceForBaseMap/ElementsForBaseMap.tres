@@ -1,10 +1,10 @@
 [gd_resource type="TileSet" format=3 uid="uid://dfvott6gynthm"]
 
-[ext_resource type="Texture2D" uid="uid://cu7m0ethowqiq" path="res://Assets/TinySwords(FreePack)/Terrain/Decorations/Bushes/Bushe1.png" id="1_o12ih"]
-[ext_resource type="Texture2D" uid="uid://t1khfera56xc" path="res://Assets/TinySwords(FreePack)/Terrain/Decorations/Bushes/Bushe3.png" id="2_22f71"]
-[ext_resource type="Texture2D" uid="uid://88g1pgolwrmy" path="res://Assets/TinySwords(FreePack)/Terrain/Resources/Wood/Trees/Tree3.png" id="3_6jwgc"]
-[ext_resource type="Texture2D" uid="uid://qljs2tditm8y" path="res://Assets/TinySwords(FreePack)/Terrain/Resources/Wood/Trees/Tree4.png" id="4_eq025"]
-[ext_resource type="Texture2D" uid="uid://cg3uyfghbh2lc" path="res://Assets/TinySwords(FreePack)/Terrain/Decorations/Rocks/Rock1.png" id="5_mfkft"]
+[ext_resource type="Texture2D" uid="uid://cu7m0ethowqiq" path="res://Assets/TinySwords/Terrain/Bushes/Bushe1.png" id="1_o12ih"]
+[ext_resource type="Texture2D" uid="uid://t1khfera56xc" path="res://Assets/TinySwords/Terrain/Bushes/Bushe3.png" id="2_22f71"]
+[ext_resource type="Texture2D" uid="uid://88g1pgolwrmy" path="res://Assets/TinySwords/Terrain/Trees/Tree3.png" id="3_6jwgc"]
+[ext_resource type="Texture2D" uid="uid://qljs2tditm8y" path="res://Assets/TinySwords/Terrain/Trees/Tree4.png" id="4_eq025"]
+[ext_resource type="Texture2D" uid="uid://cg3uyfghbh2lc" path="res://Assets/TinySwords/Terrain/Rocks/Rock1.png" id="5_mfkft"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_bm6m0"]
 texture = ExtResource("1_o12ih")
