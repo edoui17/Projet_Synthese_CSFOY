@@ -1,13 +1,15 @@
 [gd_scene format=3 uid="uid://cxftj0qybs1cs"]
 
-[ext_resource type="Texture2D" uid="uid://c5wdy43v6m6m8" path="res://Assets/Tiny Swords (Free Pack)/Tiny Swords (Free Pack)/Terrain/Resources/Gold/Gold Stones/Gold Stone 5.png" id="1_bfy42"]
-[ext_resource type="Script" uid="uid://cg2w1g1l1mjsu" path="res://Scenes/Ressources/Gold/Gold.cs" id="1_hgyh0"]
+[ext_resource type="Script" uid="uid://dapenko10scyf" path="res://Scenes/Ressources/Gold/Gold.cs" id="1_hgyh0"]
+[ext_resource type="Texture2D" uid="uid://8u7skqirdnak" path="res://Assets/TinySwords(FreePack)/Terrain/Resources/Gold/Gold Stones/Gold Stone 6.png" id="2_av1go"]
+[ext_resource type="PackedScene" uid="uid://biqhbrp7fjfyj" path="res://Nodes/StatsManager/StatsManager.tscn" id="3_g4wyb"]
+[ext_resource type="Resource" uid="uid://dokxws5co3xt0" path="res://Resources/Stats/GoldStats.tres" id="4_dl6ph"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_hgyh0"]
-size = Vector2(56, 19)
+size = Vector2(69, 22)
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_hgyh0"]
-radius = 34.0147
+radius = 33.13608
 
 [node name="Gold" type="Area2D" unique_id=1575184113 node_paths=PackedStringArray("Timer")]
 script = ExtResource("1_hgyh0")
@@ -16,14 +18,17 @@ Timer = NodePath("Timer")
 [node name="StaticBody2D" type="StaticBody2D" parent="." unique_id=309020169]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D" unique_id=1981599026]
-position = Vector2(1, 17.5)
+position = Vector2(-0.5, 19)
 shape = SubResource("RectangleShape2D_hgyh0")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1693437573]
+[node name="HitBox" type="CollisionShape2D" parent="." unique_id=1693437573]
 shape = SubResource("CircleShape2D_hgyh0")
 
-[node name="Sprite2D" type="Sprite2D" parent="." unique_id=2100105931]
-position = Vector2(0, 5)
-texture = ExtResource("1_bfy42")
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=50404936]
+position = Vector2(2, 7)
+texture = ExtResource("2_av1go")
 
 [node name="Timer" type="Timer" parent="." unique_id=1140467375]
+
+[node name="StatsManager" parent="." unique_id=1475410971 instance=ExtResource("3_g4wyb")]
+BaseStatsResource = ExtResource("4_dl6ph")

@@ -1,23 +1,27 @@
 [gd_scene format=3 uid="uid://c5wdnoymw6mrq"]
 
-[ext_resource type="Texture2D" uid="uid://qljs2tditm8y" path="res://Assets/Tiny Swords (Free Pack)/Tiny Swords (Free Pack)/Terrain/Resources/Wood/Trees/Tree4.png" id="1_amoml"]
+[ext_resource type="Texture2D" uid="uid://qljs2tditm8y" path="res://Assets/TinySwords(FreePack)/Terrain/Resources/Wood/Trees/Tree4.png" id="1_amoml"]
 [ext_resource type="Script" uid="uid://d2sqd5ttge0c1" path="res://Scenes/Ressources/Tree/AutomnTree.cs" id="1_sd2x1"]
+[ext_resource type="PackedScene" uid="uid://biqhbrp7fjfyj" path="res://Nodes/StatsManager/StatsManager.tscn" id="3_2xutj"]
+[ext_resource type="Resource" uid="uid://dcigqom8pfk3u" path="res://Resources/Stats/AutomnTreeStats.tres" id="4_sw6xs"]
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_y1hdp"]
+size = Vector2(20, 8)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_sd2x1"]
-size = Vector2(23, 102)
+size = Vector2(23, 31)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_6tncn"]
 atlas = ExtResource("1_amoml")
 region = Rect2(0, 0, 192, 192)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_7u2lw"]
-atlas = ExtResource("1_amoml")
-region = Rect2(192, 0, 192, 192)
-
 [sub_resource type="AtlasTexture" id="AtlasTexture_4myvd"]
 atlas = ExtResource("1_amoml")
 region = Rect2(384, 0, 192, 192)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7u2lw"]
+atlas = ExtResource("1_amoml")
+region = Rect2(192, 0, 192, 192)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_sp3uu"]
 atlas = ExtResource("1_amoml")
@@ -46,10 +50,10 @@ animations = [{
 "texture": SubResource("AtlasTexture_6tncn")
 }, {
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_7u2lw")
+"texture": SubResource("AtlasTexture_4myvd")
 }, {
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_4myvd")
+"texture": SubResource("AtlasTexture_7u2lw")
 }, {
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_sp3uu")
@@ -71,14 +75,27 @@ animations = [{
 "speed": 5.0
 }]
 
-[node name="AutomnTree" type="Area2D" unique_id=1636812557]
+[node name="AutomnTree" type="Area2D" unique_id=1636812557 node_paths=PackedStringArray("Timer")]
 script = ExtResource("1_sd2x1")
+Timer = NodePath("Timer")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=500406667]
-position = Vector2(1.5, 9)
+[node name="StaticBody2D" type="StaticBody2D" parent="." unique_id=892363287]
+position = Vector2(1.5, 44.5)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D" unique_id=400994129]
+position = Vector2(0, 16.5)
+shape = SubResource("RectangleShape2D_y1hdp")
+
+[node name="HitBox" type="CollisionShape2D" parent="." unique_id=500406667]
+position = Vector2(1.5, 44.5)
 shape = SubResource("RectangleShape2D_sd2x1")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1126490391]
 sprite_frames = SubResource("SpriteFrames_j3qow")
-frame = 7
-frame_progress = 0.266714
+frame = 2
+frame_progress = 0.18821257
+
+[node name="Timer" type="Timer" parent="." unique_id=699587518]
+
+[node name="StatsManager" parent="." unique_id=1475410971 instance=ExtResource("3_2xutj")]
+BaseStatsResource = ExtResource("4_sw6xs")
