@@ -6,10 +6,10 @@
 [ext_resource type="Resource" uid="uid://dokxws5co3xt0" path="res://Resources/Stats/GoldStats.tres" id="4_dl6ph"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_hgyh0"]
-size = Vector2(69, 22)
+size = Vector2(69, 33)
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_hgyh0"]
-radius = 33.13608
+radius = 36.013885
 
 [node name="Gold" type="Area2D" unique_id=1575184113 node_paths=PackedStringArray("Stats", "Timer")]
 script = ExtResource("1_hgyh0")
@@ -19,14 +19,16 @@ Timer = NodePath("Timer")
 [node name="StaticBody2D" type="StaticBody2D" parent="." unique_id=309020169]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D" unique_id=1981599026]
-position = Vector2(-0.5, 19)
+position = Vector2(-0.5, 13.5)
 shape = SubResource("RectangleShape2D_hgyh0")
 
 [node name="HitBox" type="CollisionShape2D" parent="." unique_id=1693437573]
+position = Vector2(-1, 3)
 shape = SubResource("CircleShape2D_hgyh0")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=50404936]
-position = Vector2(2, 7)
+position = Vector2(1.0000005, 12.000002)
+scale = Vector2(0.9453125, 0.8515625)
 texture = ExtResource("2_av1go")
 
 [node name="Timer" type="Timer" parent="." unique_id=1140467375]

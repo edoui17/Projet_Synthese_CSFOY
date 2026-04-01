@@ -6,7 +6,7 @@
 [ext_resource type="Resource" uid="uid://dcigqom8pfk3u" path="res://Resources/Stats/AutomnTreeStats.tres" id="4_sw6xs"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_y1hdp"]
-size = Vector2(20, 8)
+size = Vector2(26, 23)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_sd2x1"]
 size = Vector2(23, 31)
@@ -84,7 +84,7 @@ Timer = NodePath("Timer")
 position = Vector2(1.5, 44.5)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D" unique_id=400994129]
-position = Vector2(0, 16.5)
+position = Vector2(-0.5, 12)
 shape = SubResource("RectangleShape2D_y1hdp")
 
 [node name="HitBox" type="CollisionShape2D" parent="." unique_id=500406667]

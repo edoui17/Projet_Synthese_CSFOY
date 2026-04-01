@@ -6,10 +6,10 @@
 [ext_resource type="Resource" uid="uid://bgduawnxd4hah" path="res://Resources/Stats/ConiferStats.tres" id="4_moeyj"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ybac0"]
-size = Vector2(29, 14)
+size = Vector2(45, 40)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_gyewy"]
-size = Vector2(26, 57)
+size = Vector2(40, 58)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_03smp"]
 atlas = ExtResource("2_ttmo2")
@@ -62,11 +62,11 @@ Timer = NodePath("Timer")
 [node name="StaticBody2D" type="StaticBody2D" parent="." unique_id=1567773277]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D" unique_id=2002021830]
-position = Vector2(1.5, 70)
+position = Vector2(3.5, 60)
 shape = SubResource("RectangleShape2D_ybac0")
 
 [node name="HitBox" type="CollisionShape2D" parent="." unique_id=1581479158]
-position = Vector2(0, 45.5)
+position = Vector2(2, 46)
 shape = SubResource("RectangleShape2D_gyewy")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1348993800]
