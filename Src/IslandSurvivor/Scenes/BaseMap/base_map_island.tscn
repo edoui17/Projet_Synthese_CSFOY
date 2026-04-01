@@ -475,7 +475,7 @@ script = ExtResource("16_usjv8")
 position = Vector2(-1, -29)
 shape = SubResource("CircleShape2D_t6485")
 
-[node name="Spawn" type="Marker2D" parent="BuildingNode" unique_id=919176648 node_paths=PackedStringArray("SpawnPoint")]
+[node name="Spawn" type="Marker2D" parent="." unique_id=919176648 node_paths=PackedStringArray("SpawnPoint")]
 position = Vector2(727, 493)
 script = ExtResource("18_ne6mt")
 SpawnPoint = NodePath(".")
