@@ -1,18 +1,27 @@
+using Core.Managers.Stats;
 using Godot;
-using System;
-
 using IslandSurvivor.Interfaces;
+using IslandSurvivor.Nodes;
+using IslandSurvivor.Resources;
+using System;
 
 public partial class ConiferTree : Area2D, ITree
 {
+    [Export] public StatManager Stats { get; set; }
+
     [Export] public string EntityId { get; set; } = "tree_conifer_01";
     [Export] public Timer Timer { get; set; }
 
     [Export] public string MaterialName { get; set; } = "Conifère";
     [Export] public string MaterialType { get; set; } = "Wood";
+    [Export] public string IconPath { get; set; } = "res://Assets/Tiny Swords/Tiny Swords (Update 010)/Resources/Trees/Tree.png";
 
     public override void _Ready()
     {
+        if (Stats != null)
+        {
+            Stats.SetCurrentValue(StatType.Health, 2500);
+        }
         AreaEntered += OnAreaEntered;
     }
 
@@ -33,7 +42,18 @@ public partial class ConiferTree : Area2D, ITree
         Random random = new();
         int quantity = random.Next(1, 5);
 
-        SignalManager.Instance.EmitMaterialDestroyed(this, MaterialType, quantity);
+        var item = new Core.Domain.ResourceItem(EntityId, MaterialName, MaterialType, IconPath);
+        SignalManager.Instance.EmitMaterialDestroyed(this, item, quantity);
         QueueFree();
+    }
+
+    public void TakeDamage(float p_damage)
+    {
+        Stats.ModifyCurrentValue(StatType.Health, -p_damage);
+
+        if (Stats.GetCurrentValue(StatType.Health) <= 0)
+        {
+            DestroyResource();
+        }
     }
 }

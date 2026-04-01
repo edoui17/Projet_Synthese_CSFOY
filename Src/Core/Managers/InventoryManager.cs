@@ -1,50 +1,57 @@
 namespace Core.Managers;
 
 using System.Collections.Generic;
+using System.Linq;
+using Core.Domain;
 using Core.Interfaces;
 
 public class InventoryManager : IInventoryManager
 {
-    private readonly Dictionary<string, int> m_materials = new Dictionary<string, int>();
+    private readonly Dictionary<string, InventorySlot> m_slots = new Dictionary<string, InventorySlot>();
 
-    public void AddMaterial(string p_type, int p_amount)
+    public void AddMaterial(ResourceItem p_item, int p_amount)
     {
-        if (string.IsNullOrEmpty(p_type) || p_amount <= 0)
+        if (p_item == null || string.IsNullOrEmpty(p_item.Id) || p_amount <= 0)
         {
             return;
         }
 
-        if (m_materials.ContainsKey(p_type))
+        if (m_slots.ContainsKey(p_item.Id))
         {
-            m_materials[p_type] += p_amount;
+            m_slots[p_item.Id].Quantity += p_amount;
         }
         else
         {
-            m_materials[p_type] = p_amount;
+            m_slots[p_item.Id] = new InventorySlot(p_item, p_amount);
         }
     }
 
-    public void RemoveMaterial(string p_type, int p_amount)
+    public void RemoveMaterial(string p_itemId, int p_amount)
     {
-        if (string.IsNullOrEmpty(p_type) || p_amount <= 0 || !m_materials.ContainsKey(p_type))
+        if (string.IsNullOrEmpty(p_itemId) || p_amount <= 0 || !m_slots.ContainsKey(p_itemId))
         {
             return;
         }
 
-        m_materials[p_type] -= p_amount;
-        if (m_materials[p_type] < 0)
+        m_slots[p_itemId].Quantity -= p_amount;
+        if (m_slots[p_itemId].Quantity <= 0)
         {
-            m_materials[p_type] = 0;
+            m_slots.Remove(p_itemId);
         }
     }
 
-    public int GetMaterialCount(string p_type)
+    public int GetMaterialCount(string p_itemId)
     {
-        if (string.IsNullOrEmpty(p_type) || !m_materials.ContainsKey(p_type))
+        if (string.IsNullOrEmpty(p_itemId) || !m_slots.ContainsKey(p_itemId))
         {
             return 0;
         }
 
-        return m_materials[p_type];
+        return m_slots[p_itemId].Quantity;
+    }
+
+    public IReadOnlyList<InventorySlot> GetAllSlots()
+    {
+        return m_slots.Values.ToList().AsReadOnly();
     }
 }
