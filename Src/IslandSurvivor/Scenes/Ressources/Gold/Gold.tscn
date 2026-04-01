@@ -11,8 +11,9 @@ size = Vector2(69, 33)
 [sub_resource type="CircleShape2D" id="CircleShape2D_hgyh0"]
 radius = 36.013885
 
-[node name="Gold" type="Area2D" unique_id=1575184113 node_paths=PackedStringArray("Timer")]
+[node name="Gold" type="Area2D" unique_id=1575184113 node_paths=PackedStringArray("Stats", "Timer")]
 script = ExtResource("1_hgyh0")
+Stats = NodePath("StatsManager")
 Timer = NodePath("Timer")
 
 [node name="StaticBody2D" type="StaticBody2D" parent="." unique_id=309020169]

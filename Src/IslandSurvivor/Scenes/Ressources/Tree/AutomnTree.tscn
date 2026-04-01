@@ -75,8 +75,9 @@ animations = [{
 "speed": 5.0
 }]
 
-[node name="AutomnTree" type="Area2D" unique_id=1636812557 node_paths=PackedStringArray("Timer")]
+[node name="AutomnTree" type="Area2D" unique_id=1636812557 node_paths=PackedStringArray("Stats", "Timer")]
 script = ExtResource("1_sd2x1")
+Stats = NodePath("StatsManager")
 Timer = NodePath("Timer")
 
 [node name="StaticBody2D" type="StaticBody2D" parent="." unique_id=892363287]
