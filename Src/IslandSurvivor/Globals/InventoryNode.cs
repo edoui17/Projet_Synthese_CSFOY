@@ -26,14 +26,20 @@ public partial class InventoryNode : Node
 
         // Connect to the global SignalManager
         SignalManager.Instance.OnMaterialDestroyed.AddListener(OnMaterialDestroyed);
+        SignalManager.Instance.OnResourceSpent.AddListener(OnResourceSpent);
 
-        GD.Print("InventoryNode ready. Listening for material destruction events.");
+        GD.Print("InventoryNode ready. Listening for material destruction and resource spent events.");
     }
 
     private void OnMaterialDestroyed(object p_sender, ISignalManager.MaterialDestroyedEventArgs p_args)
     {
         m_inventoryManager.AddMaterial(p_args.Item, p_args.MaterialQuantity);
         GD.Print($"[Inventory] Added {p_args.MaterialQuantity} of {p_args.Item.Name} ({p_args.Item.Id}). Total: {m_inventoryManager.GetMaterialCount(p_args.Item.Id)}");
+    }
+
+    private void OnResourceSpent(object p_sender, ISignalManager.ResourceSpentEventArgs p_args)
+    {
+        ConsumeItem(p_args.ResourceId, p_args.Amount);
     }
 
     // Example of Consumption for validation purposes (Scenario 3)
@@ -48,6 +54,7 @@ public partial class InventoryNode : Node
         if (SignalManager.Instance != null)
         {
             SignalManager.Instance.OnMaterialDestroyed.RemoveListener(OnMaterialDestroyed);
+            SignalManager.Instance.OnResourceSpent.RemoveListener(OnResourceSpent);
         }
     }
 }

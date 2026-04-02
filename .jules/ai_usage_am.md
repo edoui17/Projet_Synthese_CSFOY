@@ -26,3 +26,4 @@
     *   Implemented standard transaction tests (adding, removing, querying counts, getting all slots).
     *   Implemented edge/limit case tests (null items, empty ids, negative amounts, removing non-existent items).
 *   **Decision Reasoning:** The user specifically requested xUnit. No mocking was necessary since `InventoryManager` only depends on simple domain models (`ResourceItem`, `InventorySlot`). Testing limits and negative numbers ensures robust behavior of the core logic according to N-Tier requirements.
+### 2026-04-02 - [US 4.2] | Implemented resource spending mechanics | AI mapped SignalManager for OnResourceSpent in Core and Godot, updated InventoryNode to deduct resources, and made InteractionScript handle key events to consume resources and increase Player stats. | Chose to map keys 1-5 in InteractionScript temporarily until UI is present. Updated ISignalManager and Godot wrapper to emit resource spend events safely.

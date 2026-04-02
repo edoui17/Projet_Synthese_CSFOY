@@ -29,6 +29,13 @@ public partial class SignalManager : Node, ISignalManager
         m_coreManager.EmitMaterialDestroyed(p_sender, p_item, p_quantity);
     }
 
+    public WeakEvent<ISignalManager.ResourceSpentEventArgs> OnResourceSpent => m_coreManager.OnResourceSpent;
+
+    public void EmitResourceSpent(object p_sender, string p_resourceId, int p_amount)
+    {
+        m_coreManager.EmitResourceSpent(p_sender, p_resourceId, p_amount);
+    }
+
     // === EXAMPLE OF HOW TO IMPLEMENT A SIGNAL IN GODOT ===
     //
     // // 1. Map to the Core implementation
