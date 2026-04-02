@@ -1,29 +1,36 @@
 [gd_scene format=3 uid="uid://cs7lisiu7vc7y"]
 
-[ext_resource type="Texture2D" uid="uid://5tc71kmi20kh" path="res://Assets/Tiny Swords/Tiny Swords (Update 010)/Deco/06.png" id="1_h7t5w"]
 [ext_resource type="Script" uid="uid://tmgku7dgegxr" path="res://Scenes/Ressources/Rock/Rock.cs" id="1_pv240"]
+[ext_resource type="Texture2D" uid="uid://5tc71kmi20kh" path="res://Assets/TinySwords/Decorations/Deco/06.png" id="2_45lah"]
+[ext_resource type="PackedScene" uid="uid://biqhbrp7fjfyj" path="res://Nodes/StatsManager/StatsManager.tscn" id="3_tc8id"]
+[ext_resource type="Resource" uid="uid://cqu3ltwqau142" path="res://Resources/Stats/RockStats.tres" id="4_boi77"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_pv240"]
-size = Vector2(37, 11)
+size = Vector2(38, 23)
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_pv240"]
-radius = 19.026299
+radius = 21.095022
 
-[node name="Rock" type="Area2D" unique_id=2011989865 node_paths=PackedStringArray("Timer")]
+[node name="Rock" type="Area2D" unique_id=2011989865 node_paths=PackedStringArray("Stats", "Timer")]
 script = ExtResource("1_pv240")
+Stats = NodePath("StatsManager")
 Timer = NodePath("Timer")
 
 [node name="StaticBody2D" type="StaticBody2D" parent="." unique_id=2091260846]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D" unique_id=324311914]
-position = Vector2(0.5, 9.5)
+position = Vector2(0, 0.5)
 shape = SubResource("RectangleShape2D_pv240")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1599129434]
+[node name="HitBox" type="CollisionShape2D" parent="." unique_id=1599129434]
+position = Vector2(0, -2)
 shape = SubResource("CircleShape2D_pv240")
 
-[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1458881757]
-position = Vector2(-2, 0)
-texture = ExtResource("1_h7t5w")
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=449529693]
+position = Vector2(-2, -2)
+texture = ExtResource("2_45lah")
 
 [node name="Timer" type="Timer" parent="." unique_id=17732308]
+
+[node name="StatsManager" parent="." unique_id=1475410971 instance=ExtResource("3_tc8id")]
+BaseStatsResource = ExtResource("4_boi77")
