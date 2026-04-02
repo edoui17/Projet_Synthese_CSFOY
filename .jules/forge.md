@@ -11,3 +11,5 @@
 ## Inventory Architecture
 *   **Pure Core Domains**: The Core tier cannot parse Godot assets (like `Texture2D`). Therefore, items map their visual components using simple absolute paths (`string IconPath = "res://Assets/..."`). The Godot UI/Client will be responsible for converting this text back into images.
 *   **Singleton Scene Persistence**: To satisfy global variable conditions across scene reloads, the `InventoryNode` Godot class relies on the Engine's Autoload mechanics. Internally, the class leverages static instantiation assignments to maintain its reference over its encapsulated `.NET` implementation (`InventoryManager`).
+### Technical Quirks / Discoveries
+- **Inventory & Signal Management Godot Interop**: Implemented OnResourceSpent using Core WeakEvents mapping to Godot Singletons. Godot Singleton acts as the glue. InteractionScripts can use the Key inputs to simulate UI upgrades temporarily while we map it to Player StatManager directly.

@@ -14,6 +14,14 @@ public class SignalManagerCore : ISignalManager
         m_onMaterialDestroyed.Invoke(p_sender, new ISignalManager.MaterialDestroyedEventArgs(p_item, p_quantity));
     }
 
+    private readonly WeakEvent<ISignalManager.ResourceSpentEventArgs> m_onResourceSpent = new WeakEvent<ISignalManager.ResourceSpentEventArgs>();
+    public WeakEvent<ISignalManager.ResourceSpentEventArgs> OnResourceSpent => m_onResourceSpent;
+
+    public void EmitResourceSpent(object p_sender, string p_resourceId, int p_amount)
+    {
+        m_onResourceSpent.Invoke(p_sender, new ISignalManager.ResourceSpentEventArgs(p_resourceId, p_amount));
+    }
+
     // === EXAMPLE OF HOW TO IMPLEMENT A SIGNAL IN CORE ===
     //
     // // 1. Instantiate the WeakEvent

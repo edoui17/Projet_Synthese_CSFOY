@@ -34,4 +34,19 @@ public interface ISignalManager
 
     WeakEvent<MaterialDestroyedEventArgs> OnMaterialDestroyed { get; }
     void EmitMaterialDestroyed(object p_sender, Core.Domain.ResourceItem p_item, int p_quantity);
+
+    public class ResourceSpentEventArgs : EventArgs
+    {
+        public string ResourceId { get; }
+        public int Amount { get; }
+
+        public ResourceSpentEventArgs(string p_resourceId, int p_amount)
+        {
+            ResourceId = p_resourceId;
+            Amount = p_amount;
+        }
+    }
+
+    WeakEvent<ResourceSpentEventArgs> OnResourceSpent { get; }
+    void EmitResourceSpent(object p_sender, string p_resourceId, int p_amount);
 }
