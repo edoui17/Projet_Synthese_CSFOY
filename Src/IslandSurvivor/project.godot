@@ -28,6 +28,10 @@ window/size/viewport_height=1080
 
 project/assembly_name="IslandSurvivor"
 
+[global_group]
+
+Tool=""
+
 [layer_names]
 
 2d_physics/layer_1="Evironnment"

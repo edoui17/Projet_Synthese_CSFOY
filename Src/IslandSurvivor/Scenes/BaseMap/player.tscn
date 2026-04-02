@@ -6,6 +6,9 @@
 [sub_resource type="CircleShape2D" id="CircleShape2D_4nnh0"]
 radius = 20.22375
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_3b2fw"]
+radius = 67.06713
+
 [node name="CharacterBody2D" type="CharacterBody2D" unique_id=1340236982]
 motion_mode = 1
 script = ExtResource("1_3b2fw")
@@ -18,3 +21,9 @@ hframes = 8
 shape = SubResource("CircleShape2D_4nnh0")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=973213239]
+
+[node name="ToolArea" type="Area2D" parent="." unique_id=235543325 groups=["Tool"]]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ToolArea" unique_id=1587067576]
+position = Vector2(-1, 3)
+shape = SubResource("CircleShape2D_3b2fw")
