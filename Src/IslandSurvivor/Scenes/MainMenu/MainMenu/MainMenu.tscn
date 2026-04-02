@@ -2,9 +2,14 @@
 
 [ext_resource type="Script" uid="uid://nwjpac5l48wr" path="res://Scenes/MainMenu/MainMenu/MainMenu.cs" id="1_4ebcy"]
 [ext_resource type="Texture2D" uid="uid://bl47y1uk7snrq" path="res://Assets/Images/alisher-isagaliev-f3BEa-jgNBs-unsplash.jpg" id="2_2id62"]
+[ext_resource type="Texture2D" uid="uid://cjouk04gbw7xc" path="res://Assets/TinySwords(Update010)/UI/Buttons/Button_Blue_3Slides.png" id="3_o70k1"]
+[ext_resource type="Texture2D" uid="uid://bnp7dxk6oa0lo" path="res://Assets/TinySwords(Update010)/UI/Buttons/Button_Blue_3Slides_Pressed.png" id="4_kj5tk"]
+[ext_resource type="Texture2D" uid="uid://di2vsmrnmsf0o" path="res://Assets/TinySwords(Update010)/UI/Buttons/Button_Hover_3Slides.png" id="5_k7m34"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_qu3m1"]
 texture = ExtResource("2_2id62")
+
+[sub_resource type="SystemFont" id="SystemFont_o70k1"]
 
 [node name="MainMenu" type="Control" unique_id=327941898]
 layout_mode = 3
@@ -27,15 +32,9 @@ theme_override_styles/panel = SubResource("StyleBoxTexture_qu3m1")
 
 [node name="MenuTab" type="PanelContainer" parent="." unique_id=1573798446]
 layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -207.5
-offset_top = -163.5
-offset_right = 207.5
-offset_bottom = 163.5
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
@@ -62,12 +61,49 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 35
 text = "Options"
 
-[node name="QuitGameBtn" type="Button" parent="MenuTab/VBoxContainer" unique_id=394256619]
+[node name="QuitGameBtn" type="TextureButton" parent="MenuTab/VBoxContainer" unique_id=2057456997]
+custom_minimum_size = Vector2(60, 150)
 layout_mode = 2
-theme_override_font_sizes/font_size = 35
+texture_normal = ExtResource("3_o70k1")
+texture_pressed = ExtResource("4_kj5tk")
+texture_hover = ExtResource("5_k7m34")
+stretch_mode = 0
+
+[node name="QuitLabel" type="Label" parent="MenuTab/VBoxContainer/QuitGameBtn" unique_id=1342714578]
+custom_minimum_size = Vector2(0, 110)
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 23.0
+grow_horizontal = 2
+theme_override_fonts/font = SubResource("SystemFont_o70k1")
+theme_override_font_sizes/font_size = 50
 text = "Quit"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="OptionsBtn2" type="TextureButton" parent="MenuTab/VBoxContainer" unique_id=636481789]
+custom_minimum_size = Vector2(60, 150)
+layout_mode = 2
+texture_normal = ExtResource("3_o70k1")
+texture_pressed = ExtResource("4_kj5tk")
+texture_hover = ExtResource("5_k7m34")
+stretch_mode = 0
+
+[node name="Label" type="Label" parent="MenuTab/VBoxContainer/OptionsBtn2" unique_id=1458558330]
+custom_minimum_size = Vector2(0, 110)
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 23.0
+grow_horizontal = 2
+theme_override_fonts/font = SubResource("SystemFont_o70k1")
+theme_override_font_sizes/font_size = 50
+text = "Options"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [connection signal="pressed" from="MenuTab/VBoxContainer/StartGameBtn" to="." method="_on_start_game_btn_pressed"]
 [connection signal="pressed" from="MenuTab/VBoxContainer/ScoreboardBtn" to="." method="_on_scoreboard_btn_pressed"]
-[connection signal="pressed" from="MenuTab/VBoxContainer/OptionsBtn" to="." method="_on_options_btn_pressed"]
-[connection signal="pressed" from="MenuTab/VBoxContainer/QuitGameBtn" to="." method="_on_quitgame_btn_pressed"]
+[connection signal="pressed" from="MenuTab/VBoxContainer/QuitGameBtn" to="." method="_on_quit_game_btn_pressed"]
+[connection signal="pressed" from="MenuTab/VBoxContainer/OptionsBtn2" to="." method="_on_options_btn_pressed"]
