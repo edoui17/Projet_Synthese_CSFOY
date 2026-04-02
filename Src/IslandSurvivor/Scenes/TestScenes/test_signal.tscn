@@ -1,0 +1,20 @@
+[gd_scene format=3 uid="uid://45wwovbsukmq"]
+
+[ext_resource type="Script" uid="uid://b2mxc7543gocg" path="res://Scenes/TestScenes/TestSignalLabel.cs" id="1_rx3c7"]
+[ext_resource type="PackedScene" uid="uid://ge7ibe30caal" path="res://Scenes/BaseMap/player.tscn" id="1_x6yp5"]
+[ext_resource type="PackedScene" uid="uid://rtx0k5qfaymn" path="res://Scenes/Ressources/Tree/ConiferTree.tscn" id="2_rx3c7"]
+
+[node name="Node2D" type="Node2D" unique_id=1383663328]
+
+[node name="TestSignalLabel" type="Label" parent="." unique_id=1854793707]
+offset_left = -226.0
+offset_top = -171.0
+offset_right = -151.0
+offset_bottom = -138.0
+script = ExtResource("1_rx3c7")
+
+[node name="CharacterBody2D" parent="." unique_id=1340236982 instance=ExtResource("1_x6yp5")]
+position = Vector2(164, 13)
+
+[node name="ConiferTree" parent="." unique_id=169002865 instance=ExtResource("2_rx3c7")]
+position = Vector2(-185, -21)
