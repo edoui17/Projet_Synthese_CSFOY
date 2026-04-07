@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="PlayerMovementData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://Resources/PlayerMovementData.cs" id="1_x8y2q"]
+
+[resource]
+script = ExtResource("1_x8y2q")
+Acceleration = 2000.0
+Friction = 1500.0

@@ -1,21 +1,19 @@
 using Godot;
-using System;
+using Core.Interfaces;
+using IslandSurvivor.Nodes;
 
-public partial class InteractionScript : Area2D
+public partial class InteractionScript : InteractableNode
 {
     public override void _Ready()
     {
-        BodyEntered += OnBodyEntered;
-        BodyExited += OnBodyExited;
+        InteractionPrompt = "Enter Building";
+        base._Ready();
     }
 
-    private void OnBodyEntered(Node body)
+    public override void Interact()
     {
-        GD.Print($"Quelqu'un est entré dans l'InteractionArea : {body.Name}");
-    }
-
-    private void OnBodyExited(Node body)
-    {
-        GD.Print($"Quelqu'un est sorti de l'InteractionArea : {body.Name}");
+        GD.Print($"Interacting with Building: {GetParent().Name}");
+        base.Interact();
+        // Additional building-specific logic could go here
     }
 }
