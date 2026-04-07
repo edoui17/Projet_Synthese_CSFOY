@@ -49,4 +49,17 @@ public interface ISignalManager
 
     WeakEvent<ResourceSpentEventArgs> OnResourceSpent { get; }
     void EmitResourceSpent(object p_sender, string p_resourceId, int p_amount);
+
+    public class StatUpgradePurchasedEventArgs : EventArgs
+    {
+        public Core.Managers.Stats.StatType StatType { get; }
+
+        public StatUpgradePurchasedEventArgs(Core.Managers.Stats.StatType p_statType)
+        {
+            StatType = p_statType;
+        }
+    }
+
+    WeakEvent<StatUpgradePurchasedEventArgs> OnStatUpgradePurchased { get; }
+    void EmitStatUpgradePurchased(object p_sender, Core.Managers.Stats.StatType p_statType);
 }
