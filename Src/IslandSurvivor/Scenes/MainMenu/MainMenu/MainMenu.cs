@@ -11,7 +11,7 @@ public partial class MainMenu : Control
     private void _on_start_game_btn_pressed()
     {
         GD.Print("Bouton start appuyé");
-        GetTree().ChangeSceneToFile("res://Scenes/MainMenu/TestGameShow/Game.tscn");
+        GetTree().ChangeSceneToFile("res://Scenes/LaSceneMain/main.tscn");
 
     }
 

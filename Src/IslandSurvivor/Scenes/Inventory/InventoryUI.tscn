@@ -1,0 +1,54 @@
+[gd_scene format=3 uid="uid://yytxmu8icegn"]
+
+[ext_resource type="PackedScene" uid="uid://cwudt3fk21g8d" path="res://Scenes/Inventory/RessourceSlot.tscn" id="1_78un6"]
+[ext_resource type="Script" uid="uid://cv0d38p3se1cs" path="res://Scenes/Inventory/InventoryUi.cs" id="1_t28l3"]
+[ext_resource type="Texture2D" uid="uid://ctn16fvbk5w6s" path="res://Assets/TinySwords/Terrain/Wood Resource/Wood Resource.png" id="2_klxjt"]
+[ext_resource type="Texture2D" uid="uid://btmgwxoaihhgr" path="res://Assets/TinySwords/Terrain/Meat Resource/Meat Resource.png" id="3_hujbq"]
+[ext_resource type="Texture2D" uid="uid://bv21t5vnx6olo" path="res://Assets/TinySwords/Terrain/Gold Stones/Gold Stone 5 ressource.png" id="4_klxjt"]
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_bqdhe"]
+load_path = "res://.godot/imported/Rock4.png-cfd297bb995f09254f301c68ef76bef1.ctex"
+
+[node name="InventoryUI" type="Control" unique_id=571992874 node_paths=PackedStringArray("WoodSlot", "StoneSlot", "FoodSlot", "GoldSlot")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_t28l3")
+WoodSlot = NodePath("GridContainer/WoodRessource")
+StoneSlot = NodePath("GridContainer/RockRessource")
+FoodSlot = NodePath("GridContainer/FoodRessource")
+GoldSlot = NodePath("GridContainer/GoldRessource")
+WoodTexture = ExtResource("2_klxjt")
+StoneTexture = SubResource("CompressedTexture2D_bqdhe")
+FoodTexture = ExtResource("3_hujbq")
+GoldTexture = ExtResource("4_klxjt")
+
+[node name="GridContainer" type="GridContainer" parent="." unique_id=528149886]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -206.0
+offset_top = -50.0
+offset_right = 206.0
+offset_bottom = 50.0
+grow_horizontal = 2
+grow_vertical = 2
+columns = 4
+
+[node name="RockRessource" parent="GridContainer" unique_id=1688593719 instance=ExtResource("1_78un6")]
+layout_mode = 2
+
+[node name="GoldRessource" parent="GridContainer" unique_id=298153446 instance=ExtResource("1_78un6")]
+layout_mode = 2
+
+[node name="WoodRessource" parent="GridContainer" unique_id=2052077950 instance=ExtResource("1_78un6")]
+layout_mode = 2
+
+[node name="FoodRessource" parent="GridContainer" unique_id=518431628 instance=ExtResource("1_78un6")]
+layout_mode = 2
