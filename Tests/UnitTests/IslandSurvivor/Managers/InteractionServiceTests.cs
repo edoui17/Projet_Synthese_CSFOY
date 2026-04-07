@@ -1,10 +1,10 @@
 using System.Collections.Generic;
-using Core.Interfaces;
-using Core.Managers;
+using IslandSurvivor.Interfaces;
+using IslandSurvivor.Managers;
 using Xunit;
 using Moq;
 
-namespace Tests.UnitTests.Core.Managers;
+namespace Tests.UnitTests.IslandSurvivor.Managers;
 
 public class InteractionServiceTests
 {

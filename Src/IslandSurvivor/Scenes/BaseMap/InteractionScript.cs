@@ -1,6 +1,7 @@
 using Godot;
-using Core.Interfaces;
-using IslandSurvivor.Nodes;
+using IslandSurvivor.Interfaces;
+
+namespace IslandSurvivor.Nodes;
 
 public partial class InteractionScript : InteractableNode
 {

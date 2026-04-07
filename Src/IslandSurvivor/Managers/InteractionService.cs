@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using Core.Interfaces;
+using IslandSurvivor.Interfaces;
 
-namespace Core.Managers;
+namespace IslandSurvivor.Managers;
 
 public interface IInteractionService
 {

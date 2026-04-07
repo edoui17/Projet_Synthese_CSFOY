@@ -6,10 +6,10 @@ This page documents the player character's locomotion and interaction architectu
 
 ## 1. Player Movement Architecture
 
-The movement system is designed using a hybrid approach between Godot's physics engine and a centralized state machine.
+The movement system is designed using a hybrid approach between Godot's physics engine and a character state machine.
 
-### Core Logic (Project Core)
-*   **PlayerState**: A shared enum (`Src/Core/Domain/PlayerState.cs`) that defines character activity: `Idle`, `Moving`, `Interacting`, and `Attacking`. This allows for cross-layer synchronization (e.g., UI and Game Logic).
+### Character States (Project IslandSurvivor)
+*   **PlayerState**: A project-specific enum (`Src/IslandSurvivor/Enums/PlayerState.cs`) that defines character activity: `Idle`, `Moving`, `Interacting`, and `Attacking`. This allows the engine to manage animation and movement logic based on the current context.
 
 ### Data-Driven Configuration (Resources)
 Movement parameters are externalized as Godot Resources to allow for quick iteration:
@@ -23,19 +23,17 @@ The `Player.cs` script inherits from `CharacterBody2D` and uses `MoveAndSlide()`
 
 ---
 
-## 2. Interaction System (N-Tier)
+## 2. Interaction System
 
-The interaction system strictly follows the N-Tier architecture, separating detection from decision-making.
+The interaction system handles detection and prioritized decision-making within the game client.
 
-### Interface First
-*   **IInteractable** (`Src/Core/Interfaces/IInteractable.cs`): An interface required for any object that wants to be picked up, triggered, or entered. It defines distance calculation, the interaction trigger, and the prompt text.
+### Interfaces and Services (Project IslandSurvivor)
+*   **IInteractable** (`Src/IslandSurvivor/Interfaces/IInteractable.cs`): An interface required for any object that wants to be triggered or entered. It defines distance calculation, the interaction trigger, and the prompt text.
+*   **InteractionService** (`Src/IslandSurvivor/Managers/InteractionService.cs`): This service receives the list of nearby interactable objects and the player's position. It performs the distance calculations and returns the single prioritized target. This ensures that even if several objects overlap, only one action is triggered at a time.
 
-### Proximity Detection (Godot Client)
+### Proximity Detection
 *   **PlayerInteraction (Area2D)**: The player character has a dedicated detection zone. Any `InteractableNode` entering this zone is added to a local list of candidates.
 *   **Visual Indicator**: A floating label on the player displays the prompt of the "best" (closest) interactable object in range.
-
-### Decision Logic (Project Core)
-*   **InteractionService** (`Src/Core/Managers/InteractionService.cs`): This service receives the list of nearby interactable objects and the player's position. It performs the distance calculations and returns the single prioritized target. This ensures that even if several objects overlap, only one action is triggered at a time.
 
 ### Creating New Interactables
 To make an object interactable:

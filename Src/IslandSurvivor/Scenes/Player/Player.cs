@@ -1,8 +1,8 @@
 using Godot;
 using System;
 using System.Collections.Generic;
-using Core.Managers;
-using Core.Interfaces;
+using IslandSurvivor.Managers;
+using IslandSurvivor.Interfaces;
 using IslandSurvivor.Resources;
 using IslandSurvivor.Nodes;
 using IslandSurvivor.Enums;
