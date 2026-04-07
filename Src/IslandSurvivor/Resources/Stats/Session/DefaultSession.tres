@@ -1,0 +1,7 @@
+[gd_resource type="Resource" script_class="SessionResource" format=3 uid="uid://dmncnfktt6ldb"]
+
+[ext_resource type="Script" uid="uid://cu1i24c6ts5os" path="res://Resources/Stats/Session/SessionResource.cs" id="1_33nbo"]
+
+[resource]
+script = ExtResource("1_33nbo")
+StartingCharacterId = "Raph"

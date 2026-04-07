@@ -1,6 +1,8 @@
 # Forge - Architecture & Discovery Log
 
 ## Architectural Discoveries
+*   **Live State vs Configuration (Resources)**: Godot Resources (`SessionResource.cs`) act purely as initial templates (Source of Truth). The Core (`SessionState.cs`) maintains the mutable live state. Changes to the state only occur via Core methods, which then synchronize back to Godot through WeakEvents. This separation enables testing Core logic independently of the Godot engine.
+*   **Dependency Inversion (Save System)**: To keep the Core agnostic of file systems, `ISaveService` is defined in the Core. Implementations like `GodotSaveService` in the IslandSurvivor project leverage platform-specific tools (`FileAccess`, `user://`), injected into Core managers (`ScoreTracker`) during initialization.
 *   **Signal Management Bridge**: Godot's Singleton classes (`SignalManager.cs`) seamlessly wrap Core classes (`SignalManagerCore.cs`). Exposing strongly-typed `WeakEvent` properties natively works in Godot `_Ready()` hooks, creating an airtight boundary between the engine's lifecycle and the Business logic (`Core` tier).
 *   **Dependency Avoidance (Enums)**: To avoid using enums across project bounds, String mappings for `MaterialType` correctly proxy the state of an `InventoryManager` inside `Core` when a `WeakEvent` is raised.
 
