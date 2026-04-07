@@ -111,9 +111,16 @@ public partial class Player : CharacterBody2D
 		SetState(PlayerState.Interacting);
 		m_bestTarget.Interact();
 
-		// Simulate interaction time / animation if needed
-		// For now, just wait a bit and return to Idle
-		await ToSignal(GetTree().CreateTimer(0.5f), SceneTreeTimer.SignalName.Timeout);
+		if (m_animationPlayer != null && m_animationPlayer.HasAnimation("INTERACT"))
+		{
+			m_animationPlayer.Play("INTERACT");
+			await ToSignal(m_animationPlayer, AnimationPlayer.SignalName.AnimationFinished);
+		}
+		else
+		{
+			// Fallback if animation is missing
+			await ToSignal(GetTree().CreateTimer(0.2f), SceneTreeTimer.SignalName.Timeout);
+		}
 
 		SetState(PlayerState.Idle);
 	}
@@ -129,9 +136,6 @@ public partial class Player : CharacterBody2D
 				break;
 			case PlayerState.Moving:
 				m_animationPlayer.Play("RUN");
-				break;
-			case PlayerState.Interacting:
-				m_animationPlayer.Play("INTERACT");
 				break;
 		}
 	}
