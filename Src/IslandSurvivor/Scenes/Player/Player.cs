@@ -10,7 +10,6 @@ using Core.Managers.Stats;
 
 public partial class Player : CharacterBody2D
 {
-	[Export] public PlayerMovementData? MovementData { get; set; }
 	[Export] public StatManager? Stats { get; set; }
 
 	private PlayerState m_currentState = PlayerState.Idle;
@@ -53,7 +52,7 @@ public partial class Player : CharacterBody2D
 			return;
 		}
 
-		ApplyMovement(p_delta);
+		ApplyMovement();
 		UpdateBestTarget();
 		UpdateAnimation();
 	}
@@ -66,16 +65,14 @@ public partial class Player : CharacterBody2D
 		}
 	}
 
-	private void ApplyMovement(double p_delta)
+	private void ApplyMovement()
 	{
 		Vector2 direction = Input.GetVector("move_left", "move_right", "move_up", "move_down");
 		float speed = Stats?.GetCurrentValue(StatType.Speed) ?? 300f;
-		float accel = MovementData?.Acceleration ?? 2000f;
-		float friction = MovementData?.Friction ?? 1500f;
 
 		if (direction != Vector2.Zero)
 		{
-			Velocity = Velocity.MoveToward(direction * speed, accel * (float)p_delta);
+			Velocity = direction * speed;
 			m_currentState = PlayerState.Moving;
 
 			if (m_sprite != null)
@@ -85,11 +82,8 @@ public partial class Player : CharacterBody2D
 		}
 		else
 		{
-			Velocity = Velocity.MoveToward(Vector2.Zero, friction * (float)p_delta);
-			if (Velocity.Length() < 0.1f)
-			{
-				m_currentState = PlayerState.Idle;
-			}
+			Velocity = Vector2.Zero;
+			m_currentState = PlayerState.Idle;
 		}
 
 		MoveAndSlide();

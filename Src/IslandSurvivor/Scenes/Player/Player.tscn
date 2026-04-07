@@ -1,11 +1,10 @@
-[gd_scene load_steps=18 format=3 uid="uid://cqo7rlgy61vfa"]
+[gd_scene load_steps=17 format=3 uid="uid://cqo7rlgy61vfa"]
 
 [ext_resource type="Script" uid="uid://1jvbx52ea810" path="res://Scenes/Player/Player.cs" id="1_s0eop"]
 [ext_resource type="Texture2D" uid="uid://dvcwp5qwpmdo1" path="res://Assets/TinySwords/Sprites/Pawn/Blue/Pawn_Idle Axe.png" id="2_ft8w5"]
 [ext_resource type="Texture2D" uid="uid://f1eu1fcb5woi" path="res://Assets/TinySwords/Sprites/Pawn/Blue/Pawn_Interact Axe.png" id="3_jmcll"]
 [ext_resource type="Texture2D" uid="uid://bnrdwqhy84a5e" path="res://Assets/TinySwords/Sprites/Pawn/Blue/Pawn_Run.png" id="4_4wape"]
 [ext_resource type="Texture2D" uid="uid://cff20mi4vyhg2" path="res://Assets/TinySwords/Sprites/Pawn/Blue/Pawn_Run Axe.png" id="5_t26db"]
-[ext_resource type="Resource" uid="uid://cln43i6l8q7jy" path="res://Resources/PlayerMovementData.tres" id="2_mov"]
 [ext_resource type="PackedScene" uid="uid://biqhbrp7fjfyj" path="res://Nodes/StatsManager/StatsManager.tscn" id="7_stat"]
 [ext_resource type="Resource" uid="uid://bs888n888n888" path="res://Resources/Stats/Entity/PlayerStats.tres" id="8_stat_res"]
 
@@ -261,7 +260,6 @@ radius = 55.7315
 
 [node name="Player" type="CharacterBody2D" unique_id=661327324 node_paths=PackedStringArray("Stats")]
 script = ExtResource("1_s0eop")
-MovementData = ExtResource("2_mov")
 Stats = NodePath("StatManager")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1359797056]

@@ -6,19 +6,17 @@ This page documents the player character's locomotion and interaction architectu
 
 ## 1. Player Movement Architecture
 
-The movement system is designed using a hybrid approach between Godot's physics engine and a character state machine.
+The movement system is designed using a simple and direct approach for responsive controls.
 
 ### Character States (Project IslandSurvivor)
 *   **PlayerState**: A project-specific enum (`Src/IslandSurvivor/Enums/PlayerState.cs`) that defines character activity: `Idle`, `Moving`, `Interacting`, and `Attacking`. This allows the engine to manage animation and movement logic based on the current context.
 
-### Data-Driven Configuration (Resources)
-Movement parameters are externalized as Godot Resources to allow for quick iteration:
-*   **PlayerMovementData** (`PlayerMovementData.tres`): Controls the "feel" of the character (Acceleration, Friction).
+### Configuration
 *   **PlayerStats** (`PlayerStats.tres`): Manages character attributes like `Speed`, linked to the `StatManager` node.
 
 ### Locomotion Implementation (Godot Client)
 The `Player.cs` script inherits from `CharacterBody2D` and uses `MoveAndSlide()`.
-*   **Physics Processing**: Velocity is calculated each frame using `MoveToward` to provide smooth acceleration and deceleration (friction) based on input.
+*   **Constant Speed**: Movement is handled by directly setting the velocity based on the input vector and the character's speed stat. There is no acceleration or friction, ensuring immediate response to player input.
 *   **State Machine**: The state is updated based on current velocity and input, triggering animations automatically via the `AnimationPlayer`.
 
 ---
@@ -34,12 +32,6 @@ The interaction system handles detection and prioritized decision-making within 
 ### Proximity Detection
 *   **PlayerInteraction (Area2D)**: The player character has a dedicated detection zone. Any `InteractableNode` entering this zone is added to a local list of candidates.
 *   **Visual Indicator**: A floating label on the player displays the prompt of the "best" (closest) interactable object in range.
-
-### Creating New Interactables
-To make an object interactable:
-1.  Attach an **InteractableNode** (`Src/IslandSurvivor/Nodes/InteractableNode.cs`) to the scene.
-2.  Assign an **InteractionPrompt** (e.g., "Press E to open chest").
-3.  Connect to the **Interacted** signal to implement specific behavior (opening a chest, entering a house, etc.).
 
 ---
 

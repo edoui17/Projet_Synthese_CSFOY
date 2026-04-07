@@ -6,12 +6,11 @@ Ce document détaille les scénarios de tests manuels pour valider le système d
 
 | ID | Titre | Description | Résultat Attendu |
 | :--- | :--- | :--- | :--- |
-| M-01 | WASD / Flèches | Appuyer sur W, A, S, D ou les flèches. | Le personnage se déplace dans la direction correspondante. |
-| M-02 | Accélération | Maintenir une touche directionnelle. | Le personnage atteint progressivement sa vitesse maximale. |
-| M-03 | Friction | Relâcher la touche de mouvement. | Le personnage s'arrête de manière fluide (ne s'arrête pas instantanément). |
-| M-04 | Animation Run | Se déplacer. | L'animation "RUN" se déclenche. |
-| M-05 | Animation Idle | S'arrêter. | L'animation "IDLE" se déclenche. |
-| M-06 | Stat Speed | Modifier la vitesse dans `PlayerStats.tres`. | La vitesse maximale du joueur change en conséquence. |
+| M-01 | WASD / Flèches | Appuyer sur W, A, S, D ou les flèches. | Le personnage se déplace instantanément dans la direction correspondante. |
+| M-02 | Réactivité immédiate | Maintenir puis relâcher une touche. | Le personnage démarre et s'arrête instantanément (pas d'accélération/friction). |
+| M-03 | Animation Run | Se déplacer. | L'animation "RUN" se déclenche. |
+| M-04 | Animation Idle | S'arrêter. | L'animation "IDLE" se déclenche. |
+| M-05 | Stat Speed | Modifier la vitesse dans `PlayerStats.tres`. | La vitesse du joueur change en conséquence. |
 
 ## 2. Système d'Interaction
 
