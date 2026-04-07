@@ -39,7 +39,7 @@
     *   Refactored `InteractionScript.cs` to dynamically generate a `CanvasLayer` with UI `Button`s for the shop, removing the hardcoded keyboard keys.
 *   **Decision Reasoning:** By creating `IShopManager`, we extract the business logic of scaling prices and validating inventory out of the Godot presentation layer. This aligns perfectly with the N-Tier architecture and enables xUnit tests. Creating the dynamic UI panel directly in the C# `_Ready()` method keeps everything self-contained within the base map interaction logic without requiring a new scene tree configuration. Moving the actual stat upgrade logic to `StatManager` listening to a global signal creates a clean decouple between the base map and the player entity.
 
-### 2026-04-02 - [US 4.4] | Création d'une ressource viande (Mouton) & Comportement Animal | Implemented passive NPC AI logic, health component, and inventory drop. | Decision Reasoning
+### 2026-04-07 - [US 4.4] | Création d'une ressource viande (Mouton) & Comportement Animal | Implemented passive NPC AI logic, health component, and inventory drop. | Decision Reasoning
 *   **Request:** Create a passive sheep NPC that roams randomly, flees when attacked, and drops meat directly to the global inventory upon death. Ensure N-Tier structure.
 *   **AI Contribution:**
     *   Defined `INpc`, `IDamageable`, and `IHealthComponent` interfaces in `Src/Core`.
