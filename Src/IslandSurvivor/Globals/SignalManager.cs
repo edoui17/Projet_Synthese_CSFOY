@@ -36,6 +36,13 @@ public partial class SignalManager : Node, ISignalManager
         m_coreManager.EmitResourceSpent(p_sender, p_resourceId, p_amount);
     }
 
+    public WeakEvent<ISignalManager.StatUpgradePurchasedEventArgs> OnStatUpgradePurchased => m_coreManager.OnStatUpgradePurchased;
+
+    public void EmitStatUpgradePurchased(object p_sender, Core.Managers.Stats.StatType p_statType)
+    {
+        m_coreManager.EmitStatUpgradePurchased(p_sender, p_statType);
+    }
+
     // === EXAMPLE OF HOW TO IMPLEMENT A SIGNAL IN GODOT ===
     //
     // // 1. Map to the Core implementation

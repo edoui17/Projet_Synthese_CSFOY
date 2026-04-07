@@ -22,6 +22,14 @@ public class SignalManagerCore : ISignalManager
         m_onResourceSpent.Invoke(p_sender, new ISignalManager.ResourceSpentEventArgs(p_resourceId, p_amount));
     }
 
+    private readonly WeakEvent<ISignalManager.StatUpgradePurchasedEventArgs> m_onStatUpgradePurchased = new WeakEvent<ISignalManager.StatUpgradePurchasedEventArgs>();
+    public WeakEvent<ISignalManager.StatUpgradePurchasedEventArgs> OnStatUpgradePurchased => m_onStatUpgradePurchased;
+
+    public void EmitStatUpgradePurchased(object p_sender, Core.Managers.Stats.StatType p_statType)
+    {
+        m_onStatUpgradePurchased.Invoke(p_sender, new ISignalManager.StatUpgradePurchasedEventArgs(p_statType));
+    }
+
     // === EXAMPLE OF HOW TO IMPLEMENT A SIGNAL IN CORE ===
     //
     // // 1. Instantiate the WeakEvent
