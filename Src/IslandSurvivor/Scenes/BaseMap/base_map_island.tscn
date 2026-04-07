@@ -17,7 +17,7 @@
 [ext_resource type="Texture2D" uid="uid://cbf0x2d45steq" path="res://Assets/TinySwords/Terrain/Clouds/Clouds_07.png" id="18_dttrb"]
 [ext_resource type="Script" uid="uid://bcck2xu2q5syh" path="res://Scenes/BaseMap/Spawn.cs" id="18_ne6mt"]
 [ext_resource type="Texture2D" uid="uid://d3dhc1ja483rm" path="res://Assets/TinySwords/Terrain/Clouds/Clouds_08.png" id="19_q7qh4"]
-[ext_resource type="PackedScene" uid="uid://ge7ibe30caal" path="res://Scenes/BaseMap/player.tscn" id="21_6r8yr"]
+[ext_resource type="PackedScene" uid="uid://cqo7rlgy61vfa" path="res://Scenes/Player/Player.tscn" id="21_6r8yr"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_t6485"]
 texture = ExtResource("1_g38my")
