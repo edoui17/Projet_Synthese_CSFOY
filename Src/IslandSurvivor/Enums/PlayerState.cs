@@ -1,4 +1,4 @@
-namespace Core.Domain;
+namespace IslandSurvivor.Enums;
 
 public enum PlayerState
 {

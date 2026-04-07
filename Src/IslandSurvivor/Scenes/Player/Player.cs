@@ -1,11 +1,11 @@
 using Godot;
 using System;
 using System.Collections.Generic;
-using Core.Domain;
 using Core.Managers;
 using Core.Interfaces;
 using IslandSurvivor.Resources;
 using IslandSurvivor.Nodes;
+using IslandSurvivor.Enums;
 using Core.Managers.Stats;
 
 public partial class Player : CharacterBody2D
