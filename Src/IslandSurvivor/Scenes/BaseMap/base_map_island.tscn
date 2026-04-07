@@ -410,7 +410,7 @@ sources/5 = SubResource("TileSetAtlasSource_q7qh4")
 sources/6 = SubResource("TileSetAtlasSource_exhti")
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_t6485"]
-radius = 118.15244
+radius = 78.72102
 
 [node name="BaseMapIsland" type="Node2D" unique_id=468228307]
 y_sort_enabled = true

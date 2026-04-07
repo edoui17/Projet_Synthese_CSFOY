@@ -1,22 +1,24 @@
+using Core.Managers.Stats;
 using Godot;
+using IslandSurvivor.Enums;
+using IslandSurvivor.Interfaces;
+using IslandSurvivor.Managers;
+using IslandSurvivor.Nodes;
+using IslandSurvivor.Resources;
 using System;
 using System.Collections.Generic;
-using IslandSurvivor.Managers;
-using IslandSurvivor.Interfaces;
-using IslandSurvivor.Resources;
-using IslandSurvivor.Nodes;
-using IslandSurvivor.Enums;
-using Core.Managers.Stats;
 
 public partial class Player : CharacterBody2D
 {
 	[Export] public StatManager? Stats { get; set; }
 
 	private PlayerState m_currentState = PlayerState.Idle;
-	private AnimationPlayer? m_animationPlayer;
-	private Sprite2D? m_sprite;
-	private Label? m_interactionLabel;
-	private Area2D? m_interactionArea;
+
+    [Export]  private AnimationPlayer? m_animationPlayer;
+    [Export]  private Sprite2D? m_sprite;
+    [Export]  private Label? m_interactionLabel;
+    [Export]  private Label? m_debugLabel;
+    [Export]  private Area2D? m_interactionArea;
 
 	private readonly List<IInteractable> m_nearbyInteractables = new();
 	private IInteractable? m_bestTarget;
@@ -24,11 +26,6 @@ public partial class Player : CharacterBody2D
 
 	public override void _Ready()
 	{
-		m_animationPlayer = GetNode<AnimationPlayer>("AnimationPlayer");
-		m_sprite = GetNode<Sprite2D>("Sprite2D");
-		m_interactionLabel = GetNode<Label>("InteractionLabel");
-		m_interactionArea = GetNode<Area2D>("PlayerInteraction");
-
 		m_interactionLabel.Visible = false;
 
 		if (Stats == null)
@@ -45,14 +42,16 @@ public partial class Player : CharacterBody2D
 
 	public override void _PhysicsProcess(double p_delta)
 	{
-		if (m_currentState == PlayerState.Interacting)
+        m_debugLabel.Text = m_currentState.ToString();
+        if (m_currentState == PlayerState.Interacting)
 		{
 			Velocity = Vector2.Zero;
 			MoveAndSlide();
 			return;
 		}
 
-		ApplyMovement();
+
+        ApplyMovement();
 		UpdateBestTarget();
 		UpdateAnimation();
 	}
