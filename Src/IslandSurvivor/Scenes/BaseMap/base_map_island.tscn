@@ -20,7 +20,7 @@
 [ext_resource type="PackedScene" uid="uid://cqo7rlgy61vfa" path="res://Scenes/Player/Player.tscn" id="21_6r8yr"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_t6485"]
-texture = ExtResource("1_2tg1r")
+texture = ExtResource("1_g38my")
 texture_region_size = Vector2i(64, 64)
 0:0/0 = 0
 
@@ -29,7 +29,7 @@ tile_size = Vector2i(64, 64)
 sources/0 = SubResource("TileSetAtlasSource_t6485")
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_5haku"]
-texture = ExtResource("2_orapn")
+texture = ExtResource("2_hfx6n")
 texture_region_size = Vector2i(192, 192)
 0:0/animation_speed = 8.0
 0:0/animation_mode = 1
@@ -52,7 +52,7 @@ texture_region_size = Vector2i(192, 192)
 0:0/0 = 0
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_73wd0"]
-texture = ExtResource("3_y3nlw")
+texture = ExtResource("3_p1xmv")
 texture_region_size = Vector2i(64, 64)
 0:0/animation_speed = 8.0
 0:0/animation_frame_0/duration = 1.0
@@ -79,7 +79,7 @@ sources/0 = SubResource("TileSetAtlasSource_5haku")
 sources/1 = SubResource("TileSetAtlasSource_73wd0")
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_21m2x"]
-texture = ExtResource("4_w65le")
+texture = ExtResource("4_p1xmv")
 texture_region_size = Vector2i(64, 64)
 0:3/0 = 0
 0:3/0/terrain_set = 0
@@ -205,7 +205,7 @@ terrain_set_0/terrain_0/color = Color(0.5, 0.34375, 0.25, 1)
 sources/0 = SubResource("TileSetAtlasSource_21m2x")
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_3uubx"]
-texture = ExtResource("5_5ji3a")
+texture = ExtResource("5_ej47q")
 texture_region_size = Vector2i(192, 192)
 0:0/0 = 0
 
@@ -214,7 +214,7 @@ tile_size = Vector2i(64, 64)
 sources/0 = SubResource("TileSetAtlasSource_3uubx")
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ymkp7"]
-texture = ExtResource("6_s4s1w")
+texture = ExtResource("6_n0ali")
 texture_region_size = Vector2i(64, 64)
 8:0/0 = 0
 8:0/0/terrain_set = 0
@@ -365,37 +365,37 @@ terrain_set_0/terrain_1/color = Color(0.76618856, 0.17311704, 0.39413103, 1)
 sources/1 = SubResource("TileSetAtlasSource_ymkp7")
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_f8k51"]
-texture = ExtResource("8_1hycd")
+texture = ExtResource("13_36e7r")
 texture_region_size = Vector2i(576, 256)
 0:0/0 = 0
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_kd5hk"]
-texture = ExtResource("9_ehjva")
+texture = ExtResource("14_f8k51")
 texture_region_size = Vector2i(576, 256)
 0:0/0 = 0
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_momq0"]
-texture = ExtResource("10_v8u3l")
+texture = ExtResource("15_kd5hk")
 texture_region_size = Vector2i(576, 256)
 0:0/0 = 0
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_fsya4"]
-texture = ExtResource("11_bls3v")
+texture = ExtResource("16_momq0")
 texture_region_size = Vector2i(576, 256)
 0:0/0 = 0
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_dttrb"]
-texture = ExtResource("12_lgeh8")
+texture = ExtResource("17_fsya4")
 texture_region_size = Vector2i(576, 256)
 0:0/0 = 0
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_q7qh4"]
-texture = ExtResource("13_6gs35")
+texture = ExtResource("18_dttrb")
 texture_region_size = Vector2i(576, 256)
 0:0/0 = 0
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_exhti"]
-texture = ExtResource("14_4tclt")
+texture = ExtResource("19_q7qh4")
 texture_region_size = Vector2i(576, 256)
 0:0/0 = 0
 
@@ -439,13 +439,13 @@ tile_set = SubResource("TileSet_n51jr")
 [node name="ElementsTileMap" type="TileMapLayer" parent="." unique_id=1515628892]
 y_sort_enabled = true
 tile_map_data = PackedByteArray("AAAiAA8ABAAAAAAAAAAdAAkABAAAAAAAAAARABAABQAAAAAAAAAPAAcABQAAAAAAAAAkABAABgAAAAAAAAAMAA4ABgAAAAAAAAAnAAoABgAAAAAAAAAeAAwABgAAAAAAAAAQAAoAAgAAAAAAAAAcABEAAgAAAAAAAAAeAAsAAgAAAAAAAAAaAAQAAAAAAAAAAAAeAAcAAAAAAAAAAAAMAAwAAAAAAAAAAAAKABAAAAAAAAAAAAARAAcAAgAAAAAAAAAVAA0AAgAAAAAAAAAZAAwAAAAAAAAAAAA=")
-tile_set = ExtResource("7_blcb8")
+tile_set = ExtResource("7_t6485")
 
 [node name="ElementsForElevationTileMap" type="TileMapLayer" parent="." unique_id=22687592]
 z_index = 1
 y_sort_enabled = true
 tile_map_data = PackedByteArray("AAAGAAsABQAAAAAAAAAiAAcABQAAAAAAAAAkAAkABQAAAAAAAAAIAAgABAAAAAAAAAAmAAYAAgAAAAAAAAAIAAwAAgAAAAAAAAAEAAsABgAAAAAAAAAGAAgAAAAAAAAAAAALAAcAAAAAAAAAAAA=")
-tile_set = ExtResource("7_blcb8")
+tile_set = ExtResource("7_t6485")
 
 [node name="CloudTileMap" type="TileMapLayer" parent="." unique_id=2025396475]
 tile_map_data = PackedByteArray("AAD//wEAAAAAAAAAAAAFAP7/AAAAAAAAAAAIAAoAAQAAAAAAAAANAAwAAQAAAAAAAAAUAAgAAgAAAAAAAAAaAAcAAwAAAAAAAAAZAP//AwAAAAAAAAARAP7/AwAAAAAAAAAIAA8AAwAAAAAAAAD9/w8AAwAAAAAAAAD8/woAAwAAAAAAAAD8/wkAAwAAAAAAAAD8/wUABAAAAAAAAAACAAkABQAAAAAAAAARAAwABQAAAAAAAAAVAAoABQAAAAAAAAD7//7/AwAAAAAAAAD3/wEAAwAAAAAAAAD3/wcAAwAAAAAAAAD5/wMAAwAAAAAAAAD6/w0AAwAAAAAAAAD4/w8ABAAAAAAAAAAdAA0ABAAAAAAAAAAbAAoABAAAAAAAAAAMAA0ABgAAAAAAAAAeAAIAAAAAAAAAAAAgAAgAAAAAAAAAAAAdAAUAAAAAAAAAAAAYAA8AAAAAAAAAAAARAA4AAAAAAAAAAAAjAAsAAAAAAAAAAAAkAP3/AwAAAAAAAAAlAAYAAwAAAAAAAAA=")
@@ -456,7 +456,7 @@ y_sort_enabled = true
 
 [node name="Building" type="Sprite2D" parent="BuildingNode" unique_id=1061436124]
 position = Vector2(723, 173)
-texture = ExtResource("15_7mip7")
+texture = ExtResource("12_j3wwi")
 
 [node name="Collision" type="StaticBody2D" parent="BuildingNode" unique_id=1838391107]
 y_sort_enabled = true
@@ -469,7 +469,7 @@ polygon = PackedVector2Array(67, -100, 74, -12, 54, 40, -54, 39, -70, -13, -69, 
 light_mask = 0
 visibility_layer = 2
 position = Vector2(722, 273)
-script = ExtResource("16_nilk4")
+script = ExtResource("16_usjv8")
 
 [node name="Interaction" type="CollisionShape2D" parent="BuildingNode/InteractionArea" unique_id=96916541]
 position = Vector2(-1, -29)
@@ -477,6 +477,6 @@ shape = SubResource("CircleShape2D_t6485")
 
 [node name="Spawn" type="Marker2D" parent="." unique_id=919176648 node_paths=PackedStringArray("SpawnPoint")]
 position = Vector2(727, 493)
-script = ExtResource("17_2mm7j")
+script = ExtResource("18_ne6mt")
 SpawnPoint = NodePath(".")
-PlayerScene = ExtResource("18_0darg")
+PlayerScene = ExtResource("21_6r8yr")

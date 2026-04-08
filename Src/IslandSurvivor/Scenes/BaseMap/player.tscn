@@ -1,9 +1,8 @@
 [gd_scene format=3 uid="uid://ge7ibe30caal"]
 
-[ext_resource type="Script" uid="uid://cflook6p7o4ju" path="res://Scenes/HomeMap/CharacterBody2d.cs" id="1_3b2fw"]
+[ext_resource type="Script" uid="uid://cflook6p7o4ju" path="res://Scenes/BaseMap/CharacterBody2d.cs" id="1_3b2fw"]
 [ext_resource type="Texture2D" uid="uid://b5fg1af3ipgop" path="res://Assets/TinySwords/Sprites/Pawn/Purple/Pawn_Idle Axe.png" id="2_v4trc"]
-[ext_resource type="PackedScene" uid="uid://biqhbrp7fjfyj" path="res://Nodes/StatsManager/StatsManager.tscn" id="3_stats"]
-
+[ext_resource type="PackedScene" uid="uid://dtj1p17c4s7y" path="res://Nodes/StatsManager/StatsManager.tscn" id="3_stats"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_4nnh0"]
 radius = 20.22375

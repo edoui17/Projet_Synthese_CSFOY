@@ -2,14 +2,17 @@
 
 [ext_resource type="Script" uid="uid://b2mxc7543gocg" path="res://Scenes/TestScenes/TestSignalLabel.cs" id="1_rx3c7"]
 <<<<<<< HEAD
+<<<<<<< HEAD
 [ext_resource type="PackedScene" uid="uid://ge7ibe30caal" path="res://Scenes/HomeMap/player.tscn" id="1_x6yp5"]
 =======
 [ext_resource type="PackedScene" uid="uid://cqo7rlgy61vfa" path="res://Scenes/Player/Player.tscn" id="1_x6yp5"]
 >>>>>>> 3d81b3e1fec17ffcefa2a4d5108baf090014f86d
+=======
+[ext_resource type="PackedScene" uid="uid://ge7ibe30caal" path="res://Scenes/BaseMap/player.tscn" id="1_x6yp5"]
+>>>>>>> parent of 76fda53 (ajustement de certain nom de fichier et ajout d'une carte dont vont heriter les autres)
 [ext_resource type="PackedScene" uid="uid://rtx0k5qfaymn" path="res://Scenes/Ressources/Tree/ConiferTree.tscn" id="2_rx3c7"]
 [ext_resource type="PackedScene" uid="uid://cwdf5881am4rs" path="res://Nodes/ScoreManager/ScoreManager.tscn" id="4_cn7go"]
 [ext_resource type="Script" uid="uid://cwgy214xflfdk" path="res://Nodes/ScoreManager/ScoreUI.cs" id="5_e21qn"]
-
 
 [node name="Node2D" type="Node2D" unique_id=1383663328]
 
