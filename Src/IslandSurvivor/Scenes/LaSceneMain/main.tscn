@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://b30l21wvemtmp"]
 
-[ext_resource type="PackedScene" uid="uid://5kp0j31xrejs" path="res://Scenes/BaseMap/base_map_island.tscn" id="1_dcclg"]
+[ext_resource type="PackedScene" uid="uid://5kp0j31xrejs" path="res://Scenes/HomeMap/HomeMap.tscn" id="1_dcclg"]
+
 
 [node name="Main" type="Node2D" unique_id=431913187]
 
