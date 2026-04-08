@@ -26,3 +26,7 @@
 - Added new geographical elements to the Generator: Plateaus, Cliffs, and Stairs.
 - To maintain accessibility and avoid floating plateaus, we use a BFS algorithm to discover the borders of a plateau threshold and mark them as Cliffs. We then guarantee access by flipping at least one adjacent ground cliff tile to a Stairs tile.
 - Connectedness is verified for Ground, Plateau, and Stair tiles combined, ensuring the entire island remains traversable.
+
+## Procedural Foam/Splash Animations (Date: 2024-05-18)
+- Kept the visual detection logic out of the Core and strictly inside the Godot client. The Core generates `WATER` tiles as normal. The Godot client detects if a `WATER` tile is adjacent to any non-water tile (Coastline) during rendering.
+- Used `FoamWaterTileMap` to overlay the animated splash tile instead of overriding the base water tile, ensuring base water functionality and transitions remain intact.

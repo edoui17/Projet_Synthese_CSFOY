@@ -16,6 +16,7 @@ public partial class ProceduralMapTest : Node2D
     private TileMapLayer m_groundTileMap;
     private TileMapLayer m_waterTileMap;
     private TileMapLayer m_elevationTileMap;
+    private TileMapLayer m_foamWaterTileMap;
     private ColorRect m_playerMarker;
 
     public override void _Ready()
@@ -36,6 +37,7 @@ public partial class ProceduralMapTest : Node2D
         m_groundTileMap = GetNode<TileMapLayer>("MapContainer/Map1/GroundTileMap");
         m_waterTileMap = GetNode<TileMapLayer>("MapContainer/Map1/WaterTileMap");
         m_elevationTileMap = GetNode<TileMapLayer>("MapContainer/Map1/ElevetionTileMap");
+        m_foamWaterTileMap = GetNode<TileMapLayer>("MapContainer/Map1/FoamWaterTileMap");
 
         // Generate initial map
         GenerateAndDrawMap(12345);
@@ -66,6 +68,7 @@ public partial class ProceduralMapTest : Node2D
         m_groundTileMap.Clear();
         m_waterTileMap.Clear();
         m_elevationTileMap.Clear();
+        m_foamWaterTileMap.Clear();
 
         // Tile constants based on map_1.tscn
         // Water is TileSet 0 in WaterTileMap. Coordinates: (0,0) (Atlas source 0)
@@ -90,6 +93,32 @@ public partial class ProceduralMapTest : Node2D
                 else if (tileType == TileTypeConstants.WATER)
                 {
                     m_waterTileMap.SetCell(cellPos, 0, new Vector2I(0, 0));
+
+                    // Check for splash/foam transition (adjacent to any non-water tile)
+                    bool isCoast = false;
+                    int[] dx = { -1, 0, 1, -1, 1, -1, 0, 1 };
+                    int[] dy = { -1, -1, -1, 0, 0, 1, 1, 1 };
+
+                    for (int i = 0; i < 8; i++)
+                    {
+                        int nx = x + dx[i];
+                        int ny = y + dy[i];
+
+                        if (nx >= 0 && nx < mapWidth && ny >= 0 && ny < mapHeight)
+                        {
+                            if (mapData.GetTile(nx, ny) != TileTypeConstants.WATER)
+                            {
+                                isCoast = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (isCoast)
+                    {
+                        // FoamWaterTileMap has animated foam at ID 0, Coords (0,0)
+                        m_foamWaterTileMap.SetCell(cellPos, 0, new Vector2I(0, 0));
+                    }
                 }
                 else if (tileType == TileTypeConstants.PLATEAU)
                 {

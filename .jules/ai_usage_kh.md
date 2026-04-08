@@ -15,3 +15,8 @@
 | **Request** | **AI Contribution** | **Decision Reasoning** |
 | :--- | :--- | :--- |
 | Implement Plateaus, Cliffs, and Stairs to Map Generation. Ensure connectivity. | Updated `TileTypeConstants`. Overhauled `GodotIslandGenerator` to apply a second threshold for plateaus, trace borders to make cliffs, and inject stairs. Updated BFS to consider plateaus/stairs as walkable. Updated `ProceduralMapTest` to draw these onto `ElevationTileMap`. | A multi-pass approach (noise -> borders -> connectivity) was best to guarantee constraints. By mapping these directly to `ElevationTileMap` using ID 1, we effectively layered visuals exactly as requested in `map_1.tscn` without making the generator aware of Godot layers. |
+
+### 2024-05-18 - [US 3.1: Procedural Map Generation - Splash Transitions]
+| **Request** | **AI Contribution** | **Decision Reasoning** |
+| :--- | :--- | :--- |
+| Add a splash/foam animation transition between water and land. | Added neighbor-checking logic to `ProceduralMapTest.cs`. When placing a water tile, it scans the surrounding 8 tiles. If any are land (Ground, Plateau, Cliff, Stairs), it draws a foam tile on the `FoamWaterTileMap` layer. | Placed this logic entirely in the Godot script. The Core doesn't need to know about "Foam" because it's a purely visual representation of a coastline. This respects the N-Tier architecture while achieving the desired visual effect. |
