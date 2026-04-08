@@ -30,3 +30,8 @@
 ## Procedural Foam/Splash Animations (Date: 2024-05-18)
 - Kept the visual detection logic out of the Core and strictly inside the Godot client. The Core generates `WATER` tiles as normal. The Godot client detects if a `WATER` tile is adjacent to any non-water tile (Coastline) during rendering.
 - Used `FoamWaterTileMap` to overlay the animated splash tile instead of overriding the base water tile, ensuring base water functionality and transitions remain intact.
+
+## Map Rendering and Autoloads (MapRenderer & GameManager)
+- **MapRenderer Bridge**: Separated visual rendering from logic. `MapManager` exposes `IMapData` via a `GameManager` Godot Singleton. `MapRenderer` reads this data and applies mapping using Godot features.
+- **Batching with TerrainConnect**: To leverage Godot 4's "Match Corners and Sides" organically, tile arrays (`List<Vector2I>`) are built per tile type (Ground, Elevation) and fed into `SetCellsTerrainConnect()` in batches.
+- **Depth Sorting via Scene Tree**: Placed `FoamWaterTileMap` below `GroundTileMap` in `map_1.tscn` to visually ensure splash effects peak from underneath the overlapping ground tiles.
