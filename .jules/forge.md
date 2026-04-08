@@ -17,3 +17,7 @@
 - **Inventory & Signal Management Godot Interop**: Implemented OnResourceSpent using Core WeakEvents mapping to Godot Singletons. Godot Singleton acts as the glue. InteractionScripts can use the Key inputs to simulate UI upgrades temporarily while we map it to Player StatManager directly.
 - **Dynamic Godot UI creation**: Created an interactive UI popup in `InteractionScript.cs` using Godot's built-in UI components (`CanvasLayer`, `Panel`, `VBoxContainer`, `Button`). The UI reacts strictly to player body entries into `Area2D` and handles button presses using lambda actions.
 - **Stat upgrade isolation via Signals**: Stats upgrades are kept modular by emitting `StatUpgradePurchased` instead of tightly coupling the base Interaction script to the `StatManager`. The Godot `SignalManager` simply proxies the `Core` logic.
+
+## Procedural Map Generation (Date: 2024-05-18)
+- Architecture Note: We used a hybrid approach where `IMapGenerator` is defined in Core, but its concrete implementation `GodotIslandGenerator` resides in the Godot project (`IslandSurvivor`). This allowed us to leverage `FastNoiseLite` without breaking the strict N-Tier independence of the Core.
+- Data Bridge: The Core generator logic uses standard string constants (`"Water"`, `"Ground"`) which are passed to the client. The Godot scene translates these pure strings into `Vector2I` Atlas coordinates for `TileMapLayer`, keeping rendering completely separated from business logic.
