@@ -1,0 +1,39 @@
+namespace Core.Managers;
+
+using System;
+using Core.Interfaces;
+
+public class ShopManager : IShopManager
+{
+    public int CalculateCost(int p_upgradeCount)
+    {
+        // Cost scaling: 1, 3, 7, 15... (2^(n+1) - 1)
+        return (int)Math.Pow(2, p_upgradeCount + 1) - 1;
+    }
+
+    public bool CanAffordUpgrade(IInventoryManager p_inventoryManager, string p_resourceId, int p_cost)
+    {
+        if (p_inventoryManager == null || string.IsNullOrEmpty(p_resourceId))
+        {
+            return false;
+        }
+
+        int currentAmount = p_inventoryManager.GetMaterialCount(p_resourceId);
+        return currentAmount >= p_cost;
+    }
+
+    public bool CanAffordIsland(IInventoryManager p_inventoryManager, int p_cost)
+    {
+        if (p_inventoryManager == null)
+        {
+            return false;
+        }
+
+        int meatCount = p_inventoryManager.GetMaterialCount("Viande");
+        int woodCount = p_inventoryManager.GetMaterialCount("Bois");
+        int rockCount = p_inventoryManager.GetMaterialCount("Roche");
+        int goldCount = p_inventoryManager.GetMaterialCount("Or");
+
+        return meatCount >= p_cost && woodCount >= p_cost && rockCount >= p_cost && goldCount >= p_cost;
+    }
+}

@@ -26,3 +26,14 @@
     *   Implemented standard transaction tests (adding, removing, querying counts, getting all slots).
     *   Implemented edge/limit case tests (null items, empty ids, negative amounts, removing non-existent items).
 *   **Decision Reasoning:** The user specifically requested xUnit. No mocking was necessary since `InventoryManager` only depends on simple domain models (`ResourceItem`, `InventorySlot`). Testing limits and negative numbers ensures robust behavior of the core logic according to N-Tier requirements.
+### 2026-04-02 - [US 4.2] | Implemented resource spending mechanics | AI mapped SignalManager for OnResourceSpent in Core and Godot, updated InventoryNode to deduct resources, and made InteractionScript handle key events to consume resources and increase Player stats. | Chose to map keys 1-5 in InteractionScript temporarily until UI is present. Updated ISignalManager and Godot wrapper to emit resource spend events safely.
+
+### 2026-04-02 - [User Story 4.2] | Dépenser les ressources | Refactored spending logic to IShopManager, created UI panel for purchases, updated signal architecture for stat upgrades | Decision Reasoning
+*   **Request:** Implement the base UI buttons to spend resources (Meat, Wood, Rock, Gold) to upgrade stats (Health, Speed, Attack, Luck) and purchase new islands. Ensure the stats script listens to a signal to increase stats instead of direct coupling. Write unit tests to verify.
+*   **AI Contribution:**
+    *   Created `IShopManager` and `ShopManager` in `Src/Core` to handle resource validation and cost scaling, keeping Godot logic clean.
+    *   Wrote xUnit tests in `Tests/UnitTests/Managers/ShopManagerTests.cs` to test all scaling and purchasing permutations.
+    *   Added `StatUpgradePurchased` event in `ISignalManager` and implemented it in both `Core` and `Godot` singletons.
+    *   Updated `StatManager.cs` to listen to `StatUpgradePurchased` and automatically apply `AddPermanentBonus`.
+    *   Refactored `InteractionScript.cs` to dynamically generate a `CanvasLayer` with UI `Button`s for the shop, removing the hardcoded keyboard keys.
+*   **Decision Reasoning:** By creating `IShopManager`, we extract the business logic of scaling prices and validating inventory out of the Godot presentation layer. This aligns perfectly with the N-Tier architecture and enables xUnit tests. Creating the dynamic UI panel directly in the C# `_Ready()` method keeps everything self-contained within the base map interaction logic without requiring a new scene tree configuration. Moving the actual stat upgrade logic to `StatManager` listening to a global signal creates a clean decouple between the base map and the player entity.
