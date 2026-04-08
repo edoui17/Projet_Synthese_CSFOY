@@ -1,23 +1,23 @@
 [gd_scene format=4 uid="uid://5kp0j31xrejs"]
 
-[ext_resource type="Texture2D" uid="uid://d3fwwthhwp32k" path="res://Assets/TinySwords/Terrain/Tileset/Water Background color.png" id="1_2tg1r"]
-[ext_resource type="Texture2D" uid="uid://c48sxjc4lwebv" path="res://Assets/TinySwords/Terrain/Tileset/Water Foam.png" id="2_orapn"]
-[ext_resource type="Texture2D" uid="uid://cyf2vblpr7wh4" path="res://Assets/TinySwords/Terrain/Rocks in the Water/Water Rocks_01.png" id="3_y3nlw"]
-[ext_resource type="Texture2D" uid="uid://cdn2awmneu3kj" path="res://Assets/TinySwords/Terrain/Tileset/Tilemap_color2.png" id="4_w65le"]
-[ext_resource type="Texture2D" uid="uid://de3kun8575um8" path="res://Assets/TinySwords/Terrain/Tileset/Shadow.png" id="5_5ji3a"]
-[ext_resource type="Texture2D" uid="uid://dt3sv3eylyqx3" path="res://Assets/TinySwords/Terrain/Tileset/Tilemap_color3.png" id="6_s4s1w"]
-[ext_resource type="TileSet" uid="uid://dfvott6gynthm" path="res://Scenes/Ressources/RessourceForBaseMap/ElementsForBaseMap.tres" id="7_blcb8"]
-[ext_resource type="Texture2D" uid="uid://cwo41vnlcdwp" path="res://Assets/TinySwords/Terrain/Clouds/Clouds_01.png" id="8_1hycd"]
-[ext_resource type="Texture2D" uid="uid://dacydjk7yt1ku" path="res://Assets/TinySwords/Terrain/Clouds/Clouds_02.png" id="9_ehjva"]
-[ext_resource type="Texture2D" uid="uid://do1p1ltjyqmg6" path="res://Assets/TinySwords/Terrain/Clouds/Clouds_03.png" id="10_v8u3l"]
-[ext_resource type="Texture2D" uid="uid://cfapab5httfgp" path="res://Assets/TinySwords/Terrain/Clouds/Clouds_05.png" id="11_bls3v"]
-[ext_resource type="Texture2D" uid="uid://ytgkccxb4ik1" path="res://Assets/TinySwords/Terrain/Clouds/Clouds_06.png" id="12_lgeh8"]
-[ext_resource type="Texture2D" uid="uid://cbf0x2d45steq" path="res://Assets/TinySwords/Terrain/Clouds/Clouds_07.png" id="13_6gs35"]
-[ext_resource type="Texture2D" uid="uid://d3dhc1ja483rm" path="res://Assets/TinySwords/Terrain/Clouds/Clouds_08.png" id="14_4tclt"]
-[ext_resource type="Texture2D" uid="uid://d4cbfevai81yc" path="res://Assets/TinySwords/Buildings/Black Buildings/Monastery.png" id="15_7mip7"]
-[ext_resource type="Script" uid="uid://l8eo4gisdwap" path="res://Scenes/HomeMap/InteractionScript.cs" id="16_nilk4"]
-[ext_resource type="Script" uid="uid://bcck2xu2q5syh" path="res://Scenes/HomeMap/Spawn.cs" id="17_2mm7j"]
-[ext_resource type="PackedScene" uid="uid://ge7ibe30caal" path="res://Scenes/HomeMap/player.tscn" id="18_0darg"]
+[ext_resource type="Texture2D" uid="uid://d3fwwthhwp32k" path="res://Assets/TinySwords/Terrain/Tileset/Water Background color.png" id="1_g38my"]
+[ext_resource type="Texture2D" uid="uid://c48sxjc4lwebv" path="res://Assets/TinySwords/Terrain/Tileset/Water Foam.png" id="2_hfx6n"]
+[ext_resource type="Texture2D" uid="uid://cyf2vblpr7wh4" path="res://Assets/TinySwords/Terrain/Rocks in the Water/Water Rocks_01.png" id="3_p1xmv"]
+[ext_resource type="Texture2D" uid="uid://cdn2awmneu3kj" path="res://Assets/TinySwords/Terrain/Tileset/Tilemap_color2.png" id="4_p1xmv"]
+[ext_resource type="Texture2D" uid="uid://de3kun8575um8" path="res://Assets/TinySwords/Terrain/Tileset/Shadow.png" id="5_ej47q"]
+[ext_resource type="Texture2D" uid="uid://dt3sv3eylyqx3" path="res://Assets/TinySwords/Terrain/Tileset/Tilemap_color3.png" id="6_n0ali"]
+[ext_resource type="TileSet" uid="uid://dfvott6gynthm" path="res://Scenes/Ressources/RessourceForBaseMap/ElementsForBaseMap.tres" id="7_t6485"]
+[ext_resource type="Texture2D" uid="uid://d4cbfevai81yc" path="res://Assets/TinySwords/Buildings/Black Buildings/Monastery.png" id="12_j3wwi"]
+[ext_resource type="Texture2D" uid="uid://cwo41vnlcdwp" path="res://Assets/TinySwords/Terrain/Clouds/Clouds_01.png" id="13_36e7r"]
+[ext_resource type="Texture2D" uid="uid://dacydjk7yt1ku" path="res://Assets/TinySwords/Terrain/Clouds/Clouds_02.png" id="14_f8k51"]
+[ext_resource type="Texture2D" uid="uid://do1p1ltjyqmg6" path="res://Assets/TinySwords/Terrain/Clouds/Clouds_03.png" id="15_kd5hk"]
+[ext_resource type="Texture2D" uid="uid://cfapab5httfgp" path="res://Assets/TinySwords/Terrain/Clouds/Clouds_05.png" id="16_momq0"]
+[ext_resource type="Script" uid="uid://l8eo4gisdwap" path="res://Scenes/BaseMap/InteractionScript.cs" id="16_usjv8"]
+[ext_resource type="Texture2D" uid="uid://ytgkccxb4ik1" path="res://Assets/TinySwords/Terrain/Clouds/Clouds_06.png" id="17_fsya4"]
+[ext_resource type="Texture2D" uid="uid://cbf0x2d45steq" path="res://Assets/TinySwords/Terrain/Clouds/Clouds_07.png" id="18_dttrb"]
+[ext_resource type="Script" uid="uid://bcck2xu2q5syh" path="res://Scenes/BaseMap/Spawn.cs" id="18_ne6mt"]
+[ext_resource type="Texture2D" uid="uid://d3dhc1ja483rm" path="res://Assets/TinySwords/Terrain/Clouds/Clouds_08.png" id="19_q7qh4"]
+[ext_resource type="PackedScene" uid="uid://cqo7rlgy61vfa" path="res://Scenes/Player/Player.tscn" id="21_6r8yr"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_t6485"]
 texture = ExtResource("1_2tg1r")
@@ -410,7 +410,7 @@ sources/5 = SubResource("TileSetAtlasSource_q7qh4")
 sources/6 = SubResource("TileSetAtlasSource_exhti")
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_t6485"]
-radius = 118.15244
+radius = 78.72102
 
 [node name="BaseMapIsland" type="Node2D" unique_id=468228307]
 y_sort_enabled = true
