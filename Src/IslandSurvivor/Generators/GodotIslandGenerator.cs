@@ -29,8 +29,12 @@ public class GodotIslandGenerator : IMapGenerator
                 // GetNoise2D returns values from -1 to 1
                 float noiseValue = m_noise.GetNoise2D(x, y);
 
-                // Base threshold for ground vs water
-                if (noiseValue > 0.0f)
+                // Base threshold for ground vs water, and plateau threshold
+                if (noiseValue > 0.4f)
+                {
+                    mapData.SetTile(x, y, TileTypeConstants.PLATEAU);
+                }
+                else if (noiseValue > 0.0f)
                 {
                     mapData.SetTile(x, y, TileTypeConstants.GROUND);
                 }
@@ -81,8 +85,11 @@ public class GodotIslandGenerator : IMapGenerator
             }
         }
 
-        // 2. Ensure connected landmass (Flood Fill / BFS)
-        // Find a starting point near the center that is GROUND
+        // 2. Generate Cliffs and Stairs for Plateaus
+        GenerateCliffsAndStairs(p_mapData);
+
+        // 3. Ensure connected landmass (Flood Fill / BFS)
+        // Find a starting point near the center that is GROUND or STAIRS
         (int startX, int startY) = FindCentralGroundTile(p_mapData, centerX, centerY);
 
         if (startX == -1)
@@ -114,23 +121,154 @@ public class GodotIslandGenerator : IMapGenerator
 
                 if (nx >= 0 && nx < width && ny >= 0 && ny < height)
                 {
-                    if (!visited[nx, ny] && p_mapData.GetTile(nx, ny) == TileTypeConstants.GROUND)
+                    if (!visited[nx, ny])
                     {
-                        visited[nx, ny] = true;
-                        queue.Enqueue((nx, ny));
+                        string tile = p_mapData.GetTile(nx, ny);
+                        if (tile == TileTypeConstants.GROUND || tile == TileTypeConstants.STAIRS || tile == TileTypeConstants.PLATEAU)
+                        {
+                            visited[nx, ny] = true;
+                            queue.Enqueue((nx, ny));
+                        }
                     }
                 }
             }
         }
 
-        // 3. Remove unconnected ground tiles
+        // 4. Remove unconnected ground/plateau/stairs/cliff tiles
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
             {
-                if (p_mapData.GetTile(x, y) == TileTypeConstants.GROUND && !visited[x, y])
+                string tile = p_mapData.GetTile(x, y);
+                if (tile != TileTypeConstants.WATER && !visited[x, y])
                 {
-                    p_mapData.SetTile(x, y, TileTypeConstants.WATER);
+                    // A cliff adjacent to a visited plateau/stairs/ground is valid, otherwise it's removed
+                    bool adjacentToVisited = false;
+                    if (tile == TileTypeConstants.CLIFF)
+                    {
+                        for (int i = 0; i < 4; i++)
+                        {
+                            int nx = x + dx[i];
+                            int ny = y + dy[i];
+                            if (nx >= 0 && nx < width && ny >= 0 && ny < height && visited[nx, ny])
+                            {
+                                adjacentToVisited = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (!adjacentToVisited)
+                    {
+                        p_mapData.SetTile(x, y, TileTypeConstants.WATER);
+                    }
+                }
+            }
+        }
+    }
+
+    private void GenerateCliffsAndStairs(IMapData p_mapData)
+    {
+        int width = p_mapData.Width;
+        int height = p_mapData.Height;
+        bool[,] plateauVisited = new bool[width, height];
+
+        int[] dx = { 0, 0, 1, -1 };
+        int[] dy = { 1, -1, 0, 0 };
+
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                if (p_mapData.GetTile(x, y) == TileTypeConstants.PLATEAU && !plateauVisited[x, y])
+                {
+                    // Start BFS to find the whole plateau and its borders
+                    List<(int px, int py)> plateauTiles = new List<(int, int)>();
+                    List<(int cx, int cy)> borderTiles = new List<(int, int)>();
+
+                    Queue<(int qx, int qy)> queue = new Queue<(int, int)>();
+                    queue.Enqueue((x, y));
+                    plateauVisited[x, y] = true;
+
+                    while (queue.Count > 0)
+                    {
+                        var curr = queue.Dequeue();
+                        plateauTiles.Add(curr);
+
+                        bool isBorder = false;
+
+                        for (int i = 0; i < 4; i++)
+                        {
+                            int nx = curr.qx + dx[i];
+                            int ny = curr.qy + dy[i];
+
+                            if (nx >= 0 && nx < width && ny >= 0 && ny < height)
+                            {
+                                string neighborTile = p_mapData.GetTile(nx, ny);
+                                if (neighborTile == TileTypeConstants.PLATEAU)
+                                {
+                                    if (!plateauVisited[nx, ny])
+                                    {
+                                        plateauVisited[nx, ny] = true;
+                                        queue.Enqueue((nx, ny));
+                                    }
+                                }
+                                else if (neighborTile == TileTypeConstants.GROUND)
+                                {
+                                    isBorder = true;
+                                }
+                            }
+                        }
+
+                        if (isBorder)
+                        {
+                            borderTiles.Add(curr);
+                        }
+                    }
+
+                    // Turn all borders of this plateau into CLIFF
+                    foreach (var border in borderTiles)
+                    {
+                        p_mapData.SetTile(border.cx, border.cy, TileTypeConstants.CLIFF);
+                    }
+
+                    // Ensure at least one STAIRS access
+                    if (borderTiles.Count > 0)
+                    {
+                        // To make it simple, pick the first border tile that is adjacent to GROUND and turn it to STAIRS
+                        foreach (var border in borderTiles)
+                        {
+                            bool hasGroundAdjacent = false;
+                            for (int i = 0; i < 4; i++)
+                            {
+                                int nx = border.cx + dx[i];
+                                int ny = border.cy + dy[i];
+                                if (nx >= 0 && nx < width && ny >= 0 && ny < height)
+                                {
+                                    if (p_mapData.GetTile(nx, ny) == TileTypeConstants.GROUND)
+                                    {
+                                        hasGroundAdjacent = true;
+                                        break;
+                                    }
+                                }
+                            }
+
+                            if (hasGroundAdjacent)
+                            {
+                                p_mapData.SetTile(border.cx, border.cy, TileTypeConstants.STAIRS);
+                                break; // Only need one stair per plateau (can be more, but one guarantees access)
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // Completely isolated plateau (no ground adjacent). Turn entirely to water or ground.
+                        // Here we just turn it back to ground.
+                        foreach (var pt in plateauTiles)
+                        {
+                            p_mapData.SetTile(pt.px, pt.py, TileTypeConstants.GROUND);
+                        }
+                    }
                 }
             }
         }

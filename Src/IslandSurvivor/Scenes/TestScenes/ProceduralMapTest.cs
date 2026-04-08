@@ -15,6 +15,7 @@ public partial class ProceduralMapTest : Node2D
     private LineEdit m_seedLineEdit;
     private TileMapLayer m_groundTileMap;
     private TileMapLayer m_waterTileMap;
+    private TileMapLayer m_elevationTileMap;
     private ColorRect m_playerMarker;
 
     public override void _Ready()
@@ -34,6 +35,7 @@ public partial class ProceduralMapTest : Node2D
         // The map_1.tscn instances a few TileMapLayers
         m_groundTileMap = GetNode<TileMapLayer>("MapContainer/Map1/GroundTileMap");
         m_waterTileMap = GetNode<TileMapLayer>("MapContainer/Map1/WaterTileMap");
+        m_elevationTileMap = GetNode<TileMapLayer>("MapContainer/Map1/ElevetionTileMap");
 
         // Generate initial map
         GenerateAndDrawMap(12345);
@@ -63,10 +65,16 @@ public partial class ProceduralMapTest : Node2D
         // Clear existing maps
         m_groundTileMap.Clear();
         m_waterTileMap.Clear();
+        m_elevationTileMap.Clear();
 
         // Tile constants based on map_1.tscn
         // Water is TileSet 0 in WaterTileMap. Coordinates: (0,0) (Atlas source 0)
         // Ground is TileSet 0 in GroundTileMap. Coordinates: (0,3) for standard ground (Atlas source 0)
+        // ElevetionTileMap has ID 1 for its source.
+        // We'll use rough coordinates for demonstration:
+        // Plateau -> Elevation: Atlas 1, Coords: (6,2)
+        // Cliff -> Elevation: Atlas 1, Coords: (7,1) (or some vertical cliff coordinate)
+        // Stairs -> Elevation: Atlas 1, Coords: (5,4)
 
         for (int x = 0; x < mapWidth; x++)
         {
@@ -77,13 +85,29 @@ public partial class ProceduralMapTest : Node2D
 
                 if (tileType == TileTypeConstants.GROUND)
                 {
-                    // Draw ground
                     m_groundTileMap.SetCell(cellPos, 0, new Vector2I(0, 3));
                 }
                 else if (tileType == TileTypeConstants.WATER)
                 {
-                    // Draw water
                     m_waterTileMap.SetCell(cellPos, 0, new Vector2I(0, 0));
+                }
+                else if (tileType == TileTypeConstants.PLATEAU)
+                {
+                    // Draw plateau over ground
+                    m_groundTileMap.SetCell(cellPos, 0, new Vector2I(0, 3));
+                    m_elevationTileMap.SetCell(cellPos, 1, new Vector2I(6, 2));
+                }
+                else if (tileType == TileTypeConstants.CLIFF)
+                {
+                    // Draw cliff over ground
+                    m_groundTileMap.SetCell(cellPos, 0, new Vector2I(0, 3));
+                    m_elevationTileMap.SetCell(cellPos, 1, new Vector2I(7, 1));
+                }
+                else if (tileType == TileTypeConstants.STAIRS)
+                {
+                    // Draw stairs over ground
+                    m_groundTileMap.SetCell(cellPos, 0, new Vector2I(0, 3));
+                    m_elevationTileMap.SetCell(cellPos, 1, new Vector2I(5, 4));
                 }
             }
         }

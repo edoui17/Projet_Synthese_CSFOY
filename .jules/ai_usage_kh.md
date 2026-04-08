@@ -10,3 +10,8 @@
 | **Request** | **AI Contribution** | **Decision Reasoning** |
 | :--- | :--- | :--- |
 | Implement procedural island generation using N-Tier architecture. | Designed `IMapData`, `IMapGenerator`, `ISpawnLocator` interfaces in Core. Implemented `GodotIslandGenerator` utilizing `FastNoiseLite` and a BFS flood fill for land connection. Created a test scene demonstrating the Godot-Core translation. | Godot specific functionality (like Noise generation) was implemented strictly on the Godot client side via Dependency Inversion. Standard primitive strings were chosen for the Godot-Core bridge to keep the Core independent of Godot Tilemaps. |
+
+### 2024-05-18 - [US 3.1: Procedural Map Generation - Elevation]
+| **Request** | **AI Contribution** | **Decision Reasoning** |
+| :--- | :--- | :--- |
+| Implement Plateaus, Cliffs, and Stairs to Map Generation. Ensure connectivity. | Updated `TileTypeConstants`. Overhauled `GodotIslandGenerator` to apply a second threshold for plateaus, trace borders to make cliffs, and inject stairs. Updated BFS to consider plateaus/stairs as walkable. Updated `ProceduralMapTest` to draw these onto `ElevationTileMap`. | A multi-pass approach (noise -> borders -> connectivity) was best to guarantee constraints. By mapping these directly to `ElevationTileMap` using ID 1, we effectively layered visuals exactly as requested in `map_1.tscn` without making the generator aware of Godot layers. |

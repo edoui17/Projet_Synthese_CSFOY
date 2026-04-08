@@ -21,3 +21,8 @@
 ## Procedural Map Generation (Date: 2024-05-18)
 - Architecture Note: We used a hybrid approach where `IMapGenerator` is defined in Core, but its concrete implementation `GodotIslandGenerator` resides in the Godot project (`IslandSurvivor`). This allowed us to leverage `FastNoiseLite` without breaking the strict N-Tier independence of the Core.
 - Data Bridge: The Core generator logic uses standard string constants (`"Water"`, `"Ground"`) which are passed to the client. The Godot scene translates these pure strings into `Vector2I` Atlas coordinates for `TileMapLayer`, keeping rendering completely separated from business logic.
+
+## Procedural Elevation Constraints (Date: 2024-05-18)
+- Added new geographical elements to the Generator: Plateaus, Cliffs, and Stairs.
+- To maintain accessibility and avoid floating plateaus, we use a BFS algorithm to discover the borders of a plateau threshold and mark them as Cliffs. We then guarantee access by flipping at least one adjacent ground cliff tile to a Stairs tile.
+- Connectedness is verified for Ground, Plateau, and Stair tiles combined, ensuring the entire island remains traversable.
