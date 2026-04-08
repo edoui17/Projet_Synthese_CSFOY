@@ -98,13 +98,16 @@ public partial class Sheep : CharacterBody2D, INpc, IDamageable
         // to the OnDeath event easily without custom args, we can just assume any death drops it to inventory for now,
         // or we could track the last attacker. Let's create the meat.
 
+        // Generate random meat amount between 1 and 5
+        int meatAmount = GD.RandRange(1, 5);
+
         // Emitting the signal directly to inventory via SignalManager
         ResourceItem meatResource = new ResourceItem("meat", "Viande de Mouton", "Food", "res://Assets/Images/meat.png");
 
         if (SignalManager.Instance != null)
         {
-            SignalManager.Instance.EmitMaterialDestroyed(this, meatResource, 1);
-            GD.Print("Sheep died. Sent 1 meat to inventory.");
+            SignalManager.Instance.EmitMaterialDestroyed(this, meatResource, meatAmount);
+            GD.Print($"Sheep died. Sent {meatAmount} meat to inventory.");
         }
         else
         {
