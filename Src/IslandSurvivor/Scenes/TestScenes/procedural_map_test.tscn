@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3 uid="uid://cxab3x2d45"]
+[gd_scene format=3 uid="uid://cxab3x2d45"]
 
 [ext_resource type="Script" path="res://Scenes/TestScenes/ProceduralMapTest.cs" id="1_test"]
 [ext_resource type="PackedScene" uid="uid://dq7i2c1lyiu06" path="res://Scenes/MapAJoue/map_1.tscn" id="2_map"]

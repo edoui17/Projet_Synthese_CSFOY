@@ -273,7 +273,6 @@ hframes = 8
 frame = 1
 
 [node name="PlayerHitBox" type="CollisionShape2D" parent="." unique_id=86017915]
-visible = false
 position = Vector2(0, 4)
 shape = SubResource("CapsuleShape2D_h54ih")
 
