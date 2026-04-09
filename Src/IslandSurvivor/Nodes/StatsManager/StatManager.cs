@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Godot;
 using Core.Interfaces.Stats;
+using Core.Interfaces;
 using Core.Managers.Stats;
 using IslandSurvivor.Resources;
 
@@ -29,6 +30,8 @@ public partial class StatManager : Node
     public override void _Ready()
     {
         base._Ready();
+
+        SignalManager.Instance.OnStatUpgradePurchased.AddListener(OnStatUpgradePurchased);
 
         if (m_baseStatsResource != null)
         {
@@ -80,11 +83,22 @@ public partial class StatManager : Node
         EmitSignal(SignalName.StatChanged, (int)p_args.StatType, p_args.CurrentValue, p_args.EffectiveMaxValue);
     }
 
+    private void OnStatUpgradePurchased(object? p_sender, ISignalManager.StatUpgradePurchasedEventArgs p_args)
+    {
+        // Each upgrade adds +1 permanent bonus to the stat
+        AddPermanentBonus(p_args.StatType, 1f);
+        GD.Print($"[StatManager] Received StatUpgradePurchased for {p_args.StatType}. Adding +1 permanent bonus.");
+    }
+
     protected override void Dispose(bool p_disposing)
     {
         if (p_disposing && m_statTracker != null)
         {
             m_statTracker.OnAnyStatChanged.RemoveListener(OnCoreStatChanged);
+            if (SignalManager.Instance != null)
+            {
+                SignalManager.Instance.OnStatUpgradePurchased.RemoveListener(OnStatUpgradePurchased);
+            }
         }
         base.Dispose(p_disposing);
     }

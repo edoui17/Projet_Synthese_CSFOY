@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://cwdf5881am4rs"]
+
+[ext_resource type="Script" uid="uid://bc310yy7g0dho" path="res://Nodes/ScoreManager/ScoreManager.cs" id="1_15khw"]
+[ext_resource type="Resource" uid="uid://dmncnfktt6ldb" path="res://Resources/Stats/Session/DefaultSession.tres" id="2_cjy1r"]
+
+[node name="ScoreManager" type="Node2D" unique_id=961556133]
+script = ExtResource("1_15khw")
+SessionResource = ExtResource("2_cjy1r")

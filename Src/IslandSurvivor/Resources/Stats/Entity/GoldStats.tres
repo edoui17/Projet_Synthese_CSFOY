@@ -1,6 +1,10 @@
 [gd_resource type="Resource" script_class="EntityStats" format=3 uid="uid://dokxws5co3xt0"]
 
+<<<<<<< HEAD:Src/IslandSurvivor/Resources/Stats/GoldStats.tres
 [ext_resource type="Script" path="res://Resources/Stats/EntityStats.cs" id="1_vspx4"]
+=======
+[ext_resource type="Script" uid="uid://d0614em0lx15v" path="res://Resources/Stats/Entity/EntityStats.cs" id="1_vspx4"]
+>>>>>>> 84b5df43ef3b6431eb6cca35083940771fa91dc4:Src/IslandSurvivor/Resources/Stats/Entity/GoldStats.tres
 
 
 [resource]

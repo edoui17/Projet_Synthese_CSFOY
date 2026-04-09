@@ -1,14 +1,21 @@
 [gd_scene format=3 uid="uid://ge7ibe30caal"]
 
-[ext_resource type="Script" uid="uid://cflook6p7o4ju" path="res://Scenes/BaseMap/CharacterBody2d.cs" id="1_3b2fw"]
+[ext_resource type="Script" uid="uid://cflook6p7o4ju" path="res://Scenes/HomeMap/CharacterBody2d.cs" id="1_3b2fw"]
 [ext_resource type="Texture2D" uid="uid://b5fg1af3ipgop" path="res://Assets/TinySwords/Sprites/Pawn/Purple/Pawn_Idle Axe.png" id="2_v4trc"]
+[ext_resource type="PackedScene" uid="uid://biqhbrp7fjfyj" path="res://Nodes/StatsManager/StatsManager.tscn" id="3_stats"]
+
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_4nnh0"]
 radius = 20.22375
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_3b2fw"]
+radius = 67.06713
+
 [node name="CharacterBody2D" type="CharacterBody2D" unique_id=1340236982]
 motion_mode = 1
 script = ExtResource("1_3b2fw")
+
+[node name="StatsManager" parent="." unique_id=1984218321 instance=ExtResource("3_stats")]
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1774063687]
 texture = ExtResource("2_v4trc")
@@ -18,3 +25,9 @@ hframes = 8
 shape = SubResource("CircleShape2D_4nnh0")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=973213239]
+
+[node name="ToolArea" type="Area2D" parent="." unique_id=235543325 groups=["Tool"]]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ToolArea" unique_id=1587067576]
+position = Vector2(-1, 3)
+shape = SubResource("CircleShape2D_3b2fw")
