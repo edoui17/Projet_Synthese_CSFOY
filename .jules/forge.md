@@ -1,22 +1,42 @@
-# Forge - Architecture & Discovery Log
+# IslandSurvivor - Technical Log
 
-## Architectural Discoveries
-*   **Live State vs Configuration (Resources)**: Godot Resources (`SessionResource.cs`) act purely as initial templates (Source of Truth). The Core (`SessionState.cs`) maintains the mutable live state. Changes to the state only occur via Core methods, which then synchronize back to Godot through WeakEvents. This separation enables testing Core logic independently of the Godot engine.
-*   **Dependency Inversion (Save System)**: To keep the Core agnostic of file systems, `ISaveService` is defined in the Core. Implementations like `GodotSaveService` in the IslandSurvivor project leverage platform-specific tools (`FileAccess`, `user://`), injected into Core managers (`ScoreTracker`) during initialization.
-*   **Signal Management Bridge**: Godot's Singleton classes (`SignalManager.cs`) seamlessly wrap Core classes (`SignalManagerCore.cs`). Exposing strongly-typed `WeakEvent` properties natively works in Godot `_Ready()` hooks, creating an airtight boundary between the engine's lifecycle and the Business logic (`Core` tier).
-*   **Dependency Avoidance (Enums)**: To avoid using enums across project bounds, String mappings for `MaterialType` correctly proxy the state of an `InventoryManager` inside `Core` when a `WeakEvent` is raised.
-*   **State Machine Management (Player)**: By defining `PlayerState` in the game project, we ensure that the engine can manage animation and logic blocking based on the character's current activity.
+## Sheep Implementation (US 4.4) - Godot Setup Instructions
 
-## Godot & C# Quirks
-*   **C# Name vs Godot Filenames**: Godot strictly checks `uid` and class names relative to `.tscn` references. If a `.cs` class name mismatches the `script = ExtResource("X")` inside a scene, the Godot editor drops the script. We updated `AutomnTree.tscn` and `ConiferTree.tscn` to fix translation mismatches (`ArbreAutomne` -> `AutomnTree`).
-*   **Collision Multi-hit Abuses**: A common Godot physics quirk occurs when an overlapping body (`"Tool"`) registers multiple frame intersections within an `Area2D`. Starting and validating against a `Timer` instance natively prevents this.
-*   **Physics-Based Interaction Prioritization**: While Godot handles the proximity detection via `Area2D`, the game's `InteractionService` calculates the distance-based priority. This allows for unit testing the "best target" selection without spawning nodes.
+For the implementation of the Sheep (Passive NPC), the core logic has been written in C# following the N-Tier architecture (`HealthComponent`, `SheepController` in `Core`, and `Sheep.cs` in `IslandSurvivor`).
 
-## Inventory Architecture
-*   **Pure Core Domains**: The Core tier cannot parse Godot assets (like `Texture2D`). Therefore, items map their visual components using simple absolute paths (`string IconPath = "res://Assets/..."`). The Godot UI/Client will be responsible for converting this text back into images.
-*   **Singleton Scene Persistence**: To satisfy global variable conditions across scene reloads, the `InventoryNode` Godot class relies on the Engine's Autoload mechanics. Internally, the class leverages static instantiation assignments to maintain its reference over its encapsulated `.NET` implementation (`InventoryManager`).
-### Technical Quirks / Discoveries
-- **Inventory & Signal Management Godot Interop**: Implemented OnResourceSpent using Core WeakEvents mapping to Godot Singletons. Godot Singleton acts as the glue. InteractionScripts can use the Key inputs to simulate UI upgrades temporarily while we map it to Player StatManager directly.
-- **Dynamic Godot UI creation**: Created an interactive UI popup in `InteractionScript.cs` using Godot's built-in UI components (`CanvasLayer`, `Panel`, `VBoxContainer`, `Button`). The UI reacts strictly to player body entries into `Area2D` and handles button presses using lambda actions.
-- **Stat upgrade isolation via Signals**: Stats upgrades are kept modular by emitting `StatUpgradePurchased` instead of tightly coupling the base Interaction script to the `StatManager`. The Godot `SignalManager` simply proxies the `Core` logic.
-- **Combat Interaction Pattern**: Implemented a decoupled combat system using `IAttackable`. The `Player` detects `IAttackable` nodes via a dedicated weapon `Area2D` during the `ATTACK` animation frames. This separates combat from the general proximity-based `IInteractable` system.
+### How to configure `Sheep.tscn` in Godot:
+
+1. **Create the Scene:**
+   - Create a new Scene with a `CharacterBody2D` as the Root Node.
+   - Rename the root node to `Sheep`.
+   - Save the scene as `Sheep.tscn` in `Src/IslandSurvivor/Nodes/Entities/` (or your preferred Scenes folder).
+
+2. **Add Child Nodes:**
+   - Add a `Sprite2D` node. Assign a sheep texture to it.
+   - Add a `CollisionShape2D` node. Assign a shape (like a `CapsuleShape2D` or `CircleShape2D`) that fits the sprite.
+   - Add a `NavigationAgent2D` node. This is required by `Sheep.cs` (although currently for fleeing we use vector math + MoveAndSlide, having the node prepares for future pathfinding integrations and avoids errors).
+
+3. **Attach the Script:**
+   - Select the `Sheep` root node.
+   - Attach the `Src/IslandSurvivor/Nodes/Entities/Sheep.cs` script to it.
+
+4. **Configure Export Variables (Inspector):**
+   - Click on the `Sheep` node. In the Inspector, under the `Sheep` script section:
+     - `NpcType`: Leave as "Passive".
+     - `IdleSpeed`: Adjust as desired (default is 30.0).
+     - `FleeSpeed`: Adjust as desired (default is 120.0).
+     - `MaxHealth`: Set the sheep's HP (default is 3).
+
+5. **Collision & Layers:**
+   - Make sure the `CharacterBody2D` is set to the correct Collision Layer (e.g., an "Enemy/NPC" layer) and masks the "World" layer so it collides with trees and rocks during `MoveAndSlide()`.
+   - Ensure your Player's weapon/attack logic can detect this layer and call the `TakeDamage(int amount, object attacker)` method on the Sheep when hitting it.
+
+6. **Signals (Inventory):**
+   - No Godot GUI signals need to be manually connected for the inventory.
+   - The C# script automatically emits the `SignalManager.Instance.EmitMaterialDestroyed(...)` event upon death.
+   - Ensure the global `InventoryNode` and `SignalManager` AutoLoads are running in your project so the inventory receives the "Meat" resource.
+
+### Technical Quirks Addressed
+- **Enums Avoided:** Used static string constants (`SheepStates`) instead of enums.
+- **Interfaces First:** Created `INpc`, `IDamageable`, and `IHealthComponent` before implementation.
+- **Decoupled Logic:** The Flee calculations and Timers run in pure C# (`SheepController`) without relying on the Godot `_Process` delta directly inside the node (the node just passes the delta down).
