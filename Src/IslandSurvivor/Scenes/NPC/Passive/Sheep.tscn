@@ -3,6 +3,8 @@
 [ext_resource type="Texture2D" uid="uid://c7q4wps0c7vh1" path="res://Assets/TinySwords/Decorations/Sheep/HappySheep_Bouncing.png" id="1_b5sgu"]
 [ext_resource type="Script" uid="uid://fvn22w5rptq7" path="res://Scenes/NPC/Passive/Sheep.cs" id="1_d7b5k"]
 [ext_resource type="Texture2D" uid="uid://bhauap76rg7mv" path="res://Assets/TinySwords/Decorations/Sheep/HappySheep_Idle.png" id="2_d7b5k"]
+[ext_resource type="PackedScene" uid="uid://biqhbrp7fjfyj" path="res://Nodes/StatsManager/StatsManager.tscn" id="4_cdkpw"]
+[ext_resource type="Resource" uid="uid://baaektliv15bg" path="res://Resources/Stats/Entity/SheepStats.tres" id="5_ifvjj"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_5jkdo"]
 radius = 21.023796
@@ -152,3 +154,6 @@ autoplay = &"IDLE"
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1421437182]
 texture = ExtResource("2_d7b5k")
 hframes = 8
+
+[node name="StatsManager" parent="." unique_id=1475410971 instance=ExtResource("4_cdkpw")]
+BaseStatsResource = ExtResource("5_ifvjj")
