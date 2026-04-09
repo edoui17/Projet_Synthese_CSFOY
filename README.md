@@ -94,3 +94,17 @@ Pour assurer la stabilité du projet, nous appliquons une approche de **tests au
 **Antoine Masson** - Étudiant en programmation au Cégep de Sainte-Foy.<br>
 **Delphine Martin** - Étudiante en programmation au Cégep de Sainte-Foy.<br>
 **Charles-Phillipe Warren** - Étudiant en programmation au Cégep de Sainte-Foy.
+---
+
+## Technical Information: NPC Entities
+
+In IslandSurvivor, NPCs are separated into two distinct types logically:
+* **Passive** (e.g., Sheep)
+* **Hostile** (e.g., Enemies)
+
+### Sheep (Passive) & Resource Looting
+The Sheep is a passive entity that roams the island idly. When it takes damage from the player or any node, its `SheepController.cs` logic triggers a "Flee" state, which makes it move faster in the opposite direction of the attacker.
+
+Upon death, the loot (Meat) is distributed **directly to the global inventory system**. The Sheep uses the `SignalManager.Instance.EmitMaterialDestroyed(...)` method to send the `ResourceItem` data (amount and type) up to the Godot Event Bus. The `InventoryNode` automatically detects this signal and processes the loot, meaning there is no loose drop left on the floor.
+
+(Addendum): The Sheep loot generation verifies if the attacker was the Player (via group check "Player") before instantiating and adding exactly 1 meat item, thus preventing the economy from breaking due to environmental deaths or non-player damage. Additionally, NavigationAgent2D has been wired up to compute valid velocities ensuring safe obstacle avoidance.
