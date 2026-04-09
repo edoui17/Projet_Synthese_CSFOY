@@ -157,3 +157,6 @@ hframes = 8
 
 [node name="StatsManager" parent="." unique_id=1475410971 instance=ExtResource("4_cdkpw")]
 BaseStatsResource = ExtResource("5_ifvjj")
+
+[node name="NavigationAgent2D" type="NavigationAgent2D" parent="." unique_id=1042935962]
+avoidance_enabled = true
