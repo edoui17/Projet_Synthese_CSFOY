@@ -15,15 +15,19 @@ run/main_scene="uid://b30l21wvemtmp"
 config/features=PackedStringArray("4.6", "C#", "Mobile")
 config/icon="res://icon.svg"
 
+[audio]
+
+buses/default_bus_layout="uid://dr80y288fhe65"
+
 [autoload]
 
+MusicPlayer="*uid://cmbtn736rnfhu"
 SignalManager="*res://Globals/SignalManager.cs"
 GameManager="*res://Globals/GameManager.cs"
 
 [display]
 
-window/size/viewport_width=1920
-window/size/viewport_height=1080
+window/size/mode=1
 
 [dotnet]
 
@@ -31,6 +35,8 @@ project/assembly_name="IslandSurvivor"
 
 [global_group]
 
+Inventory=""
+InventorySelectHighligther=""
 Tool=""
 
 [input]

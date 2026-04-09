@@ -1,0 +1,67 @@
+[gd_scene format=3 uid="uid://du6mrtfohbxi8"]
+
+[ext_resource type="Script" uid="uid://c0gym4pjyd031" path="res://Scenes/GameMaterialsPlanner/MaterialsMenuPlanner.cs" id="1_4tgk7"]
+
+[node name="GameMaterialControl" type="Control" unique_id=1530430602]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_4tgk7")
+
+[node name="PanelContainer" type="PanelContainer" parent="." unique_id=24578957]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -199.5
+offset_top = -172.0
+offset_right = 199.5
+offset_bottom = 172.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer" unique_id=13741765]
+layout_mode = 2
+theme_override_constants/separation = 15
+
+[node name="MaterialPlannerLabel" type="Label" parent="PanelContainer/VBoxContainer" unique_id=597038513]
+layout_mode = 2
+theme_override_font_sizes/font_size = 35
+text = "Material Planner"
+horizontal_alignment = 1
+
+[node name="BuyHealthBtn" type="Button" parent="PanelContainer/VBoxContainer" unique_id=1260937566]
+layout_mode = 2
+theme_override_font_sizes/font_size = 26
+text = "Buy Health (Cost Viande)"
+
+[node name="BuySpeedBtn" type="Button" parent="PanelContainer/VBoxContainer" unique_id=1675163305]
+layout_mode = 2
+theme_override_font_sizes/font_size = 26
+text = "Buy Speed (Cost Bois)"
+
+[node name="BuyAttackBtn" type="Button" parent="PanelContainer/VBoxContainer" unique_id=427082887]
+layout_mode = 2
+theme_override_font_sizes/font_size = 26
+text = "Buy Attack (Cost Roche)"
+
+[node name="BuyLuckBtn" type="Button" parent="PanelContainer/VBoxContainer" unique_id=1579585752]
+layout_mode = 2
+theme_override_font_sizes/font_size = 26
+text = "Buy Luck (Cost Or)"
+
+[node name="BuyNextIslandBtn" type="Button" parent="PanelContainer/VBoxContainer" unique_id=1633728779]
+layout_mode = 2
+theme_override_font_sizes/font_size = 26
+text = "Buy next island (Cost 1 of each)"
+
+[connection signal="pressed" from="PanelContainer/VBoxContainer/BuyHealthBtn" to="." method="_on_buy_health_btn_pressed"]
+[connection signal="pressed" from="PanelContainer/VBoxContainer/BuySpeedBtn" to="." method="_on_buy_speed_btn_pressed"]
+[connection signal="pressed" from="PanelContainer/VBoxContainer/BuyAttackBtn" to="." method="_on_buy_attack_btn_pressed"]
+[connection signal="pressed" from="PanelContainer/VBoxContainer/BuyLuckBtn" to="." method="_on_buy_luck_btn_pressed"]
+[connection signal="pressed" from="PanelContainer/VBoxContainer/BuyNextIslandBtn" to="." method="_on_buy_next_island_btn_pressed"]
