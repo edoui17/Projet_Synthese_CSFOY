@@ -10,8 +10,7 @@ public partial class InteractionScript : Area2D
     private Node m_playerNode = null;
 
     // UI elements
-    private CanvasLayer m_uiLayer;
-    private Panel m_shopPanel;
+    [Export] private Control m_uiLayer;
 
     // Progression variables to manage cost scaling
     private int m_healthUpgradeCount = 0;
@@ -28,54 +27,7 @@ public partial class InteractionScript : Area2D
 
         m_shopManager = new Core.Managers.ShopManager();
 
-        CreateUI();
-    }
-
-    private void CreateUI()
-    {
-        m_uiLayer = new CanvasLayer();
         m_uiLayer.Visible = false;
-        AddChild(m_uiLayer);
-
-        m_shopPanel = new Panel();
-        m_shopPanel.SetAnchorsPreset(Control.LayoutPreset.Center);
-        m_shopPanel.CustomMinimumSize = new Vector2(400, 300);
-        m_uiLayer.AddChild(m_shopPanel);
-
-        VBoxContainer vbox = new VBoxContainer();
-        vbox.SetAnchorsPreset(Control.LayoutPreset.FullRect);
-        vbox.AddThemeConstantOverride("separation", 10);
-        m_shopPanel.AddChild(vbox);
-
-        Label title = new Label();
-        title.Text = "Base Shop";
-        title.HorizontalAlignment = HorizontalAlignment.Center;
-        vbox.AddChild(title);
-
-        Button btnHealth = new Button();
-        btnHealth.Text = "Buy Health (Cost: Viande)";
-        btnHealth.Pressed += () => TryPurchaseUpgrade("Viande", StatType.Health, ref m_healthUpgradeCount);
-        vbox.AddChild(btnHealth);
-
-        Button btnSpeed = new Button();
-        btnSpeed.Text = "Buy Speed (Cost: Bois)";
-        btnSpeed.Pressed += () => TryPurchaseUpgrade("Bois", StatType.Speed, ref m_speedUpgradeCount);
-        vbox.AddChild(btnSpeed);
-
-        Button btnAttack = new Button();
-        btnAttack.Text = "Buy Attack (Cost: Roche)";
-        btnAttack.Pressed += () => TryPurchaseUpgrade("Roche", StatType.Attack, ref m_attackUpgradeCount);
-        vbox.AddChild(btnAttack);
-
-        Button btnLuck = new Button();
-        btnLuck.Text = "Buy Luck (Cost: Or)";
-        btnLuck.Pressed += () => TryPurchaseUpgrade("Or", StatType.Luck, ref m_luckUpgradeCount);
-        vbox.AddChild(btnLuck);
-
-        Button btnIsland = new Button();
-        btnIsland.Text = "Buy Next Island (Cost: 1 of each)";
-        btnIsland.Pressed += TryPurchaseIsland;
-        vbox.AddChild(btnIsland);
     }
 
     private void OnBodyEntered(Node p_body)

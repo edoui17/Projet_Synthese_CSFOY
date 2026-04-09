@@ -1,0 +1,92 @@
+[gd_scene format=3 uid="uid://derr2icro3xvq"]
+
+[ext_resource type="Texture2D" uid="uid://cnrtxv4a0g87x" path="res://Assets/TinySwords/Misc/Bars/BigBar_Base.png" id="1_jfwkp"]
+[ext_resource type="Texture2D" uid="uid://cmkra4yvf7oyv" path="res://Assets/TinySwords/Misc/Bars/SmallBar_Base.png" id="2_xi2dn"]
+[ext_resource type="Texture2D" uid="uid://cado6x11tkpt3" path="res://Assets/TinySwords/Misc/Bars/BigBar_Fill.png" id="3_pl14k"]
+[ext_resource type="Texture2D" uid="uid://cjarnmqtbybkq" path="res://Assets/TinySwords/Misc/Bars/SmallBar_Fill.png" id="4_0s7lx"]
+
+[node name="HealthBar" type="Control" unique_id=1024287040]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="BigBarBase" type="Sprite2D" parent="." unique_id=156926897]
+position = Vector2(10, 603)
+texture = ExtResource("1_jfwkp")
+region_enabled = true
+region_rect = Rect2(1.6043701, 0, 62.555717, 64)
+
+[node name="BigBarBase2" type="Sprite2D" parent="." unique_id=2069193976]
+position = Vector2(72, 603)
+texture = ExtResource("1_jfwkp")
+region_enabled = true
+region_rect = Rect2(127.89073, 0, 64.39668, 64)
+
+[node name="BigBarBase3" type="Sprite2D" parent="." unique_id=455126692]
+position = Vector2(135, 603)
+texture = ExtResource("1_jfwkp")
+region_enabled = true
+region_rect = Rect2(127.89073, 0, 64.39668, 64)
+
+[node name="BigBarBase4" type="Sprite2D" parent="." unique_id=2107455311]
+position = Vector2(198, 603)
+texture = ExtResource("1_jfwkp")
+region_enabled = true
+region_rect = Rect2(127.89073, 0, 64.39668, 64)
+
+[node name="BigBarBase5" type="Sprite2D" parent="." unique_id=681983921]
+position = Vector2(261, 603)
+texture = ExtResource("1_jfwkp")
+region_enabled = true
+region_rect = Rect2(127.89073, 0, 64.39668, 64)
+
+[node name="BigBarBase6" type="Sprite2D" parent="." unique_id=1547018751]
+position = Vector2(324, 603)
+texture = ExtResource("1_jfwkp")
+region_enabled = true
+region_rect = Rect2(255.54147, 0, 64.45853, 64)
+
+[node name="SmallBarBase" type="Sprite2D" parent="." unique_id=1795791659]
+position = Vector2(0, 566)
+texture = ExtResource("2_xi2dn")
+region_enabled = true
+region_rect = Rect2(0, 0, 65.95243, 64)
+
+[node name="SmallBarBase2" type="Sprite2D" parent="." unique_id=961305890]
+position = Vector2(62, 566)
+texture = ExtResource("2_xi2dn")
+region_enabled = true
+region_rect = Rect2(127.79899, 0, 64.26006, 64)
+
+[node name="SmallBarBase3" type="Sprite2D" parent="." unique_id=34049032]
+position = Vector2(239, 566)
+texture = ExtResource("2_xi2dn")
+region_enabled = true
+region_rect = Rect2(244.88583, 0, 75.11417, 64)
+
+[node name="SmallBarBase4" type="Sprite2D" parent="." unique_id=1367388711]
+position = Vector2(125, 566)
+texture = ExtResource("2_xi2dn")
+region_enabled = true
+region_rect = Rect2(127.79899, 0, 64.26006, 64)
+
+[node name="SmallBarBase5" type="Sprite2D" parent="." unique_id=619732904]
+position = Vector2(181, 566)
+texture = ExtResource("2_xi2dn")
+region_enabled = true
+region_rect = Rect2(127.79899, 0, 64.26006, 64)
+
+[node name="BigBarFill" type="Sprite2D" parent="." unique_id=178989705]
+position = Vector2(60, 603)
+texture = ExtResource("3_pl14k")
+
+[node name="BigBarFill2" type="Sprite2D" parent="." unique_id=1238562808]
+position = Vector2(123, 603)
+texture = ExtResource("3_pl14k")
+
+[node name="SmallBarFill" type="Sprite2D" parent="." unique_id=2019554085]
+position = Vector2(57, 566)
+texture = ExtResource("4_0s7lx")

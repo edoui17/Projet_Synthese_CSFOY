@@ -19,6 +19,7 @@ public partial class Player : CharacterBody2D
     [Export]  private Label? m_interactionLabel;
     [Export]  private Label? m_debugLabel;
     [Export]  private Area2D? m_interactionArea;
+    [Export]  private Area2D? m_weaponArea;
 
 	private readonly List<IInteractable> m_nearbyInteractables = new();
 	private IInteractable? m_bestTarget;
@@ -38,12 +39,21 @@ public partial class Player : CharacterBody2D
 			m_interactionArea.AreaEntered += OnInteractionAreaEntered;
 			m_interactionArea.AreaExited += OnInteractionAreaExited;
 		}
+
+		if (m_weaponArea != null)
+		{
+			m_weaponArea.AreaEntered += OnWeaponAreaEntered;
+		}
 	}
 
 	public override void _PhysicsProcess(double p_delta)
 	{
-        m_debugLabel.Text = m_currentState.ToString();
-        if (m_currentState == PlayerState.Interacting)
+		if (m_debugLabel != null)
+		{
+			m_debugLabel.Text = m_currentState.ToString();
+		}
+
+		if (m_currentState == PlayerState.Interacting || m_currentState == PlayerState.Attacking)
 		{
 			Velocity = Vector2.Zero;
 			MoveAndSlide();
@@ -58,9 +68,15 @@ public partial class Player : CharacterBody2D
 
 	public override void _Input(InputEvent p_event)
 	{
-		if (p_event.IsActionPressed("interact") && m_bestTarget != null && m_currentState != PlayerState.Interacting)
+		if (m_currentState == PlayerState.Interacting || m_currentState == PlayerState.Attacking) return;
+
+		if (p_event.IsActionPressed("interact") && m_bestTarget != null)
 		{
 			ExecuteInteraction();
+		}
+		else if (p_event.IsActionPressed("attack"))
+		{
+			ExecuteAttack();
 		}
 	}
 
@@ -124,6 +140,24 @@ public partial class Player : CharacterBody2D
 		SetState(PlayerState.Idle);
 	}
 
+	private async void ExecuteAttack()
+	{
+		SetState(PlayerState.Attacking);
+
+		if (m_animationPlayer != null && m_animationPlayer.HasAnimation("ATTACK"))
+		{
+			m_animationPlayer.Play("ATTACK");
+			await ToSignal(m_animationPlayer, AnimationPlayer.SignalName.AnimationFinished);
+		}
+		else
+		{
+			GD.Print("[COMBAT] Attack triggered (no animation found)");
+			await ToSignal(GetTree().CreateTimer(0.4f), SceneTreeTimer.SignalName.Timeout);
+		}
+
+		SetState(PlayerState.Idle);
+	}
+
 	private void UpdateAnimation()
 	{
 		if (m_animationPlayer == null) return;
@@ -157,6 +191,14 @@ public partial class Player : CharacterBody2D
 		if (p_area is IInteractable interactable)
 		{
 			m_nearbyInteractables.Remove(interactable);
+		}
+	}
+
+	private void OnWeaponAreaEntered(Area2D p_area)
+	{
+		if (m_currentState == PlayerState.Attacking && p_area is IAttackable attackable)
+		{
+			attackable.OnAttacked();
 		}
 	}
 }
