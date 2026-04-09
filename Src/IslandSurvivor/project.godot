@@ -24,6 +24,7 @@ buses/default_bus_layout="uid://dr80y288fhe65"
 MusicPlayer="*uid://cmbtn736rnfhu"
 SignalManager="*res://Globals/SignalManager.cs"
 GameManager="*res://Globals/GameManager.cs"
+NavigationManager="*res://Globals/Navigation/NavigationManager.cs"
 
 [display]
 
