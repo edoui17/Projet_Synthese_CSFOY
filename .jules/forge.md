@@ -40,3 +40,5 @@ For the implementation of the Sheep (Passive NPC), the core logic has been writt
 - **Enums Avoided:** Used static string constants (`SheepStates`) instead of enums.
 - **Interfaces First:** Created `INpc`, `IDamageable`, and `IHealthComponent` before implementation.
 - **Decoupled Logic:** The Flee calculations and Timers run in pure C# (`SheepController`) without relying on the Godot `_Process` delta directly inside the node (the node just passes the delta down).
+### Integrating `StatManager` with the Godot Scene Tree
+To meet the requirement to use the N-Tier statistics system, `Sheep.cs` exposes an `[Export] public StatManager Stats { get; set; }` property. Like `Rock.cs`, it requires the user to instantiate the Godot `StatsManager.tscn` as a child node in `Sheep.tscn`, and assign it via the inspector. We also created `SheepStats.tres` which holds the baseline values (`MaxHealth = 3.0`) for the entity so it seamlessly fits into the global Upgrade and Saving mechanics.
