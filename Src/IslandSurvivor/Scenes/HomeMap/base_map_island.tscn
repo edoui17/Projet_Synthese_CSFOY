@@ -12,12 +12,12 @@
 [ext_resource type="Texture2D" uid="uid://dacydjk7yt1ku" path="res://Assets/TinySwords/Terrain/Clouds/Clouds_02.png" id="14_f8k51"]
 [ext_resource type="Texture2D" uid="uid://do1p1ltjyqmg6" path="res://Assets/TinySwords/Terrain/Clouds/Clouds_03.png" id="15_kd5hk"]
 [ext_resource type="Texture2D" uid="uid://cfapab5httfgp" path="res://Assets/TinySwords/Terrain/Clouds/Clouds_05.png" id="16_momq0"]
-[ext_resource type="Script" uid="uid://l8eo4gisdwap" path="res://Scenes/BaseMap/InteractionScript.cs" id="16_usjv8"]
+[ext_resource type="Script" uid="uid://l8eo4gisdwap" path="res://Scenes/HomeMap/InteractionScript.cs" id="16_usjv8"]
 [ext_resource type="Texture2D" uid="uid://ytgkccxb4ik1" path="res://Assets/TinySwords/Terrain/Clouds/Clouds_06.png" id="17_fsya4"]
 [ext_resource type="Texture2D" uid="uid://cbf0x2d45steq" path="res://Assets/TinySwords/Terrain/Clouds/Clouds_07.png" id="18_dttrb"]
-[ext_resource type="Script" uid="uid://bcck2xu2q5syh" path="res://Scenes/BaseMap/Spawn.cs" id="18_ne6mt"]
+[ext_resource type="Script" uid="uid://bcck2xu2q5syh" path="res://Scenes/HomeMap/Spawn.cs" id="18_ne6mt"]
 [ext_resource type="Texture2D" uid="uid://d3dhc1ja483rm" path="res://Assets/TinySwords/Terrain/Clouds/Clouds_08.png" id="19_q7qh4"]
-[ext_resource type="PackedScene" uid="uid://ge7ibe30caal" path="res://Scenes/BaseMap/player.tscn" id="21_6r8yr"]
+[ext_resource type="PackedScene" uid="uid://cqo7rlgy61vfa" path="res://Scenes/Player/Player.tscn" id="21_6r8yr"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_t6485"]
 texture = ExtResource("1_g38my")
@@ -410,7 +410,7 @@ sources/5 = SubResource("TileSetAtlasSource_q7qh4")
 sources/6 = SubResource("TileSetAtlasSource_exhti")
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_t6485"]
-radius = 118.15244
+radius = 78.72102
 
 [node name="BaseMapIsland" type="Node2D" unique_id=468228307]
 y_sort_enabled = true

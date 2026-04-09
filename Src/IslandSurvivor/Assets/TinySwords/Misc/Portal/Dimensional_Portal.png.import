@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c65rsarsxislu"
-path="res://.godot/imported/Pawn_Blue_v2.png-21684562bd23a5a61f4c775d4bb20820.ctex"
+uid="uid://cw1qahb6wf2ft"
+path="res://.godot/imported/Dimensional_Portal.png-ebab9f2c389155bc921eaa47f17ee3cd.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/TinySwords/Sprites/Pawn/Blue/Pawn_Blue_v2.png"
-dest_files=["res://.godot/imported/Pawn_Blue_v2.png-21684562bd23a5a61f4c775d4bb20820.ctex"]
+source_file="res://Assets/TinySwords/Misc/Portal/Dimensional_Portal.png"
+dest_files=["res://.godot/imported/Dimensional_Portal.png-ebab9f2c389155bc921eaa47f17ee3cd.ctex"]
 
 [params]
 
