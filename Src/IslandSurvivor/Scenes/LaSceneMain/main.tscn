@@ -7,6 +7,7 @@
 [node name="Main" type="Node2D" unique_id=431913187]
 
 [node name="BaseMapIsland" parent="." unique_id=468228307 instance=ExtResource("1_dcclg")]
+position = Vector2(-1, 0)
 
 [node name="Portal" parent="." unique_id=1100397267 instance=ExtResource("2_dcclg")]
 position = Vector2(990, 487)
