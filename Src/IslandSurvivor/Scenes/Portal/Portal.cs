@@ -1,15 +1,28 @@
 using Godot;
 using System;
+using Core.Domain.Models;
+using IslandSurvivor.Interfaces;
 
 public partial class Portal : Node2D
 {
-	// Called when the node enters the scene tree for the first time.
+	private AnimationPlayer m_animationPlayer;
+	private PortalInteraction m_interactionArea;
+
 	public override void _Ready()
 	{
+		m_animationPlayer = GetNode<AnimationPlayer>("AnimationPlayer");
+
+		// The InteractionArea child has the script attached now
+		m_interactionArea = GetNode<PortalInteraction>("InteractionArea");
 	}
 
-	// Called every frame. 'delta' is the elapsed time since the previous frame.
-	public override void _Process(double delta)
+	public void ActivatePortal(IslandDestination p_destination)
 	{
+		m_animationPlayer.Play("ACTIVE");
+
+		if (m_interactionArea != null)
+		{
+			m_interactionArea.SetDestination(p_destination);
+		}
 	}
 }

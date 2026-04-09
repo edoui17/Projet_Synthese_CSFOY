@@ -62,4 +62,17 @@ public interface ISignalManager
 
     WeakEvent<StatUpgradePurchasedEventArgs> OnStatUpgradePurchased { get; }
     void EmitStatUpgradePurchased(object p_sender, Core.Managers.Stats.StatType p_statType);
+
+    public class NavigationRequestedEventArgs : EventArgs
+    {
+        public Core.Domain.Models.IslandDestination Destination { get; }
+
+        public NavigationRequestedEventArgs(Core.Domain.Models.IslandDestination p_destination)
+        {
+            Destination = p_destination;
+        }
+    }
+
+    WeakEvent<NavigationRequestedEventArgs> OnNavigationRequested { get; }
+    void EmitNavigationRequested(object p_sender, Core.Domain.Models.IslandDestination p_destination);
 }

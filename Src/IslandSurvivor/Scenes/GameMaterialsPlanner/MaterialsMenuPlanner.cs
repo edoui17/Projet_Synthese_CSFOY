@@ -12,7 +12,29 @@ public partial class MaterialsMenuPlanner : Control
 	public void _on_buy_next_island_btn_pressed()
 	{
         GD.Print("Bouton pour acheter nouvelle ile appuyé");
-        //TryPurchaseIsland;
+
+        // Instead of hardcoding relative paths, query from the top of the scene
+        var navMenu = GetTree().Root.GetNodeOrNull<IslandSurvivor.Scenes.NavigationMenu.NavigationMenu>("Main/BaseMapIsland/NavigationMenu");
+
+        if (navMenu != null)
+        {
+            navMenu.OpenMenu();
+            Visible = false; // Hide this menu temporarily
+        }
+        else
+        {
+            // Fallback for tests/other scene hierarchies
+            navMenu = GetNodeOrNull<IslandSurvivor.Scenes.NavigationMenu.NavigationMenu>("../../NavigationMenu");
+            if (navMenu != null)
+            {
+                navMenu.OpenMenu();
+                Visible = false;
+            }
+            else
+            {
+                GD.PrintErr("NavigationMenu node not found! Make sure it is instantiated correctly.");
+            }
+        }
     }
 
 	public void _on_buy_luck_btn_pressed()

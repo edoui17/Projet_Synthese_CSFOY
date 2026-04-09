@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://cnjiv2vx4chut" path="res://Scenes/Portal/Portal.cs" id="1_rjhn5"]
 [ext_resource type="Texture2D" uid="uid://cw1qahb6wf2ft" path="res://Assets/TinySwords/Misc/Portal/Dimensional_Portal.png" id="2_3tbg2"]
+[ext_resource type="Script" uid="uid://portals12345" path="res://Scenes/Portal/PortalInteraction.cs" id="3_portint"]
 
 [sub_resource type="Animation" id="Animation_s61ot"]
 resource_name = "ACTIVE"
@@ -101,6 +102,7 @@ libraries/ = SubResource("AnimationLibrary_otroc")
 autoplay = &"INACTIVE"
 
 [node name="InteractionArea" type="Area2D" parent="." unique_id=1095668021]
+script = ExtResource("3_portint")
 
 [node name="InteractionHB" type="CollisionShape2D" parent="InteractionArea" unique_id=1129233464]
 position = Vector2(3.5, 0)

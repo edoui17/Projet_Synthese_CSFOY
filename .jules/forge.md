@@ -33,3 +33,7 @@
 * **Quirks Techniques** : 
     * Évitement des Enums au profit de constantes string statiques (`SheepStates`).
     * Approche "Interface-First" (`INpc`, `IDamageable`, `IHealthComponent`).
+## Navigation & State Serialization
+* **Delayed Scene Transition**: Decoupled scene switching from the immediate UI button press. The UI deducts cost and activates a 'Portal', allowing the player to actually walk to and interact with the portal to confirm transition.
+* **N-Tier Persistence**: Intercepted the navigation event in Godot's `NavigationManager` (Autoload) to call `GodotSaveService`. This is used to capture and serialize the current `IInventoryManager` state and `SessionState` (via `ScoreManager`) right before calling `ChangeSceneToFile`, preventing data loss.
+* **UI Hardcoding Limitations**: Avoided relative path hardcoding like `../../NavigationMenu` whenever possible by querying via `GetTree().Root.GetNodeOrNull(...)` to ensure stability across different parent hierarchy changes.
