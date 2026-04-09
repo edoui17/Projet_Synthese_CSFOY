@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://yytxmu8icegn"]
+[gd_scene format=3 uid="uid://bwk4xdbqnv8dj"]
 
 [ext_resource type="PackedScene" uid="uid://cwudt3fk21g8d" path="res://Scenes/Inventory/RessourceSlot.tscn" id="1_78un6"]
 [ext_resource type="Script" uid="uid://cv0d38p3se1cs" path="res://Scenes/Inventory/InventoryUi.cs" id="1_t28l3"]
