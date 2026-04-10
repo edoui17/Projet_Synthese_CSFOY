@@ -37,3 +37,10 @@
 * **Delayed Scene Transition**: Decoupled scene switching from the immediate UI button press. The UI deducts cost and activates a 'Portal', allowing the player to actually walk to and interact with the portal to confirm transition.
 * **N-Tier Persistence**: Intercepted the navigation event in Godot's `NavigationManager` (Autoload) to call `GodotSaveService`. This is used to capture and serialize the current `IInventoryManager` state and `SessionState` (via `ScoreManager`) right before calling `ChangeSceneToFile`, preventing data loss.
 * **UI Hardcoding Limitations**: Avoided relative path hardcoding like `../../NavigationMenu` whenever possible by querying via `GetTree().Root.GetNodeOrNull(...)` to ensure stability across different parent hierarchy changes.
+
+### Godot Collision Layers & Masks
+- **Collision Layer:** Defines "what object am I?".
+- **Collision Mask:** Defines "what object can I interact with or detect?".
+- In IslandSurvivor, layers are clearly separated to simplify physics processing: Player (3) doesn't need to physically collide with Interaction (2) if it's only meant to detect them via an Area2D sensor (`PlayerInteraction`). The `PlayerInteraction` sensor masks on Interaction (2).
+- When a resource or an NPC needs to be hit by a tool, they exist on the Ressource (5) layer and detect Combat (4) layers. The player's weapon is set to the Combat layer (value 8) and masks on Ressource (value 16).
+- **Tip:** When an Area2D needs to emit `body_exited` signals, it must have `monitoring = true` to actively search for leaving bodies or areas.
