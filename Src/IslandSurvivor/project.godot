@@ -25,6 +25,7 @@ MusicPlayer="*uid://cmbtn736rnfhu"
 SignalManager="*res://Globals/SignalManager.cs"
 GameManager="*res://Globals/GameManager.cs"
 NavigationManager="*res://Globals/Navigation/NavigationManager.cs"
+InventoryNode="*uid://dr3trnrux3qtu"
 
 [display]
 
