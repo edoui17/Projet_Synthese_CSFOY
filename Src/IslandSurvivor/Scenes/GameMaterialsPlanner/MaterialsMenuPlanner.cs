@@ -66,25 +66,23 @@ public partial class MaterialsMenuPlanner : Control
 
   private void TryPurchaseIsland()
   {
-    int cost = 1;
-    if (_shopManager.CanAffordIsland(InventoryNode.Instance.Manager, cost))
+    // L'ouverture du menu est maintenant gratuite
+    // 1. Trouver le NavigationMenu de façon robuste à partir de la racine
+    var navMenu = GetTree().Root.GetNodeOrNull<IslandSurvivor.Scenes.NavigationMenu.NavigationMenu>("Main/BaseMapIsland/NavigationMenu");
+
+    if (navMenu != null)
     {
-      // ... (Logique de paiement) ...
-
-      // 1. Trouver le NavigationMenu dans la map
-      // On cherche à partir de la racine pour être sûr de le trouver
-      var navMenu = GetTree().Root.FindChild("NavigationMenu", true, false) as Control;
-
-      if (navMenu != null)
-      {
-        navMenu.Visible = true;
-        // On s'assure qu'il peut maintenant recevoir des clics
-        navMenu.MouseFilter = MouseFilterEnum.Pass;
-        GD.Print("[Shop] NavigationMenu activé !");
-      }
-
-      // 2. Fermer le shop
-      Visible = false;
+      navMenu.OpenMenu();
+      // On s'assure qu'il peut maintenant recevoir des clics
+      navMenu.MouseFilter = MouseFilterEnum.Pass;
+      GD.Print("[Shop] NavigationMenu activé !");
     }
+    else
+    {
+      GD.PrintErr("[Shop] Impossible de trouver le NavigationMenu.");
+    }
+
+    // 2. Fermer le shop
+    Visible = false;
   }
 }

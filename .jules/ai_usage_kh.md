@@ -40,3 +40,8 @@
 - Patched resources (`Gold`, `Rock`, `AutomnTree`, `ConiferTree`, `Sheep`) and `Portal` with matching collision setups.
 - Documented the layer structure in `WikiCode/CollisionLayers.md`.
 **Decision Reasoning:** By creating dedicated Godot layers for each entity type, physics processing is more efficient and we avoid false-positive collisions. Separating 'Interaction' (detection) from 'Player' (physical body) clarifies the workflow when checking `AreaEntered` or `BodyExited` and avoids conflicts with terrain or combat logic.
+
+### 2024-05-18 - [Bugfix: NavigationMenu non visible]
+| **Request** | **AI Contribution** | **Decision Reasoning** |
+| :--- | :--- | :--- |
+| Le Navigation Menu n'apparait pas lors de l'interation avec le bouton Select Next Island du Material Planner | Modification de `MaterialsMenuPlanner.cs` :<br>1. Rendu le clic sur le bouton gratuit (suppression de la vérification de ressource pour l'ouverture du menu).<br>2. Utilisation du chemin absolu (`GetTree().Root.GetNodeOrNull<NavigationMenu>("Main/BaseMapIsland/NavigationMenu")`) pour trouver le menu robuste.<br>3. Appel explicite de `OpenMenu()` au lieu de forcer `Visible = true` pour que les boutons de destinations se génèrent correctement. | Le menu n'affichait pas ses choix car l'appel original forçait la visibilité sans invoquer la méthode de génération des destinations. En appelant `OpenMenu()` et en utilisant un chemin de node robuste depuis la racine, on s'assure de l'apparition dynamique du UI. Le coût en ressources est correctement géré en aval, lors de la sélection d'une île spécifique dans le menu de navigation. |
