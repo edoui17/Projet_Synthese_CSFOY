@@ -7,19 +7,17 @@
 [ext_resource type="Texture2D" uid="uid://de3kun8575um8" path="res://Assets/TinySwords/Terrain/Tileset/Shadow.png" id="5_ej47q"]
 [ext_resource type="Texture2D" uid="uid://dt3sv3eylyqx3" path="res://Assets/TinySwords/Terrain/Tileset/Tilemap_color3.png" id="6_n0ali"]
 [ext_resource type="TileSet" uid="uid://dfvott6gynthm" path="res://Scenes/Ressources/RessourceForBaseMap/ElementsForBaseMap.tres" id="7_t6485"]
-[ext_resource type="Texture2D" uid="uid://d4cbfevai81yc" path="res://Assets/TinySwords/Buildings/Black Buildings/Monastery.png" id="12_j3wwi"]
 [ext_resource type="Texture2D" uid="uid://cwo41vnlcdwp" path="res://Assets/TinySwords/Terrain/Clouds/Clouds_01.png" id="13_36e7r"]
 [ext_resource type="Texture2D" uid="uid://dacydjk7yt1ku" path="res://Assets/TinySwords/Terrain/Clouds/Clouds_02.png" id="14_f8k51"]
+[ext_resource type="PackedScene" uid="uid://b6mk67we343d4" path="res://Scenes/PlayerHouse/building_node.tscn" id="15_16xjv"]
 [ext_resource type="Texture2D" uid="uid://do1p1ltjyqmg6" path="res://Assets/TinySwords/Terrain/Clouds/Clouds_03.png" id="15_kd5hk"]
 [ext_resource type="Texture2D" uid="uid://cfapab5httfgp" path="res://Assets/TinySwords/Terrain/Clouds/Clouds_05.png" id="16_momq0"]
-[ext_resource type="Script" uid="uid://bsndjto885sfr" path="res://Scenes/HomeMap/InteractionScript.cs" id="16_usjv8"]
-[ext_resource type="PackedScene" uid="uid://du6mrtfohbxi8" path="res://Scenes/GameMaterialsPlanner/MaterialsMenuPlanner.tscn" id="17_d4mhh"]
-[ext_resource type="PackedScene" uid="uid://c7w3b4h8f6j0a" path="res://Scenes/NavigationMenu/NavigationMenu.tscn" id="22_navmn"]
 [ext_resource type="Texture2D" uid="uid://ytgkccxb4ik1" path="res://Assets/TinySwords/Terrain/Clouds/Clouds_06.png" id="17_fsya4"]
 [ext_resource type="Texture2D" uid="uid://cbf0x2d45steq" path="res://Assets/TinySwords/Terrain/Clouds/Clouds_07.png" id="18_dttrb"]
 [ext_resource type="Script" uid="uid://bcck2xu2q5syh" path="res://Scenes/HomeMap/Spawn.cs" id="18_ne6mt"]
 [ext_resource type="Texture2D" uid="uid://d3dhc1ja483rm" path="res://Assets/TinySwords/Terrain/Clouds/Clouds_08.png" id="19_q7qh4"]
 [ext_resource type="PackedScene" uid="uid://cqo7rlgy61vfa" path="res://Scenes/Player/Player.tscn" id="21_6r8yr"]
+[ext_resource type="PackedScene" uid="uid://c7w3b4h8f6j0a" path="res://Scenes/NavigationMenu/NavigationMenu.tscn" id="22_navmn"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_t6485"]
 texture = ExtResource("1_g38my")
@@ -411,9 +409,6 @@ sources/4 = SubResource("TileSetAtlasSource_dttrb")
 sources/5 = SubResource("TileSetAtlasSource_q7qh4")
 sources/6 = SubResource("TileSetAtlasSource_exhti")
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_t6485"]
-radius = 118.15244
-
 [node name="BaseMapIsland" type="Node2D" unique_id=468228307]
 y_sort_enabled = true
 
@@ -453,17 +448,13 @@ tile_set = ExtResource("7_t6485")
 tile_map_data = PackedByteArray("AAD//wEAAAAAAAAAAAAFAP7/AAAAAAAAAAAIAAoAAQAAAAAAAAANAAwAAQAAAAAAAAAUAAgAAgAAAAAAAAAaAAcAAwAAAAAAAAAZAP//AwAAAAAAAAARAP7/AwAAAAAAAAAIAA8AAwAAAAAAAAD9/w8AAwAAAAAAAAD8/woAAwAAAAAAAAD8/wkAAwAAAAAAAAD8/wUABAAAAAAAAAACAAkABQAAAAAAAAARAAwABQAAAAAAAAAVAAoABQAAAAAAAAD7//7/AwAAAAAAAAD3/wEAAwAAAAAAAAD3/wcAAwAAAAAAAAD5/wMAAwAAAAAAAAD6/w0AAwAAAAAAAAD4/w8ABAAAAAAAAAAdAA0ABAAAAAAAAAAbAAoABAAAAAAAAAAMAA0ABgAAAAAAAAAeAAIAAAAAAAAAAAAgAAgAAAAAAAAAAAAdAAUAAAAAAAAAAAAYAA8AAAAAAAAAAAARAA4AAAAAAAAAAAAjAAsAAAAAAAAAAAAkAP3/AwAAAAAAAAAlAAYAAwAAAAAAAAA=")
 tile_set = SubResource("TileSet_telec")
 
-[node name="GameMaterialControl" parent="." unique_id=1530430602 instance=ExtResource("17_d4mhh")]
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = 800.0
-offset_top = 250.0
-offset_right = 800.0
-offset_bottom = 250.0
-scale = Vector2(0.465, 0.465)
+[node name="BuildingNode" parent="." unique_id=408521942 instance=ExtResource("15_16xjv")]
+
+[node name="Spawn" type="Marker2D" parent="." unique_id=919176648 node_paths=PackedStringArray("SpawnPoint")]
+position = Vector2(727, 493)
+script = ExtResource("18_ne6mt")
+SpawnPoint = NodePath(".")
+PlayerScene = ExtResource("21_6r8yr")
 
 [node name="NavigationMenu" parent="." unique_id=987654320 instance=ExtResource("22_navmn")]
 anchors_preset = 8
@@ -476,35 +467,4 @@ offset_top = 250.0
 offset_right = 800.0
 offset_bottom = 250.0
 scale = Vector2(0.465, 0.465)
-visible = false
-
-[node name="BuildingNode" type="Node2D" parent="." unique_id=1462691924]
-y_sort_enabled = true
-
-[node name="Building" type="Sprite2D" parent="BuildingNode" unique_id=1061436124]
-position = Vector2(723, 173)
-texture = ExtResource("12_j3wwi")
-
-[node name="Collision" type="StaticBody2D" parent="BuildingNode" unique_id=1838391107]
-y_sort_enabled = true
-position = Vector2(722, 273)
-
-[node name="PhysiqueCollision" type="CollisionPolygon2D" parent="BuildingNode/Collision" unique_id=1953547996]
-polygon = PackedVector2Array(67, -100, 74, -12, 54, 40, -54, 39, -70, -13, -69, -103)
-
-[node name="InteractionArea" type="Area2D" parent="BuildingNode" unique_id=1388784044 node_paths=PackedStringArray("m_uiLayer")]
-light_mask = 0
-visibility_layer = 2
-position = Vector2(722, 273)
-script = ExtResource("16_usjv8")
-m_uiLayer = NodePath("../../GameMaterialControl")
-
-[node name="Interaction" type="CollisionShape2D" parent="BuildingNode/InteractionArea" unique_id=96916541]
-position = Vector2(-1, -29)
-shape = SubResource("CircleShape2D_t6485")
-
-[node name="Spawn" type="Marker2D" parent="." unique_id=919176648 node_paths=PackedStringArray("SpawnPoint")]
-position = Vector2(727, 493)
-script = ExtResource("18_ne6mt")
-SpawnPoint = NodePath(".")
-PlayerScene = ExtResource("21_6r8yr")
+mouse_filter = 2

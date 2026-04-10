@@ -1,63 +1,90 @@
-using Core.Managers.Stats;
 using Godot;
-using System;
+using System.Collections.Generic;
+using Core.Managers.Stats;
+using Core.Interfaces;
 
 public partial class MaterialsMenuPlanner : Control
 {
-	public override void _Ready()
-	{
-		//
-	}
+  [ExportGroup("Boutons d'Amélioration")]
+  [Export] private Button _buyHealthBtn;
+  [Export] private Button _buySpeedBtn;
+  [Export] private Button _buyAttackBtn;
+  [Export] private Button _buyLuckBtn;
 
-	public void _on_buy_next_island_btn_pressed()
-	{
-        GD.Print("Bouton pour acheter nouvelle ile appuyé");
+  [ExportGroup("Boutons Spéciaux")]
+  [Export] private Button _buyIslandBtn;
 
-        // Instead of hardcoding relative paths, query from the top of the scene
-        var navMenu = GetTree().Root.GetNodeOrNull<IslandSurvivor.Scenes.NavigationMenu.NavigationMenu>("Main/BaseMapIsland/NavigationMenu");
+  // --- State ---
+  private Dictionary<StatType, int> _upgradeCounts = new Dictionary<StatType, int>()
+    {
+        { StatType.Health, 0 },
+        { StatType.Speed, 0 },
+        { StatType.Attack, 0 },
+        { StatType.Luck, 0 }
+    };
 
-        if (navMenu != null)
-        {
-            navMenu.OpenMenu();
-            Visible = false; // Hide this menu temporarily
-        }
-        else
-        {
-            // Fallback for tests/other scene hierarchies
-            navMenu = GetNodeOrNull<IslandSurvivor.Scenes.NavigationMenu.NavigationMenu>("../../NavigationMenu");
-            if (navMenu != null)
-            {
-                navMenu.OpenMenu();
-                Visible = false;
-            }
-            else
-            {
-                GD.PrintErr("NavigationMenu node not found! Make sure it is instantiated correctly.");
-            }
-        }
+  private IShopManager _shopManager;
+
+  public override void _Ready()
+  {
+    _shopManager = new Core.Managers.ShopManager();
+
+    // On s'assure que le menu est caché au lancement
+    Visible = false;
+
+    // Connexions des boutons
+    if (_buyHealthBtn != null) _buyHealthBtn.Pressed += () => TryPurchaseUpgrade("Or", StatType.Health);
+    if (_buySpeedBtn != null) _buySpeedBtn.Pressed += () => TryPurchaseUpgrade("Bois", StatType.Speed);
+    if (_buyAttackBtn != null) _buyAttackBtn.Pressed += () => TryPurchaseUpgrade("Roche", StatType.Attack);
+    if (_buyLuckBtn != null) _buyLuckBtn.Pressed += () => TryPurchaseUpgrade("Viande", StatType.Luck);
+    if (_buyIslandBtn != null) _buyIslandBtn.Pressed += TryPurchaseIsland;
+  }
+  public void ToggleMenu()
+  {
+    Visible = !Visible;
+    GD.Print($"[Menu] Affichage : {Visible}");
+  }
+
+  private void TryPurchaseUpgrade(string resourceId, StatType statType)
+  {
+    int currentLevel = _upgradeCounts[statType];
+    int cost = _shopManager.CalculateCost(currentLevel);
+
+    if (_shopManager.CanAffordUpgrade(InventoryNode.Instance.Manager, resourceId, cost))
+    {
+      SignalManager.Instance.EmitResourceSpent(this, resourceId, cost);
+      SignalManager.Instance.EmitStatUpgradePurchased(this, statType);
+
+      _upgradeCounts[statType]++;
+      GD.Print($"[Menu] {statType} niveau {_upgradeCounts[statType]} acheté !");
     }
-
-	public void _on_buy_luck_btn_pressed()
-	{
-		GD.Print("Bouton pour acheter de la chance appuyé");
-        //TryPurchaseUpgrade("Or", StatType.Luck, ref m_luckUpgradeCount);
+    else
+    {
+      GD.Print($"[Menu] Ressources insuffisantes pour {statType}.");
     }
+  }
 
-    public void _on_buy_attack_btn_pressed()
-	{
-        GD.Print("Bouton pour acheter de l'attaque appuyé");
-        //TryPurchaseUpgrade("Roche", StatType.Attack, ref m_attackUpgradeCount);
-    }
+  private void TryPurchaseIsland()
+  {
+    int cost = 1;
+    if (_shopManager.CanAffordIsland(InventoryNode.Instance.Manager, cost))
+    {
+      // ... (Logique de paiement) ...
 
-	public void _on_buy_speed_btn_pressed()
-	{
-		GD.Print("Bouton pour acheter de la vitesse appuyé");
-        //TryPurchaseUpgrade("Bois", StatType.Speed, ref m_speedUpgradeCount);
-    }
+      // 1. Trouver le NavigationMenu dans la map
+      // On cherche à partir de la racine pour être sûr de le trouver
+      var navMenu = GetTree().Root.FindChild("NavigationMenu", true, false) as Control;
 
-	public void _on_buy_health_btn_pressed()
-	{
-		GD.Print("Bouton pour acheter de la vie appuyé");
-        //TryPurchaseUpgrade("Viande", StatType.Health, ref m_healthUpgradeCount);
+      if (navMenu != null)
+      {
+        navMenu.Visible = true;
+        // On s'assure qu'il peut maintenant recevoir des clics
+        navMenu.MouseFilter = MouseFilterEnum.Pass;
+        GD.Print("[Shop] NavigationMenu activé !");
+      }
+
+      // 2. Fermer le shop
+      Visible = false;
     }
+  }
 }
