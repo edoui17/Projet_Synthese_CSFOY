@@ -13,6 +13,8 @@ size = Vector2(38, 23)
 radius = 21.095022
 
 [node name="Rock" type="Area2D" unique_id=2011989865 node_paths=PackedStringArray("Stats", "Timer")]
+collision_layer = 16
+collision_mask = 8
 script = ExtResource("1_pv240")
 Stats = NodePath("StatsManager")
 Timer = NodePath("Timer")
