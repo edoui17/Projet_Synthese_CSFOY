@@ -1,42 +1,46 @@
-# IslandSurvivor - Technical Log
+#  IslandSurvivor - Technical Log
 
-## Sheep Implementation (US 4.4) - Godot Setup Instructions
+##  Architecture & Interopérabilité (N-Tier)
+* **Séparation Core/Client** : Le `Core` est indépendant de Godot. Les domaines purs ne peuvent pas parser d'assets (ex: `Texture2D`). Les items utilisent des chemins absolus (`string IconPath = "res://Assets/..."`) que le client Godot convertit en images.
+* **Gestion des Événements (Bridge Pattern)** : Implémentation via les `WeakEvents` du Core mappés sur les Singletons de Godot. Le `SignalManager` de Godot sert de proxy ("glue") pour la logique métier.
+* **Persistance des Singletons** : Pour maintenir l'état lors du rechargement de scènes, la classe `InventoryNode` utilise les mécanismes d'Autoload de Godot et des instances statiques pour son implémentation `.NET` (`InventoryManager`).
 
-For the implementation of the Sheep (Passive NPC), the core logic has been written in C# following the N-Tier architecture (`HealthComponent`, `SheepController` in `Core`, and `Sheep.cs` in `IslandSurvivor`).
+##  Génération Procédurale de Map
+* **Approche Hybride** : `IMapGenerator` est défini dans le Core, mais l'implémentation concrète `GodotIslandGenerator` réside dans le projet Godot pour exploiter `FastNoiseLite`.
+* **Pont de Données** : Le Core utilise des constantes de type string (`"Water"`, `"Ground"`) que la scène Godot traduit en coordonnées Atlas `Vector2I` pour le `TileMapLayer`.
+* **Contraintes d'Élévation** : 
+    * Ajout de Plateaux, Falaises et Escaliers.
+    * Utilisation d'un algorithme **BFS** pour détecter les bordures de plateaux (Falaises) et garantir l'accès via des tuiles Escaliers.
+    * Vérification de la connectivité globale pour assurer que l'île reste traversable.
+* **Rendu et Visualisation** :
+    * `MapRenderer` lit les données via le `GameManager` (Singleton).
+    * Utilisation de `SetCellsTerrainConnect()` en batch pour optimiser le rendu.
+    * **Animations de mousse (Foam/Splash)** : Logique de détection strictement côté client (adjacence Eau/Terre). Utilisation d'un `FoamWaterTileMap` superposé.
+    * **Tri de profondeur** : `FoamWaterTileMap` placé sous le `GroundTileMap` dans `map_1.tscn` pour que les effets dépassent de dessous les tuiles de sol.
 
-### How to configure `Sheep.tscn` in Godot:
+##  Implémentation du Mouton (US 4.4 - Passive NPC)
+* **Logique Découplée** : Les calculs de fuite (Flee) et les timers tournent en C# pur (`SheepController`). Le nœud Godot transmet simplement le `delta`.
+* **Configuration Sheep.tscn** :
+    1.  **Root** : `CharacterBody2D` nommé "Sheep".
+    2.  **Enfants** : `Sprite2D`, `CollisionShape2D`, et `NavigationAgent2D` (préparation pour le futur pathfinding).
+    3.  **Script** : Attacher `Sheep.cs`. Configurer `IdleSpeed` (30.0), `FleeSpeed` (120.0) et `MaxHealth` (3) dans l'inspecteur.
+    4.  **Collisions** : Layer "Enemy/NPC", Mask "World".
+* **Système de Loot** : Le script émet automatiquement `SignalManager.Instance.EmitMaterialDestroyed(...)` à la mort pour que l'inventaire reçoive la ressource "Viande".
 
-1. **Create the Scene:**
-   - Create a new Scene with a `CharacterBody2D` as the Root Node.
-   - Rename the root node to `Sheep`.
-   - Save the scene as `Sheep.tscn` in `Src/IslandSurvivor/Nodes/Entities/` (or your preferred Scenes folder).
+##  Systèmes UI et Inventaire
+* **UI Dynamique** : Création de popups interactifs dans `InteractionScript.cs` (`CanvasLayer`, `Panel`, `Button`). Réagit aux entrées du joueur dans l' `Area2D` et gère les clics via des actions lambda.
+* **Isolation des Stats** : Les améliorations de statistiques émettent `StatUpgradePurchased` au lieu de coupler le script d'interaction au `StatManager`.
+* **Quirks Techniques** : 
+    * Évitement des Enums au profit de constantes string statiques (`SheepStates`).
+    * Approche "Interface-First" (`INpc`, `IDamageable`, `IHealthComponent`).
+## Navigation & State Serialization
+* **Delayed Scene Transition**: Decoupled scene switching from the immediate UI button press. The UI deducts cost and activates a 'Portal', allowing the player to actually walk to and interact with the portal to confirm transition.
+* **N-Tier Persistence**: Intercepted the navigation event in Godot's `NavigationManager` (Autoload) to call `GodotSaveService`. This is used to capture and serialize the current `IInventoryManager` state and `SessionState` (via `ScoreManager`) right before calling `ChangeSceneToFile`, preventing data loss.
+* **UI Hardcoding Limitations**: Avoided relative path hardcoding like `../../NavigationMenu` whenever possible by querying via `GetTree().Root.GetNodeOrNull(...)` to ensure stability across different parent hierarchy changes.
 
-2. **Add Child Nodes:**
-   - Add a `Sprite2D` node. Assign a sheep texture to it.
-   - Add a `CollisionShape2D` node. Assign a shape (like a `CapsuleShape2D` or `CircleShape2D`) that fits the sprite.
-   - Add a `NavigationAgent2D` node. This is required by `Sheep.cs` (although currently for fleeing we use vector math + MoveAndSlide, having the node prepares for future pathfinding integrations and avoids errors).
-
-3. **Attach the Script:**
-   - Select the `Sheep` root node.
-   - Attach the `Src/IslandSurvivor/Nodes/Entities/Sheep.cs` script to it.
-
-4. **Configure Export Variables (Inspector):**
-   - Click on the `Sheep` node. In the Inspector, under the `Sheep` script section:
-     - `NpcType`: Leave as "Passive".
-     - `IdleSpeed`: Adjust as desired (default is 30.0).
-     - `FleeSpeed`: Adjust as desired (default is 120.0).
-     - `MaxHealth`: Set the sheep's HP (default is 3).
-
-5. **Collision & Layers:**
-   - Make sure the `CharacterBody2D` is set to the correct Collision Layer (e.g., an "Enemy/NPC" layer) and masks the "World" layer so it collides with trees and rocks during `MoveAndSlide()`.
-   - Ensure your Player's weapon/attack logic can detect this layer and call the `TakeDamage(int amount, object attacker)` method on the Sheep when hitting it.
-
-6. **Signals (Inventory):**
-   - No Godot GUI signals need to be manually connected for the inventory.
-   - The C# script automatically emits the `SignalManager.Instance.EmitMaterialDestroyed(...)` event upon death.
-   - Ensure the global `InventoryNode` and `SignalManager` AutoLoads are running in your project so the inventory receives the "Meat" resource.
-
-### Technical Quirks Addressed
-- **Enums Avoided:** Used static string constants (`SheepStates`) instead of enums.
-- **Interfaces First:** Created `INpc`, `IDamageable`, and `IHealthComponent` before implementation.
-- **Decoupled Logic:** The Flee calculations and Timers run in pure C# (`SheepController`) without relying on the Godot `_Process` delta directly inside the node (the node just passes the delta down).
+### Godot Collision Layers & Masks
+- **Collision Layer:** Defines "what object am I?".
+- **Collision Mask:** Defines "what object can I interact with or detect?".
+- In IslandSurvivor, layers are clearly separated to simplify physics processing: Player (3) doesn't need to physically collide with Interaction (2) if it's only meant to detect them via an Area2D sensor (`PlayerInteraction`). The `PlayerInteraction` sensor masks on Interaction (2).
+- When a resource or an NPC needs to be hit by a tool, they exist on the Ressource (5) layer and detect Combat (4) layers. The player's weapon is set to the Combat layer (value 8) and masks on Ressource (value 16).
+- **Tip:** When an Area2D needs to emit `body_exited` signals, it must have `monitoring = true` to actively search for leaving bodies or areas.

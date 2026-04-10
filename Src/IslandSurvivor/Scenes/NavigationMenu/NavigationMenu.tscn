@@ -1,0 +1,47 @@
+[gd_scene format=3 uid="uid://c7w3b4h8f6j0a"]
+
+[ext_resource type="Script" uid="uid://dx9u8v7w6k5l2" path="res://Scenes/NavigationMenu/NavigationMenu.cs" id="1_nav"]
+
+[node name="NavigationMenu" type="Control" unique_id=123456789]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_nav")
+
+[node name="PanelContainer" type="PanelContainer" parent="." unique_id=987654321]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -300.0
+offset_top = -250.0
+offset_right = 300.0
+offset_bottom = 250.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer" unique_id=456123789]
+layout_mode = 2
+theme_override_constants/separation = 15
+
+[node name="TitleLabel" type="Label" parent="PanelContainer/VBoxContainer" unique_id=789456123]
+layout_mode = 2
+theme_override_font_sizes/font_size = 35
+text = "Select Destination"
+horizontal_alignment = 1
+
+[node name="DestinationsContainer" type="VBoxContainer" parent="PanelContainer/VBoxContainer" unique_id=321654987]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="CloseBtn" type="Button" parent="PanelContainer/VBoxContainer" unique_id=654987321]
+layout_mode = 2
+theme_override_font_sizes/font_size = 26
+text = "Close"
+
+[connection signal="pressed" from="PanelContainer/VBoxContainer/CloseBtn" to="." method="_on_close_btn_pressed"]
