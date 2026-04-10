@@ -136,6 +136,7 @@ L'équipe applique des règles de révision strictes pour garantir la qualité d
   * [Ajouter la création de la map de base](https://dev.azure.com/csf-dfc/Projet%20Jeu/_workitems/edit/8466)
   * [Implementer la génération d'une map](https://dev.azure.com/csf-dfc/Projet%20Jeu/_workitems/edit/8400)
   * [Implementer l'apparition d'éléments sur la map](https://dev.azure.com/csf-dfc/Projet%20Jeu/_workitems/edit/8402)
+  * [Implementer les maps à la main](https://dev.azure.com/csf-dfc/Projet%20Jeu/_workitems/edit/8826)
 
 - Antoine Masson : 
   * [Ajouter des ressources dans le jeu](https://dev.azure.com/csf-dfc/Projet%20Jeu/_workitems/edit/8394)

@@ -121,7 +121,8 @@ public partial class Player : CharacterBody2D
 
 	private async void ExecuteInteraction()
 	{
-		if (m_bestTarget == null) return;
+    GD.Print(m_bestTarget == null);
+    if (m_bestTarget == null) return;
 
 		SetState(PlayerState.Interacting);
 		m_bestTarget.Interact();
@@ -178,23 +179,32 @@ public partial class Player : CharacterBody2D
 		m_currentState = p_newState;
 	}
 
-	private void OnInteractionAreaEntered(Area2D p_area)
-	{
-		if (p_area is IInteractable interactable)
-		{
-			m_nearbyInteractables.Add(interactable);
-		}
-	}
+  private void OnInteractionAreaEntered(Area2D p_area)
+  {
+    // LOG DE DEBUG : Si ce message s'affiche, la collision fonctionne !
+    GD.Print("PHYSIQUE : Collision détectée avec le nœud : " + p_area.Name);
 
-	private void OnInteractionAreaExited(Area2D p_area)
-	{
-		if (p_area is IInteractable interactable)
-		{
-			m_nearbyInteractables.Remove(interactable);
-		}
-	}
+    IInteractable interactable = p_area as IInteractable ?? p_area.GetParent() as IInteractable;
 
-	private void OnWeaponAreaEntered(Area2D p_area)
+    if (interactable != null)
+    {
+      GD.Print("LOGIQUE : IInteractable trouvé sur " + p_area.GetParent().Name);
+      if (!m_nearbyInteractables.Contains(interactable))
+        m_nearbyInteractables.Add(interactable);
+    }
+  }
+
+  private void OnInteractionAreaExited(Area2D p_area)
+  {
+    IInteractable? interactable = p_area as IInteractable ?? p_area.GetParent() as IInteractable;
+
+    if (interactable != null)
+    {
+      m_nearbyInteractables.Remove(interactable);
+    }
+  }
+
+  private void OnWeaponAreaEntered(Area2D p_area)
 	{
 		if (m_currentState == PlayerState.Attacking && p_area is IAttackable attackable)
 		{
