@@ -68,7 +68,7 @@ public partial class MaterialsMenuPlanner : Control
   {
     // L'ouverture du menu est maintenant gratuite
     // 1. Trouver le NavigationMenu de façon robuste à partir de la racine
-    var navMenu = GetTree().Root.GetNodeOrNull<IslandSurvivor.Scenes.NavigationMenu.NavigationMenu>("Main/BaseMapIsland/NavigationMenu");
+    var navMenu = GetTree().Root.GetNodeOrNull<IslandSurvivor.Scenes.NavigationMenu.NavigationMenu>("Main/CanvasLayer/NavigationMenu");
 
     if (navMenu != null)
     {
