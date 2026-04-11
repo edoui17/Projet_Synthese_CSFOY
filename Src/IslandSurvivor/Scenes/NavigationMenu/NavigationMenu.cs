@@ -13,6 +13,18 @@ public partial class NavigationMenu : Control
     private INavigationService m_navigationService;
     private IReadOnlyList<IslandDestination> m_currentOptions;
 
+    private Node2D FindPlayer(Node parent)
+    {
+        if (parent == null) return null;
+        if (parent is Node2D node && node.Name == "Player") return node;
+        foreach (Node child in parent.GetChildren())
+        {
+            var result = FindPlayer(child);
+            if (result != null) return result;
+        }
+        return null;
+    }
+
     public override void _Ready()
     {
         m_navigationService = new NavigationService(SignalManager.Instance);
@@ -21,6 +33,18 @@ public partial class NavigationMenu : Control
 
         // Hide by default
         Visible = false;
+    }
+
+    private bool IsPlayerHome()
+    {
+        var scoreManager = GetTree().CurrentScene.GetNodeOrNull<Nodes.StatsManager.ScoreManager>("ScoreManager");
+        if (scoreManager != null)
+        {
+            var tracker = scoreManager.GetTracker();
+            return tracker.GetSessionState().CurrentIslandId == IslandDestination.HomeIsland.Id;
+        }
+        // Fallback check based on scene name if ScoreManager is absent
+        return GetTree().CurrentScene.SceneFilePath.Contains("PlayerHub");
     }
 
     public void OpenMenu()
@@ -42,25 +66,32 @@ public partial class NavigationMenu : Control
             child.QueueFree();
         }
 
-        // Add "Home Hub" option
-        var homeBtn = new Button();
-        homeBtn.Text = "Return to Home Hub (Cost: Free)";
-        homeBtn.Pressed += () => OnDestinationSelected(IslandDestination.HomeIsland);
-        m_destinationsContainer.AddChild(homeBtn);
+        bool isHome = IsPlayerHome();
 
-        // Generate 3 random islands
-        m_currentOptions = m_navigationService.GenerateDestinations(3);
-
-        foreach (var destination in m_currentOptions)
+        if (isHome)
         {
-            var btn = new Button();
-            btn.Text = $"Travel to {destination.Biome} Island (Diff: {destination.Difficulty}, Danger: {destination.DangerLevel}, Cost: {destination.ResourceCost} of each)";
+            // Generate 5 random islands
+            m_currentOptions = m_navigationService.GenerateDestinations(5);
 
-            // Local copy for the closure
-            IslandDestination destCopy = destination;
-            btn.Pressed += () => OnDestinationSelected(destCopy);
+            foreach (var destination in m_currentOptions)
+            {
+                var btn = new Button();
+                btn.Text = $"Island {destination.Id.Substring(0, 5)} (Cost: {destination.ResourceCost}, Type: {destination.Biome})";
 
-            m_destinationsContainer.AddChild(btn);
+                // Local copy for the closure
+                IslandDestination destCopy = destination;
+                btn.Pressed += () => OnDestinationSelected(destCopy);
+
+                m_destinationsContainer.AddChild(btn);
+            }
+        }
+        else
+        {
+            // Add "Return Home" option
+            var homeBtn = new Button();
+            homeBtn.Text = "Return Home";
+            homeBtn.Pressed += () => OnDestinationSelected(IslandDestination.HomeIsland);
+            m_destinationsContainer.AddChild(homeBtn);
         }
     }
 
@@ -81,14 +112,28 @@ public partial class NavigationMenu : Control
             GD.Print("[NavigationMenu] Navigation successful! Deducted resources. Activating portal...");
 
             // Activate the portal and set its destination
-            var portalNode = GetNodeOrNull<Portal>("../Portal");
+            var portalNode = GetTree().CurrentScene.GetNodeOrNull<Portal>("Portal");
             if (portalNode != null)
             {
+                if (IsPlayerHome())
+                {
+                    // No movement on home
+                }
+                else
+                {
+                    var playerNode = FindPlayer(GetTree().CurrentScene);
+                    if (playerNode != null)
+                    {
+                        // Portal moves near player
+                        portalNode.GlobalPosition = playerNode.GlobalPosition;
+                    }
+                }
+
                 portalNode.ActivatePortal(p_destination);
             }
             else
             {
-                GD.PrintErr("[NavigationMenu] Portal node not found! Make sure it is a sibling to NavigationMenu.");
+                GD.PrintErr("[NavigationMenu] Portal node not found! Make sure it is at Main/Portal.");
             }
 
             CloseMenu();
