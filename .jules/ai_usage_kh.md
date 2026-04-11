@@ -16,3 +16,10 @@
 **Decision Reasoning**: Global interactive UI elements like the main island navigation menu need to be in a `CanvasLayer` to correctly process OS-level mouse inputs without being blocked by 2D Game World elements (like Y-Sort objects or Area2Ds). Conversely, local UI meant to simulate an in-world popup for a specific object (like the Material Planner) should exist in world space (without `CanvasLayer`) so it maintains its physical position relative to the object it belongs to.
 ### 2024-04-12 - [Navigation Menu fixes]
 | **Request** | Fix Navigation Menu return to home logic, portal behavior, and display format. | **AI Contribution** | Extracted `Player` out of `Map.tscn` to `Level.tscn`, implemented `PlayerHub.tscn`, added `SceneLoadingManager.cs` singleton, and updated `NavigationMenu.cs` to handle home checks using `SessionState`. | **Decision Reasoning** | Improved world shell hierarchy by moving `Player` to `Level{X}.tscn` scenes. Allows UI and Navigation to easily find Player using generic methods instead of hardcoded paths inside dynamically loaded maps.
+
+### 2026-04-11 - [Navigation Menu] Force first destination to be free for testing
+**Request**: Force the very first destination generated in the Navigation Menu to have a resource cost of 0 and label it as a "Test" island.
+**AI Contribution**:
+1. Modified `NavigationService.cs` so `GenerateDestinations` explicitly sets `resourceCost = 0` when `i == 0`.
+2. Modified `NavigationMenu.cs` to dynamically prepend "Test " to the island button label if `destination.ResourceCost == 0`.
+**Decision Reasoning**: Satisfies the requirement for a permanent free test destination without altering the core structure of the 5 generated islands. This maintains UI flexibility and keeps test overrides explicit.

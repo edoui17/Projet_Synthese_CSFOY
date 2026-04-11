@@ -40,6 +40,11 @@ public class NavigationService : INavigationService
                 resourceCost += 2;
             }
 
+            if (i == 0)
+            {
+                resourceCost = 0;
+            }
+
             int randomLevel = m_random.Next(1, 6);
             string scenePath = $"res://Scenes/Level/Level{randomLevel}/Level{randomLevel}.tscn";
 

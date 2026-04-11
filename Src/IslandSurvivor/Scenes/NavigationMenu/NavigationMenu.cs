@@ -76,7 +76,14 @@ public partial class NavigationMenu : Control
             foreach (var destination in m_currentOptions)
             {
                 var btn = new Button();
-                btn.Text = $"Island {destination.Id.Substring(0, 5)} (Cost: {destination.ResourceCost}, Type: {destination.Biome})";
+                if (destination.ResourceCost == 0)
+                {
+                    btn.Text = $"Test Island {destination.Id.Substring(0, 5)} (Cost: 0, Type: {destination.Biome})";
+                }
+                else
+                {
+                    btn.Text = $"Island {destination.Id.Substring(0, 5)} (Cost: {destination.ResourceCost}, Type: {destination.Biome})";
+                }
 
                 // Local copy for the closure
                 IslandDestination destCopy = destination;
