@@ -11,3 +11,6 @@
 - Created `PlayerHub.tscn` to load `base_map_island.tscn` cleanly.
 - `NavigationManager` now uses `SceneLoadingManager` for loading.
 - Re-routed all portal interactions to spawn portals near player or just remain static at the Home location, updating `IsPlayerHome` check to check `SessionState`.
+### 2026-04-12 - Auto-Active Portal for Map Return
+- **Feature**: Portals in any island maps that are not the `PlayerHub` will now be automatically activated.
+- **Discovery**: Godot allows retrieving `GetTree()?.CurrentScene?.SceneFilePath` during `_Ready()` of any node inside the active scene. We leverage this to conditionally invoke `ActivatePortal(IslandDestination.HomeIsland)` right when the portal loads, allowing the portal to permanently serve as a return point back to the home hub.

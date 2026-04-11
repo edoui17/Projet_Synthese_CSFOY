@@ -14,6 +14,13 @@ public partial class Portal : Node2D
 
 		// The InteractionArea child has the script attached now
 		m_interactionArea = GetNode<PortalInteraction>("InteractionArea");
+
+		// Auto-activate the portal and point it to the Home Island if we are NOT in the PlayerHub.
+		var currentScenePath = GetTree()?.CurrentScene?.SceneFilePath;
+		if (currentScenePath != null && !currentScenePath.Contains("PlayerHub"))
+		{
+			ActivatePortal(IslandDestination.HomeIsland);
+		}
 	}
 
 	public void ActivatePortal(IslandDestination p_destination)
