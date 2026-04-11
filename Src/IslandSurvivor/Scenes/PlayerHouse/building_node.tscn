@@ -10,7 +10,7 @@ radius = 118.15244
 [node name="BuildingNode" type="Node2D" unique_id=408521942 node_paths=PackedStringArray("_menu", "_interactionArea")]
 y_sort_enabled = true
 script = ExtResource("1_xsjht")
-_menu = NodePath("CanvasLayer/GameMaterialControl")
+_menu = NodePath("GameMaterialControl")
 _interactionArea = NodePath("InteractionArea")
 
 [node name="Building" type="Sprite2D" parent="." unique_id=1643200212]
@@ -38,10 +38,7 @@ monitoring = true
 position = Vector2(-1, -29)
 shape = SubResource("CircleShape2D_t6485")
 
-[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=657269453]
-layer = 2
-
-[node name="GameMaterialControl" parent="CanvasLayer" unique_id=1530430602 instance=ExtResource("3_ioygu")]
+[node name="GameMaterialControl" parent="." unique_id=1530430602 instance=ExtResource("3_ioygu")]
 anchors_preset = 0
 anchor_right = 0.0
 anchor_bottom = 0.0
