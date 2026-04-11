@@ -2,7 +2,6 @@
 
 [ext_resource type="Texture2D" uid="uid://d4cbfevai81yc" path="res://Assets/TinySwords/Buildings/Black Buildings/Monastery.png" id="1_embsr"]
 [ext_resource type="Script" uid="uid://bjrxe8rxsvnp0" path="res://Scenes/PlayerHouse/BuildingNode.cs" id="1_xsjht"]
-[ext_resource type="PackedScene" uid="uid://du6mrtfohbxi8" path="res://Scenes/GameMaterialsPlanner/MaterialsMenuPlanner.tscn" id="3_ioygu"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_t6485"]
 radius = 118.15244
@@ -10,7 +9,7 @@ radius = 118.15244
 [node name="BuildingNode" type="Node2D" unique_id=408521942 node_paths=PackedStringArray("_menu", "_interactionArea")]
 y_sort_enabled = true
 script = ExtResource("1_xsjht")
-_menu = NodePath("GameMaterialControl")
+_menu = NodePath("")
 _interactionArea = NodePath("InteractionArea")
 
 [node name="Building" type="Sprite2D" parent="." unique_id=1643200212]
@@ -18,10 +17,9 @@ position = Vector2(723, 173)
 texture = ExtResource("1_embsr")
 
 [node name="Collision" type="StaticBody2D" parent="." unique_id=113778885]
-collision_layer = 1
-collision_mask = 4
 y_sort_enabled = true
 position = Vector2(722, 273)
+collision_mask = 4
 
 [node name="PhysiqueCollision" type="CollisionPolygon2D" parent="Collision" unique_id=1398650726]
 polygon = PackedVector2Array(67, -100, 74, -12, 54, 40, -54, 39, -70, -13, -69, -103)
@@ -32,22 +30,7 @@ visibility_layer = 2
 position = Vector2(722, 273)
 collision_layer = 2
 collision_mask = 4
-monitoring = true
 
 [node name="Interaction" type="CollisionShape2D" parent="InteractionArea" unique_id=1202706186]
 position = Vector2(-1, -29)
 shape = SubResource("CircleShape2D_t6485")
-
-[node name="GameMaterialControl" parent="." unique_id=1530430602 instance=ExtResource("3_ioygu")]
-anchors_preset = 0
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_left = 726.0
-offset_top = 174.0
-offset_right = 726.0
-offset_bottom = 174.0
-grow_horizontal = 1
-grow_vertical = 1
-scale = Vector2(0.5, 0.5)
-size_flags_horizontal = 4
-size_flags_vertical = 4
