@@ -20,7 +20,7 @@ public partial class BuildingNode : Node2D, IInteractable
 
   public void Interact()
   {
-    // emettre un signal
+    SignalManager.Instance.EmitBuildingShopToggled(this, true, "PlayerHouse");
   }
 
   public float GetDistanceTo(float p_x, float p_y)
@@ -30,6 +30,6 @@ public partial class BuildingNode : Node2D, IInteractable
 
   private void OnBodyExited(Node body)
   {
-    // emttre un signal
+    SignalManager.Instance.EmitBuildingShopToggled(this, false, "PlayerHouse");
   }
 }

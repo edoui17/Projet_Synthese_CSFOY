@@ -38,7 +38,28 @@ public partial class MaterialsMenuPlanner : Control
     if (_buyAttackBtn != null) _buyAttackBtn.Pressed += () => TryPurchaseUpgrade("Roche", StatType.Attack);
     if (_buyLuckBtn != null) _buyLuckBtn.Pressed += () => TryPurchaseUpgrade("Viande", StatType.Luck);
     if (_buyIslandBtn != null) _buyIslandBtn.Pressed += TryPurchaseIsland;
+
+    SignalManager.Instance.OnBuildingShopToggled.AddListener(OnBuildingShopToggled);
   }
+
+  protected override void Dispose(bool disposing)
+  {
+      if (disposing)
+      {
+          if (SignalManager.Instance != null && SignalManager.Instance.OnBuildingShopToggled != null)
+          {
+              SignalManager.Instance.OnBuildingShopToggled.RemoveListener(OnBuildingShopToggled);
+          }
+      }
+      base.Dispose(disposing);
+  }
+
+  private void OnBuildingShopToggled(object sender, ISignalManager.BuildingShopToggledEventArgs e)
+  {
+      Visible = e.IsOpen;
+      GD.Print($"[Menu] Shop Toggled: {Visible} (Building: {e.BuildingId})");
+  }
+
   public void ToggleMenu()
   {
     Visible = !Visible;

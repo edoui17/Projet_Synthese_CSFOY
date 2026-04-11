@@ -1,3 +1,12 @@
+### 2026-04-11 - [UI / Interaction] Refactor BuildingNode to UI Signal Logic
+**Request**: Implement a good signal logic for `building_node` so it can properly interact with UI components, especially the Material Planner.
+**AI Contribution**:
+1. Added `BuildingShopToggledEventArgs` and a corresponding `WeakEvent` (`OnBuildingShopToggled`) in the `ISignalManager` and `SignalManagerCore` inside the Core domain.
+2. Exposed `OnBuildingShopToggled` in the Godot-side `SignalManager` (Bridge pattern).
+3. Updated `BuildingNode.cs` to emit `OnBuildingShopToggled` with `true` on interact, and `false` when the player exits the interaction area.
+4. Updated `MaterialsMenuPlanner.cs` to subscribe to the new signal and toggle its visibility based on `e.IsOpen`.
+**Decision Reasoning**: N-Tier architecture relies on a Bridge Pattern for cross-system communication. Passing these state changes through pure C# `WeakEvents` in the Core layer before re-emitting them in the Godot layer maintains decoupled systems. The UI reacts to global domain state rather than being tightly coupled to a specific physical node.
+
 ### 2026-04-11 - [UI / Interaction] Fix Menu Rendering and Clicks
 **Request**: Assure toi que le menu material Planner est afficher a la meme posision que le building_node lorsqu'il est ouvert. Puis, assure toi que le navigation menu fonctionne bien, les bouton ne detecte pas d'input, probablement un probl'eme de layer ou de positionnement dans les scenes.
 **AI Contribution**:
