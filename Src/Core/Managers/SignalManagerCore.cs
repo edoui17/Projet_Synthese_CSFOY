@@ -38,6 +38,14 @@ public class SignalManagerCore : ISignalManager
         m_onNavigationRequested.Invoke(p_sender, new ISignalManager.NavigationRequestedEventArgs(p_destination));
     }
 
+    private readonly WeakEvent<ISignalManager.BuildingShopToggledEventArgs> m_onBuildingShopToggled = new WeakEvent<ISignalManager.BuildingShopToggledEventArgs>();
+    public WeakEvent<ISignalManager.BuildingShopToggledEventArgs> OnBuildingShopToggled => m_onBuildingShopToggled;
+
+    public void EmitBuildingShopToggled(object p_sender, bool p_isOpen, string p_buildingId)
+    {
+        m_onBuildingShopToggled.Invoke(p_sender, new ISignalManager.BuildingShopToggledEventArgs(p_isOpen, p_buildingId));
+    }
+
     // === EXAMPLE OF HOW TO IMPLEMENT A SIGNAL IN CORE ===
     //
     // // 1. Instantiate the WeakEvent
