@@ -23,3 +23,6 @@
 1. Modified `NavigationService.cs` so `GenerateDestinations` explicitly sets `resourceCost = 0` when `i == 0`.
 2. Modified `NavigationMenu.cs` to dynamically prepend "Test " to the island button label if `destination.ResourceCost == 0`.
 **Decision Reasoning**: Satisfies the requirement for a permanent free test destination without altering the core structure of the 5 generated islands. This maintains UI flexibility and keeps test overrides explicit.
+
+### 2026-04-12 - [Gameplay / Navigation] Auto-Active Return Portal
+| **Request** | The portal when I am not home should always be active to let me return home. | **AI Contribution** | Modified `Portal.cs` to check the `SceneFilePath` during `_Ready()`. If the path does not contain `PlayerHub`, it invokes `ActivatePortal(IslandDestination.HomeIsland)`. | **Decision Reasoning** | Since portals exist universally in the map templates, automatically triggering it upon loading a non-hub level guarantees a seamless return path without needing to tie portal activation to complex level logic or specific map events.
