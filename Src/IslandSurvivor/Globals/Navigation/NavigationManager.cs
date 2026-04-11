@@ -44,7 +44,7 @@ public partial class NavigationManager : Node
             // Save SessionState
             // ScoreManager might be instantiated dynamically or available via groups.
             // Try fetching it to serialize the updated session.
-            var scoreManager = GetTree().Root.GetNodeOrNull<Nodes.StatsManager.ScoreManager>("Main/ScoreManager");
+            var scoreManager = GetTree().CurrentScene.GetNodeOrNull<Nodes.StatsManager.ScoreManager>("ScoreManager");
             if (scoreManager != null)
             {
                 var tracker = scoreManager.GetTracker();
@@ -61,7 +61,16 @@ public partial class NavigationManager : Node
         }
 
         // Perform transition
-        CallDeferred(nameof(ChangeScene), p_args.Destination.ScenePath);
+        // Use SceneLoadingManager if available
+        var slm = GetNodeOrNull<Managers.SceneLoadingManager>("/root/SceneLoadingManager");
+        if (slm != null)
+        {
+            slm.LoadScene(p_args.Destination.ScenePath);
+        }
+        else
+        {
+            CallDeferred(nameof(ChangeScene), p_args.Destination.ScenePath);
+        }
     }
 
     private void ChangeScene(string p_scenePath)
