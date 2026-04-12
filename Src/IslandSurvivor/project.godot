@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="IslandSurvivor"
-run/main_scene="uid://b30l21wvemtmp"
+run/main_scene="uid://cqj0slyvkda77"
 config/features=PackedStringArray("4.6", "C#", "Mobile")
 config/icon="res://icon.svg"
 
