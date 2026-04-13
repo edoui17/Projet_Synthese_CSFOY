@@ -22,17 +22,10 @@ public class NavigationService : INavigationService
     {
         var destinations = new List<IslandDestination>();
 
-        // Guarantee at least one free, low-tier island
-        destinations.Add(new IslandDestination(
-            Id: $"island_{Guid.NewGuid().ToString().Substring(0, 8)}",
-            ScenePath: "res://Scenes/GameMap/game_map.tscn",
-            Biome: "Normal",
-            Difficulty: 1,
-            ResourceCost: 0,
-            DangerLevel: 1
-        ));
+        // We have 5 levels: Level1, Level2, Level3, Level4, Level5
+        // We can pick randomly from them
 
-        for (int i = 1; i < p_count; i++)
+        for (int i = 0; i < p_count; i++)
         {
             int difficulty = m_random.Next(1, 10);
             string biome = m_biomes[m_random.Next(m_biomes.Length)];
@@ -47,9 +40,17 @@ public class NavigationService : INavigationService
                 resourceCost += 2;
             }
 
+            if (i == 0)
+            {
+                resourceCost = 0;
+            }
+
+            int randomLevel = m_random.Next(1, 6);
+            string scenePath = $"res://Scenes/Level/Level{randomLevel}/Level{randomLevel}.tscn";
+
             destinations.Add(new IslandDestination(
                 Id: $"island_{Guid.NewGuid().ToString().Substring(0, 8)}",
-                ScenePath: "res://Scenes/GameMap/game_map.tscn", // The target dynamic island map scene
+                ScenePath: scenePath,
                 Biome: biome,
                 Difficulty: difficulty,
                 ResourceCost: resourceCost,
@@ -64,14 +65,9 @@ public class NavigationService : INavigationService
         // HomeIsland is free
         if (p_destination.Id == IslandDestination.HomeIsland.Id)
         {
-            m_signalManager.EmitNavigationRequested(this, p_destination);
+            // Do not emit here, wait for portal interaction
             return true;
         }
-
-        // For this US, cost is 1 of each resource (as defined in the user's interaction script previously),
-        // but we'll use the destination's cost to demonstrate we can use it. The problem says "cost and danger at 0" for HomeIsland.
-        // We will assume 1 of each (Viande, Bois, Roche, Or) if cost > 0 or whatever cost logic needed.
-        // The previous InteractionScript had cost = 1. We'll use the ResourceCost value.
 
         int requiredCost = p_destination.ResourceCost;
 
@@ -87,10 +83,6 @@ public class NavigationService : INavigationService
                 return false;
             }
 
-            // Deduct
-            // In the Godot InteractionScript, it emits "ResourceSpent", which the InventoryNode handles.
-            // Since we are in the Core logic, we can directly modify InventoryManager AND emit the event.
-            // But we should follow the same pattern:
             p_inventoryManager.RemoveMaterial("Viande", requiredCost);
             m_signalManager.EmitResourceSpent(this, "Viande", requiredCost);
 
@@ -104,8 +96,6 @@ public class NavigationService : INavigationService
             m_signalManager.EmitResourceSpent(this, "Or", requiredCost);
         }
 
-        // Do not emit NavigationRequested here anymore. Wait for the player to interact with the Portal.
-        // We will just return true indicating the purchase was successful.
         return true;
     }
 }

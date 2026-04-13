@@ -2,7 +2,6 @@
 
 [ext_resource type="PackedScene" uid="uid://dq7i2c1lyiu06" path="res://Scenes/Map/BaseMap.tscn" id="1_slt5o"]
 [ext_resource type="Texture2D" uid="uid://dcixlp1kygthy" path="res://Assets/TinySwords/Terrain/Bridge/Bridge_All.png" id="2_70h80"]
-[ext_resource type="PackedScene" uid="uid://cqo7rlgy61vfa" path="res://Scenes/Player/Player.tscn" id="2_447s8"]
 [ext_resource type="Texture2D" uid="uid://dpofjd10jo1ii" path="res://Assets/TinySwords/Terrain/Tileset/Tilemap_color1.png" id="2_ea0hy"]
 [ext_resource type="Texture2D" uid="uid://de3kun8575um8" path="res://Assets/TinySwords/Terrain/Tileset/Shadow.png" id="2_j1ch7"]
 [ext_resource type="Texture2D" uid="uid://dt3sv3eylyqx3" path="res://Assets/TinySwords/Terrain/Tileset/Tilemap_color3.png" id="3_j1ch7"]
@@ -766,5 +765,4 @@ tile_set = SubResource("TileSet_v8phl")
 [node name="CloudTileMap" parent="." index="9" unique_id=1255073501]
 tile_map_data = PackedByteArray("AAAcAOT/AQAAAAAAAADl//v/AQAAAAAAAAATAAwAAQAAAAAAAAABAB0AAQAAAAAAAAD1/xAAAQAAAAAAAADl/xkAAQAAAAAAAADn/+T/AQAAAAAAAAAQAOn/AQAAAAAAAAAcAPv/AQAAAAAAAAAcABMAAQAAAAAAAAAGABYAAQAAAAAAAAABAPv/AQAAAAAAAADo/+//AQAAAAAAAADn//3/AQAAAAAAAADw/+b/AQAAAAAAAAAMAOv/AQAAAAAAAAAXAAcAAQAAAAAAAAD5/+P/BQAAAAAAAAD+//n/BQAAAAAAAAAEAOb/BQAAAAAAAADv/w0ABQAAAAAAAAANABwABQAAAAAAAAAXAPr/BQAAAAAAAADv/xYABQAAAAAAAADj/wYABQAAAAAAAAD4/xgABQAAAAAAAADr/wQABQAAAAAAAAD+/wMABQAAAAAAAAAdAO7/BQAAAAAAAAAAAOj/BQAAAAAAAAAOAOP/AwAAAAAAAADk//T/AwAAAAAAAAAYAPT/AwAAAAAAAAAUABUAAwAAAAAAAAAYABwAAwAAAAAAAADv/x4AAwAAAAAAAADl/w0AAQAAAAAAAADm/+//AAAAAAAAAAASAOn/AAAAAAAAAAATAAcAAAAAAAAAAAD8/+v/AAAAAAAAAAA=")
 
-[node name="Player" parent="." index="10" unique_id=661327324 instance=ExtResource("2_447s8")]
 position = Vector2(-698, -497)

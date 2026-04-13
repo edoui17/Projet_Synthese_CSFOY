@@ -4,7 +4,7 @@ public record IslandDestination(string Id, string ScenePath, string Biome, int D
 {
     public static readonly IslandDestination HomeIsland = new(
         Id: "home_hub",
-        ScenePath: "res://Scenes/HomeMap/base_map_island.tscn",
+        ScenePath: "res://Scenes/Level/PlayerHub/PlayerHub.tscn",
         Biome: "Meadow",
         Difficulty: 0,
         ResourceCost: 0,

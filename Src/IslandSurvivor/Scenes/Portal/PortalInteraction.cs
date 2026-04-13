@@ -8,7 +8,22 @@ public partial class PortalInteraction : Area2D, IInteractable
     private IslandDestination? m_destination = null;
 
     public bool IsInteractable => m_destination != null;
-    public string InteractionPrompt => m_destination != null ? $"Press E to travel to {m_destination.Biome}" : "";
+
+    public string InteractionPrompt
+    {
+        get
+        {
+            if (m_destination != null)
+            {
+                if (m_destination.Id == IslandDestination.HomeIsland.Id)
+                {
+                    return "Return Home";
+                }
+                return $"Travel to {m_destination.Biome}";
+            }
+            return "";
+        }
+    }
 
     public float GetDistanceTo(float p_x, float p_y)
     {

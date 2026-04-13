@@ -1,46 +1,21 @@
-#  IslandSurvivor - Technical Log
 
-##  Architecture & Interopérabilité (N-Tier)
-* **Séparation Core/Client** : Le `Core` est indépendant de Godot. Les domaines purs ne peuvent pas parser d'assets (ex: `Texture2D`). Les items utilisent des chemins absolus (`string IconPath = "res://Assets/..."`) que le client Godot convertit en images.
-* **Gestion des Événements (Bridge Pattern)** : Implémentation via les `WeakEvents` du Core mappés sur les Singletons de Godot. Le `SignalManager` de Godot sert de proxy ("glue") pour la logique métier.
-* **Persistance des Singletons** : Pour maintenir l'état lors du rechargement de scènes, la classe `InventoryNode` utilise les mécanismes d'Autoload de Godot et des instances statiques pour son implémentation `.NET` (`InventoryManager`).
+### 2026-04-11 - WeakEvent Subscription in Core Bridge
+- **Discovery**: Custom `WeakEvent` implementation in the Core uses `.AddListener()` and `.RemoveListener()` instead of the standard `+=` and `-=` operators or `.Subscribe()` / `.Unsubscribe()`. Always verify the specific custom utilities provided by the Core before trying to attach standard C# event handler logic.
 
-##  Génération Procédurale de Map
-* **Approche Hybride** : `IMapGenerator` est défini dans le Core, mais l'implémentation concrète `GodotIslandGenerator` réside dans le projet Godot pour exploiter `FastNoiseLite`.
-* **Pont de Données** : Le Core utilise des constantes de type string (`"Water"`, `"Ground"`) que la scène Godot traduit en coordonnées Atlas `Vector2I` pour le `TileMapLayer`.
-* **Contraintes d'Élévation** : 
-    * Ajout de Plateaux, Falaises et Escaliers.
-    * Utilisation d'un algorithme **BFS** pour détecter les bordures de plateaux (Falaises) et garantir l'accès via des tuiles Escaliers.
-    * Vérification de la connectivité globale pour assurer que l'île reste traversable.
-* **Rendu et Visualisation** :
-    * `MapRenderer` lit les données via le `GameManager` (Singleton).
-    * Utilisation de `SetCellsTerrainConnect()` en batch pour optimiser le rendu.
-    * **Animations de mousse (Foam/Splash)** : Logique de détection strictement côté client (adjacence Eau/Terre). Utilisation d'un `FoamWaterTileMap` superposé.
-    * **Tri de profondeur** : `FoamWaterTileMap` placé sous le `GroundTileMap` dans `map_1.tscn` pour que les effets dépassent de dessous les tuiles de sol.
+### 2026-04-11 - UI Placement in Godot 4.6.1
+- **Discovery**: When placing `Control` nodes directly inside a `Node2D` hierarchy (world space), they correctly follow the world coordinates and are affected by the camera. Wrapping them in a `CanvasLayer` detaches them from world coordinates and pins them to screen space.
+- **Quirk**: Input events for UI elements (like `Button` clicks) can be absorbed or ignored if the UI is deep in the game world tree and obscured by collision/mouse filters of sibling `Node2D`/`Area2D`s. Placing global interactive menus (like `NavigationMenu`) into the main scene's `CanvasLayer` guarantees they are at the forefront of the viewport and reliably intercept mouse events.
 
-##  Implémentation du Mouton (US 4.4 - Passive NPC)
-* **Logique Découplée** : Les calculs de fuite (Flee) et les timers tournent en C# pur (`SheepController`). Le nœud Godot transmet simplement le `delta`.
-* **Configuration Sheep.tscn** :
-    1.  **Root** : `CharacterBody2D` nommé "Sheep".
-    2.  **Enfants** : `Sprite2D`, `CollisionShape2D`, et `NavigationAgent2D` (préparation pour le futur pathfinding).
-    3.  **Script** : Attacher `Sheep.cs`. Configurer `IdleSpeed` (30.0), `FleeSpeed` (120.0) et `MaxHealth` (3) dans l'inspecteur.
-    4.  **Collisions** : Layer "Enemy/NPC", Mask "World".
-* **Système de Loot** : Le script émet automatiquement `SignalManager.Instance.EmitMaterialDestroyed(...)` à la mort pour que l'inventaire reçoive la ressource "Viande".
+### Navigation Menu Fixes & Level Architecture
+- Extracted the Player from base maps and put them directly in `Level{X}.tscn` scenes.
+- Created `PlayerHub.tscn` to load `base_map_island.tscn` cleanly.
+- `NavigationManager` now uses `SceneLoadingManager` for loading.
+- Re-routed all portal interactions to spawn portals near player or just remain static at the Home location, updating `IsPlayerHome` check to check `SessionState`.
+### 2026-04-12 - Auto-Active Portal for Map Return
+- **Feature**: Portals in any island maps that are not the `PlayerHub` will now be automatically activated.
+- **Discovery**: Godot allows retrieving `GetTree()?.CurrentScene?.SceneFilePath` during `_Ready()` of any node inside the active scene. We leverage this to conditionally invoke `ActivatePortal(IslandDestination.HomeIsland)` right when the portal loads, allowing the portal to permanently serve as a return point back to the home hub.
 
-##  Systèmes UI et Inventaire
-* **UI Dynamique** : Création de popups interactifs dans `InteractionScript.cs` (`CanvasLayer`, `Panel`, `Button`). Réagit aux entrées du joueur dans l' `Area2D` et gère les clics via des actions lambda.
-* **Isolation des Stats** : Les améliorations de statistiques émettent `StatUpgradePurchased` au lieu de coupler le script d'interaction au `StatManager`.
-* **Quirks Techniques** : 
-    * Évitement des Enums au profit de constantes string statiques (`SheepStates`).
-    * Approche "Interface-First" (`INpc`, `IDamageable`, `IHealthComponent`).
-## Navigation & State Serialization
-* **Delayed Scene Transition**: Decoupled scene switching from the immediate UI button press. The UI deducts cost and activates a 'Portal', allowing the player to actually walk to and interact with the portal to confirm transition.
-* **N-Tier Persistence**: Intercepted the navigation event in Godot's `NavigationManager` (Autoload) to call `GodotSaveService`. This is used to capture and serialize the current `IInventoryManager` state and `SessionState` (via `ScoreManager`) right before calling `ChangeSceneToFile`, preventing data loss.
-* **UI Hardcoding Limitations**: Avoided relative path hardcoding like `../../NavigationMenu` whenever possible by querying via `GetTree().Root.GetNodeOrNull(...)` to ensure stability across different parent hierarchy changes.
-
-### Godot Collision Layers & Masks
-- **Collision Layer:** Defines "what object am I?".
-- **Collision Mask:** Defines "what object can I interact with or detect?".
-- In IslandSurvivor, layers are clearly separated to simplify physics processing: Player (3) doesn't need to physically collide with Interaction (2) if it's only meant to detect them via an Area2D sensor (`PlayerInteraction`). The `PlayerInteraction` sensor masks on Interaction (2).
-- When a resource or an NPC needs to be hit by a tool, they exist on the Ressource (5) layer and detect Combat (4) layers. The player's weapon is set to the Combat layer (value 8) and masks on Ressource (value 16).
-- **Tip:** When an Area2D needs to emit `body_exited` signals, it must have `monitoring = true` to actively search for leaving bodies or areas.
+### 2026-04-12 - Navigation System Architecture Documentation
+- **Tags**: Navigation, Système, Architecture
+- **Decision**: Created an exhaustive End-to-End documentation for the Navigation System (`WikiCode/SystemeNavigation.md`).
+- **Learning**: The Navigation System successfully demonstrates the N-Tier architecture and Bridge pattern, ensuring Core logic (`NavigationService`) generates destinations and calculates costs abstractly. Interaction via Godot Nodes (`NavigationMenu`, `PortalInteraction`) triggers WeakEvents which are intercepted by Godot Singletons (`NavigationManager`) to persist state before deferring transition to `SceneLoadingManager`. This ensures stable decoupling between game state persistence and scene lifecycles.

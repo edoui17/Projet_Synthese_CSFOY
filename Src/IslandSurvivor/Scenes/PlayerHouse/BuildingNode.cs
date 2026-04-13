@@ -4,8 +4,6 @@ using IslandSurvivor.Interfaces;
 
 public partial class BuildingNode : Node2D, IInteractable
 {
-  // On utilise UNIQUEMENT l'export pour le lien
-  [Export] private MaterialsMenuPlanner _menu;
   [Export] private Area2D _interactionArea;
 
   public bool IsInteractable => true;
@@ -22,14 +20,7 @@ public partial class BuildingNode : Node2D, IInteractable
 
   public void Interact()
   {
-    if (_menu != null)
-    {
-      _menu.ToggleMenu();
-    }
-    else
-    {
-      GD.PushError("BuildingNode: Le menu n'est pas lié dans l'inspecteur !");
-    }
+    SignalManager.Instance.EmitBuildingShopToggled(this, true, "PlayerHouse");
   }
 
   public float GetDistanceTo(float p_x, float p_y)
@@ -39,9 +30,6 @@ public partial class BuildingNode : Node2D, IInteractable
 
   private void OnBodyExited(Node body)
   {
-    if (body.Name.ToString().Contains("Player", StringComparison.OrdinalIgnoreCase))
-    {
-      if (_menu != null) _menu.Visible = false;
-    }
+    SignalManager.Instance.EmitBuildingShopToggled(this, false, "PlayerHouse");
   }
 }
