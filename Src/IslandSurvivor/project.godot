@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="IslandSurvivor"
-run/main_scene="uid://b30l21wvemtmp"
+run/main_scene="uid://cqj0slyvkda77"
 config/features=PackedStringArray("4.6", "C#", "Mobile")
 config/icon="res://icon.svg"
 
@@ -23,6 +23,9 @@ buses/default_bus_layout="uid://dr80y288fhe65"
 
 MusicPlayer="*uid://cmbtn736rnfhu"
 SignalManager="*res://Globals/SignalManager.cs"
+GameManager="*res://Globals/GameManager.cs"
+NavigationManager="*res://Globals/Navigation/NavigationManager.cs"
+InventoryNode="*uid://dr3trnrux3qtu"
 
 [display]
 
@@ -82,8 +85,11 @@ attack={
 
 [layer_names]
 
-2d_physics/layer_1="Evironnment"
+2d_physics/layer_1="Environnement"
 2d_physics/layer_2="Interaction"
+2d_physics/layer_3="Player"
+2d_physics/layer_4="Combat"
+2d_physics/layer_5="Ressource"
 
 [physics]
 
@@ -91,5 +97,6 @@ attack={
 
 [rendering]
 
+textures/canvas_textures/default_texture_filter=0
 rendering_device/driver.windows="d3d12"
 renderer/rendering_method="mobile"

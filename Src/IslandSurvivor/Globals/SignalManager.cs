@@ -43,6 +43,20 @@ public partial class SignalManager : Node, ISignalManager
         m_coreManager.EmitStatUpgradePurchased(p_sender, p_statType);
     }
 
+    public WeakEvent<ISignalManager.NavigationRequestedEventArgs> OnNavigationRequested => m_coreManager.OnNavigationRequested;
+
+    public void EmitNavigationRequested(object p_sender, Core.Domain.Models.IslandDestination p_destination)
+    {
+        m_coreManager.EmitNavigationRequested(p_sender, p_destination);
+    }
+
+    public WeakEvent<ISignalManager.BuildingShopToggledEventArgs> OnBuildingShopToggled => m_coreManager.OnBuildingShopToggled;
+
+    public void EmitBuildingShopToggled(object p_sender, bool p_isOpen, string p_buildingId)
+    {
+        m_coreManager.EmitBuildingShopToggled(p_sender, p_isOpen, p_buildingId);
+    }
+
     // === EXAMPLE OF HOW TO IMPLEMENT A SIGNAL IN GODOT ===
     //
     // // 1. Map to the Core implementation

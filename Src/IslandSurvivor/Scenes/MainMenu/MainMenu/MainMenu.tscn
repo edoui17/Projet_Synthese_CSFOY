@@ -30,23 +30,26 @@ offset_right = 579.0
 offset_bottom = 328.0
 theme_override_styles/panel = SubResource("StyleBoxTexture_qu3m1")
 
-[node name="MenuTab" type="PanelContainer" parent="." unique_id=1573798446]
+[node name="MenuTab" type="PanelContainer" parent="Panel" unique_id=1573798446]
 layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 20.0
+offset_top = -289.5
+offset_right = 435.0
+offset_bottom = 289.5
 grow_vertical = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MenuTab" unique_id=117694114]
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel/MenuTab" unique_id=117694114]
 layout_mode = 2
 
-[node name="GameNameLabel" type="Label" parent="MenuTab/VBoxContainer" unique_id=1639614787]
+[node name="GameNameLabel" type="Label" parent="Panel/MenuTab/VBoxContainer" unique_id=1639614787]
 layout_mode = 2
 theme_override_font_sizes/font_size = 60
 text = "IslandSurvivor"
 
-[node name="StartGameBtn" type="TextureButton" parent="MenuTab/VBoxContainer" unique_id=1511952471]
+[node name="StartGameBtn" type="TextureButton" parent="Panel/MenuTab/VBoxContainer" unique_id=1511952471]
 custom_minimum_size = Vector2(60, 120)
 layout_mode = 2
 texture_normal = ExtResource("3_o70k1")
@@ -54,7 +57,7 @@ texture_pressed = ExtResource("4_kj5tk")
 texture_hover = ExtResource("5_k7m34")
 stretch_mode = 0
 
-[node name="PlayLabel" type="Label" parent="MenuTab/VBoxContainer/StartGameBtn" unique_id=1977628879]
+[node name="PlayLabel" type="Label" parent="Panel/MenuTab/VBoxContainer/StartGameBtn" unique_id=1977628879]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -70,7 +73,7 @@ grow_vertical = 2
 theme_override_font_sizes/font_size = 50
 text = "Play"
 
-[node name="ScoreboardBtn" type="TextureButton" parent="MenuTab/VBoxContainer" unique_id=1007029109]
+[node name="ScoreboardBtn" type="TextureButton" parent="Panel/MenuTab/VBoxContainer" unique_id=1007029109]
 custom_minimum_size = Vector2(60, 120)
 layout_mode = 2
 texture_normal = ExtResource("3_o70k1")
@@ -78,7 +81,7 @@ texture_pressed = ExtResource("4_kj5tk")
 texture_hover = ExtResource("5_k7m34")
 stretch_mode = 0
 
-[node name="ScoreboardLabel" type="Label" parent="MenuTab/VBoxContainer/ScoreboardBtn" unique_id=718123604]
+[node name="ScoreboardLabel" type="Label" parent="Panel/MenuTab/VBoxContainer/ScoreboardBtn" unique_id=718123604]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -94,7 +97,7 @@ grow_vertical = 2
 theme_override_font_sizes/font_size = 50
 text = "Scoreboard"
 
-[node name="OptionsBtn" type="TextureButton" parent="MenuTab/VBoxContainer" unique_id=636481789]
+[node name="OptionsBtn" type="TextureButton" parent="Panel/MenuTab/VBoxContainer" unique_id=636481789]
 custom_minimum_size = Vector2(60, 120)
 layout_mode = 2
 texture_normal = ExtResource("3_o70k1")
@@ -102,7 +105,7 @@ texture_pressed = ExtResource("4_kj5tk")
 texture_hover = ExtResource("5_k7m34")
 stretch_mode = 0
 
-[node name="OptionsLabel" type="Label" parent="MenuTab/VBoxContainer/OptionsBtn" unique_id=1458558330]
+[node name="OptionsLabel" type="Label" parent="Panel/MenuTab/VBoxContainer/OptionsBtn" unique_id=1458558330]
 custom_minimum_size = Vector2(0, 110)
 layout_mode = 1
 anchors_preset = 10
@@ -118,7 +121,7 @@ text = "Options"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="QuitGameBtn" type="TextureButton" parent="MenuTab/VBoxContainer" unique_id=2057456997]
+[node name="QuitGameBtn" type="TextureButton" parent="Panel/MenuTab/VBoxContainer" unique_id=2057456997]
 custom_minimum_size = Vector2(60, 120)
 layout_mode = 2
 texture_normal = ExtResource("3_o70k1")
@@ -126,7 +129,7 @@ texture_pressed = ExtResource("4_kj5tk")
 texture_hover = ExtResource("5_k7m34")
 stretch_mode = 0
 
-[node name="QuitLabel" type="Label" parent="MenuTab/VBoxContainer/QuitGameBtn" unique_id=1342714578]
+[node name="QuitLabel" type="Label" parent="Panel/MenuTab/VBoxContainer/QuitGameBtn" unique_id=1342714578]
 custom_minimum_size = Vector2(0, 110)
 layout_mode = 1
 anchors_preset = 10
@@ -142,7 +145,7 @@ text = "Quit"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[connection signal="pressed" from="MenuTab/VBoxContainer/StartGameBtn" to="." method="_on_start_game_btn_pressed"]
-[connection signal="pressed" from="MenuTab/VBoxContainer/ScoreboardBtn" to="." method="_on_scoreboard_btn_pressed"]
-[connection signal="pressed" from="MenuTab/VBoxContainer/OptionsBtn" to="." method="_on_options_btn_pressed"]
-[connection signal="pressed" from="MenuTab/VBoxContainer/QuitGameBtn" to="." method="_on_quit_game_btn_pressed"]
+[connection signal="pressed" from="Panel/MenuTab/VBoxContainer/StartGameBtn" to="." method="_on_start_game_btn_pressed"]
+[connection signal="pressed" from="Panel/MenuTab/VBoxContainer/ScoreboardBtn" to="." method="_on_scoreboard_btn_pressed"]
+[connection signal="pressed" from="Panel/MenuTab/VBoxContainer/OptionsBtn" to="." method="_on_options_btn_pressed"]
+[connection signal="pressed" from="Panel/MenuTab/VBoxContainer/QuitGameBtn" to="." method="_on_quit_game_btn_pressed"]
