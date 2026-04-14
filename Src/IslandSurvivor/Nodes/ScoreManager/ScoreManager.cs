@@ -68,6 +68,11 @@ public partial class ScoreManager : Node
         m_scoreTracker.UpdateHighScore();
     }
 
+    public IScoreTracker GetTracker()
+    {
+        return m_scoreTracker;
+    }
+
     private void OnCoreScoreChanged(object? p_sender, IScoreTracker.ScoreChangedEventArgs p_args)
     {
         EmitSignal(SignalName.ScoreChanged, p_args.PreviousScore, p_args.NewScore);

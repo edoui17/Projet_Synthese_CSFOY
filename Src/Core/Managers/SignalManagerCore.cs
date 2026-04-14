@@ -30,6 +30,22 @@ public class SignalManagerCore : ISignalManager
         m_onStatUpgradePurchased.Invoke(p_sender, new ISignalManager.StatUpgradePurchasedEventArgs(p_statType));
     }
 
+    private readonly WeakEvent<ISignalManager.NavigationRequestedEventArgs> m_onNavigationRequested = new WeakEvent<ISignalManager.NavigationRequestedEventArgs>();
+    public WeakEvent<ISignalManager.NavigationRequestedEventArgs> OnNavigationRequested => m_onNavigationRequested;
+
+    public void EmitNavigationRequested(object p_sender, Core.Domain.Models.IslandDestination p_destination)
+    {
+        m_onNavigationRequested.Invoke(p_sender, new ISignalManager.NavigationRequestedEventArgs(p_destination));
+    }
+
+    private readonly WeakEvent<ISignalManager.BuildingShopToggledEventArgs> m_onBuildingShopToggled = new WeakEvent<ISignalManager.BuildingShopToggledEventArgs>();
+    public WeakEvent<ISignalManager.BuildingShopToggledEventArgs> OnBuildingShopToggled => m_onBuildingShopToggled;
+
+    public void EmitBuildingShopToggled(object p_sender, bool p_isOpen, string p_buildingId)
+    {
+        m_onBuildingShopToggled.Invoke(p_sender, new ISignalManager.BuildingShopToggledEventArgs(p_isOpen, p_buildingId));
+    }
+
     // === EXAMPLE OF HOW TO IMPLEMENT A SIGNAL IN CORE ===
     //
     // // 1. Instantiate the WeakEvent

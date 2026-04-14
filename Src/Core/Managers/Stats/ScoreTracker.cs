@@ -20,6 +20,14 @@ public class ScoreTracker : IScoreTracker
     public int HighScore => m_highScore;
     public int MapCount => m_sessionState.MapCount;
     public string CharacterId => m_sessionState.CharacterId;
+    public string CurrentIslandId => m_sessionState.CurrentIslandId;
+
+    public SessionState GetSessionState() => m_sessionState;
+
+    public void UpdateCurrentIsland(string p_islandId)
+    {
+        m_sessionState.CurrentIslandId = p_islandId;
+    }
 
     public ScoreTracker(ISaveService p_saveService)
     {

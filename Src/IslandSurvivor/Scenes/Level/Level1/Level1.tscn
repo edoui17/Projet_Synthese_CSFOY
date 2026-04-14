@@ -1,0 +1,40 @@
+[gd_scene format=3 uid="uid://b30l21wvemtmp"]
+
+[ext_resource type="PackedScene" uid="uid://dcghy8ygomn7y" path="res://Scenes/Map/Map1/Map1.tscn" id="1_dcclg"]
+[ext_resource type="PackedScene" uid="uid://dq4dear1g8mq2" path="res://Scenes/Portal/Portal.tscn" id="2_dcclg"]
+[ext_resource type="PackedScene" uid="uid://cqo7rlgy61vfa" path="res://Scenes/Player/Player.tscn" id="player_res"]
+[ext_resource type="PackedScene" uid="uid://djv45romp3vxj" path="res://Scenes/HomeMap/PlayerHUD.tscn" id="3_dcclg"]
+[ext_resource type="PackedScene" uid="uid://c7w3b4h8f6j0a" path="res://Scenes/NavigationMenu/NavigationMenu.tscn" id="4_navmn"]
+[ext_resource type="PackedScene" uid="uid://du6mrtfohbxi8" path="res://Scenes/GameMaterialsPlanner/MaterialsMenuPlanner.tscn" id="5_m4dri"]
+
+[node name="Main" type="Node2D" unique_id=431913187]
+
+[node name="MapContainer" type="Node2D" parent="."]
+
+[node name="Map1" parent="MapContainer" instance=ExtResource("1_dcclg")]
+position = Vector2(-1, 0)
+
+[node name="Portal" parent="." instance=ExtResource("2_dcclg")]
+position = Vector2(0, 50)
+
+[node name="Player" parent="." instance=ExtResource("player_res")]
+position = Vector2(0, 0)
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1275231257]
+
+[node name="PlayerHUD" parent="CanvasLayer" unique_id=666194177 instance=ExtResource("3_dcclg")]
+
+[node name="NavigationMenu" parent="CanvasLayer" unique_id=987654320 instance=ExtResource("4_navmn")]
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 726.0
+offset_top = 174.0
+offset_right = 726.0
+offset_bottom = 174.0
+grow_horizontal = 1
+grow_vertical = 1
+scale = Vector2(0.5, 0.5)
+size_flags_horizontal = 4
+size_flags_vertical = 4
+mouse_filter = 2
