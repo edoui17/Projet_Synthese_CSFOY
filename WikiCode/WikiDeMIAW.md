@@ -109,6 +109,12 @@ L'équipe applique des règles de révision strictes pour garantir la qualité d
     * Validation obligatoire par **Jules**.
 
     * Tests de non-régression obligatoires.
+   
+4.  **Nomenclature au niveau des branches**
+
+    * Mettre le numeros de la User Story au debut du nom de la branche
+    
+    * Titre la User Story ou court descriptif de la User Story 
 
 ## **Notre "Definition of done"**
 - Développement terminé
