@@ -1,13 +1,16 @@
-[gd_scene load_steps=4 format=3 uid="uid://g3x2l3wvemtmp"]
+[gd_scene format=3 uid="uid://c8j6010mtfxux"]
 
 [ext_resource type="PackedScene" uid="uid://cax2j3b2g36d" path="res://Scenes/Level/LevelBase.tscn" id="1_base"]
 [ext_resource type="PackedScene" uid="uid://cjs412h2naab0" path="res://Scenes/HomeMap/base_map_island.tscn" id="2_map"]
 [ext_resource type="PackedScene" uid="uid://dq4dear1g8mq2" path="res://Scenes/Portal/Portal.tscn" id="3_portal"]
 
-[node name="Main" instance=ExtResource("1_base")]
+[node name="Main" unique_id=935674309 instance=ExtResource("1_base")]
 
-[node name="BaseMapIsland" parent="MapContainer" index="0" instance=ExtResource("2_map")]
+[node name="BaseMapIsland" parent="MapContainer" index="0" unique_id=2101831528 instance=ExtResource("2_map")]
 position = Vector2(-1, 0)
 
-[node name="Portal" parent="." index="2" instance=ExtResource("3_portal")]
+[node name="Player" parent="." index="1"]
+position = Vector2(769, 486)
+
+[node name="Portal" parent="." index="2" unique_id=675494200 instance=ExtResource("3_portal")]
 position = Vector2(990, 487)
