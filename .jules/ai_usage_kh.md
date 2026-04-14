@@ -29,3 +29,8 @@
 
 ### 2026-04-12 - [Documentation] SystemeNavigation.md wiki page
 | **Request** | J'aimerais que tu ajoute une page wiki pour documenter comment utiliser le systeme de navigation, incluant le SceneLoadingManager | **AI Contribution** | Analyzed the codebase to understand the Navigation flow (from UI interaction to the core NavigationService, down to SceneLoadingManager via WeakEvents). Drafted an exhaustive markdown documentation (`WikiCode/SystemeNavigation.md`) in French, demonstrating the N-Tier architecture, Bridge Pattern with WeakEvents, and providing concrete code examples of interaction triggers, Core service validation, and scene transitions. | **Decision Reasoning** | Following the user's explicit instruction to create exhaustive technical documentation that highlights the solid engineering (N-Tier, event handling, persistence decoupled from Godot lifecycle) behind the Navigation System, ensuring it serves as a robust reference for future development.
+
+### 2026-04-14 - [Save Location Migration]
+| **Request** | **AI Contribution** | **Decision Reasoning** |
+| :--- | :--- | :--- |
+| Move Godot saves to root `Save` folder. | Updated `GodotSaveService.cs` to use `res://../../Save/` and implemented migration from `user://` to this new folder. | `res://../../` natively escapes the IslandSurvivor folder to target the .sln root. Adding dynamic `EnsureDirectoryExists()` and checking `.json` files enables automatic migration without data loss. |
