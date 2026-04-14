@@ -34,3 +34,8 @@
 | **Request** | **AI Contribution** | **Decision Reasoning** |
 | :--- | :--- | :--- |
 | Move Godot saves to root `Save` folder. | Updated `GodotSaveService.cs` to use `res://../../Save/` and implemented migration from `user://` to this new folder. | `res://../../` natively escapes the IslandSurvivor folder to target the .sln root. Adding dynamic `EnsureDirectoryExists()` and checking `.json` files enables automatic migration without data loss. |
+
+### $(date +'%Y-%m-%d') - [Level Architecture Refactoring]
+| **Request** | Extract common elements (Player, UI CanvasLayer, and ScoreManager) from various level scenes into a single inheritable `LevelBase.tscn` to simplify level design and support future Score tracking systems. |
+| **AI Contribution** | Created `LevelBase.tscn` incorporating `MapContainer`, `Player`, `ScoreManager`, and UI nodes (`CanvasLayer` containing `PlayerHUD`, `NavigationMenu`, and `MaterialsMenuPlanner`). Then modified `Level1` through `Level5` and `PlayerHub` to inherit from `LevelBase.tscn`, specifically appending their respective map assets and individual portals to the inherited tree. |
+| **Decision Reasoning** | Aligning with the N-Tier architecture principles, a shared Godot Base Scene allows unified inclusion of shared nodes like the `ScoreManager` without manually replicating them across scenes, ensuring maintainability and adherence to DRY principles. |
