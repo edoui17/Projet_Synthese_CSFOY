@@ -1,0 +1,48 @@
+[gd_scene format=3 uid="uid://cax2j3b2g36d"]
+
+[ext_resource type="PackedScene" uid="uid://cqo7rlgy61vfa" path="res://Scenes/Player/Player.tscn" id="1_player"]
+[ext_resource type="PackedScene" uid="uid://cwdf5881am4rs" path="res://Nodes/ScoreManager/ScoreManager.tscn" id="2_score"]
+[ext_resource type="PackedScene" uid="uid://djv45romp3vxj" path="res://Scenes/HomeMap/PlayerHUD.tscn" id="3_hud"]
+[ext_resource type="PackedScene" uid="uid://c7w3b4h8f6j0a" path="res://Scenes/NavigationMenu/NavigationMenu.tscn" id="4_nav"]
+[ext_resource type="PackedScene" uid="uid://du6mrtfohbxi8" path="res://Scenes/GameMaterialsPlanner/MaterialsMenuPlanner.tscn" id="5_mat"]
+
+[node name="Main" type="Node2D"]
+
+[node name="MapContainer" type="Node2D" parent="."]
+
+[node name="Player" parent="." instance=ExtResource("1_player")]
+
+[node name="ScoreManager" parent="." instance=ExtResource("2_score")]
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="PlayerHUD" parent="CanvasLayer" instance=ExtResource("3_hud")]
+
+[node name="NavigationMenu" parent="CanvasLayer" instance=ExtResource("4_nav")]
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 726.0
+offset_top = 174.0
+offset_right = 726.0
+offset_bottom = 174.0
+grow_horizontal = 1
+grow_vertical = 1
+scale = Vector2(0.5, 0.5)
+size_flags_horizontal = 4
+size_flags_vertical = 4
+mouse_filter = 2
+
+[node name="GameMaterialControl" parent="CanvasLayer" instance=ExtResource("5_mat")]
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 726.0
+offset_top = 174.0
+offset_right = 726.0
+offset_bottom = 174.0
+grow_horizontal = 1
+grow_vertical = 1
+scale = Vector2(0.5, 0.5)
+size_flags_horizontal = 4
+size_flags_vertical = 4
