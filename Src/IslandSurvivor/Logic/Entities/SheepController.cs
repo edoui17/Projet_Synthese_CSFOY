@@ -1,14 +1,7 @@
-namespace Core.Domain.Entities;
+namespace IslandSurvivor.Logic.Entities;
 
 using System;
-using System.Numerics;
-
-public static class SheepStates
-{
-    public const string IDLE = "Idle";
-    public const string FLEE = "Flee";
-    public const string DEAD = "Dead";
-}
+using Godot;
 
 public class SheepController
 {
@@ -65,7 +58,7 @@ public class SheepController
 
         if (direction.LengthSquared() > 0)
         {
-            m_currentDirection = Vector2.Normalize(direction);
+            m_currentDirection = direction.Normalized();
         }
         else
         {
