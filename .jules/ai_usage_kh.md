@@ -54,3 +54,22 @@
 | **Request** | **AI Contribution** | **Decision Reasoning** |
 | :--- | :--- | :--- |
 | Audit des Nodes, SRP, paramètres de signaux, QueueFree, et Fix de conflits | Résolution de merge conflicts (GoldStats.tres, test_signal.tscn), renommage des paramètres avec le préfixe `p_` dans les scripts de IslandSurvivor (Signaux et Event handlers), vérification du QueueFree et validation des tres. | Résoudre les conflits Git était primordial car ils créaient des balises invalides empêchant le moteur Godot de charger les ressources. L'audit de SRP a confirmé que Session et Entity Stats devaient rester séparés. Le refactoring des variables respecte la convention stricte p_ pour harmoniser le code. |
+
+### 2026-04-17 - [Audit Phase 4 - Documentation et Clôture]
+- **Request**: Mettre à jour les fichiers du Wiki pour qu'ils reflètent les derniers changements architecturaux de la phase d'audit (Bridge Pattern natif, Dependency Injection via ServiceRegistry) et sceller l'itération 0.1 pour servir de référence.
+- **AI Contribution**:
+  1. `WikiCode/SignalManager.md` réécrit pour indiquer l'utilisation exclusive du Bridge (signaux natifs `+=`) du côté Client Godot.
+  2. `WikiCode/Systeme_Inventaire.md` mis à jour pour indiquer que l'instance de `InventoryManager` provient du `ServiceRegistry` et non d'une instanciation manuelle dans `_Ready()`.
+  3. `WikiCode/ScoreManager.md` mis à jour pour spécifier l'injection de dépendances pour le `ScoreTracker`.
+  4. `WikiCode/SystemeNavigation.md` corrigé avec la syntaxe de signal `+=` et l'utilisation de `ServiceRegistry.Instance.ScoreTracker`.
+  5. Finalisation du document `WikiCode/Audit/Iteration1_Audit.md` en y ajoutant la section de clôture de la Phase 4.
+- **Decision Reasoning**: La documentation doit être strictement "User Oriented". Les exemples précédents montraient encore l'utilisation directe de `WeakEvent` (`.AddListener`) et d'instanciation de Managers (`new Manager()`), ce qui contredisait le nouvel Audit de Phase 2. Les mises à jour s'assurent que les développeurs comprennent comment s'abonner correctement via Godot pour éviter les fuites de mémoire sans enfreindre la séparation N-Tier.
+
+### 2026-04-17 - [Audit Phase 4 - Wiki Maintenance & Cleanup]
+- **Request**: Effectuer une revue de tous les fichiers .md dans le Wiki pour s'assurer qu'ils reflètent l'état actuel du code (identifier les lacunes ou l'obsolescence) et créer de nouvelles pages si des systèmes manquent. Ne pas supprimer Map.md.
+- **AI Contribution**:
+  1. Suppression de `ProceduralMapGeneration.md` car le système de génération procédurale a été abandonné. Conservation de `Map.md`.
+  2. Suppression de `Inventory.md` (fichier vide en double).
+  3. Création de `Architecture_Niveaux.md` pour documenter l'utilisation de l'héritage de scène (`LevelBase.tscn`), l'injection de `MapContainer`, et le positionnement UI via `CanvasLayer`.
+  4. Mise à jour de `CollisionLayers.md` pour clarifier mathématiquement le système de Bitmask (puissance de 2) lié aux IDs des couches Godot.
+- **Decision Reasoning**: La suppression des fichiers obsolètes allège la charge mentale. La conservation de Map.md satisfait les règles établies. La documentation de la nouvelle architecture des niveaux (qui n'était expliquée nulle part de manière centralisée) donne à l'équipe une source de vérité claire et saine pour la suite du développement.

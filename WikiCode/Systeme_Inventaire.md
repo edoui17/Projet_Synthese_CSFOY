@@ -30,8 +30,8 @@ Pour que Godot puisse interagir avec `InventoryManager`, une classe spéciale `I
    - Dans `_EnterTree()`, il s'assure qu'il est l'unique instance (`Instance = this`).
    - Cela lui permet de **survivre aux changements de scènes**. Si le joueur passe de la forêt à la mine, l'inventaire ne sera pas effacé car ce nœud global restera en vie.
 
-2. **Écouteur de Signaux** :
-   Dans `_Ready()`, `InventoryNode` crée une instance de `InventoryManager` et s'abonne au signal global `SignalManager.Instance.OnMaterialDestroyed`.
+2. **Écouteur de Signaux et Injection de Dépendance** :
+   Dans `_Ready()`, `InventoryNode` récupère l'instance unique de `InventoryManager` via le `ServiceRegistry` (`ServiceRegistry.Instance.InventoryManager`) et s'abonne au signal global natif `SignalManager.Instance.MaterialDestroyed`.
 
 ### Le Cycle Complet
 1. Un joueur détruit un arbre.
