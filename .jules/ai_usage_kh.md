@@ -49,3 +49,8 @@
 - **Request**: Audit the core communication layer (ServiceRegistry DI and SignalManager Bridge pattern) to ensure robust memory management and strict N-Tier compliance. Clean up obsolete Godot/Core code logic (like GameManager Map creation).
 - **AI Contribution**: Created `ServiceRegistry` to act as the global DI container. Refactored `SignalManager` to act as a proper Bridge (absorbing `WeakEvents` from Core and re-emitting Godot `[Signal]`). Migrated all UI and Node listeners to use standard Godot C# event syntax (`+=`).
 - **Decision Reasoning**: Using Godot `[Signal]` handles Godot's node lifecycle safely preventing Lapsed Listener leaks upon scene change. Implementing a pure DI `ServiceRegistry` fixes strong coupling and transient state issues.
+
+### 2024-05-30 - [Audit Phase 3 - Ressources et Signaux]
+| **Request** | **AI Contribution** | **Decision Reasoning** |
+| :--- | :--- | :--- |
+| Audit des Nodes, SRP, paramètres de signaux, QueueFree, et Fix de conflits | Résolution de merge conflicts (GoldStats.tres, test_signal.tscn), renommage des paramètres avec le préfixe `p_` dans les scripts de IslandSurvivor (Signaux et Event handlers), vérification du QueueFree et validation des tres. | Résoudre les conflits Git était primordial car ils créaient des balises invalides empêchant le moteur Godot de charger les ressources. L'audit de SRP a confirmé que Session et Entity Stats devaient rester séparés. Le refactoring des variables respecte la convention stricte p_ pour harmoniser le code. |

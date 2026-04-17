@@ -28,10 +28,10 @@ public partial class TestSignalLabel : Label
     CallDeferred(MethodName.UpdateVisuals, p_itemName, p_quantity);
   }
 
-  private void UpdateVisuals(string itemName, int quantity)
+  private void UpdateVisuals(string p_itemName, int p_quantity)
   {
-    Text = $"Récolté : {quantity}x {itemName}";
-    GD.Print($"[SIGNAL] Affichage mis à jour : {itemName} x{quantity}");
+    Text = $"Récolté : {p_quantity}x {p_itemName}";
+    GD.Print($"[SIGNAL] Affichage mis à jour : {p_itemName} x{p_quantity}");
   }
 
   public override void _ExitTree()
