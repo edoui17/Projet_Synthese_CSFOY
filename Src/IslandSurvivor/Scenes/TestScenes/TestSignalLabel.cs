@@ -15,17 +15,17 @@ public partial class TestSignalLabel : Label
       return;
     }
 
-    // Utilisation de la méthode correcte définie dans WeakEvent.cs
-    SignalManager.Instance.OnMaterialDestroyed.AddListener(OnMaterialCollected);
+    // Utilisation des signaux natifs
+    SignalManager.Instance.MaterialDestroyed += OnMaterialCollected;
 
     Text = "En attente de récolte...";
     GD.Print("TestSignalLabel: Prêt et abonné.");
   }
 
-  private void OnMaterialCollected(object sender, ISignalManager.MaterialDestroyedEventArgs e)
+  private void OnMaterialCollected(string p_itemId, string p_itemName, string p_itemType, string p_itemIcon, int p_quantity)
   {
     // Mise à jour sécurisée de l'UI Godot
-    CallDeferred(MethodName.UpdateVisuals, e.Item.Name, e.MaterialQuantity);
+    CallDeferred(MethodName.UpdateVisuals, p_itemName, p_quantity);
   }
 
   private void UpdateVisuals(string itemName, int quantity)
@@ -36,7 +36,9 @@ public partial class TestSignalLabel : Label
 
   public override void _ExitTree()
   {
-    // Nettoyage manuel (même si WeakEvent gère les références mortes)
-    SignalManager.Instance?.OnMaterialDestroyed.RemoveListener(OnMaterialCollected);
+    if (SignalManager.Instance != null)
+    {
+      SignalManager.Instance.MaterialDestroyed -= OnMaterialCollected;
+    }
   }
 }

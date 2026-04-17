@@ -21,15 +21,11 @@ public partial class ScoreManager : Node
     [Signal]
     public delegate void ScoreChangedEventHandler(int p_previousScore, int p_newScore);
 
-    public ScoreManager()
-    {
-        // Inject GodotSaveService into ScoreTracker
-        m_scoreTracker = new ScoreTracker(new GodotSaveService());
-    }
-
     public override void _Ready()
     {
         base._Ready();
+
+        m_scoreTracker = ServiceRegistry.Instance.ScoreTracker;
 
         if (m_sessionResource != null)
         {
