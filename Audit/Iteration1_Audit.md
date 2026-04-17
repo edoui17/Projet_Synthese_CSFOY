@@ -33,3 +33,18 @@ Le scan a révélé plusieurs fichiers enfreignant la règle de l'atomicité (1 
 
 **Résultat :**
 Toutes les compilations se déroulent avec succès après ces modifications.
+
+
+### 4. **[0.1.6] Audit Phase 3 - Ressources et Signaux (Godot Client) :**
+**Analyse :**
+- **S.R.P & Ressources `.tres` :** L'analyse des fichiers `SessionResource` et `EntityStats` a montré qu'ils encadrent des périmètres distincts (Session vs Entité). Les ressources de type `.tres` sont bien utilisées comme des gabarits (Templates) en lecture seule, ce qui garantit qu'il n'y a pas de duplication inutile en mémoire à l'exécution.
+- **Libération mémoire (`QueueFree`) :** L'utilisation de `QueueFree()` sur les ressources épuisées (arbres, minerais, moutons) et autres objets temporaires est correctement mise en place.
+- **Conventions de Nommage :** De nombreux paramètres de méthodes à travers le client Godot (`Src/IslandSurvivor/`) ne respectaient pas le préfixe `p_`. En effet, beaucoup de signaux custom (ex: `StatChangedEventHandler`, `NavigationRequested`) utilisaient des noms de variables sans `p_`.
+- **Merge Conflicts :** Des conflits Git non résolus persistaient dans des fichiers de ressources (comme `GoldStats.tres`, `Gold.tscn` et `test_signal.tscn`), entraînant une instabilité potentielle (par exemple des crashs lors du chargement de ces scènes/ressources ou impossibilité de lancer le projet).
+
+**Actions :**
+- Les conflits Git dans `GoldStats.tres`, `Gold.tscn` et `test_signal.tscn` ont été résolus pour garantir que les scènes et les nœuds chargent les bons fichiers C# et ressources sans erreur.
+- Renommage massif (Refactoring) des paramètres à travers les `delegate` des Signaux (ex: `SignalManager.cs`, `StatManager.cs`) et autres méthodes événementielles (`_Process`, `LoadScene`, `OnStatChanged`) afin qu'ils respectent tous scrupuleusement la convention `p_` (ex: `p_scenePath`, `p_statType`).
+
+**Impact :**
+- **Pour le Joueur :** Les corrections apportées aux conflits Git évitent d'éventuels crashs lors du chargement de la carte (notamment lors du chargement des ressources d'Or ou de la scène de test). Le fait que les ressources `QueueFree()` soient gérées correctement prévient l'augmentation exponentielle de l'utilisation de la RAM et assure que les performances restent stables, même lors de longues sessions de jeu (évitant ainsi des "Saccades visuelles après 5 minutes").

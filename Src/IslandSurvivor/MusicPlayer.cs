@@ -11,11 +11,11 @@ public partial class MusicPlayer : AudioStreamPlayer
         _player.Play();
     }
 
-    public void PlayMusic(AudioStream music)
+    public void PlayMusic(AudioStream p_music)
     {
-        if (_player.Stream == music) return;
+        if (_player.Stream == p_music) return;
 
-        _player.Stream = music;
+        _player.Stream = p_music;
         _player.Play();
     }
 }
