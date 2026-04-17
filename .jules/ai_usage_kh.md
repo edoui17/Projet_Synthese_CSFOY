@@ -64,3 +64,12 @@
   4. `WikiCode/SystemeNavigation.md` corrigé avec la syntaxe de signal `+=` et l'utilisation de `ServiceRegistry.Instance.ScoreTracker`.
   5. Finalisation du document `WikiCode/Audit/Iteration1_Audit.md` en y ajoutant la section de clôture de la Phase 4.
 - **Decision Reasoning**: La documentation doit être strictement "User Oriented". Les exemples précédents montraient encore l'utilisation directe de `WeakEvent` (`.AddListener`) et d'instanciation de Managers (`new Manager()`), ce qui contredisait le nouvel Audit de Phase 2. Les mises à jour s'assurent que les développeurs comprennent comment s'abonner correctement via Godot pour éviter les fuites de mémoire sans enfreindre la séparation N-Tier.
+
+### 2026-04-17 - [Audit Phase 4 - Wiki Maintenance & Cleanup]
+- **Request**: Effectuer une revue de tous les fichiers .md dans le Wiki pour s'assurer qu'ils reflètent l'état actuel du code (identifier les lacunes ou l'obsolescence) et créer de nouvelles pages si des systèmes manquent. Ne pas supprimer Map.md.
+- **AI Contribution**:
+  1. Suppression de `ProceduralMapGeneration.md` car le système de génération procédurale a été abandonné. Conservation de `Map.md`.
+  2. Suppression de `Inventory.md` (fichier vide en double).
+  3. Création de `Architecture_Niveaux.md` pour documenter l'utilisation de l'héritage de scène (`LevelBase.tscn`), l'injection de `MapContainer`, et le positionnement UI via `CanvasLayer`.
+  4. Mise à jour de `CollisionLayers.md` pour clarifier mathématiquement le système de Bitmask (puissance de 2) lié aux IDs des couches Godot.
+- **Decision Reasoning**: La suppression des fichiers obsolètes allège la charge mentale. La conservation de Map.md satisfait les règles établies. La documentation de la nouvelle architecture des niveaux (qui n'était expliquée nulle part de manière centralisée) donne à l'équipe une source de vérité claire et saine pour la suite du développement.
