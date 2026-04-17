@@ -27,7 +27,7 @@ public partial class MaterialsMenuPlanner : Control
 
   public override void _Ready()
   {
-    _shopManager = new Core.Managers.ShopManager();
+    _shopManager = IslandSurvivor.Globals.ServiceRegistry.Instance.ShopManager;
 
     // On s'assure que le menu est caché au lancement
     Visible = false;
@@ -39,25 +39,25 @@ public partial class MaterialsMenuPlanner : Control
     if (_buyLuckBtn != null) _buyLuckBtn.Pressed += () => TryPurchaseUpgrade("Viande", StatType.Luck);
     if (_buyIslandBtn != null) _buyIslandBtn.Pressed += TryPurchaseIsland;
 
-    SignalManager.Instance.OnBuildingShopToggled.AddListener(OnBuildingShopToggled);
+    SignalManager.Instance.BuildingShopToggled += OnBuildingShopToggled;
   }
 
   protected override void Dispose(bool disposing)
   {
       if (disposing)
       {
-          if (SignalManager.Instance != null && SignalManager.Instance.OnBuildingShopToggled != null)
+          if (SignalManager.Instance != null)
           {
-              SignalManager.Instance.OnBuildingShopToggled.RemoveListener(OnBuildingShopToggled);
+              SignalManager.Instance.BuildingShopToggled -= OnBuildingShopToggled;
           }
       }
       base.Dispose(disposing);
   }
 
-  private void OnBuildingShopToggled(object sender, ISignalManager.BuildingShopToggledEventArgs e)
+  private void OnBuildingShopToggled(bool p_isOpen, string p_buildingId)
   {
-      Visible = e.IsOpen;
-      GD.Print($"[Menu] Shop Toggled: {Visible} (Building: {e.BuildingId})");
+      Visible = p_isOpen;
+      GD.Print($"[Menu] Shop Toggled: {Visible} (Building: {p_buildingId})");
   }
 
   public void ToggleMenu()
