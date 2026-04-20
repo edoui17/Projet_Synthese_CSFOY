@@ -28,25 +28,8 @@ public partial class MapRenderer : Node2D
     {
         base._Ready();
 
-        if (GameManager.Instance == null || GameManager.Instance.MapManager == null)
-        {
-            GD.PrintErr("MapRenderer: GameManager or MapManager is not available.");
-            return;
-        }
-
-        // Generate map via Manager
-        IMapData mapData = GameManager.Instance.MapManager.GenerateNewMap(MapWidth, MapHeight, MapSeed);
-
-        // Render the generated map
-        RenderMap(mapData);
-
-        // Update spawn marker
-        if (SpawnMarker != null)
-        {
-            (int sx, int sy) = GameManager.Instance.MapManager.GetPlayerSpawnPoint();
-            // Assuming tile size is 64x64, we position the marker at the center of the tile
-            SpawnMarker.Position = new Vector2(sx * 64 + 32, sy * 64 + 32);
-        }
+        GD.Print("MapRenderer: Map Generation is currently paused/disabled as per instructions.");
+        return;
     }
 
     private void RenderMap(IMapData p_mapData)

@@ -82,21 +82,22 @@ Le `NavigationManager` en Godot écoute `OnNavigationRequested`. Avant de change
 // Extrait de NavigationManager.cs
 public override void _Ready()
 {
-    SignalManager.Instance.OnNavigationRequested.AddListener(OnNavigationRequested);
+    // Utilisation du signal natif Godot (Bridge Pattern)
+    SignalManager.Instance.NavigationRequested += OnNavigationRequested;
 }
 
-private void OnNavigationRequested(object p_sender, ISignalManager.NavigationRequestedEventArgs p_args)
+private void OnNavigationRequested(string p_islandId, string p_scenePath, string p_biome, int p_difficulty, int p_resourceCost, int p_dangerLevel)
 {
     // 1. Sauvegarde de l'inventaire via GodotSaveService
     var saveService = new GodotSaveService();
     string inventoryJson = JsonSerializer.Serialize(InventoryNode.Instance.Manager.GetAllSlots());
     saveService.SaveData("inventory_save.json", inventoryJson);
 
-    // 2. Mise à jour et sauvegarde de la session
-    var tracker = GetTree().CurrentScene.GetNodeOrNull<ScoreManager>("ScoreManager")?.GetTracker();
+    // 2. Mise à jour et sauvegarde de la session via le ServiceRegistry
+    var tracker = ServiceRegistry.Instance.ScoreTracker;
     if (tracker != null)
     {
-        tracker.UpdateCurrentIsland(p_args.Destination.Id);
+        tracker.UpdateCurrentIsland(p_islandId);
         string sessionJson = JsonSerializer.Serialize(tracker.GetSessionState());
         saveService.SaveData("session_save.json", sessionJson);
     }
@@ -105,7 +106,7 @@ private void OnNavigationRequested(object p_sender, ISignalManager.NavigationReq
     var slm = GetNodeOrNull<Managers.SceneLoadingManager>("/root/SceneLoadingManager");
     if (slm != null)
     {
-        slm.LoadScene(p_args.Destination.ScenePath);
+        slm.LoadScene(p_scenePath);
     }
 }
 ```

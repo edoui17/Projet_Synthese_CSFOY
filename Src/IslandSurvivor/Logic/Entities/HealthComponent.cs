@@ -1,7 +1,7 @@
-namespace Core.Domain.Entities;
+namespace IslandSurvivor.Logic.Entities;
 
 using System;
-using Core.Interfaces;
+using IslandSurvivor.Interfaces;
 
 public class HealthComponent : IHealthComponent
 {

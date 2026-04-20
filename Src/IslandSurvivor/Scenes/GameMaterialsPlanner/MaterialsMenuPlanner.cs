@@ -27,7 +27,7 @@ public partial class MaterialsMenuPlanner : Control
 
   public override void _Ready()
   {
-    _shopManager = new Core.Managers.ShopManager();
+    _shopManager = IslandSurvivor.Globals.ServiceRegistry.Instance.ShopManager;
 
     // On s'assure que le menu est caché au lancement
     Visible = false;
@@ -39,25 +39,25 @@ public partial class MaterialsMenuPlanner : Control
     if (_buyLuckBtn != null) _buyLuckBtn.Pressed += () => TryPurchaseUpgrade("Viande", StatType.Luck);
     if (_buyIslandBtn != null) _buyIslandBtn.Pressed += TryPurchaseIsland;
 
-    SignalManager.Instance.OnBuildingShopToggled.AddListener(OnBuildingShopToggled);
+    SignalManager.Instance.BuildingShopToggled += OnBuildingShopToggled;
   }
 
-  protected override void Dispose(bool disposing)
+  protected override void Dispose(bool p_disposing)
   {
-      if (disposing)
+      if (p_disposing)
       {
-          if (SignalManager.Instance != null && SignalManager.Instance.OnBuildingShopToggled != null)
+          if (SignalManager.Instance != null)
           {
-              SignalManager.Instance.OnBuildingShopToggled.RemoveListener(OnBuildingShopToggled);
+              SignalManager.Instance.BuildingShopToggled -= OnBuildingShopToggled;
           }
       }
-      base.Dispose(disposing);
+      base.Dispose(p_disposing);
   }
 
-  private void OnBuildingShopToggled(object sender, ISignalManager.BuildingShopToggledEventArgs e)
+  private void OnBuildingShopToggled(bool p_isOpen, string p_buildingId)
   {
-      Visible = e.IsOpen;
-      GD.Print($"[Menu] Shop Toggled: {Visible} (Building: {e.BuildingId})");
+      Visible = p_isOpen;
+      GD.Print($"[Menu] Shop Toggled: {Visible} (Building: {p_buildingId})");
   }
 
   public void ToggleMenu()
@@ -66,22 +66,22 @@ public partial class MaterialsMenuPlanner : Control
     GD.Print($"[Menu] Affichage : {Visible}");
   }
 
-  private void TryPurchaseUpgrade(string resourceId, StatType statType)
+  private void TryPurchaseUpgrade(string p_resourceId, StatType p_statType)
   {
-    int currentLevel = _upgradeCounts[statType];
+    int currentLevel = _upgradeCounts[p_statType];
     int cost = _shopManager.CalculateCost(currentLevel);
 
-    if (_shopManager.CanAffordUpgrade(InventoryNode.Instance.Manager, resourceId, cost))
+    if (_shopManager.CanAffordUpgrade(InventoryNode.Instance.Manager, p_resourceId, cost))
     {
-      SignalManager.Instance.EmitResourceSpent(this, resourceId, cost);
-      SignalManager.Instance.EmitStatUpgradePurchased(this, statType);
+      SignalManager.Instance.EmitResourceSpent(this, p_resourceId, cost);
+      SignalManager.Instance.EmitStatUpgradePurchased(this, p_statType);
 
-      _upgradeCounts[statType]++;
-      GD.Print($"[Menu] {statType} niveau {_upgradeCounts[statType]} acheté !");
+      _upgradeCounts[p_statType]++;
+      GD.Print($"[Menu] {p_statType} niveau {_upgradeCounts[p_statType]} acheté !");
     }
     else
     {
-      GD.Print($"[Menu] Ressources insuffisantes pour {statType}.");
+      GD.Print($"[Menu] Ressources insuffisantes pour {p_statType}.");
     }
   }
 
