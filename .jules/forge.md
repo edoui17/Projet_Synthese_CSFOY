@@ -37,3 +37,9 @@
 - **Merge Conflicts in .tres/.tscn :** Des marqueurs de fusion Git (<<<<<<< HEAD) au sein des fichiers texte Godot `.tres` et `.tscn` corrompent le système de parsing interne de Godot. Ils doivent être corrigés au niveau texte via Bash ou l'éditeur car l'UI de Godot ne les surmontera pas.
 - **Paramètres p_ :** Une vigilance particulière est requise sur les `delegate` définissant les `[Signal]` en C#. Le parseur de C# vers Godot accepte n'importe quel nom de paramètre, il faut donc s'astreindre soi-même à préfixer par `p_` pour des raisons de conformité.
 - **QueueFree() :** Les ressources destructibles (Arbres, Moutons, Minerais) de ce projet appellent bien `QueueFree()` à la fin de leur cycle de vie, garantissant la récupération de la mémoire (Memory Leak Prevention).
+
+### 2025-05-14 - Database Schema & EF Core Infrastructure
+- **Decision**: Implemented a SQL Server schema and EF Core DbContext for meta-progression persistence.
+- **Architecture**: Tables include `Players`, `ResourceItems`, `Inventory`, `Stats`, and `PlayerConfig`. Used GUIDs (`uniqueidentifier`) for primary keys to ensure global uniqueness and ease of sync between Godot client and API.
+- **EF Core Mapping**: Utilized Fluent API in `AppDbContext` to enforce strict schema constraints (max lengths, defaults, cascading deletes) and to map one-to-one relationships for Stats and Config.
+- **SQL Script**: A standalone `schema.sql` was created in `Src/Infrastructure/database/script/` for manual database initialization/documentation alongside the EF Core implementation.
