@@ -20,17 +20,17 @@ public partial class SceneLoadingManager : Node
         Instance = this;
     }
 
-    public void LoadScene(string scenePath)
+    public void LoadScene(string p_scenePath)
     {
-        CallDeferred(nameof(ChangeScene), scenePath);
+        CallDeferred(nameof(ChangeScene), p_scenePath);
     }
 
-    private void ChangeScene(string scenePath)
+    private void ChangeScene(string p_scenePath)
     {
-        var error = GetTree().ChangeSceneToFile(scenePath);
+        var error = GetTree().ChangeSceneToFile(p_scenePath);
         if (error != Error.Ok)
         {
-            GD.PrintErr($"[SceneLoadingManager] Failed to load scene {scenePath}. Error: {error}");
+            GD.PrintErr($"[SceneLoadingManager] Failed to load scene {p_scenePath}. Error: {error}");
         }
     }
 }

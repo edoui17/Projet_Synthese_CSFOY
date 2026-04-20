@@ -4,18 +4,20 @@ To properly organize physics interactions between different entities (Player, Re
 
 ## Godot Physics Layers defined
 
-1. **Environnement (Layer 1):**
+*Note : Les couches (Layers) Godot utilisent un système de Bitmask (puissance de 2). La couche 1 a la valeur 1, la couche 2 a la valeur 2, la couche 3 a la valeur 4, la couche 4 a la valeur 8, et la couche 5 a la valeur 16.*
+
+1. **Environnement (Layer 1 - Value 1):**
    - Used for static environment structures (ground, walls, boundaries, TileMap limits) that block movement.
-2. **Interaction (Layer 2):**
+2. **Interaction (Layer 2 - Value 2):**
    - Used for objects the player can interact with (e.g., `BuildingNode`, `Portal`).
-3. **Player (Layer 3):**
+3. **Player (Layer 3 - Value 4):**
    - Used by the main `CharacterBody2D` of the player.
-4. **Combat (Layer 4):**
+4. **Combat (Layer 4 - Value 8):**
    - Used by player weapons and tools during attack animations (`WeaponInteractionArea`).
-5. **Ressource (Layer 5):**
+5. **Ressource (Layer 5 - Value 16):**
    - Used by resource entities (`Gold`, `Rock`, `Trees`, `Sheep`) that can be attacked/farmed.
 
-## Common Setups
+## Common Setups (Bitmask Values)
 
 * **Player:**
   * Root node (`CharacterBody2D`): `collision_layer = 4` (Player), `collision_mask = 1` (Environnement).

@@ -13,8 +13,8 @@ public class ScoreTracker : IScoreTracker
     private int m_highScore;
     private const string HIGH_SCORE_FILE = "highscore.json";
 
-    private readonly WeakEvent<IScoreTracker.ScoreChangedEventArgs> m_onScoreChanged = new WeakEvent<IScoreTracker.ScoreChangedEventArgs>();
-    public WeakEvent<IScoreTracker.ScoreChangedEventArgs> OnScoreChanged => m_onScoreChanged;
+    private readonly WeakEvent<ScoreChangedEventArgs> m_onScoreChanged = new WeakEvent<ScoreChangedEventArgs>();
+    public WeakEvent<ScoreChangedEventArgs> OnScoreChanged => m_onScoreChanged;
 
     public int CurrentScore => m_sessionState.Score;
     public int HighScore => m_highScore;
@@ -51,7 +51,7 @@ public class ScoreTracker : IScoreTracker
         int previousScore = m_sessionState.Score;
         m_sessionState.Score += p_amount;
 
-        m_onScoreChanged.Invoke(this, new IScoreTracker.ScoreChangedEventArgs(previousScore, m_sessionState.Score));
+        m_onScoreChanged.Invoke(this, new ScoreChangedEventArgs(previousScore, m_sessionState.Score));
     }
 
     public void UpdateHighScore()

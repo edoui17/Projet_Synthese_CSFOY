@@ -1,7 +1,8 @@
 using Godot;
 using System;
 using Core.Domain;
-using Core.Domain.Entities;
+using IslandSurvivor.Logic.Entities;
+using IslandSurvivor.Interfaces;
 using Core.Interfaces;
 
 public partial class Sheep : CharacterBody2D, INpc, IDamageable
@@ -41,8 +42,7 @@ public partial class Sheep : CharacterBody2D, INpc, IDamageable
         m_sheepController.Update((float)p_delta);
 
         Vector2 targetVelocity = Vector2.Zero;
-        System.Numerics.Vector2 controllerDir = m_sheepController.CurrentDirection;
-        Vector2 direction = new Vector2(controllerDir.X, controllerDir.Y);
+        Vector2 direction = m_sheepController.CurrentDirection;
 
         if (m_sheepController.CurrentState == SheepStates.IDLE)
         {
@@ -75,8 +75,8 @@ public partial class Sheep : CharacterBody2D, INpc, IDamageable
 
         if (!m_healthComponent.IsDead && p_attacker is Node2D attackerNode)
         {
-            System.Numerics.Vector2 myPos = new System.Numerics.Vector2(GlobalPosition.X, GlobalPosition.Y);
-            System.Numerics.Vector2 attackerPos = new System.Numerics.Vector2(attackerNode.GlobalPosition.X, attackerNode.GlobalPosition.Y);
+            Vector2 myPos = GlobalPosition;
+            Vector2 attackerPos = attackerNode.GlobalPosition;
 
             m_sheepController.StartFleeing(myPos, attackerPos);
 

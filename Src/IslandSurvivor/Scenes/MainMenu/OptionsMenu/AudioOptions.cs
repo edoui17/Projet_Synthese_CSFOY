@@ -18,21 +18,21 @@ public partial class AudioOptions : Control
         sfxSlider.Value = Mathf.DbToLinear(AudioServer.GetBusVolumeDb(sfxBusIndex));
     }
 
-    public void _on_master_soudn_h_slider_value_changed(double value)
+    public void _on_master_soudn_h_slider_value_changed(double p_value)
     {
-        AudioServer.SetBusVolumeDb(masterBusIndex, Mathf.LinearToDb((float)value));
+        AudioServer.SetBusVolumeDb(masterBusIndex, Mathf.LinearToDb((float)p_value));
         GD.Print("Slider master Modifié");
     }
 
-    public void _on_musicslider_value_changed(double value)
+    public void _on_musicslider_value_changed(double p_value)
     {
-        AudioServer.SetBusVolumeDb(musicBusIndex, Mathf.LinearToDb((float)value));
+        AudioServer.SetBusVolumeDb(musicBusIndex, Mathf.LinearToDb((float)p_value));
         GD.Print("Slider music Modifié");
     }
 
-    public void _on_sfx_slider_value_changed(double value)
+    public void _on_sfx_slider_value_changed(double p_value)
     {
-        AudioServer.SetBusVolumeDb(sfxBusIndex, Mathf.LinearToDb((float)value));
+        AudioServer.SetBusVolumeDb(sfxBusIndex, Mathf.LinearToDb((float)p_value));
         GD.Print("Slider SFX Modifié");
     }
 }

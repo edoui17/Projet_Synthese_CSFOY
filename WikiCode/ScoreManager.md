@@ -21,7 +21,7 @@ Le système de score a été conçu en respectant l'architecture N-Tier du proje
 ### B. Mettre en place le ScoreManager
 1. Ajoutez le nœud `ScoreManager.cs` dans votre scène principale ou votre `GameManager`.
 2. Dans l'inspecteur, assignez le template `SessionResource` que vous venez de créer.
-3. Le `ScoreManager` s'occupera automatiquement d'instancier le `ScoreTracker` du Core et de lui injecter le `GodotSaveService`.
+3. Le `ScoreManager` s'occupera automatiquement de récupérer l'instance du `ScoreTracker` du Core via l'injection de dépendances (`ServiceRegistry.Instance.ScoreTracker`).
 
 ---
 
