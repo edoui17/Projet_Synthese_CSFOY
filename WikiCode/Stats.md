@@ -74,3 +74,6 @@ Si vous devez ajouter une nouvelle statistique au jeu (ex: `Defense` ou `Mana`) 
 1. Ajoutez l'entrée dans l'enum `/Src/Core/Managers/Stats/StatType.cs`.
 2. Ajoutez la propriété `[Export]` correspondante dans le fichier ressource `/Src/IslandSurvivor/Resources/EntityStats.cs`.
 3. Ajoutez l'entrée dans l'initialisation du dictionnaire à l'intérieur de `_Ready()` dans `/Src/IslandSurvivor/Nodes/StatManager.cs`.
+
+## Persistance (Méta-Progression)
+Les statistiques de méta-progression (améliorations permanentes) sont gérées séparément via le [Persistence System](./Persistence_System.md). Elles sont stockées en base de données et chargées au démarrage du jeu pour être appliquées comme bonus permanents via `AddPermanentBonus`.

@@ -1,8 +1,8 @@
 using System;
 
-namespace Infrastructure.Entities;
+namespace Core.Domain;
 
-public class PlayerConfigEntity
+public class PlayerConfig
 {
     public Guid PlayerId { get; set; }
     public float MasterVolume { get; set; }
@@ -11,5 +11,5 @@ public class PlayerConfigEntity
     public string? Resolution { get; set; }
     public bool IsFullScreen { get; set; }
 
-    public virtual PlayerEntity? Player { get; set; }
+    public virtual Player? Player { get; set; }
 }

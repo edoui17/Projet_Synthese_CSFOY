@@ -1,8 +1,8 @@
 using System;
 
-namespace Infrastructure.Entities;
+namespace Core.Domain;
 
-public class StatsEntity
+public class PlayerStats
 {
     public Guid PlayerId { get; set; }
     public float Health { get; set; }
@@ -10,5 +10,5 @@ public class StatsEntity
     public float Speed { get; set; }
     public float Luck { get; set; }
 
-    public virtual PlayerEntity? Player { get; set; }
+    public virtual Player? Player { get; set; }
 }
