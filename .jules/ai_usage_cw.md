@@ -7,3 +7,10 @@
 4. Implemented `AppDbContext` in `Src/Infrastructure` mapping Core models via Fluent API.
 5. Translated and updated persistence documentation to English (`WikiCode/Persistence_System.md`).
 **Decision Reasoning**: Adhering to strict N-Tier and "Interfaces First" requirements ensures long-term maintainability and clean separation of concerns. Moving entities to the Core Domain allows all layers (API, Godot, Infrastructure) to share the same business models without cyclic dependencies.
+### 2026-04-20 - [US 7.1.1] | Implementation of DAL and SQL Schema | Defined persistence scope as Meta-Progression and instructed on EF Core integration within Infrastructure layer.
+**AI Contribution**:
+1. Updated SQL schema with `ExtraStats` column for flexibility.
+2. Implemented repository interfaces in Core and implementations in Infrastructure.
+3. Mapped Infrastructure entities to Core domain models within the repositories.
+4. Documented the use of `ExtraStats` for future-proofing stats.
+**Decision Reasoning**: Column-per-stat optimizes reads for core meta-progression, while a JSON column provides the necessary flexibility for future attributes without schema overhead.

@@ -28,6 +28,7 @@ CREATE TABLE Stats (
     Attack FLOAT NOT NULL DEFAULT 0,
     Speed FLOAT NOT NULL DEFAULT 0,
     Luck FLOAT NOT NULL DEFAULT 0,
+    ExtraStats NVARCHAR(MAX) NULL, -- JSON column for future flexibility
     CONSTRAINT FK_Stats_Players FOREIGN KEY (PlayerId) REFERENCES Players(Id) ON DELETE CASCADE
 );
 

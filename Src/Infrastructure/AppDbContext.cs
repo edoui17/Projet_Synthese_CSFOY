@@ -1,4 +1,4 @@
-using Core.Domain;
+using Infrastructure.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure;
@@ -9,18 +9,18 @@ public class AppDbContext : DbContext
     {
     }
 
-    public DbSet<Player> Players { get; set; }
-    public DbSet<ResourceItem> ResourceItems { get; set; }
-    public DbSet<InventoryEntry> Inventory { get; set; }
-    public DbSet<PlayerStats> Stats { get; set; }
-    public DbSet<PlayerConfig> PlayerConfigs { get; set; }
+    public DbSet<PlayerEntity> Players { get; set; }
+    public DbSet<ResourceItemEntity> ResourceItems { get; set; }
+    public DbSet<InventoryEntity> Inventory { get; set; }
+    public DbSet<StatsEntity> Stats { get; set; }
+    public DbSet<PlayerConfigEntity> PlayerConfigs { get; set; }
 
     protected override void OnModelCreating(ModelBuilder p_modelBuilder)
     {
         base.OnModelCreating(p_modelBuilder);
 
         // Player Configuration
-        p_modelBuilder.Entity<Player>(entity =>
+        p_modelBuilder.Entity<PlayerEntity>(entity =>
         {
             entity.ToTable("Players");
             entity.HasKey(e => e.Id);
@@ -30,7 +30,7 @@ public class AppDbContext : DbContext
         });
 
         // ResourceItem Configuration
-        p_modelBuilder.Entity<ResourceItem>(entity =>
+        p_modelBuilder.Entity<ResourceItemEntity>(entity =>
         {
             entity.ToTable("ResourceItems");
             entity.HasKey(e => e.Id);
@@ -41,7 +41,7 @@ public class AppDbContext : DbContext
         });
 
         // Inventory Configuration (Join Table)
-        p_modelBuilder.Entity<InventoryEntry>(entity =>
+        p_modelBuilder.Entity<InventoryEntity>(entity =>
         {
             entity.ToTable("Inventory");
             entity.HasKey(e => new { e.PlayerId, e.ResourceItemId });
@@ -60,19 +60,19 @@ public class AppDbContext : DbContext
         });
 
         // Stats Configuration (One-to-One)
-        p_modelBuilder.Entity<PlayerStats>(entity =>
+        p_modelBuilder.Entity<StatsEntity>(entity =>
         {
             entity.ToTable("Stats");
             entity.HasKey(e => e.PlayerId);
 
             entity.HasOne(e => e.Player)
                 .WithOne(p => p.Stats)
-                .HasForeignKey<PlayerStats>(e => e.PlayerId)
+                .HasForeignKey<StatsEntity>(e => e.PlayerId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
 
         // PlayerConfig Configuration (One-to-One)
-        p_modelBuilder.Entity<PlayerConfig>(entity =>
+        p_modelBuilder.Entity<PlayerConfigEntity>(entity =>
         {
             entity.ToTable("PlayerConfig");
             entity.HasKey(e => e.PlayerId);
@@ -81,7 +81,7 @@ public class AppDbContext : DbContext
 
             entity.HasOne(e => e.Player)
                 .WithOne(p => p.Config)
-                .HasForeignKey<PlayerConfig>(e => e.PlayerId)
+                .HasForeignKey<PlayerConfigEntity>(e => e.PlayerId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
     }

@@ -43,3 +43,7 @@
 - **Interfaces**: Introduced `IRepository<T>` in `Src/Core/Interfaces` following the "Interfaces First" principle.
 - **Infrastructure**: `AppDbContext` in `Src/Infrastructure` maps Core Domain models using Fluent API. Used GUIDs (`uniqueidentifier`) for primary keys and fixed string ID lengths to match the SQL schema.
 - **Documentation**: All persistence documentation is maintained in English (`WikiCode/Persistence_System.md`) to comply with project standards.
+
+### 2025-05-14 - Stats Flexibility via ExtraStats
+- **Decision**: Added an `ExtraStats` NVARCHAR(MAX) column to the `Stats` table.
+- **Reasoning**: To allow future flexibility for additional stats without requiring database migrations. This column is intended to store JSON data for stats not covered by the main columns (Health, Attack, Speed, Luck).
