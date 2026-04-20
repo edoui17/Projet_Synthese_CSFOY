@@ -22,24 +22,25 @@ public partial class InventoryNode : Node
 
     public override void _Ready()
     {
-        m_inventoryManager = new InventoryManager();
+        m_inventoryManager = IslandSurvivor.Globals.ServiceRegistry.Instance.InventoryManager;
 
-        // Connect to the global SignalManager
-        SignalManager.Instance.OnMaterialDestroyed.AddListener(OnMaterialDestroyed);
-        SignalManager.Instance.OnResourceSpent.AddListener(OnResourceSpent);
+        // Connect to the global SignalManager using native Godot signals
+        SignalManager.Instance.MaterialDestroyed += OnMaterialDestroyed;
+        SignalManager.Instance.ResourceSpent += OnResourceSpent;
 
         GD.Print("InventoryNode ready. Listening for material destruction and resource spent events.");
     }
 
-    private void OnMaterialDestroyed(object p_sender, ISignalManager.MaterialDestroyedEventArgs p_args)
+    private void OnMaterialDestroyed(string p_itemId, string p_itemName, string p_itemType, string p_itemIcon, int p_quantity)
     {
-        m_inventoryManager.AddMaterial(p_args.Item, p_args.MaterialQuantity);
-        GD.Print($"[Inventory] Added {p_args.MaterialQuantity} of {p_args.Item.Name} ({p_args.Item.Id}). Total: {m_inventoryManager.GetMaterialCount(p_args.Item.Id)}");
+        Core.Domain.ResourceItem item = new Core.Domain.ResourceItem(p_itemId, p_itemName, p_itemType, p_itemIcon);
+        m_inventoryManager.AddMaterial(item, p_quantity);
+        GD.Print($"[Inventory] Added {p_quantity} of {p_itemName} ({p_itemId}). Total: {m_inventoryManager.GetMaterialCount(p_itemId)}");
     }
 
-    private void OnResourceSpent(object p_sender, ISignalManager.ResourceSpentEventArgs p_args)
+    private void OnResourceSpent(string p_resourceId, int p_amount)
     {
-        ConsumeItem(p_args.ResourceId, p_args.Amount);
+        ConsumeItem(p_resourceId, p_amount);
     }
 
     // Example of Consumption for validation purposes (Scenario 3)
@@ -53,8 +54,8 @@ public partial class InventoryNode : Node
     {
         if (SignalManager.Instance != null)
         {
-            SignalManager.Instance.OnMaterialDestroyed.RemoveListener(OnMaterialDestroyed);
-            SignalManager.Instance.OnResourceSpent.RemoveListener(OnResourceSpent);
+            SignalManager.Instance.MaterialDestroyed -= OnMaterialDestroyed;
+            SignalManager.Instance.ResourceSpent -= OnResourceSpent;
         }
     }
 }

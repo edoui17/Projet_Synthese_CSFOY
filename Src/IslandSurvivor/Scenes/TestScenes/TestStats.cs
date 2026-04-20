@@ -54,9 +54,9 @@ public partial class TestStats : Node2D
     _statManager.AddPermanentBonus(StatType.Speed, 5f);
   }
 
-  private void OnStatChanged(int statType, float currentValue, float effectiveMaxValue)
+  private void OnStatChanged(int p_statType, float p_currentValue, float p_effectiveMaxValue)
   {
-    StatType type = (StatType)statType;
-    GD.Print($"[SIGNAL] {type} Updated -> Current: {currentValue}, Max: {effectiveMaxValue}");
+    StatType type = (StatType)p_statType;
+    GD.Print($"[SIGNAL] {type} Updated -> Current: {p_currentValue}, Max: {p_effectiveMaxValue}");
   }
 }

@@ -50,17 +50,26 @@ void EmitScoreChanged(object p_sender, int p_newScore);
 
 **Implémentation dans le Client Godot :**
 ```csharp
-// S'abonner à un événement (Dans un Node, par ex. _Ready)
-SignalManager.Instance.OnScoreChanged.AddListener(OnScoreChangedHandler);
+// S'abonner au signal natif Godot (Bridge)
+SignalManager.Instance.ScoreChanged += OnScoreChangedHandler;
 
-// Émettre un événement
+// Émettre un événement (Il passera par le Core avant de revenir en Godot)
 SignalManager.Instance.EmitScoreChanged(this, 1500);
 
 // Méthode de réception
-private void OnScoreChangedHandler(object p_sender, ISignalManager.ScoreChangedEventArgs p_args)
+private void OnScoreChangedHandler(int p_previousScore, int p_newScore)
 {
-    // Mettre à jour l'UI avec p_args.NewScore
+    // Mettre à jour l'UI avec p_newScore
+}
+
+public override void _ExitTree()
+{
+    // Toujours se désabonner des signaux natifs pour éviter les fuites ou erreurs de Godot
+    if (SignalManager.Instance != null)
+    {
+        SignalManager.Instance.ScoreChanged -= OnScoreChangedHandler;
+    }
 }
 ```
 
-*Note : Bien que `WeakEvent` utilise des références faibles, il est toujours recommandé de se désabonner (`RemoveListener`) lors de la destruction d'un objet (`_ExitTree`) pour des raisons de performance et de bonnes pratiques.*
+*Note sur le Bridge : Le Godot Client ne doit jamais utiliser `.AddListener` pour écouter des événements, seulement `+=` sur les signaux natifs (`[Signal]`). Les `WeakEvent` avec `.AddListener` sont réservés exclusivement à la logique interne du Core.*
