@@ -1,0 +1,2 @@
+
+### 2026-04-21 - [US 6.1 - Base Movement and Enemy Navigation] | Implement wandering, avoid obstacles, refactor Sheep, create Soldier | Provided Core IEnemy interface, state controllers (Passive/Agressor), fixed Sheep navigation integration, created Soldier with chase logic, and documented Godot node setup in Wiki. | Maintained N-Tier structure by keeping controllers in Logic layer while letting Godot scripts handle NavigationAgent2D and MovementController interactions.
