@@ -22,16 +22,13 @@ public partial class StatManager : Node
     [Signal]
     public delegate void StatChangedEventHandler(int p_statType, float p_currentValue, float p_effectiveMaxValue);
 
-    public StatManager()
-    {
-        m_statTracker = new StatTracker();
-    }
-
     public override void _Ready()
     {
         base._Ready();
 
-        SignalManager.Instance.OnStatUpgradePurchased.AddListener(OnStatUpgradePurchased);
+        m_statTracker = IslandSurvivor.Globals.ServiceRegistry.Instance.StatTracker;
+
+        SignalManager.Instance.StatUpgradePurchased += OnStatUpgradePurchased;
 
         if (m_baseStatsResource != null)
         {
@@ -83,11 +80,11 @@ public partial class StatManager : Node
         EmitSignal(SignalName.StatChanged, (int)p_args.StatType, p_args.CurrentValue, p_args.EffectiveMaxValue);
     }
 
-    private void OnStatUpgradePurchased(object? p_sender, ISignalManager.StatUpgradePurchasedEventArgs p_args)
+    private void OnStatUpgradePurchased(int p_statType)
     {
         // Each upgrade adds +1 permanent bonus to the stat
-        AddPermanentBonus(p_args.StatType, 1f);
-        GD.Print($"[StatManager] Received StatUpgradePurchased for {p_args.StatType}. Adding +1 permanent bonus.");
+        AddPermanentBonus((StatType)p_statType, 1f);
+        GD.Print($"[StatManager] Received StatUpgradePurchased for {(StatType)p_statType}. Adding +1 permanent bonus.");
     }
 
     protected override void Dispose(bool p_disposing)
@@ -97,7 +94,7 @@ public partial class StatManager : Node
             m_statTracker.OnAnyStatChanged.RemoveListener(OnCoreStatChanged);
             if (SignalManager.Instance != null)
             {
-                SignalManager.Instance.OnStatUpgradePurchased.RemoveListener(OnStatUpgradePurchased);
+                SignalManager.Instance.StatUpgradePurchased -= OnStatUpgradePurchased;
             }
         }
         base.Dispose(p_disposing);
