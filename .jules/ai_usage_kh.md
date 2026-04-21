@@ -39,3 +39,42 @@
 | **Request** | Extract common elements (Player, UI CanvasLayer, and ScoreManager) from various level scenes into a single inheritable `LevelBase.tscn` to simplify level design and support future Score tracking systems. |
 | **AI Contribution** | Created `LevelBase.tscn` incorporating `MapContainer`, `Player`, `ScoreManager`, and UI nodes (`CanvasLayer` containing `PlayerHUD`, `NavigationMenu`, and `MaterialsMenuPlanner`). Then modified `Level1` through `Level5` and `PlayerHub` to inherit from `LevelBase.tscn`, specifically appending their respective map assets and individual portals to the inherited tree. |
 | **Decision Reasoning** | Aligning with the N-Tier architecture principles, a shared Godot Base Scene allows unified inclusion of shared nodes like the `ScoreManager` without manually replicating them across scenes, ensuring maintainability and adherence to DRY principles. |
+
+### 2024-04-16 - [Audit Phase 1 - Structure et Agnosticisme]
+| **Request** | **AI Contribution** | **Decision Reasoning** |
+| :--- | :--- | :--- |
+| Effectuer un audit et corriger la hiérarchie des fichiers, l'agnosticisme du Core vis-à-vis de Godot, et l'atomicité des classes (1 classe par fichier). | - Déplacement des entités spécifiques au jeu et de leurs interfaces (ex: `SheepController`, `HealthComponent`) de `/Src/Core/` vers `/Src/IslandSurvivor/`.<br>- Remplacement de `System.Numerics.Vector2` par `Godot.Vector2` dans le code propre au jeu.<br>- Extraction des sous-classes (`SheepStates`, `ScoreChangedEventArgs`) vers des fichiers séparés.<br>- Découpage des tests unitaires (`SheepLogicTests` divisé en deux fichiers). | - Les entités exclusivement liées au comportement du jeu ne seront jamais utilisées dans le Web ou l'API, elles appartiennent donc à `IslandSurvivor`.<br>- Lors de la migration vers le jeu, le choix natif `Godot.Vector2` est préférable à la librairie de base C#.<br>- Le maintien des délégués privés imbriqués (comme dans `WeakEvent`) respecte les bonnes pratiques d'encapsulation C# tout en adhérant globalement à l'atomicité. |
+
+### $(date +"%Y-%m-%d") - [Audit Phase 2 - Injection et Bridge Pattern]
+- **Request**: Audit the core communication layer (ServiceRegistry DI and SignalManager Bridge pattern) to ensure robust memory management and strict N-Tier compliance. Clean up obsolete Godot/Core code logic (like GameManager Map creation).
+- **AI Contribution**: Created `ServiceRegistry` to act as the global DI container. Refactored `SignalManager` to act as a proper Bridge (absorbing `WeakEvents` from Core and re-emitting Godot `[Signal]`). Migrated all UI and Node listeners to use standard Godot C# event syntax (`+=`).
+- **Decision Reasoning**: Using Godot `[Signal]` handles Godot's node lifecycle safely preventing Lapsed Listener leaks upon scene change. Implementing a pure DI `ServiceRegistry` fixes strong coupling and transient state issues.
+
+### 2024-05-30 - [Audit Phase 3 - Ressources et Signaux]
+| **Request** | **AI Contribution** | **Decision Reasoning** |
+| :--- | :--- | :--- |
+| Audit des Nodes, SRP, paramètres de signaux, QueueFree, et Fix de conflits | Résolution de merge conflicts (GoldStats.tres, test_signal.tscn), renommage des paramètres avec le préfixe `p_` dans les scripts de IslandSurvivor (Signaux et Event handlers), vérification du QueueFree et validation des tres. | Résoudre les conflits Git était primordial car ils créaient des balises invalides empêchant le moteur Godot de charger les ressources. L'audit de SRP a confirmé que Session et Entity Stats devaient rester séparés. Le refactoring des variables respecte la convention stricte p_ pour harmoniser le code. |
+
+### 2026-04-17 - [Audit Phase 4 - Documentation et Clôture]
+- **Request**: Mettre à jour les fichiers du Wiki pour qu'ils reflètent les derniers changements architecturaux de la phase d'audit (Bridge Pattern natif, Dependency Injection via ServiceRegistry) et sceller l'itération 0.1 pour servir de référence.
+- **AI Contribution**:
+  1. `WikiCode/SignalManager.md` réécrit pour indiquer l'utilisation exclusive du Bridge (signaux natifs `+=`) du côté Client Godot.
+  2. `WikiCode/Systeme_Inventaire.md` mis à jour pour indiquer que l'instance de `InventoryManager` provient du `ServiceRegistry` et non d'une instanciation manuelle dans `_Ready()`.
+  3. `WikiCode/ScoreManager.md` mis à jour pour spécifier l'injection de dépendances pour le `ScoreTracker`.
+  4. `WikiCode/SystemeNavigation.md` corrigé avec la syntaxe de signal `+=` et l'utilisation de `ServiceRegistry.Instance.ScoreTracker`.
+  5. Finalisation du document `WikiCode/Audit/Iteration1_Audit.md` en y ajoutant la section de clôture de la Phase 4.
+- **Decision Reasoning**: La documentation doit être strictement "User Oriented". Les exemples précédents montraient encore l'utilisation directe de `WeakEvent` (`.AddListener`) et d'instanciation de Managers (`new Manager()`), ce qui contredisait le nouvel Audit de Phase 2. Les mises à jour s'assurent que les développeurs comprennent comment s'abonner correctement via Godot pour éviter les fuites de mémoire sans enfreindre la séparation N-Tier.
+
+### 2026-04-17 - [Audit Phase 4 - Wiki Maintenance & Cleanup]
+- **Request**: Effectuer une revue de tous les fichiers .md dans le Wiki pour s'assurer qu'ils reflètent l'état actuel du code (identifier les lacunes ou l'obsolescence) et créer de nouvelles pages si des systèmes manquent. Ne pas supprimer Map.md.
+- **AI Contribution**:
+  1. Suppression de `ProceduralMapGeneration.md` car le système de génération procédurale a été abandonné. Conservation de `Map.md`.
+  2. Suppression de `Inventory.md` (fichier vide en double).
+  3. Création de `Architecture_Niveaux.md` pour documenter l'utilisation de l'héritage de scène (`LevelBase.tscn`), l'injection de `MapContainer`, et le positionnement UI via `CanvasLayer`.
+  4. Mise à jour de `CollisionLayers.md` pour clarifier mathématiquement le système de Bitmask (puissance de 2) lié aux IDs des couches Godot.
+- **Decision Reasoning**: La suppression des fichiers obsolètes allège la charge mentale. La conservation de Map.md satisfait les règles établies. La documentation de la nouvelle architecture des niveaux (qui n'était expliquée nulle part de manière centralisée) donne à l'équipe une source de vérité claire et saine pour la suite du développement.
+
+### 2024-04-20 - [US 5.4 Créer une composante de mouvement unifié]
+| **Request** | **AI Contribution** | **Decision Reasoning** |
+| :--- | :--- | :--- |
+| Implement a reusable MovementController for Player and NPCs (Sheep). The system needs to use a base speed and apply the Speed stat as a percentage increase. Keep the logic in the game project instead of Core. | Implemented `MovementController.cs` and integrated it into `Player.tscn` / `Sheep.tscn`. Set up stat multiplication so that `Speed` stat gives +1% per point. Wrote the system documentation. | Kept the physics inside Godot since `MoveAndSlide` and Godot's internal physics loop are much better suited for 2D character collision and slope handling. The user confirmed keeping this out of `Core` to avoid duplicating physics code. |

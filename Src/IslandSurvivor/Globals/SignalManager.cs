@@ -1,15 +1,29 @@
 using Godot;
 using System;
 using Core.Interfaces;
-using Core.Managers;
-using Core.Utils;
+using IslandSurvivor.Globals;
 
 public partial class SignalManager : Node, ISignalManager
 {
     private static SignalManager m_instance;
-    private readonly SignalManagerCore m_coreManager = new SignalManagerCore();
 
     public static SignalManager Instance => m_instance;
+
+    // --- Native Godot Signals ---
+    [Signal] public delegate void MaterialDestroyedEventHandler(string p_itemId, string p_itemName, string p_itemType, string p_itemIcon, int p_quantity);
+    [Signal] public delegate void ResourceSpentEventHandler(string p_resourceId, int p_amount);
+    [Signal] public delegate void StatUpgradePurchasedEventHandler(int p_statType);
+    [Signal] public delegate void NavigationRequestedEventHandler(string p_islandId, string p_scenePath, string p_biome, int p_difficulty, int p_resourceCost, int p_dangerLevel);
+    [Signal] public delegate void BuildingShopToggledEventHandler(bool p_isOpen, string p_buildingId);
+
+    // Explicit implementation for Core Interface WeakEvents
+    Core.Utils.WeakEvent<ISignalManager.MaterialDestroyedEventArgs> ISignalManager.OnMaterialDestroyed => ServiceRegistry.Instance.SignalManagerCore.OnMaterialDestroyed;
+    Core.Utils.WeakEvent<ISignalManager.ResourceSpentEventArgs> ISignalManager.OnResourceSpent => ServiceRegistry.Instance.SignalManagerCore.OnResourceSpent;
+    Core.Utils.WeakEvent<ISignalManager.StatUpgradePurchasedEventArgs> ISignalManager.OnStatUpgradePurchased => ServiceRegistry.Instance.SignalManagerCore.OnStatUpgradePurchased;
+    Core.Utils.WeakEvent<ISignalManager.NavigationRequestedEventArgs> ISignalManager.OnNavigationRequested => ServiceRegistry.Instance.SignalManagerCore.OnNavigationRequested;
+    Core.Utils.WeakEvent<ISignalManager.BuildingShopToggledEventArgs> ISignalManager.OnBuildingShopToggled => ServiceRegistry.Instance.SignalManagerCore.OnBuildingShopToggled;
+
+    // Backward compatibility for refactoring (we will update callers in the next step to use Godot native signals `+=` instead)
 
     public override void _EnterTree()
     {
@@ -22,49 +36,56 @@ public partial class SignalManager : Node, ISignalManager
         m_instance = this;
     }
 
-    public WeakEvent<ISignalManager.MaterialDestroyedEventArgs> OnMaterialDestroyed => m_coreManager.OnMaterialDestroyed;
-
-    public void EmitMaterialDestroyed(object p_sender, Core.Domain.ResourceItem p_item, int p_quantity)
+    public override void _Ready()
     {
-        m_coreManager.EmitMaterialDestroyed(p_sender, p_item, p_quantity);
+        // Subscribe to Core WeakEvents and re-emit as Godot Signals
+        var coreManager = ServiceRegistry.Instance.SignalManagerCore;
+        if (coreManager != null)
+        {
+            coreManager.OnMaterialDestroyed.AddListener((s, e) =>
+                EmitSignal(SignalName.MaterialDestroyed, e.Item.Id, e.Item.Name, e.Item.Type, e.Item.IconPath, e.MaterialQuantity));
+
+            coreManager.OnResourceSpent.AddListener((s, e) =>
+                EmitSignal(SignalName.ResourceSpent, e.ResourceId, e.Amount));
+
+            coreManager.OnStatUpgradePurchased.AddListener((s, e) =>
+                EmitSignal(SignalName.StatUpgradePurchased, (int)e.StatType));
+
+            coreManager.OnNavigationRequested.AddListener((s, e) =>
+                EmitSignal(SignalName.NavigationRequested, e.Destination.Id, e.Destination.ScenePath, e.Destination.Biome, e.Destination.Difficulty, e.Destination.ResourceCost, e.Destination.DangerLevel));
+
+            coreManager.OnBuildingShopToggled.AddListener((s, e) =>
+                EmitSignal(SignalName.BuildingShopToggled, e.IsOpen, e.BuildingId));
+        }
+        else
+        {
+            GD.PrintErr("SignalManager: SignalManagerCore not found in ServiceRegistry!");
+        }
     }
 
-    public WeakEvent<ISignalManager.ResourceSpentEventArgs> OnResourceSpent => m_coreManager.OnResourceSpent;
+    // Proxy methods to emit into Core
+    public void EmitMaterialDestroyed(object p_sender, Core.Domain.ResourceItem p_item, int p_quantity)
+    {
+        ServiceRegistry.Instance.SignalManagerCore?.EmitMaterialDestroyed(p_sender, p_item, p_quantity);
+    }
 
     public void EmitResourceSpent(object p_sender, string p_resourceId, int p_amount)
     {
-        m_coreManager.EmitResourceSpent(p_sender, p_resourceId, p_amount);
+        ServiceRegistry.Instance.SignalManagerCore?.EmitResourceSpent(p_sender, p_resourceId, p_amount);
     }
-
-    public WeakEvent<ISignalManager.StatUpgradePurchasedEventArgs> OnStatUpgradePurchased => m_coreManager.OnStatUpgradePurchased;
 
     public void EmitStatUpgradePurchased(object p_sender, Core.Managers.Stats.StatType p_statType)
     {
-        m_coreManager.EmitStatUpgradePurchased(p_sender, p_statType);
+        ServiceRegistry.Instance.SignalManagerCore?.EmitStatUpgradePurchased(p_sender, p_statType);
     }
-
-    public WeakEvent<ISignalManager.NavigationRequestedEventArgs> OnNavigationRequested => m_coreManager.OnNavigationRequested;
 
     public void EmitNavigationRequested(object p_sender, Core.Domain.Models.IslandDestination p_destination)
     {
-        m_coreManager.EmitNavigationRequested(p_sender, p_destination);
+        ServiceRegistry.Instance.SignalManagerCore?.EmitNavigationRequested(p_sender, p_destination);
     }
-
-    public WeakEvent<ISignalManager.BuildingShopToggledEventArgs> OnBuildingShopToggled => m_coreManager.OnBuildingShopToggled;
 
     public void EmitBuildingShopToggled(object p_sender, bool p_isOpen, string p_buildingId)
     {
-        m_coreManager.EmitBuildingShopToggled(p_sender, p_isOpen, p_buildingId);
+        ServiceRegistry.Instance.SignalManagerCore?.EmitBuildingShopToggled(p_sender, p_isOpen, p_buildingId);
     }
-
-    // === EXAMPLE OF HOW TO IMPLEMENT A SIGNAL IN GODOT ===
-    //
-    // // 1. Map to the Core implementation
-    // public WeakEvent<ISignalManager.ScoreChangedEventArgs> OnScoreChanged => m_coreManager.OnScoreChanged;
-    //
-    // // 2. Delegate the emit method
-    // public void EmitScoreChanged(object p_sender, int p_newScore)
-    // {
-    //     m_coreManager.EmitScoreChanged(p_sender, p_newScore);
-    // }
 }

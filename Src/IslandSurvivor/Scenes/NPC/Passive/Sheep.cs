@@ -1,7 +1,9 @@
 using Godot;
 using System;
 using Core.Domain;
-using Core.Domain.Entities;
+using IslandSurvivor.Logic.Entities;
+using IslandSurvivor.Interfaces;
+using IslandSurvivor.Nodes.Movement;
 using Core.Interfaces;
 using IslandSurvivor.Nodes;
 using Core.Managers.Stats;
@@ -16,6 +18,7 @@ public partial class Sheep : CharacterBody2D, INpc, IDamageable
 
     private NavigationAgent2D m_navigationAgent;
     private SheepController m_sheepController;
+    private MovementController m_movementController;
     private Sprite2D m_sprite;
     private bool m_wasKilledByPlayer = false;
 
@@ -27,6 +30,7 @@ public partial class Sheep : CharacterBody2D, INpc, IDamageable
 
         m_navigationAgent = GetNodeOrNull<NavigationAgent2D>("NavigationAgent2D");
         m_sprite = GetNodeOrNull<Sprite2D>("Sprite2D");
+        m_movementController = GetNodeOrNull<MovementController>("MovementController");
 
         if (m_navigationAgent == null)
         {
@@ -51,43 +55,29 @@ public partial class Sheep : CharacterBody2D, INpc, IDamageable
 
         m_sheepController.Update((float)p_delta);
 
-        Vector2 targetVelocity = Vector2.Zero;
-        System.Numerics.Vector2 controllerDir = m_sheepController.CurrentDirection;
-        Vector2 direction = new Vector2(controllerDir.X, controllerDir.Y);
+        Vector2 direction = m_sheepController.CurrentDirection;
 
-        if (m_sheepController.CurrentState == SheepStates.IDLE)
+        float targetSpeed = IdleSpeed;
+        if (m_sheepController.CurrentState == SheepStates.FLEE)
         {
-            targetVelocity = direction * IdleSpeed;
-        }
-        else if (m_sheepController.CurrentState == SheepStates.FLEE)
-        {
-            targetVelocity = direction * FleeSpeed;
+            targetSpeed = FleeSpeed;
         }
 
-        if (m_navigationAgent != null)
+        // Flip sprite based on movement direction
+        if (m_sprite != null && direction.X != 0)
         {
-            m_navigationAgent.Velocity = targetVelocity;
+            m_sprite.FlipH = direction.X < 0;
+        }
+
+        if (m_movementController != null)
+        {
+            m_movementController.Move(direction, targetSpeed);
         }
         else
         {
-            Velocity = targetVelocity;
-            ApplyMovement();
+            Velocity = direction * targetSpeed;
+            MoveAndSlide();
         }
-    }
-
-    private void OnVelocityComputed(Vector2 safeVelocity)
-    {
-        Velocity = safeVelocity;
-        ApplyMovement();
-    }
-
-    private void ApplyMovement()
-    {
-        if (m_sprite != null && Velocity.X != 0)
-        {
-            m_sprite.FlipH = Velocity.X < 0;
-        }
-        MoveAndSlide();
     }
 
     public void TakeDamage(int p_amount, object p_attacker)
@@ -96,8 +86,8 @@ public partial class Sheep : CharacterBody2D, INpc, IDamageable
 
         if (Stats != null)
         {
-            Stats.ModifyCurrentValue(StatType.Health, -p_amount);
-        }
+            Vector2 myPos = GlobalPosition;
+            Vector2 attackerPos = attackerNode.GlobalPosition;
 
         bool isDead = Stats == null || Stats.GetCurrentValue(StatType.Health) <= 0;
 
