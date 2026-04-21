@@ -5,6 +5,8 @@ public partial class Spawn : Marker2D
     [Export] public Marker2D SpawnPoint { get; set; }
     [Export] public PackedScene PlayerScene { get; set; }
 
+    private IslandSurvivor.Managers.TreePopulationManager m_treeManager;
+
     public override void _Ready()
     {
         GD.Print("Spawn._Ready() exécuté");
@@ -21,6 +23,11 @@ public partial class Spawn : Marker2D
             return;
         }
         GD.Print("Juste avant CallDeferred");
+
+        m_treeManager = new IslandSurvivor.Managers.TreePopulationManager();
+        AddChild(m_treeManager);
+        m_treeManager.PopulateTrees();
+
         CallDeferred(nameof(SpawnPlayer));
         GD.Print("Juste après CallDeferred");
 
