@@ -1,8 +1,0 @@
-[gd_scene format=3 uid="uid://caulvit2mlo5s"]
-
-[ext_resource type="Script" uid="uid://c0tcdthmj16yj" path="res://Scenes/SpawnRessources/SpawnTree/TreeSpawn.cs" id="1_kgpqk"]
-
-[node name="SpawnPointTree" type="Node2D" unique_id=468282216]
-
-[node name="TreeSpawn" type="Marker2D" parent="." unique_id=1586691407]
-script = ExtResource("1_kgpqk")

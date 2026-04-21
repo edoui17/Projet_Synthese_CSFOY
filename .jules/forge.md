@@ -41,3 +41,8 @@
 ### 2025-05-22 - Dynamic Resource Loading in Godot (DirAccess)
 - **Discovery**: While Unity uses `Resources.LoadAll`, Godot requires using `DirAccess` to iterate through the filesystem at runtime to discover `.tscn` files.
 - **Quirk**: When exported, `res://` paths behave differently than in the editor. Using `DirAccess.Open(path)` is the safest way to ensure cross-platform compatibility for dynamic scanning of resource folders.
+
+### 2026-04-21 - TreeZone Procedural Spawning
+- **Discovery**: Using `Polygon2D` with `Geometry2D.IsPointInPolygon` provides a flexible way to define irregular spawning zones in Godot.
+- **Quirk**: When calculating random points within a polygon, it's safer to work in the node's local space and use `ToLocal(ToGlobal(point))` when comparing against child polygon coordinates to avoid issues with nested transformations.
+- **Performance**: Pre-loading `PackedScene` resources before a spawning loop significantly reduces overhead compared to calling `GD.Load` inside the loop.
