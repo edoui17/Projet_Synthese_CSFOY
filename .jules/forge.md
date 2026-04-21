@@ -47,3 +47,7 @@
 ### 2025-05-14 - Stats Flexibility via ExtraStats
 - **Decision**: Added an `ExtraStats` NVARCHAR(MAX) column to the `Stats` table.
 - **Reasoning**: To allow future flexibility for additional stats without requiring database migrations. This column is intended to store JSON data for stats not covered by the main columns (Health, Attack, Speed, Luck).
+
+### 2025-05-14 - Database Naming
+- **Decision**: The database for the project is named `DBIslandSurvivor`.
+- **Implementation**: Connection strings have been added to the API project's `appsettings.json` and registered in `Program.cs`.

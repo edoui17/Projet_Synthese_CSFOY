@@ -1,4 +1,5 @@
 -- Create Tables for IslandSurvivor Meta-Progression
+-- Target Database: DBIslandSurvivor
 
 CREATE TABLE Players (
     Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
