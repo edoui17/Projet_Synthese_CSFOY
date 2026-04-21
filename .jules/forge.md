@@ -37,3 +37,12 @@
 - **Merge Conflicts in .tres/.tscn :** Des marqueurs de fusion Git (<<<<<<< HEAD) au sein des fichiers texte Godot `.tres` et `.tscn` corrompent le système de parsing interne de Godot. Ils doivent être corrigés au niveau texte via Bash ou l'éditeur car l'UI de Godot ne les surmontera pas.
 - **Paramètres p_ :** Une vigilance particulière est requise sur les `delegate` définissant les `[Signal]` en C#. Le parseur de C# vers Godot accepte n'importe quel nom de paramètre, il faut donc s'astreindre soi-même à préfixer par `p_` pour des raisons de conformité.
 - **QueueFree() :** Les ressources destructibles (Arbres, Moutons, Minerais) de ce projet appellent bien `QueueFree()` à la fin de leur cycle de vie, garantissant la récupération de la mémoire (Memory Leak Prevention).
+
+### 2025-05-22 - Dynamic Resource Loading in Godot (DirAccess)
+- **Discovery**: While Unity uses `Resources.LoadAll`, Godot requires using `DirAccess` to iterate through the filesystem at runtime to discover `.tscn` files.
+- **Quirk**: When exported, `res://` paths behave differently than in the editor. Using `DirAccess.Open(path)` is the safest way to ensure cross-platform compatibility for dynamic scanning of resource folders.
+
+### 2026-04-21 - TreeZone Procedural Spawning
+- **Discovery**: Using `Polygon2D` with `Geometry2D.IsPointInPolygon` provides a flexible way to define irregular spawning zones in Godot.
+- **Quirk**: When calculating random points within a polygon, it's safer to work in the node's local space and use `ToLocal(ToGlobal(point))` when comparing against child polygon coordinates to avoid issues with nested transformations.
+- **Performance**: Pre-loading `PackedScene` resources before a spawning loop significantly reduces overhead compared to calling `GD.Load` inside the loop.

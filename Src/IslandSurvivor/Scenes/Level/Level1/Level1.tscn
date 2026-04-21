@@ -1,13 +1,26 @@
-[gd_scene load_steps=4 format=3 uid="uid://b30l21wvemtmp"]
+[gd_scene format=3 uid="uid://b30l21wvemtmp"]
 
 [ext_resource type="PackedScene" uid="uid://cax2j3b2g36d" path="res://Scenes/Level/LevelBase.tscn" id="1_base"]
 [ext_resource type="PackedScene" uid="uid://dcghy8ygomn7y" path="res://Scenes/Map/Map1/Map1.tscn" id="2_map"]
 [ext_resource type="PackedScene" uid="uid://dq4dear1g8mq2" path="res://Scenes/Portal/Portal.tscn" id="3_portal"]
+[ext_resource type="Script" uid="uid://crnps6x7v7q3k" path="res://Nodes/Zones/TreeZone.cs" id="4_tree"]
 
-[node name="Main" instance=ExtResource("1_base")]
+[node name="Main" unique_id=2090159461 instance=ExtResource("1_base")]
 
-[node name="Map1" parent="MapContainer" index="0" instance=ExtResource("2_map")]
+[node name="Map1" parent="MapContainer" index="0" unique_id=1850480075 instance=ExtResource("2_map")]
 position = Vector2(-1, 0)
 
-[node name="Portal" parent="." index="2" instance=ExtResource("3_portal")]
+[node name="Portal" parent="." index="2" unique_id=704496346 instance=ExtResource("3_portal")]
 position = Vector2(0, 50)
+
+[node name="TreeZone" type="Node2D" parent="." index="3" unique_id=1411712744]
+script = ExtResource("4_tree")
+TreeCount = 25
+
+[node name="SpawningArea" type="Polygon2D" parent="TreeZone" index="0" unique_id=1497946598]
+visible = false
+light_mask = 0
+visibility_layer = 0
+position = Vector2(-36.5, 0)
+scale = Vector2(1.045625, 1)
+polygon = PackedVector2Array(-1302.092, 59, -396.41364, 36, -385.89362, -370, 453.7956, -367, 495.87567, 75, 898.5057, 75, 887.0293, 289, 446.14465, 376, -383.0245, 367, -423.1919, 268, -877.46564, 249, -889.8984, 975, 895.6366, 956, 902.3312, -787, -899.46204, -766, -891.81116, 6, -1302.092, -14, -1298.2666, -1195, 1304.0048, -1187, 1304.9612, 1342, -1310.6993, 1323, -1312.612, 199)
