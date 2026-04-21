@@ -1,0 +1,89 @@
+[gd_scene format=3 uid="uid://dyxx1q578y7t0"]
+
+[ext_resource type="Texture2D" uid="uid://dme25kdxbnqcy" path="res://Assets/TinySwords/Sprites/Warrior/Black/Warrior_Idle.png" id="1_s60lb"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_5pc2q"]
+radius = 24.0
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jkuhk"]
+atlas = ExtResource("1_s60lb")
+region = Rect2(0, 0, 192, 192)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_e5iyk"]
+atlas = ExtResource("1_s60lb")
+region = Rect2(192, 0, 192, 192)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_17jve"]
+atlas = ExtResource("1_s60lb")
+region = Rect2(384, 0, 192, 192)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_uqak8"]
+atlas = ExtResource("1_s60lb")
+region = Rect2(576, 0, 192, 192)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_pjw02"]
+atlas = ExtResource("1_s60lb")
+region = Rect2(768, 0, 192, 192)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2hvqn"]
+atlas = ExtResource("1_s60lb")
+region = Rect2(960, 0, 192, 192)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_nivrv"]
+atlas = ExtResource("1_s60lb")
+region = Rect2(1152, 0, 192, 192)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_v3v3l"]
+atlas = ExtResource("1_s60lb")
+region = Rect2(1344, 0, 192, 192)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_8an0u"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_jkuhk")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_e5iyk")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_17jve")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_uqak8")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_pjw02")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2hvqn")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_nivrv")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_v3v3l")
+}],
+"loop": true,
+"name": &"Idle",
+"speed": 5.0
+}, {
+"frames": [],
+"loop": true,
+"name": &"new_animation",
+"speed": 5.0
+}]
+
+[node name="Soldier" type="Node2D" unique_id=912880506]
+
+[node name="CharacterBody2D" type="CharacterBody2D" parent="." unique_id=1762557651]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D" unique_id=22620120]
+shape = SubResource("CircleShape2D_5pc2q")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=586828728]
+sprite_frames = SubResource("SpriteFrames_8an0u")
+animation = &"Idle"
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="AnimatedSprite2D" unique_id=983588552]
+root_node = NodePath("../..")

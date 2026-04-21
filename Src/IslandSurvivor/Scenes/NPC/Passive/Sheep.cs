@@ -89,34 +89,35 @@ public partial class Sheep : CharacterBody2D, INpc, IDamageable
             Vector2 myPos = GlobalPosition;
             Vector2 attackerPos = attackerNode.GlobalPosition;
 
-        bool isDead = Stats == null || Stats.GetCurrentValue(StatType.Health) <= 0;
+            bool isDead = Stats == null || Stats.GetCurrentValue(StatType.Health) <= 0;
 
-        if (p_attacker is Node2D attackerNode)
-        {
-            if (isDead && attackerNode.IsInGroup("Player"))
+            if (p_attacker is Node2D attackerNode)
             {
-                m_wasKilledByPlayer = true;
-            }
-
-            if (!isDead)
-            {
-                System.Numerics.Vector2 myPos = new System.Numerics.Vector2(GlobalPosition.X, GlobalPosition.Y);
-                System.Numerics.Vector2 attackerPos = new System.Numerics.Vector2(attackerNode.GlobalPosition.X, attackerNode.GlobalPosition.Y);
-
-                m_sheepController.StartFleeing(myPos, attackerPos);
-
-                // Visual feedback
-                Modulate = new Color(1, 0.5f, 0.5f);
-                GetTree().CreateTimer(0.2f).Timeout += () =>
+                if (isDead && attackerNode.IsInGroup("Player"))
                 {
-                    if (IsInstanceValid(this)) Modulate = Colors.White;
-                };
-            }
-        }
+                    m_wasKilledByPlayer = true;
+                }
 
-        if (isDead)
-        {
-            HandleDeath();
+                if (!isDead)
+                {
+                    System.Numerics.Vector2 myPos = new System.Numerics.Vector2(GlobalPosition.X, GlobalPosition.Y);
+                    System.Numerics.Vector2 attackerPos = new System.Numerics.Vector2(attackerNode.GlobalPosition.X, attackerNode.GlobalPosition.Y);
+
+                    m_sheepController.StartFleeing(myPos, attackerPos);
+
+                    // Visual feedback
+                    Modulate = new Color(1, 0.5f, 0.5f);
+                    GetTree().CreateTimer(0.2f).Timeout += () =>
+                    {
+                        if (IsInstanceValid(this)) Modulate = Colors.White;
+                    };
+                }
+            }
+
+            if (isDead)
+            {
+                HandleDeath();
+            }
         }
     }
 
