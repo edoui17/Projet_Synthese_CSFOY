@@ -1,4 +1,3 @@
-
 ### 2026-04-11 - WeakEvent Subscription in Core Bridge
 - **Discovery**: Custom `WeakEvent` implementation in the Core uses `.AddListener()` and `.RemoveListener()` instead of the standard `+=` and `-=` operators or `.Subscribe()` / `.Unsubscribe()`. Always verify the specific custom utilities provided by the Core before trying to attach standard C# event handler logic.
 
@@ -22,7 +21,7 @@
 
 - **Godot Save Migration & Paths:** Godot's `res://` maps directly to `Src/IslandSurvivor/`. To resolve a path back to the solution root programmatically within Godot, `ProjectSettings.GlobalizePath("res://../../Save/")` successfully breaks out of the Godot project bounds, pointing directly alongside the `.sln`. Using `DirAccess` and `FileAccess` is necessary to gracefully interact with these paths over raw `System.IO` to respect virtual directories (`user://`).
 
-### $(date +'%Y-%m-%d') - Inheritance in Godot
+### 2026-04-12 - Inheritance in Godot
 - Discovered and addressed that when refactoring existing independent `.tscn` files to utilize inherited scenes, the child `.tscn` needs specific index pathing to safely inject elements (like Map scenes inside the inherited `MapContainer` node) over relying on the standalone architecture.
 
 ### 2024-04-16 - Audit Phase 1 - Architectures & Quirks
@@ -37,3 +36,18 @@
 - **Merge Conflicts in .tres/.tscn :** Des marqueurs de fusion Git (<<<<<<< HEAD) au sein des fichiers texte Godot `.tres` et `.tscn` corrompent le système de parsing interne de Godot. Ils doivent être corrigés au niveau texte via Bash ou l'éditeur car l'UI de Godot ne les surmontera pas.
 - **Paramètres p_ :** Une vigilance particulière est requise sur les `delegate` définissant les `[Signal]` en C#. Le parseur de C# vers Godot accepte n'importe quel nom de paramètre, il faut donc s'astreindre soi-même à préfixer par `p_` pour des raisons de conformité.
 - **QueueFree() :** Les ressources destructibles (Arbres, Moutons, Minerais) de ce projet appellent bien `QueueFree()` à la fin de leur cycle de vie, garantissant la récupération de la mémoire (Memory Leak Prevention).
+
+### 2025-05-14 - Database Persistence Architecture (N-Tier)
+- **Decision**: Implemented a SQL Server schema and EF Core DbContext for meta-progression persistence using strict N-Tier patterns.
+- **Architecture**: Domain models (`Player`, `InventoryEntry`, `PlayerStats`, `PlayerConfig`) are defined in `Src/Core/Domain` to ensure the logic layer remains independent of persistence technology.
+- **Interfaces**: Introduced `IRepository<T>` in `Src/Core/Interfaces` following the "Interfaces First" principle.
+- **Infrastructure**: `AppDbContext` in `Src/Infrastructure` maps Core Domain models using Fluent API. Used GUIDs (`uniqueidentifier`) for primary keys and fixed string ID lengths to match the SQL schema.
+- **Documentation**: All persistence documentation is maintained in English (`WikiCode/Persistence_System.md`) to comply with project standards.
+
+### 2025-05-14 - Stats Flexibility via ExtraStats
+- **Decision**: Added an `ExtraStats` NVARCHAR(MAX) column to the `Stats` table.
+- **Reasoning**: To allow future flexibility for additional stats without requiring database migrations. This column is intended to store JSON data for stats not covered by the main columns (Health, Attack, Speed, Luck).
+
+### 2025-05-14 - Database Naming
+- **Decision**: The database for the project is named `DBIslandSurvivor`.
+- **Implementation**: Connection strings have been added to the API project's `appsettings.json` and registered in `Program.cs`.
