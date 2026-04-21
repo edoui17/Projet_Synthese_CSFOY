@@ -1,0 +1,16 @@
+[gd_scene load_steps=4 format=3 uid="uid://f3x2l3wvemtmp"]
+
+[ext_resource type="PackedScene" uid="uid://cax2j3b2g36d" path="res://Scenes/Level/LevelBase.tscn" id="1_base"]
+[ext_resource type="PackedScene" uid="uid://ckb8i3wqmci1d" path="res://Scenes/Map/Map5/Map5.tscn" id="2_map"]
+[ext_resource type="PackedScene" uid="uid://dq4dear1g8mq2" path="res://Scenes/Portal/Portal.tscn" id="3_portal"]
+
+[node name="Main" instance=ExtResource("1_base")]
+
+[node name="Map5" parent="MapContainer" index="0" instance=ExtResource("2_map")]
+position = Vector2(-1, 0)
+
+[node name="Player" parent="." index="1"]
+position = Vector2(409, -226)
+
+[node name="Portal" parent="." index="2" instance=ExtResource("3_portal")]
+position = Vector2(353, -109)

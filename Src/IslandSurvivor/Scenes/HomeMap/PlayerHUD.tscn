@@ -1,0 +1,32 @@
+[gd_scene format=3 uid="uid://djv45romp3vxj"]
+
+[ext_resource type="PackedScene" uid="uid://bwk4xdbqnv8dj" path="res://Scenes/Inventory/InventoryUI.tscn" id="1_0ckdk"]
+[ext_resource type="PackedScene" uid="uid://derr2icro3xvq" path="res://Scenes/Inventory/HealthBar.tscn" id="2_m0shc"]
+
+[node name="PlayerHUD" type="Control" unique_id=666194177 groups=["Inventory"]]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+
+[node name="InventoryUI" parent="." unique_id=571992874 instance=ExtResource("1_0ckdk")]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+offset_bottom = -50.0
+grow_vertical = 0
+
+[node name="HealthBar" parent="." unique_id=1024287040 instance=ExtResource("2_m0shc")]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_right = 0.0
+offset_top = -648.0
+offset_bottom = -648.0
+grow_horizontal = 1
+grow_vertical = 0

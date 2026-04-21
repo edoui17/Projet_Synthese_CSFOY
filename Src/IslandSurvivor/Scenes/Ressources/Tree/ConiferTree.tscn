@@ -1,0 +1,82 @@
+[gd_scene format=3 uid="uid://rtx0k5qfaymn"]
+
+[ext_resource type="Script" uid="uid://tvjivvqe0caf" path="res://Scenes/Ressources/Tree/ConiferTree.cs" id="1_dkrse"]
+[ext_resource type="Texture2D" uid="uid://pr42it55tc3f" path="res://Assets/TinySwords/Decorations/Trees/Tree.png" id="2_ttmo2"]
+[ext_resource type="PackedScene" uid="uid://biqhbrp7fjfyj" path="res://Nodes/StatsManager/StatsManager.tscn" id="3_5a382"]
+[ext_resource type="Resource" uid="uid://bgduawnxd4hah" path="res://Resources/Stats/Entity/ConiferStats.tres" id="4_moeyj"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ybac0"]
+size = Vector2(45, 40)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_gyewy"]
+size = Vector2(40, 58)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_03smp"]
+atlas = ExtResource("2_ttmo2")
+region = Rect2(0, 0, 192, 192)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_eh46u"]
+atlas = ExtResource("2_ttmo2")
+region = Rect2(192, 0, 192, 192)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3qrc1"]
+atlas = ExtResource("2_ttmo2")
+region = Rect2(384, 0, 192, 192)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_l2jeo"]
+atlas = ExtResource("2_ttmo2")
+region = Rect2(576, 0, 192, 192)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_g6mj5"]
+atlas = ExtResource("2_ttmo2")
+region = Rect2(192, 192, 192, 192)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_j77k5"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_03smp")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_eh46u")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_3qrc1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_l2jeo")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_g6mj5")
+}],
+"loop": true,
+"name": &"Arbre",
+"speed": 3.0
+}]
+
+[node name="ConiferTree" type="Area2D" unique_id=169002865 node_paths=PackedStringArray("Stats", "Timer")]
+collision_layer = 16
+collision_mask = 8
+script = ExtResource("1_dkrse")
+Stats = NodePath("StatsManager")
+Timer = NodePath("Timer")
+
+[node name="StaticBody2D" type="StaticBody2D" parent="." unique_id=1567773277]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D" unique_id=2002021830]
+position = Vector2(3.5, 60)
+shape = SubResource("RectangleShape2D_ybac0")
+
+[node name="HitBox" type="CollisionShape2D" parent="." unique_id=1581479158]
+position = Vector2(2, 46)
+shape = SubResource("RectangleShape2D_gyewy")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1348993800]
+sprite_frames = SubResource("SpriteFrames_j77k5")
+animation = &"Arbre"
+frame_progress = 0.5379155
+
+[node name="Timer" type="Timer" parent="." unique_id=3877963]
+
+[node name="StatsManager" parent="." unique_id=1475410971 instance=ExtResource("3_5a382")]
+BaseStatsResource = ExtResource("4_moeyj")

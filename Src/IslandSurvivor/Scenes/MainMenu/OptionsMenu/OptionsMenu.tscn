@@ -1,0 +1,85 @@
+[gd_scene format=3 uid="uid://bb65uo8ffuuy1"]
+
+[ext_resource type="Script" uid="uid://dgeqcnnndfn10" path="res://Scenes/MainMenu/OptionsMenu/OptionsMenuManager.cs" id="1_ssx1h"]
+[ext_resource type="Script" uid="uid://bx8hre87ccsel" path="res://Scenes/MainMenu/OptionsMenu/AudioOptions.cs" id="2_hxaau"]
+
+[node name="OptionsMenu" type="Control" unique_id=947387956 node_paths=PackedStringArray("_returnToMenuButton")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_ssx1h")
+_returnToMenuButton = NodePath("AudioOptions/OptionsTab/VBoxContainer/ReturnBtn")
+
+[node name="AudioOptions" type="Control" parent="." unique_id=1893711024 node_paths=PackedStringArray("masterSlider", "musicSlider", "sfxSlider")]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("2_hxaau")
+masterSlider = NodePath("OptionsTab/VBoxContainer/MasterSoudnHSlider")
+musicSlider = NodePath("OptionsTab/VBoxContainer/MusicSlider")
+sfxSlider = NodePath("OptionsTab/VBoxContainer/SFXSlider")
+
+[node name="OptionsTab" type="PanelContainer" parent="AudioOptions" unique_id=1619656472]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 441.5
+offset_top = 154.0
+offset_right = 670.5
+offset_bottom = 454.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="AudioOptions/OptionsTab" unique_id=1114010033]
+layout_mode = 2
+
+[node name="OptionsLabel" type="Label" parent="AudioOptions/OptionsTab/VBoxContainer" unique_id=1262259903]
+layout_mode = 2
+theme_override_font_sizes/font_size = 60
+text = "Options"
+
+[node name="MasterSoundLabel" type="Label" parent="AudioOptions/OptionsTab/VBoxContainer" unique_id=1953859228]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Sound"
+
+[node name="MasterSoudnHSlider" type="HSlider" parent="AudioOptions/OptionsTab/VBoxContainer" unique_id=210809865]
+layout_mode = 2
+max_value = 1.0
+step = 0.05
+
+[node name="MusicLabel" type="Label" parent="AudioOptions/OptionsTab/VBoxContainer" unique_id=1780052987]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Music"
+
+[node name="MusicSlider" type="HSlider" parent="AudioOptions/OptionsTab/VBoxContainer" unique_id=1544707407]
+layout_mode = 2
+max_value = 1.0
+step = 0.05
+
+[node name="SFXLabel" type="Label" parent="AudioOptions/OptionsTab/VBoxContainer" unique_id=1369514368]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "SFX"
+
+[node name="SFXSlider" type="HSlider" parent="AudioOptions/OptionsTab/VBoxContainer" unique_id=1735602965]
+layout_mode = 2
+max_value = 1.0
+step = 0.05
+
+[node name="ReturnBtn" type="Button" parent="AudioOptions/OptionsTab/VBoxContainer" unique_id=294548138]
+layout_mode = 2
+theme_override_font_sizes/font_size = 35
+text = "Return"
+
+[connection signal="value_changed" from="AudioOptions/OptionsTab/VBoxContainer/MasterSoudnHSlider" to="." method="_on_master_soudn_h_slider_value_changed"]
+[connection signal="value_changed" from="AudioOptions/OptionsTab/VBoxContainer/MusicSlider" to="AudioOptions" method="_on_musicslider_value_changed"]
+[connection signal="value_changed" from="AudioOptions/OptionsTab/VBoxContainer/SFXSlider" to="." method="_on_sfx_slider_value_changed"]
+[connection signal="pressed" from="AudioOptions/OptionsTab/VBoxContainer/ReturnBtn" to="AudioOptions/OptionsTab" method="_on_return_btn_pressed"]

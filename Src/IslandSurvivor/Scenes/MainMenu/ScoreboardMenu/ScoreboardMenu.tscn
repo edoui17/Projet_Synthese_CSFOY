@@ -1,0 +1,43 @@
+[gd_scene format=3 uid="uid://bou8m1oowr6bq"]
+
+[ext_resource type="Script" uid="uid://duxk7wphhgyjo" path="res://Scenes/MainMenu/ScoreboardMenu/ScoreboardMenu.cs" id="1_53tlr"]
+
+[node name="ScoreboardMenu" type="Control" unique_id=1986820597]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_53tlr")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=1750732668]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -83.0
+offset_right = 83.0
+offset_bottom = 42.0
+grow_horizontal = 2
+
+[node name="ScoreboardLabel" type="Label" parent="VBoxContainer" unique_id=1252353306]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "Scoreboard"
+
+[node name="ScoreRichTextLabel" type="RichTextLabel" parent="VBoxContainer" unique_id=1222037002]
+layout_mode = 2
+text = "Pseudo score
+Pseudo score
+Pseudo score
+Pseudo score"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+
+[node name="ReturnMenuBtn" type="Button" parent="VBoxContainer" unique_id=1965212455]
+layout_mode = 2
+text = "Return"
+
+[connection signal="pressed" from="VBoxContainer/ReturnMenuBtn" to="." method="_on_return_menu_btn_pressed"]
