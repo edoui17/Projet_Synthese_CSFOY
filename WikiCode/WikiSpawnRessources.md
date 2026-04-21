@@ -1,23 +1,21 @@
-# Documentation : Système de Spawn Aléatoire de Ressources (Arbres)
+# Documentation : Système de Spawn Aléatoire de Ressources (TreeZone)
 
 ## Vue d'ensemble
-Le système de spawn d'arbres permet de peupler dynamiquement la carte avec différents modèles d'arbres lors du chargement du niveau, assurant une diversité visuelle sans intervention manuelle.
+Le système `TreeZone` permet de peupler dynamiquement des zones spécifiques de la carte avec un nombre défini d'arbres. Contrairement à l'ancien système de points individuels, `TreeZone` utilise une zone polygonale pour définir l'aire de répartition.
 
 ## Architecture
 Le système suit une architecture N-Tier avec une approche "Interface First".
 
 ### 1. Core (Logique Pure)
-- **`IRandomSelector<T>`** : Interface générique définissant la capacité à choisir un élément aléatoire.
-- **`RandomSelector<T>`** : Implémentation basée sur `System.Random`.
+- **`ITreePopulator`** : Interface définissant la capacité à peupler une zone avec des arbres.
 
 ### 2. IslandSurvivor (Godot)
-- **`TreeSpawn` (Node : Marker2D)** : Point de spawn placé dans les scènes.
+- **`TreeZone` (Node : Node2D)** : Définit une zone de peuplement.
+    - Utilise un enfant **`Polygon2D`** (nommé "SpawningArea") pour définir la forme de la zone.
     - Scanne dynamiquement le dossier `res://Scenes/Ressources/Tree`.
-    - Sélectionne un fichier `.tscn` aléatoirement via le `IRandomSelector`.
-    - Instancie l'arbre en tant qu'enfant.
-- **`TreePopulationManager` (Node)** : Coordinateur central.
-    - Parcourt l'arbre de scènes pour trouver tous les `TreeSpawn`.
-    - Déclenche la méthode `SpawnTree` sur chaque point trouvé.
+    - Génère des positions aléatoires dans le polygone via `Geometry2D.IsPointInPolygon`.
+    - Instancie les arbres en tant qu'enfants du `TreeZone`.
+    - Force la visibilité, l'échelle et la couche de collision (Layer 5 : Ressource).
 
 ## Utilisation
 
@@ -27,12 +25,14 @@ Il suffit de placer les nouvelles scènes d'arbres (`.tscn`) dans le dossier :
 
 Le système les détectera automatiquement au prochain lancement.
 
-### Placer un point de spawn
-1. Instancier la scène `SpawnPointTree.tscn` dans votre niveau.
-2. Positionner le node là où vous souhaitez qu'un arbre apparaisse.
+### Créer une zone de peuplement
+1. Créez un node `Node2D` et attachez-lui le script `TreeZone.cs`.
+2. Ajoutez un enfant `Polygon2D` nommé **"SpawningArea"**.
+3. Dessinez la forme de la zone dans l'éditeur Godot en utilisant les points du polygone.
+4. Ajustez la propriété **`TreeCount`** dans l'inspecteur pour définir le nombre d'arbres souhaités.
 
 ## Déclenchement
-Le peuplement est actuellement déclenché dans `Spawn.cs` juste avant l'instanciation du joueur via `TreePopulationManager.PopulateTrees()`.
+Le peuplement est déclenché automatiquement dans le `_Ready()` du node `TreeZone`.
 
 ## Tags
 `Gameplay`, `Map`, `Procedural`, `Spawning`, `Algorithme`
