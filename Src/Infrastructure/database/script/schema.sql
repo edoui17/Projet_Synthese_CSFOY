@@ -38,7 +38,5 @@ CREATE TABLE PlayerConfig (
     MasterVolume FLOAT NOT NULL DEFAULT 1.0,
     MusicVolume FLOAT NOT NULL DEFAULT 1.0,
     SfxVolume FLOAT NOT NULL DEFAULT 1.0,
-    Resolution NVARCHAR(50) NULL,
-    IsFullScreen BIT NOT NULL DEFAULT 1,
     CONSTRAINT FK_PlayerConfig_Players FOREIGN KEY (PlayerId) REFERENCES Players(Id) ON DELETE CASCADE
 );
