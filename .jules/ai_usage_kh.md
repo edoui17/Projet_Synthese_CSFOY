@@ -73,3 +73,8 @@
   3. Création de `Architecture_Niveaux.md` pour documenter l'utilisation de l'héritage de scène (`LevelBase.tscn`), l'injection de `MapContainer`, et le positionnement UI via `CanvasLayer`.
   4. Mise à jour de `CollisionLayers.md` pour clarifier mathématiquement le système de Bitmask (puissance de 2) lié aux IDs des couches Godot.
 - **Decision Reasoning**: La suppression des fichiers obsolètes allège la charge mentale. La conservation de Map.md satisfait les règles établies. La documentation de la nouvelle architecture des niveaux (qui n'était expliquée nulle part de manière centralisée) donne à l'équipe une source de vérité claire et saine pour la suite du développement.
+
+### 2024-04-20 - [US 5.4 Créer une composante de mouvement unifié]
+| **Request** | **AI Contribution** | **Decision Reasoning** |
+| :--- | :--- | :--- |
+| Implement a reusable MovementController for Player and NPCs (Sheep). The system needs to use a base speed and apply the Speed stat as a percentage increase. Keep the logic in the game project instead of Core. | Implemented `MovementController.cs` and integrated it into `Player.tscn` / `Sheep.tscn`. Set up stat multiplication so that `Speed` stat gives +1% per point. Wrote the system documentation. | Kept the physics inside Godot since `MoveAndSlide` and Godot's internal physics loop are much better suited for 2D character collision and slope handling. The user confirmed keeping this out of `Core` to avoid duplicating physics code. |
