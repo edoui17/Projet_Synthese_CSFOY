@@ -12,6 +12,7 @@ Le système suit une architecture N-Tier avec une approche "Interface First".
 ### 2. IslandSurvivor (Godot)
 - **`TreeZone` (Node : Node2D)** : Définit une zone de peuplement.
     - Utilise un enfant **`Polygon2D`** (nommé "SpawningArea") pour définir la forme de la zone.
+    - Gère une **Safe Zone** (Rayon et Centre) pour éviter le spawn sur le joueur.
     - Scanne dynamiquement le dossier `res://Scenes/Ressources/Tree`.
     - Génère des positions aléatoires dans le polygone via `Geometry2D.IsPointInPolygon`.
     - Instancie les arbres en tant qu'enfants du `TreeZone`.
@@ -30,6 +31,7 @@ Le système les détectera automatiquement au prochain lancement.
 2. Ajoutez un enfant `Polygon2D` nommé **"SpawningArea"**.
 3. Dessinez la forme de la zone dans l'éditeur Godot en utilisant les points du polygone.
 4. Ajustez la propriété **`TreeCount`** dans l'inspecteur pour définir le nombre d'arbres souhaités.
+5. (Optionnel) Configurez la **`SafeZoneRadius`** et le **`SafeZoneCenter`** pour protéger les zones d'apparition des personnages.
 
 ## Déclenchement
 Le peuplement est déclenché automatiquement dans le `_Ready()` du node `TreeZone`.
