@@ -8,25 +8,29 @@ using Core.Interfaces;
 using IslandSurvivor.Nodes;
 using Core.Managers.Stats;
 
-public partial class Sheep : CharacterBody2D, INpc, IDamageable
+public partial class Soldier : CharacterBody2D, INpc, IEnemy, IDamageable
 {
     [Export] public StatManager Stats { get; set; }
 
-    [Export] public string NpcType { get; set; } = "Passive";
+    [Export] public string NpcType { get; set; } = "Agressive";
+    [Export] public string EnemyType { get; set; } = "Soldier";
+
     [Export] public float IdleSpeed { get; set; } = 30.0f;
-    [Export] public float FleeSpeed { get; set; } = 120.0f;
+    [Export] public float ChaseSpeed { get; set; } = 150.0f;
+    [Export] public float DetectionRadius { get; set; } = 250.0f;
 
     private NavigationAgent2D m_navigationAgent;
-    private PassiveController m_passiveController;
+    private AgressorController m_agressorController;
     private MovementController m_movementController;
     private Sprite2D m_sprite;
+    private Node2D m_targetPlayer;
     private bool m_wasKilledByPlayer = false;
 
-    public string CurrentState => m_passiveController?.CurrentState ?? NpcStates.IDLE;
+    public string CurrentState => m_agressorController?.CurrentState ?? NpcStates.IDLE;
 
     public override void _Ready()
     {
-        m_passiveController = new PassiveController();
+        m_agressorController = new AgressorController();
 
         m_navigationAgent = GetNodeOrNull<NavigationAgent2D>("NavigationAgent2D");
         m_sprite = GetNodeOrNull<Sprite2D>("Sprite2D");
@@ -34,42 +38,52 @@ public partial class Sheep : CharacterBody2D, INpc, IDamageable
 
         if (m_navigationAgent == null)
         {
-            GD.PrintErr("Sheep node requires a NavigationAgent2D child node.");
+            GD.PrintErr("Soldier node requires a NavigationAgent2D child node.");
         }
         else
         {
             m_navigationAgent.PathDesiredDistance = 4.0f;
             m_navigationAgent.TargetDesiredDistance = 4.0f;
-            // No need for VelocityComputed if we just use direction + MovementController,
-            // but left here in case Godot navigation avoidance is enabled later.
         }
 
         if (Stats != null)
         {
-            Stats.SetCurrentValue(StatType.Health, 3);
+            Stats.SetCurrentValue(StatType.Health, 10);
+            // Example for base damage. Can use StatType.Attack if it exists in StatType
         }
     }
 
     public override void _PhysicsProcess(double p_delta)
     {
-        if (m_passiveController.CurrentState == NpcStates.DEAD) return;
+        if (m_agressorController.CurrentState == NpcStates.DEAD) return;
 
-        m_passiveController.Update((float)p_delta);
+        UpdateTarget();
 
-        Vector2 direction = m_passiveController.CurrentDirection;
+        m_agressorController.Update((float)p_delta, m_targetPlayer != null);
 
+        Vector2 direction = m_agressorController.CurrentDirection;
         float targetSpeed = IdleSpeed;
-        if (m_passiveController.CurrentState == NpcStates.FLEE)
+
+        if (m_agressorController.CurrentState == NpcStates.CHASE && m_targetPlayer != null)
         {
-            targetSpeed = FleeSpeed;
-        }
-        else if (m_passiveController.CurrentState == NpcStates.IDLE)
-        {
-            // Set navigation target based on current direction to wander using navmesh
+            targetSpeed = ChaseSpeed;
             if (m_navigationAgent != null)
             {
-                // Give a short distance to walk in that direction
-                Vector2 targetPos = GlobalPosition + (m_passiveController.CurrentDirection * 50f);
+                m_navigationAgent.TargetPosition = m_targetPlayer.GlobalPosition;
+                if (!m_navigationAgent.IsNavigationFinished())
+                {
+                    Vector2 nextPathPosition = m_navigationAgent.GetNextPathPosition();
+                    direction = GlobalPosition.DirectionTo(nextPathPosition);
+                    m_agressorController.UpdateChaseDirection(GlobalPosition, m_targetPlayer.GlobalPosition);
+                }
+            }
+        }
+        else if (m_agressorController.CurrentState == NpcStates.IDLE)
+        {
+            // Wandering
+            if (m_navigationAgent != null)
+            {
+                Vector2 targetPos = GlobalPosition + (m_agressorController.CurrentDirection * 50f);
                 m_navigationAgent.TargetPosition = targetPos;
 
                 if (!m_navigationAgent.IsNavigationFinished())
@@ -80,13 +94,11 @@ public partial class Sheep : CharacterBody2D, INpc, IDamageable
                 else
                 {
                     direction = Vector2.Zero;
-                    // Force a new direction pick sooner if we hit a wall
-                    m_passiveController.ResetDirectionChangeTimer();
+                    m_agressorController.ResetDirectionChangeTimer();
                 }
             }
         }
 
-        // Flip sprite based on movement direction
         if (m_sprite != null && direction.X != 0)
         {
             m_sprite.FlipH = direction.X < 0;
@@ -103,13 +115,34 @@ public partial class Sheep : CharacterBody2D, INpc, IDamageable
         }
     }
 
+    private void UpdateTarget()
+    {
+        // Simple detection using group
+        Godot.Collections.Array<Node> players = GetTree().GetNodesInGroup("Player");
+        if (players.Count > 0)
+        {
+            Node2D playerNode = players[0] as Node2D;
+            if (playerNode != null && GlobalPosition.DistanceTo(playerNode.GlobalPosition) <= DetectionRadius)
+            {
+                m_targetPlayer = playerNode;
+            }
+            else
+            {
+                m_targetPlayer = null;
+            }
+        }
+        else
+        {
+            m_targetPlayer = null;
+        }
+    }
+
     public void TakeDamage(int p_amount, object p_attacker)
     {
-        if (m_passiveController.CurrentState == NpcStates.DEAD) return;
+        if (m_agressorController.CurrentState == NpcStates.DEAD) return;
 
         if (Stats != null)
         {
-            // Just apply damage logically here since we don't have a direct Stats.TakeDamage method visible
             float currentHp = Stats.GetCurrentValue(StatType.Health);
             Stats.SetCurrentValue(StatType.Health, currentHp - p_amount);
         }
@@ -125,10 +158,9 @@ public partial class Sheep : CharacterBody2D, INpc, IDamageable
 
             if (!isDead)
             {
-                // Let the controller compute flee direction
-                m_passiveController.StartFleeing(GlobalPosition, attackerNode.GlobalPosition);
+                // Force target to whoever hit it
+                m_targetPlayer = attackerNode;
 
-                // Visual feedback
                 Modulate = new Color(1, 0.5f, 0.5f);
                 GetTree().CreateTimer(0.2f).Timeout += () =>
                 {
@@ -145,21 +177,17 @@ public partial class Sheep : CharacterBody2D, INpc, IDamageable
 
     private void HandleDeath()
     {
-        m_passiveController.SetDead();
+        m_agressorController.SetDead();
 
         if (m_wasKilledByPlayer)
         {
-            int meatAmount = 1;
-            ResourceItem meatResource = new ResourceItem("meat_01", "Viande", "Meat", "res://Assets/TinySwords/TinySwords(Update010)/Deco/17.png");
+            int goldAmount = 2;
+            ResourceItem goldResource = new ResourceItem("gold_coin", "Piece d'Or", "Gold Coin", "res://Assets/TinySwords/TinySwords(Update010)/Resources/Gold_Coin.png");
 
             if (SignalManager.Instance != null)
             {
-                SignalManager.Instance.EmitMaterialDestroyed(this, meatResource, meatAmount);
-                GD.Print($"Sheep died. Sent {meatAmount} meat to inventory.");
-            }
-            else
-            {
-                GD.PrintErr("SignalManager is not available.");
+                SignalManager.Instance.EmitMaterialDestroyed(this, goldResource, goldAmount);
+                GD.Print($"Soldier died. Sent {goldAmount} gold to inventory.");
             }
         }
 

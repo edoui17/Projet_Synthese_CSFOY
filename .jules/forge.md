@@ -78,3 +78,7 @@ To meet the requirement to use the N-Tier statistics system, `Sheep.cs` exposes 
 ### Movement System (US 5.4)
 - **Decision:** Maintained movement logic (`MovementController`) inside the `IslandSurvivor` (Godot Client) project rather than moving it to `Core`.
 - **Reasoning:** Movement relies heavily on Godot's built-in physics engine and the `MoveAndSlide()` native API to handle collisions and slopes correctly. Implementing a custom 2D physics/collision solver in the C# `Core` would be redundant, error-prone, and suffer a performance hit compared to Godot's optimized C++ implementation.
+
+### 2026-04-21 - US 6.1 Enemy Navigation
+- **Discovery**: When using `NavigationAgent2D` for simple wandering logic, setting `TargetPosition` to a calculated point in front of the entity works well to generate a path. However, the path position updates asynchronously in some cases, so checking `IsNavigationFinished()` prevents erratic movement when the entity reaches the target.
+- **Architecture**: Separated raw C# state/timer logic (`PassiveController`, `AgressorController`) from Godot Node interaction (`Sheep.cs`, `Soldier.cs`). The controller handles *why* and *when* to move, and Godot handles *how* to move using `NavigationAgent2D` and `MovementController`.
