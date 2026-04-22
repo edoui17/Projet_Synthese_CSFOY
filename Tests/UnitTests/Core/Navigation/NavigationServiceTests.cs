@@ -15,12 +15,16 @@ public class NavigationServiceTests
     private readonly Mock<ISignalManager> m_signalManagerMock;
     private readonly NavigationService m_navigationService;
     private readonly Mock<IEventBus> m_eventBusMock;
+    private readonly Mock<IShopManager> m_shopManagerMock;
+    private readonly Mock<IInventoryManager> m_inventoryManagerMock;
 
     public NavigationServiceTests()
     {
         m_signalManagerMock = new Mock<ISignalManager>();
         m_eventBusMock = new Mock<IEventBus>();
-        m_navigationService = new NavigationService(m_signalManagerMock.Object, m_eventBusMock.Object);
+        m_shopManagerMock = new Mock<IShopManager>();
+        m_inventoryManagerMock = new Mock<IInventoryManager>();
+        m_navigationService = new NavigationService(m_signalManagerMock.Object, m_eventBusMock.Object, m_shopManagerMock.Object, m_inventoryManagerMock.Object);
     }
 
     [Fact]
@@ -43,10 +47,23 @@ public class NavigationServiceTests
     public void TryNavigate_ShouldPublishEventAndReturnTrue()
     {
         var destination = new IslandDestination("test_id", "test_path", "Normal", 5, 5, 5);
+        m_shopManagerMock.Setup(s => s.CanAffordIsland(It.IsAny<IInventoryManager>(), It.IsAny<int>())).Returns(true);
 
         bool result = m_navigationService.TryNavigate(destination);
 
         Assert.True(result);
         m_eventBusMock.Verify(b => b.Publish(It.Is<NavigationRequestedEvent>(e => e.Destination == destination)), Times.Once);
+    }
+
+    [Fact]
+    public void TryNavigate_WhenCannotAfford_ShouldReturnFalseAndNotPublishEvent()
+    {
+        var destination = new IslandDestination("test_id", "test_path", "Normal", 5, 5, 5);
+        m_shopManagerMock.Setup(s => s.CanAffordIsland(It.IsAny<IInventoryManager>(), It.IsAny<int>())).Returns(false);
+
+        bool result = m_navigationService.TryNavigate(destination);
+
+        Assert.False(result);
+        m_eventBusMock.Verify(b => b.Publish(It.IsAny<NavigationRequestedEvent>()), Times.Never);
     }
 }

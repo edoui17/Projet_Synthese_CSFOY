@@ -42,7 +42,7 @@ public partial class ServiceRegistry : Node
     // Pass Godot specific implementation of ISaveService
     ISaveService saveService = new GodotSaveService();
     ScoreTracker = new ScoreTracker(saveService);
-    NavigationService = new NavigationService(SignalManagerCore, EventBus);
+    NavigationService = new NavigationService(SignalManagerCore, EventBus, ShopManager, InventoryManager);
 
   }
 

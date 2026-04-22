@@ -11,14 +11,18 @@ public class NavigationService : INavigationService
 {
     private readonly ISignalManager m_signalManager;
     private readonly IEventBus m_eventBus;
+    private readonly IShopManager m_shopManager;
+    private readonly IInventoryManager m_inventoryManager;
     private readonly Random m_random = new Random();
 
     private readonly string[] m_biomes = { "Normal", "Rare", "Dangerous" };
 
-    public NavigationService(ISignalManager p_signalManager, IEventBus p_eventBus)
+    public NavigationService(ISignalManager p_signalManager, IEventBus p_eventBus, IShopManager p_shopManager, IInventoryManager p_inventoryManager)
     {
         m_signalManager = p_signalManager;
         m_eventBus = p_eventBus;
+        m_shopManager = p_shopManager;
+        m_inventoryManager = p_inventoryManager;
 
         m_eventBus.Subscribe<NavigationApprovedEvent>(OnNavigationApproved);
     }
@@ -75,6 +79,11 @@ public class NavigationService : INavigationService
 
     public bool TryNavigate(IslandDestination p_destination)
     {
+        if (!CanAffordIsland(p_destination))
+        {
+            return false;
+        }
+
         // Instead of directly coupling with IInventoryManager to deduct items,
         // we publish an event. InventoryManager will subscribe, validate, and emit NavigationApproved/Rejected.
         m_eventBus.Publish(new NavigationRequestedEvent(p_destination));
@@ -82,5 +91,15 @@ public class NavigationService : INavigationService
         // Since we are transitioning to async/queued events, the return value here might need to be removed in future passes.
         // For now, returning true implies the request was successfully dispatched.
         return true;
+    }
+
+    public bool CanAffordIsland(IslandDestination p_destination)
+    {
+        if (p_destination.ResourceCost <= 0 || p_destination.Id == IslandDestination.HomeIsland.Id)
+        {
+            return true;
+        }
+
+        return m_shopManager.CanAffordIsland(m_inventoryManager, p_destination.ResourceCost);
     }
 }
