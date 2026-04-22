@@ -5,6 +5,8 @@
 [ext_resource type="Texture2D" uid="uid://dwsh1gspfwghh" path="res://Assets/TinySwords/Sprites/Warrior/Black/Warrior_Attack1.png" id="2_ftayq"]
 [ext_resource type="Texture2D" uid="uid://cy36cydp3xyku" path="res://Assets/TinySwords/Sprites/Warrior/Black/Warrior_Run.png" id="4_ftayq"]
 [ext_resource type="PackedScene" path="res://Nodes/Movement/MovementController.tscn" id="5_hx8j2"]
+[ext_resource type="PackedScene" uid="uid://biqhbrp7fjfyj" path="res://Nodes/StatsManager/StatsManager.tscn" id="6_hx8j2"]
+[ext_resource type="Resource" uid="uid://bf238lhuy7sdh" path="res://Resources/Stats/Entity/SoldierStats.tres" id="7_8t73o"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_8hhla"]
 atlas = ExtResource("2_ftayq")
@@ -151,22 +153,25 @@ animations = [{
 }]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_v2bfp"]
-radius = 21.0
-height = 58.0
+radius = 36.0
+height = 96.0
 
 [node name="Soldier" type="CharacterBody2D" unique_id=666187867]
 script = ExtResource("1_lf5hw")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=586828728]
-position = Vector2(3, 0.9999999)
-scale = Vector2(0.6302083, 0.6302083)
+position = Vector2(-3, 0)
+scale = Vector2(1.251587, 1.4513752)
 sprite_frames = SubResource("SpriteFrames_8an0u")
 animation = &"Moving"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=22620120]
 light_mask = 17
-position = Vector2(0, 5.9604645e-08)
+position = Vector2(-7, 1.0000002)
 scale = Vector2(0.99999994, 0.99999994)
 shape = SubResource("CapsuleShape2D_v2bfp")
 
 [node name="MovementController" parent="." unique_id=1324976384 instance=ExtResource("5_hx8j2")]
+
+[node name="StatsManager" parent="." unique_id=1475410971 instance=ExtResource("6_hx8j2")]
+BaseStatsResource = ExtResource("7_8t73o")
