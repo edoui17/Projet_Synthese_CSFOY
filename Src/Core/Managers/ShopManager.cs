@@ -1,10 +1,26 @@
 namespace Core.Managers;
 
 using System;
+using Core.Events;
 using Core.Interfaces;
 
 public class ShopManager : IShopManager
 {
+    private readonly IEventBus m_eventBus;
+
+    public ShopManager(IEventBus p_eventBus)
+    {
+        m_eventBus = p_eventBus;
+
+        // Example logic to handle successful purchases if ShopManager needed state
+        m_eventBus.Subscribe<TransactionResultEvent>(OnTransactionResult);
+    }
+
+    private void OnTransactionResult(TransactionResultEvent p_event)
+    {
+        // Internal logic for when a transaction completes (success/failure)
+    }
+
     public int CalculateCost(int p_upgradeCount)
     {
         // Cost scaling: 1, 3, 7, 15... (2^(n+1) - 1)
