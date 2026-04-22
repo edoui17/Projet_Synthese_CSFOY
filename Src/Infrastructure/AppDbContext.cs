@@ -77,8 +77,6 @@ public class AppDbContext : DbContext
             entity.ToTable("PlayerConfig");
             entity.HasKey(e => e.PlayerId);
 
-            entity.Property(e => e.Resolution).HasMaxLength(50);
-
             entity.HasOne(e => e.Player)
                 .WithOne(p => p.Config)
                 .HasForeignKey<PlayerConfigEntity>(e => e.PlayerId)

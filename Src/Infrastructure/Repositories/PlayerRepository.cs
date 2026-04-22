@@ -106,9 +106,7 @@ public class PlayerRepository : IPlayerRepository
                 PlayerId = p_entity.Config.PlayerId,
                 MasterVolume = p_entity.Config.MasterVolume,
                 MusicVolume = p_entity.Config.MusicVolume,
-                SfxVolume = p_entity.Config.SfxVolume,
-                Resolution = p_entity.Config.Resolution,
-                IsFullScreen = p_entity.Config.IsFullScreen
+                SfxVolume = p_entity.Config.SfxVolume
             }
         };
     }

@@ -14,3 +14,10 @@
 3. Mapped Infrastructure entities to Core domain models within the repositories.
 4. Documented the use of `ExtraStats` for future-proofing stats.
 **Decision Reasoning**: Column-per-stat optimizes reads for core meta-progression, while a JSON column provides the necessary flexibility for future attributes without schema overhead.
+### 2026-04-21 - [Cleanup] | Removal of Resolution and IsFullScreen from PlayerConfig | Removed unnecessary fields from PlayerConfig throughout the N-Tier architecture.
+**AI Contribution**:
+1. Removed fields from `Core.Domain.PlayerConfig` and `Infrastructure.Entities.PlayerConfigEntity`.
+2. Updated `AppDbContext` and `PlayerRepository` to eliminate dependencies on these fields.
+3. Updated SQL schema script `schema.sql` and `Persistence_System.md` documentation.
+4. Initialized and added Entity Framework Core migration `InitialCreate` for the Infrastructure project.
+**Decision Reasoning**: Simplifies the persistence model by removing fields not required for meta-progression. Initializing EF migrations ensures the development environment can correctly synchronize the database state with the updated models.

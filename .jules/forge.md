@@ -51,3 +51,7 @@
 ### 2025-05-14 - Database Naming
 - **Decision**: The database for the project is named `DBIslandSurvivor`.
 - **Implementation**: Connection strings have been added to the API project's `appsettings.json` and registered in `Program.cs`.
+
+### 2026-04-21 - PlayerConfig Schema Update (Clean-up)
+- **Decision**: Removed `Resolution` and `IsFullScreen` fields from `PlayerConfig` domain model, entity model, and database schema.
+- **Reasoning**: These fields were deemed unnecessary for the meta-progression persistence via API. Cleaned up the project to maintain only relevant fields and initialized EF Core migrations for the `Infrastructure` project.

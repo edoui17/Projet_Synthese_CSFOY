@@ -20,7 +20,7 @@ The database is named **`DBIslandSurvivor`**. The schema is designed for SQL Ser
 - **`Inventory`**: Junction table between players and items (PlayerId, ResourceItemId, Quantity).
 - **`Stats`**: Meta-progression statistics (PlayerId, Health, Attack, Speed, Luck).
   - **`ExtraStats`**: A flexible `NVARCHAR(MAX)` column storing JSON for future-proofing statistics without schema migrations.
-- **`PlayerConfig`**: User settings (PlayerId, Audio Volumes, Resolution, Fullscreen).
+- **`PlayerConfig`**: User settings (PlayerId, Audio Volumes).
 
 The complete DDL script is located at: `Src/Infrastructure/database/script/schema.sql`.
 
