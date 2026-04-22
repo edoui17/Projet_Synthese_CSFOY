@@ -137,3 +137,11 @@ Ce document retrace l'interaction entre Kevin Houle et les assistants IA (Forge/
 | **Request** | **AI Contribution** | **Decision Reasoning** |
 | :--- | :--- | :--- |
 | Implement a reusable MovementController for Player and NPCs (Sheep). The system needs to use a base speed and apply the Speed stat as a percentage increase. Keep the logic in the game project instead of Core. | Implemented `MovementController.cs` and integrated it into `Player.tscn` / `Sheep.tscn`. Set up stat multiplication so that `Speed` stat gives +1% per point. Wrote the system documentation. | Kept the physics inside Godot since `MoveAndSlide` and Godot's internal physics loop are much better suited for 2D character collision and slope handling. The user confirmed keeping this out of `Core` to avoid duplicating physics code. |
+### 2026-04-22 - [Navigation System Fix]
+**Request**: Fix the navigation system so that islands cannot be purchased without sufficient resources, ensuring N-Tier separation.
+**AI Contribution**: Implemented synchronous resource checking in `NavigationService` and `NavigationMenu` by injecting `ShopManager` and `InventoryManager` into `NavigationService`. Updated the Godot UI to disable buttons dynamically, and updated unit tests.
+**Decision Reasoning**: The `NavigationMenu` now correctly queries `NavigationService.CanAffordIsland()` to keep UI decoupled from shop logic. The asynchronous transaction processing is maintained in `InventoryManager` via EventBus, but now the initial request is securely blocked if resources are inadequate.
+### 2026-04-22 - [Navigation Menu UI Revert]
+**Request**: Remove the text modifications and disabling of UI buttons in the Navigation Menu when the player cannot afford an island. Prefer using GD.Print logs and keeping UI active.
+**AI Contribution**: Reverted visual alterations inside `NavigationMenu.cs` so that the button strictly displays the destination data.
+**Decision Reasoning**: Retained the core functionality of blocking the backend purchase via the synchronous check in `NavigationService`, but restored the UI text so it doesn't clutter the user interface.
