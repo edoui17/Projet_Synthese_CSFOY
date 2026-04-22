@@ -3,7 +3,7 @@
 [ext_resource type="PackedScene" uid="uid://cax2j3b2g36d" path="res://Scenes/Level/LevelBase.tscn" id="1_base"]
 [ext_resource type="PackedScene" uid="uid://dcghy8ygomn7y" path="res://Scenes/Map/Map1/Map1.tscn" id="2_map"]
 [ext_resource type="PackedScene" uid="uid://dq4dear1g8mq2" path="res://Scenes/Portal/Portal.tscn" id="3_portal"]
-[ext_resource type="Script" uid="uid://crnps6x7v7q3k" path="res://Nodes/Zones/TreeZone.cs" id="4_tree"]
+[ext_resource type="Script" uid="uid://crnps6x7v7q3k" path="res://Nodes/Zones/ResourceZone.cs" id="4_tree"]
 
 [node name="Main" unique_id=2090159461 instance=ExtResource("1_base")]
 
@@ -13,11 +13,11 @@ position = Vector2(-1, 0)
 [node name="Player" parent="." index="1"]
 position = Vector2(-132, -161)
 
-[node name="TreeZone" type="Node2D" parent="." index="2" unique_id=2099294014]
+[node name="ResourceZone" type="Node2D" parent="." index="2" unique_id=2099294014]
 script = ExtResource("4_tree")
-TreeCount = 50
+ResourceCount = 50
 
-[node name="SpawningArea" type="Polygon2D" parent="TreeZone" index="0" unique_id=687902949]
+[node name="SpawningArea" type="Polygon2D" parent="ResourceZone" index="0" unique_id=687902949]
 light_mask = 0
 visibility_layer = 0
 position = Vector2(-36.5, 0)
