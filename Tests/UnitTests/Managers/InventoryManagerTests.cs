@@ -9,7 +9,7 @@ public class InventoryManagerTests
     public void AddMaterial_WithValidItem_IncreasesQuantity()
     {
         // Arrange
-        var inventoryManager = new InventoryManager();
+        var inventoryManager = new InventoryManager(new global::Core.Services.EventBus());
         var item = new ResourceItem("wood", "Wood", "Resource", "path/to/icon");
 
         // Act
@@ -23,7 +23,7 @@ public class InventoryManagerTests
     public void AddMaterial_SameItemMultipleTimes_AccumulatesQuantity()
     {
         // Arrange
-        var inventoryManager = new InventoryManager();
+        var inventoryManager = new InventoryManager(new global::Core.Services.EventBus());
         var item = new ResourceItem("stone", "Stone", "Resource", "path/to/icon");
 
         // Act
@@ -38,7 +38,7 @@ public class InventoryManagerTests
     public void RemoveMaterial_WithValidAmount_DecreasesQuantity()
     {
         // Arrange
-        var inventoryManager = new InventoryManager();
+        var inventoryManager = new InventoryManager(new global::Core.Services.EventBus());
         var item = new ResourceItem("iron", "Iron", "Resource", "path/to/icon");
         inventoryManager.AddMaterial(item, 10);
 
@@ -53,7 +53,7 @@ public class InventoryManagerTests
     public void RemoveMaterial_ExactAmount_RemovesItemFromInventory()
     {
         // Arrange
-        var inventoryManager = new InventoryManager();
+        var inventoryManager = new InventoryManager(new global::Core.Services.EventBus());
         var item = new ResourceItem("gold", "Gold", "Resource", "path/to/icon");
         inventoryManager.AddMaterial(item, 5);
 
@@ -69,7 +69,7 @@ public class InventoryManagerTests
     public void GetAllSlots_ReturnsCorrectNumberOfSlots()
     {
         // Arrange
-        var inventoryManager = new InventoryManager();
+        var inventoryManager = new InventoryManager(new global::Core.Services.EventBus());
         var item1 = new ResourceItem("wood", "Wood", "Resource", "path/to/icon");
         var item2 = new ResourceItem("stone", "Stone", "Resource", "path/to/icon");
 
@@ -88,7 +88,7 @@ public class InventoryManagerTests
     public void AddMaterial_WithNullItem_DoesNothing()
     {
         // Arrange
-        var inventoryManager = new InventoryManager();
+        var inventoryManager = new InventoryManager(new global::Core.Services.EventBus());
 
         // Act
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
@@ -103,7 +103,7 @@ public class InventoryManagerTests
     public void AddMaterial_WithEmptyItemId_DoesNothing()
     {
         // Arrange
-        var inventoryManager = new InventoryManager();
+        var inventoryManager = new InventoryManager(new global::Core.Services.EventBus());
         var item = new ResourceItem("", "Wood", "Resource", "path/to/icon");
 
         // Act
@@ -117,7 +117,7 @@ public class InventoryManagerTests
     public void AddMaterial_WithZeroOrNegativeAmount_DoesNothing()
     {
         // Arrange
-        var inventoryManager = new InventoryManager();
+        var inventoryManager = new InventoryManager(new global::Core.Services.EventBus());
         var item = new ResourceItem("wood", "Wood", "Resource", "path/to/icon");
 
         // Act
@@ -132,7 +132,7 @@ public class InventoryManagerTests
     public void RemoveMaterial_WithZeroOrNegativeAmount_DoesNothing()
     {
         // Arrange
-        var inventoryManager = new InventoryManager();
+        var inventoryManager = new InventoryManager(new global::Core.Services.EventBus());
         var item = new ResourceItem("wood", "Wood", "Resource", "path/to/icon");
         inventoryManager.AddMaterial(item, 10);
 
@@ -148,7 +148,7 @@ public class InventoryManagerTests
     public void RemoveMaterial_MoreThanAvailable_RemovesItemFromInventory()
     {
         // Arrange
-        var inventoryManager = new InventoryManager();
+        var inventoryManager = new InventoryManager(new global::Core.Services.EventBus());
         var item = new ResourceItem("wood", "Wood", "Resource", "path/to/icon");
         inventoryManager.AddMaterial(item, 5);
 
@@ -164,7 +164,7 @@ public class InventoryManagerTests
     public void RemoveMaterial_NonExistentItem_DoesNothing()
     {
         // Arrange
-        var inventoryManager = new InventoryManager();
+        var inventoryManager = new InventoryManager(new global::Core.Services.EventBus());
         var item = new ResourceItem("wood", "Wood", "Resource", "path/to/icon");
         inventoryManager.AddMaterial(item, 5);
 
@@ -181,7 +181,7 @@ public class InventoryManagerTests
     public void GetMaterialCount_WithNullOrEmptyId_ReturnsZero()
     {
         // Arrange
-        var inventoryManager = new InventoryManager();
+        var inventoryManager = new InventoryManager(new global::Core.Services.EventBus());
 
         // Act
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
@@ -198,7 +198,7 @@ public class InventoryManagerTests
     public void GetMaterialCount_WithNonExistentId_ReturnsZero()
     {
         // Arrange
-        var inventoryManager = new InventoryManager();
+        var inventoryManager = new InventoryManager(new global::Core.Services.EventBus());
 
         // Act
         var count = inventoryManager.GetMaterialCount("nonexistent");
