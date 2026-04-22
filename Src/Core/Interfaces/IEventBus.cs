@@ -18,7 +18,12 @@ public interface IEventBus
     void Unsubscribe<T>(Action<T> p_callback) where T : IEvent;
 
     /// <summary>
-    /// Publishes an event to all subscribed callbacks.
+    /// Enqueues an event to be published during the next ProcessEvents call.
     /// </summary>
     void Publish<T>(T p_event) where T : IEvent;
+
+    /// <summary>
+    /// Processes and dispatches all queued events to their subscribers.
+    /// </summary>
+    void ProcessEvents();
 }

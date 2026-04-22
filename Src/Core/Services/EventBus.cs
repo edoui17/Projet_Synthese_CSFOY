@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Core.Interfaces;
+using System.Collections.Concurrent;
+using Core.Utils;
 
 namespace Core.Services;
 
@@ -12,49 +14,7 @@ namespace Core.Services;
 public class EventBus : IEventBus
 {
     private readonly Dictionary<Type, List<object>> m_subscriptions = new();
-
-    private class WeakAction<T> where T : IEvent
-    {
-        public WeakReference? TargetReference { get; }
-        public MethodInfo Method { get; }
-
-        public WeakAction(Action<T> p_callback)
-        {
-            if (p_callback.Target != null)
-            {
-                TargetReference = new WeakReference(p_callback.Target);
-            }
-            Method = p_callback.Method;
-        }
-
-        public bool IsAlive => TargetReference == null || TargetReference.IsAlive;
-
-        public bool IsMatch(Action<T> p_callback)
-        {
-            if (TargetReference != null)
-            {
-                return TargetReference.Target == p_callback.Target && Method == p_callback.Method;
-            }
-            return p_callback.Target == null && Method == p_callback.Method;
-        }
-
-        public void Invoke(T p_event)
-        {
-            if (TargetReference != null)
-            {
-                object? target = TargetReference.Target;
-                if (target != null)
-                {
-                    Method.Invoke(target, new object[] { p_event });
-                }
-            }
-            else
-            {
-                // Static method
-                Method.Invoke(null, new object[] { p_event });
-            }
-        }
-    }
+    private readonly ConcurrentQueue<Action> m_eventQueue = new();
 
     public void Subscribe<T>(Action<T> p_callback) where T : IEvent
     {
@@ -94,6 +54,19 @@ public class EventBus : IEventBus
     }
 
     public void Publish<T>(T p_event) where T : IEvent
+    {
+        m_eventQueue.Enqueue(() => DispatchEvent(p_event));
+    }
+
+    public void ProcessEvents()
+    {
+        while (m_eventQueue.TryDequeue(out var dispatchAction))
+        {
+            dispatchAction.Invoke();
+        }
+    }
+
+    private void DispatchEvent<T>(T p_event) where T : IEvent
     {
         Type eventType = typeof(T);
         List<object> subscribersSnapshot = new();

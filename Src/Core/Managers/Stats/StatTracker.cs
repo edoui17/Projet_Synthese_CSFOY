@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using Core.Events;
+using Core.Interfaces;
 using Core.Interfaces.Stats;
 using Core.Utils;
 
@@ -9,11 +11,27 @@ public class StatTracker : IStatTracker
 {
     private readonly Dictionary<StatType, Stat> m_stats;
     private readonly WeakEvent<StatChangedEventArgs> m_onAnyStatChanged;
+    private readonly IEventBus m_eventBus;
 
-    public StatTracker()
+    public StatTracker(IEventBus p_eventBus)
     {
         m_stats = new Dictionary<StatType, Stat>();
         m_onAnyStatChanged = new WeakEvent<StatChangedEventArgs>();
+        m_eventBus = p_eventBus;
+
+        m_eventBus.Subscribe<ResourceHarvestedEvent>(OnResourceHarvested);
+        m_eventBus.Subscribe<ResourceSpentEvent>(OnResourceSpent);
+    }
+
+    private void OnResourceHarvested(ResourceHarvestedEvent p_event)
+    {
+        // Example: Logging or updating "Total Resources Harvested" stat
+        // using the event bus decoupled data.
+    }
+
+    private void OnResourceSpent(ResourceSpentEvent p_event)
+    {
+        // Example: Logging or updating "Total Resources Spent" stat
     }
 
     public WeakEvent<StatChangedEventArgs> OnAnyStatChanged => m_onAnyStatChanged;

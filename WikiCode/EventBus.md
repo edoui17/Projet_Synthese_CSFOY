@@ -35,10 +35,32 @@ public interface IEventBus
     void Subscribe<T>(Action<T> p_callback) where T : IEvent;
     void Unsubscribe<T>(Action<T> p_callback) where T : IEvent;
     void Publish<T>(T p_event) where T : IEvent;
+    void ProcessEvents();
 }
 ```
 
 ## Utilisation de l'EventBus
+
+### Configuration (Godot Autoload)
+Puisque le `EventBus` utilise une file d'attente concurrente (`ConcurrentQueue<Action>`) pour éviter la récursion infinie ou les blocages de synchronisation (Option B), il **doit** être traité à chaque frame. Un script Autoload dans Godot doit appeler `ProcessEvents()`.
+
+```csharp
+public partial class EventBusAutoload : Node
+{
+    private IEventBus m_eventBus;
+
+    public override void _Ready()
+    {
+        // Injecter ou récupérer le bus
+        m_eventBus = ServiceRegistry.Get<IEventBus>();
+    }
+
+    public override void _Process(double delta)
+    {
+        m_eventBus.ProcessEvents();
+    }
+}
+```
 
 ### 1. Créer un Événement
 Pour créer un nouvel événement, définissez un record ou une classe implémentant `IEvent`.
