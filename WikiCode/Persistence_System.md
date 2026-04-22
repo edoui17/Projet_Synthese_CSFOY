@@ -59,7 +59,25 @@ Current status:
 3. `AppDbContext` is configured in `Infrastructure`.
 4. API is configured with the connection string for `DBIslandSurvivor`.
 
-## 5. Migration and Evolution
+## 5. API Endpoints & Synchronization (US 8.1)
+
+The API provides several endpoints for data synchronization:
+
+### Authentication
+- `POST /api/auth/login` : Validates `Username` and `Password`. Returns a `SessionToken` (GUID).
+
+### Synchronization
+- `GET /api/player/profile` : **(Consolidated)** Returns the full player profile including Stats, Config, and Inventory. Requires `X-Session-Token` in the header.
+- `POST /api/player/sync` : **(Consolidated)** Atomic update of the entire player state.
+
+### Granular Updates
+- `POST /api/stats/upsert` : Individual update for player statistics.
+- `POST /api/inventory/upsert` : Individual update for player inventory.
+
+### Security
+Protected endpoints require a valid `SessionToken` provided in the request body (for POST) or headers (for GET).
+
+## 6. Migration and Evolution
 To add a new persistent statistic:
 1. Add a column to the `Stats` table in the SQL script (if it's a primary stat) OR add it to the `ExtraStats` JSON object.
 2. Update the corresponding `PlayerStats` domain model in the `Core` project.
