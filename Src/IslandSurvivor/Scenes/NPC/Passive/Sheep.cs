@@ -166,3 +166,4 @@ public partial class Sheep : CharacterBody2D, INpc, IDamageable
         QueueFree();
     }
 }
+
