@@ -5,6 +5,7 @@ using IslandSurvivor.Interfaces;
 using IslandSurvivor.Managers;
 using IslandSurvivor.Nodes;
 using IslandSurvivor.Resources;
+using IslandSurvivor.Nodes.Movement;
 using System;
 using System.Collections.Generic;
 
@@ -24,10 +25,13 @@ public partial class Player : CharacterBody2D
 	private readonly List<IInteractable> m_nearbyInteractables = new();
 	private IInteractable? m_bestTarget;
 	private readonly IInteractionService m_interactionService = new InteractionService();
+	private MovementController? m_movementController;
 
 	public override void _Ready()
 	{
 		m_interactionLabel.Visible = false;
+
+		m_movementController = GetNodeOrNull<MovementController>("MovementController");
 
 		if (Stats == null)
 		{
@@ -83,11 +87,9 @@ public partial class Player : CharacterBody2D
 	private void ApplyMovement()
 	{
 		Vector2 direction = Input.GetVector("move_left", "move_right", "move_up", "move_down");
-		float speed = Stats?.GetCurrentValue(StatType.Speed) ?? 300f;
 
 		if (direction != Vector2.Zero)
 		{
-			Velocity = direction * speed;
 			m_currentState = PlayerState.Moving;
 
 			if (m_sprite != null)
@@ -97,11 +99,20 @@ public partial class Player : CharacterBody2D
 		}
 		else
 		{
-			Velocity = Vector2.Zero;
 			m_currentState = PlayerState.Idle;
 		}
 
-		MoveAndSlide();
+		if (m_movementController != null)
+		{
+			m_movementController.Move(direction);
+		}
+		else
+		{
+			// Fallback
+			float speed = Stats?.GetCurrentValue(StatType.Speed) ?? 300f;
+			Velocity = direction * speed;
+			MoveAndSlide();
+		}
 	}
 
 	private void UpdateBestTarget()
