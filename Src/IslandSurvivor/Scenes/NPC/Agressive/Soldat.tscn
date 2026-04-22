@@ -1,5 +1,6 @@
 [gd_scene format=3 uid="uid://dyxx1q578y7t0"]
 
+[ext_resource type="Script" uid="uid://dot6ok27yw8tq" path="res://Scenes/NPC/Agressive/Soldat.cs" id="1_lf5hw"]
 [ext_resource type="Texture2D" uid="uid://dme25kdxbnqcy" path="res://Assets/TinySwords/Sprites/Warrior/Black/Warrior_Idle.png" id="1_s60lb"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_5pc2q"]
@@ -75,6 +76,7 @@ animations = [{
 }]
 
 [node name="Soldier" type="Node2D" unique_id=912880506]
+script = ExtResource("1_lf5hw")
 
 [node name="CharacterBody2D" type="CharacterBody2D" parent="." unique_id=1762557651]
 
@@ -82,6 +84,8 @@ animations = [{
 shape = SubResource("CircleShape2D_5pc2q")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=586828728]
+position = Vector2(2, -9.536743e-07)
+scale = Vector2(0.6302083, 0.6302083)
 sprite_frames = SubResource("SpriteFrames_8an0u")
 animation = &"Idle"
 

@@ -17,16 +17,16 @@ public partial class Sheep : CharacterBody2D, INpc, IDamageable
     [Export] public float FleeSpeed { get; set; } = 120.0f;
 
     private NavigationAgent2D m_navigationAgent;
-    private SheepController m_sheepController;
+    private PassiveController m_passiveController;
     private MovementController m_movementController;
     private Sprite2D m_sprite;
     private bool m_wasKilledByPlayer = false;
 
-    public string CurrentState => m_sheepController?.CurrentState ?? SheepStates.IDLE;
+    public string CurrentState => m_passiveController?.CurrentState ?? NpcStates.IDLE;
 
     public override void _Ready()
     {
-        m_sheepController = new SheepController();
+        m_passiveController = new PassiveController();
 
         m_navigationAgent = GetNodeOrNull<NavigationAgent2D>("NavigationAgent2D");
         m_sprite = GetNodeOrNull<Sprite2D>("Sprite2D");
@@ -40,7 +40,8 @@ public partial class Sheep : CharacterBody2D, INpc, IDamageable
         {
             m_navigationAgent.PathDesiredDistance = 4.0f;
             m_navigationAgent.TargetDesiredDistance = 4.0f;
-            m_navigationAgent.VelocityComputed += OnVelocityComputed;
+            // No need for VelocityComputed if we just use direction + MovementController,
+            // but left here in case Godot navigation avoidance is enabled later.
         }
 
         if (Stats != null)
@@ -51,16 +52,38 @@ public partial class Sheep : CharacterBody2D, INpc, IDamageable
 
     public override void _PhysicsProcess(double p_delta)
     {
-        if (m_sheepController.CurrentState == SheepStates.DEAD) return;
+        if (m_passiveController.CurrentState == NpcStates.DEAD) return;
 
-        m_sheepController.Update((float)p_delta);
+        m_passiveController.Update((float)p_delta);
 
-        Vector2 direction = m_sheepController.CurrentDirection;
+        Vector2 direction = m_passiveController.CurrentDirection;
 
         float targetSpeed = IdleSpeed;
-        if (m_sheepController.CurrentState == SheepStates.FLEE)
+        if (m_passiveController.CurrentState == NpcStates.FLEE)
         {
             targetSpeed = FleeSpeed;
+        }
+        else if (m_passiveController.CurrentState == NpcStates.IDLE)
+        {
+            // Set navigation target based on current direction to wander using navmesh
+            if (m_navigationAgent != null)
+            {
+                // Give a short distance to walk in that direction
+                Vector2 targetPos = GlobalPosition + (m_passiveController.CurrentDirection * 50f);
+                m_navigationAgent.TargetPosition = targetPos;
+
+                if (!m_navigationAgent.IsNavigationFinished())
+                {
+                    Vector2 nextPathPosition = m_navigationAgent.GetNextPathPosition();
+                    direction = GlobalPosition.DirectionTo(nextPathPosition);
+                }
+                else
+                {
+                    direction = Vector2.Zero;
+                    // Force a new direction pick sooner if we hit a wall
+                    m_passiveController.ResetDirectionChangeTimer();
+                }
+            }
         }
 
         // Flip sprite based on movement direction
@@ -82,48 +105,47 @@ public partial class Sheep : CharacterBody2D, INpc, IDamageable
 
     public void TakeDamage(int p_amount, object p_attacker)
     {
-        if (m_sheepController.CurrentState == SheepStates.DEAD) return;
+        if (m_passiveController.CurrentState == NpcStates.DEAD) return;
 
         if (Stats != null)
         {
-            Vector2 myPos = GlobalPosition;
-            Vector2 attackerPos = attackerNode.GlobalPosition;
+            // Just apply damage logically here since we don't have a direct Stats.TakeDamage method visible
+            float currentHp = Stats.GetCurrentValue(StatType.Health);
+            Stats.SetCurrentValue(StatType.Health, currentHp - p_amount);
+        }
 
-            bool isDead = Stats == null || Stats.GetCurrentValue(StatType.Health) <= 0;
+        bool isDead = Stats == null || Stats.GetCurrentValue(StatType.Health) <= 0;
 
-            if (p_attacker is Node2D attackerNode)
+        if (p_attacker is Node2D attackerNode)
+        {
+            if (isDead && attackerNode.IsInGroup("Player"))
             {
-                if (isDead && attackerNode.IsInGroup("Player"))
-                {
-                    m_wasKilledByPlayer = true;
-                }
-
-                if (!isDead)
-                {
-                    System.Numerics.Vector2 myPos = new System.Numerics.Vector2(GlobalPosition.X, GlobalPosition.Y);
-                    System.Numerics.Vector2 attackerPos = new System.Numerics.Vector2(attackerNode.GlobalPosition.X, attackerNode.GlobalPosition.Y);
-
-                    m_sheepController.StartFleeing(myPos, attackerPos);
-
-                    // Visual feedback
-                    Modulate = new Color(1, 0.5f, 0.5f);
-                    GetTree().CreateTimer(0.2f).Timeout += () =>
-                    {
-                        if (IsInstanceValid(this)) Modulate = Colors.White;
-                    };
-                }
+                m_wasKilledByPlayer = true;
             }
 
-            if (isDead)
+            if (!isDead)
             {
-                HandleDeath();
+                // Let the controller compute flee direction
+                m_passiveController.StartFleeing(GlobalPosition, attackerNode.GlobalPosition);
+
+                // Visual feedback
+                Modulate = new Color(1, 0.5f, 0.5f);
+                GetTree().CreateTimer(0.2f).Timeout += () =>
+                {
+                    if (IsInstanceValid(this)) Modulate = Colors.White;
+                };
             }
+        }
+
+        if (isDead)
+        {
+            HandleDeath();
         }
     }
 
     private void HandleDeath()
     {
-        m_sheepController.SetDead();
+        m_passiveController.SetDead();
 
         if (m_wasKilledByPlayer)
         {
@@ -144,3 +166,4 @@ public partial class Sheep : CharacterBody2D, INpc, IDamageable
         QueueFree();
     }
 }
+
