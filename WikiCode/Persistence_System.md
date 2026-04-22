@@ -24,6 +24,14 @@ The database is named **`DBIslandSurvivor`**. The schema is designed for SQL Ser
 
 The complete DDL script is located at: `Src/Infrastructure/database/script/schema.sql`.
 
+### Seed Data
+A DML script for populating the database with initial configuration (e.g., base speed) and test data is available at: `Src/Infrastructure/database/script/data.sql`.
+
+This script includes:
+- Default `ResourceItems` (Wood, Rock, Gold, Sheep Meat).
+- Test `Players`.
+- Initial `Stats` (with base Speed set to 1) and `PlayerConfig`.
+
 ## 3. Data Access Layer (Infrastructure)
 
 Data access is managed by Entity Framework Core 8 in the `Infrastructure` project.
