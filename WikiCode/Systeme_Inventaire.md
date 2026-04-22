@@ -39,4 +39,4 @@ Pour que Godot puisse interagir avec `InventoryManager`, une classe spéciale `I
 3. Le **SignalManagerCore** attrape ce signal et informe tous les abonnés.
 4. Le **InventoryNode** (Godot) reçoit le signal.
 5. Il appelle `m_inventoryManager.AddMaterial(item, 3)` (Core).
-6. L'inventaire est à jour et stocké de manière persistante !
+6. L'inventaire est à jour et prêt à être persisté via le [Persistence System](./Persistence_System.md).

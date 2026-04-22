@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://cs7lisiu7vc7y" path="res://Scenes/Ressources/Rock/Rock.tscn" id="5_80kk5"]
 
 
+
 [node name="TestStats" type="Node2D" unique_id=502416074 node_paths=PackedStringArray("TreeEntity")]
 script = ExtResource("1_r3xks")
 TreeEntity = NodePath("Rock")
