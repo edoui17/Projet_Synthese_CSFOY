@@ -21,3 +21,10 @@
 3. Updated SQL schema script `schema.sql` and `Persistence_System.md` documentation.
 4. Initialized and added Entity Framework Core migration `InitialCreate` for the Infrastructure project.
 **Decision Reasoning**: Simplifies the persistence model by removing fields not required for meta-progression. Initializing EF migrations ensures the development environment can correctly synchronize the database state with the updated models.
+### 2026-04-21 - [US 7.1.2] | Creation of initial configuration data script | Created a DML script to populate the database with default configuration and test data.
+**AI Contribution**:
+1. Created `Src/Infrastructure/database/script/data.sql` with seed data for all persistence tables.
+2. Configured default `Speed` (vitesse de base) to 1.0 for test players.
+3. Populated `ResourceItems` with game-matching entities (Wood, Rock, Gold, Meat).
+4. Updated `WikiCode/Persistence_System.md` to document the new script.
+**Decision Reasoning**: Providing a pre-configured data script allows for immediate testing of the meta-progression system and ensures consistent base configuration (like speed) across different environments.

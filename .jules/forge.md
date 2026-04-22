@@ -55,3 +55,9 @@
 ### 2026-04-21 - PlayerConfig Schema Update (Clean-up)
 - **Decision**: Removed `Resolution` and `IsFullScreen` fields from `PlayerConfig` domain model, entity model, and database schema.
 - **Reasoning**: These fields were deemed unnecessary for the meta-progression persistence via API. Cleaned up the project to maintain only relevant fields and initialized EF Core migrations for the `Infrastructure` project.
+
+### 2026-04-21 - Database Seeding Strategy (US 7.1.2)
+- **Decision**: Created a standalone DML script `data.sql` for initial data population.
+- **Implementation**: The script seeds `ResourceItems`, `Players`, `Stats`, `PlayerConfig`, and `Inventory`.
+- **Constraint**: Base Speed ("vitesse de base") is explicitly set to 1 for all initial players in the `Stats` table as per gameplay requirements.
+- **Strategy**: Used T-SQL variables (`@ForgeId`, etc.) to maintain referential integrity across related tables (`Stats`, `Inventory`, `PlayerConfig`) during the seeding process.
