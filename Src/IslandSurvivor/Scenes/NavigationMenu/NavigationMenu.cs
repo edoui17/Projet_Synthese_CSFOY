@@ -27,7 +27,7 @@ public partial class NavigationMenu : Control
 
     public override void _Ready()
     {
-        m_navigationService = new NavigationService(SignalManager.Instance);
+        m_navigationService = Globals.ServiceRegistry.Instance.NavigationService;
 
         m_destinationsContainer = GetNode<VBoxContainer>("PanelContainer/VBoxContainer/DestinationsContainer");
 
@@ -106,13 +106,7 @@ public partial class NavigationMenu : Control
     {
         GD.Print($"[NavigationMenu] Selected destination: {p_destination.Biome} (ID: {p_destination.Id})");
 
-        if (InventoryNode.Instance == null || InventoryNode.Instance.Manager == null)
-        {
-            GD.PrintErr("[NavigationMenu] Error: InventoryNode or its Manager is missing.");
-            return;
-        }
-
-        bool success = m_navigationService.TryNavigate(InventoryNode.Instance.Manager, p_destination);
+        bool success = m_navigationService.TryNavigate(p_destination);
 
         if (success)
         {
