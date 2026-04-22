@@ -1,40 +1,52 @@
-# Documentation : Système de Spawn Aléatoire de Ressources (TreeZone)
+# Documentation : Système de Spawn Aléatoire de Ressources (ResourceZone)
 
 ## Vue d'ensemble
-Le système `TreeZone` permet de peupler dynamiquement des zones spécifiques de la carte avec un nombre défini d'arbres. Contrairement à l'ancien système de points individuels, `TreeZone` utilise une zone polygonale pour définir l'aire de répartition.
+Le système `ResourceZone` permet de peupler dynamiquement des zones spécifiques de la carte avec des ressources (arbres, rochers, mines d'or, etc.). Il utilise une zone polygonale pour définir l'aire de répartition et gère automatiquement le cycle de vie des ressources (spawn, destruction, respawn).
 
 ## Architecture
 Le système suit une architecture N-Tier avec une approche "Interface First".
 
 ### 1. Core (Logique Pure)
-- **`ITreePopulator`** : Interface définissant la capacité à peupler une zone avec des arbres.
+- **`IResourcePopulator`** : Interface définissant la capacité à peupler une zone avec des ressources.
 
 ### 2. IslandSurvivor (Godot)
-- **`TreeZone` (Node : Node2D)** : Définit une zone de peuplement.
+- **`ResourceZone` (Node : Node2D)** : Définit une zone de peuplement.
     - Utilise un enfant **`Polygon2D`** (nommé "SpawningArea") pour définir la forme de la zone.
     - Gère une **Safe Zone** (Rayon et Centre) pour éviter le spawn sur le joueur.
-    - Scanne dynamiquement le dossier `res://Scenes/Ressources/Tree`.
-    - Génère des positions aléatoires dans le polygone via `Geometry2D.IsPointInPolygon`.
-    - Instancie les arbres en tant qu'enfants du `TreeZone`.
-    - Force la visibilité, l'échelle et la couche de collision (Layer 5 : Ressource).
+    - Utilise une liste de **`ResourceScenes`** configurables via l'inspecteur (Drag & Drop).
+    - Vérifie la validité du spawn (pas dans l'eau, distance minimale entre ressources).
+    - Gère le **Respawn** automatique via un timer configurable.
+    - Force la couche de collision (Layer 5 : Ressource).
+
+## Paramètres Configurables
+
+| Paramètre | Description | Défaut |
+| :--- | :--- | :--- |
+| `ResourceCount` | Nombre maximum de ressources dans la zone. | 10 |
+| `ResourceScenes` | Liste de scènes `.tscn` à spawn (Drag & Drop depuis l'éditeur). | [] |
+| `SafeZoneRadius` | Distance minimale du centre de sécurité. | 150f |
+| `SafeZoneCenter` | Position locale du centre de sécurité. | (0, 0) |
+| `MinDistanceBetweenResources` | Distance minimale entre deux ressources. | 50f |
+| `RespawnInterval` | Temps (sec) entre les tentatives de respawn. | 30f |
+| `WaterTileMap` | Référence au TileMapLayer d'eau pour validation. | null |
+
+## Contraintes et Validations
+1. **Exclusions** : Le système ne doit pas être utilisé pour `RessourceForBaseMap` qui possède sa propre logique.
+2. **Eau** : Si `WaterTileMap` est assigné, aucune ressource ne peut spawn sur une tuile d'eau.
+3. **Distance** : Évite la superposition des ressources en respectant `MinDistanceBetweenResources`.
+4. **Physique** : Les ressources spawnées sont automatiquement assignées au Layer 5 (Collision Bit 16).
 
 ## Utilisation
 
-### Ajouter de nouveaux modèles d'arbres
-Il suffit de placer les nouvelles scènes d'arbres (`.tscn`) dans le dossier :
-`Src/IslandSurvivor/Scenes/Ressources/Tree`
-
-Le système les détectera automatiquement au prochain lancement.
-
-### Créer une zone de peuplement
-1. Créez un node `Node2D` et attachez-lui le script `TreeZone.cs`.
+### Créer une zone de ressources
+1. Créez un node `Node2D` et attachez-lui le script `ResourceZone.cs`.
 2. Ajoutez un enfant `Polygon2D` nommé **"SpawningArea"**.
-3. Dessinez la forme de la zone dans l'éditeur Godot en utilisant les points du polygone.
-4. Ajustez la propriété **`TreeCount`** dans l'inspecteur pour définir le nombre d'arbres souhaités.
-5. (Optionnel) Configurez la **`SafeZoneRadius`** et le **`SafeZoneCenter`** pour protéger les zones d'apparition des personnages.
+3. Dessinez la forme de la zone.
+4. Dans l'inspecteur, ajoutez des éléments à la liste **`ResourceScenes`** en y glissant des scènes de ressources (ex: `Rock.tscn`).
+5. (Optionnel) Assignez le `WaterTileMap` de votre scène pour activer la validation.
 
 ## Déclenchement
-Le peuplement est déclenché automatiquement dans le `_Ready()` du node `TreeZone`.
+Le peuplement initial est déclenché dans le `_Ready()`. Le système vérifie ensuite périodiquement (`RespawnInterval`) s'il doit faire réapparaître des ressources manquantes.
 
 ## Tags
 `Gameplay`, `Map`, `Procedural`, `Spawning`, `Algorithme`
