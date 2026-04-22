@@ -141,3 +141,11 @@ Ce document retrace l'interaction entre Kevin Houle et les assistants IA (Forge/
 | **Request** | **AI Contribution** | **Decision Reasoning** |
 | :--- | :--- | :--- |
 | Fix `CS1503`, `CS7036`, and `CS1501` compilation errors caused by new `IEventBus` constructor requirements and `TryNavigate` signature change. | Implemented `EventBus` instantiation in `ServiceRegistry`, injected it into Core managers, and set up `_Process` for deferred event processing. Refactored `NavigationMenu.cs` to fetch `NavigationService` from `ServiceRegistry.Instance` and updated `TryNavigate` calls. Fixed all corresponding unit tests. | Centralizing infrastructure instantiation in `ServiceRegistry` respects N-Tier architecture and DI principles. Overriding `_Process` guarantees deferred events execute correctly in the Godot lifecycle. Removing `InventoryManager` from `TryNavigate` cleanly decouples navigation logic from inventory validation, delegating communication to the EventBus. |
+### 2026-04-22 - [Navigation System Fix]
+**Request**: Fix the navigation system so that islands cannot be purchased without sufficient resources, ensuring N-Tier separation.
+**AI Contribution**: Implemented synchronous resource checking in `NavigationService` and `NavigationMenu` by injecting `ShopManager` and `InventoryManager` into `NavigationService`. Updated the Godot UI to disable buttons dynamically, and updated unit tests.
+**Decision Reasoning**: The `NavigationMenu` now correctly queries `NavigationService.CanAffordIsland()` to keep UI decoupled from shop logic. The asynchronous transaction processing is maintained in `InventoryManager` via EventBus, but now the initial request is securely blocked if resources are inadequate.
+### 2026-04-22 - [Navigation Menu UI Revert]
+**Request**: Remove the text modifications and disabling of UI buttons in the Navigation Menu when the player cannot afford an island. Prefer using GD.Print logs and keeping UI active.
+**AI Contribution**: Reverted visual alterations inside `NavigationMenu.cs` so that the button strictly displays the destination data.
+**Decision Reasoning**: Retained the core functionality of blocking the backend purchase via the synchronous check in `NavigationService`, but restored the UI text so it doesn't clutter the user interface.
