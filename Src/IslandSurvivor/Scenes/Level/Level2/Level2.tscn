@@ -1,13 +1,17 @@
-[gd_scene load_steps=4 format=3 uid="uid://c3x2l3wvemtmp"]
+[gd_scene format=3 uid="uid://c3x2l3wvemtmp"]
 
 [ext_resource type="PackedScene" uid="uid://cax2j3b2g36d" path="res://Scenes/Level/LevelBase.tscn" id="1_base"]
 [ext_resource type="PackedScene" uid="uid://dvkgi8wqmci1c" path="res://Scenes/Map/Map2/Map2.tscn" id="2_map"]
+[ext_resource type="PackedScene" uid="uid://b0pub1ar8jnbu" path="res://Scenes/NPC/Passive/Sheep.tscn" id="3_3e544"]
 [ext_resource type="PackedScene" uid="uid://dq4dear1g8mq2" path="res://Scenes/Portal/Portal.tscn" id="3_portal"]
 
-[node name="Main" instance=ExtResource("1_base")]
+[node name="Main" unique_id=1230220837 instance=ExtResource("1_base")]
 
-[node name="Map2" parent="MapContainer" index="0" instance=ExtResource("2_map")]
+[node name="Map2" parent="MapContainer" index="0" unique_id=1333386273 instance=ExtResource("2_map")]
 position = Vector2(-1, 0)
 
-[node name="Portal" parent="." index="2" instance=ExtResource("3_portal")]
+[node name="Sheep" parent="." index="2" unique_id=1690845376 instance=ExtResource("3_3e544")]
+position = Vector2(-369, -247)
+
+[node name="Portal" parent="." index="3" unique_id=504895432 instance=ExtResource("3_portal")]
 position = Vector2(0, 50)

@@ -1,8 +1,5 @@
 using Godot;
-<<<<<<< HEAD
-=======
 using System;
->>>>>>> a8c9c541f4339f77878c1056ad34d5fd858c9a86
 using Core.Domain;
 using IslandSurvivor.Logic.Entities;
 using IslandSurvivor.Interfaces;
