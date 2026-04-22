@@ -19,10 +19,9 @@ public partial class Soldier : CharacterBody2D, INpc, IEnemy, IDamageable
     [Export] public float ChaseSpeed { get; set; } = 150.0f;
     [Export] public float DetectionRadius { get; set; } = 250.0f;
 
-    private NavigationAgent2D m_navigationAgent;
     private AgressorController m_agressorController;
     private MovementController m_movementController;
-    private Sprite2D m_sprite;
+    private AnimatedSprite2D m_animatedSprite;
     private Node2D m_targetPlayer;
     private bool m_wasKilledByPlayer = false;
 
@@ -32,18 +31,17 @@ public partial class Soldier : CharacterBody2D, INpc, IEnemy, IDamageable
     {
         m_agressorController = new AgressorController();
 
-        m_navigationAgent = GetNodeOrNull<NavigationAgent2D>("NavigationAgent2D");
-        m_sprite = GetNodeOrNull<Sprite2D>("Sprite2D");
+        m_animatedSprite = GetNodeOrNull<AnimatedSprite2D>("AnimatedSprite2D");
         m_movementController = GetNodeOrNull<MovementController>("MovementController");
 
-        if (m_navigationAgent == null)
+        if (m_animatedSprite == null)
         {
-            GD.PrintErr("Soldier node requires a NavigationAgent2D child node.");
+            GD.PrintErr("Soldier node requires an AnimatedSprite2D child node.");
         }
-        else
+
+        if (m_movementController == null)
         {
-            m_navigationAgent.PathDesiredDistance = 4.0f;
-            m_navigationAgent.TargetDesiredDistance = 4.0f;
+            GD.PrintErr("Soldier node requires a MovementController child node.");
         }
 
         if (Stats != null)
@@ -67,43 +65,11 @@ public partial class Soldier : CharacterBody2D, INpc, IEnemy, IDamageable
         if (m_agressorController.CurrentState == NpcStates.CHASE && m_targetPlayer != null)
         {
             targetSpeed = ChaseSpeed;
-            if (m_navigationAgent != null)
-            {
-                m_navigationAgent.TargetPosition = m_targetPlayer.GlobalPosition;
-                if (!m_navigationAgent.IsNavigationFinished())
-                {
-                    Vector2 nextPathPosition = m_navigationAgent.GetNextPathPosition();
-                    direction = GlobalPosition.DirectionTo(nextPathPosition);
-                    m_agressorController.UpdateChaseDirection(GlobalPosition, m_targetPlayer.GlobalPosition);
-                }
-            }
-        }
-        else if (m_agressorController.CurrentState == NpcStates.IDLE)
-        {
-            // Wandering
-            if (m_navigationAgent != null)
-            {
-                Vector2 targetPos = GlobalPosition + (m_agressorController.CurrentDirection * 50f);
-                m_navigationAgent.TargetPosition = targetPos;
-
-                if (!m_navigationAgent.IsNavigationFinished())
-                {
-                    Vector2 nextPathPosition = m_navigationAgent.GetNextPathPosition();
-                    direction = GlobalPosition.DirectionTo(nextPathPosition);
-                }
-                else
-                {
-                    direction = Vector2.Zero;
-                    m_agressorController.ResetDirectionChangeTimer();
-                }
-            }
+            m_agressorController.UpdateChaseDirection(GlobalPosition, m_targetPlayer.GlobalPosition);
+            direction = m_agressorController.CurrentDirection;
         }
 
-        if (m_sprite != null && direction.X != 0)
-        {
-            m_sprite.FlipH = direction.X < 0;
-        }
-
+        // Apply movement
         if (m_movementController != null)
         {
             m_movementController.Move(direction, targetSpeed);
@@ -112,6 +78,33 @@ public partial class Soldier : CharacterBody2D, INpc, IEnemy, IDamageable
         {
             Velocity = direction * targetSpeed;
             MoveAndSlide();
+        }
+
+        // Obstacle avoidance in IDLE state
+        if (m_agressorController.CurrentState == NpcStates.IDLE && GetSlideCollisionCount() > 0)
+        {
+            m_agressorController.ForceNewDirection();
+        }
+
+        UpdateAnimation(direction);
+    }
+
+    private void UpdateAnimation(Vector2 p_direction)
+    {
+        if (m_animatedSprite == null) return;
+
+        if (Velocity.LengthSquared() > 0)
+        {
+            m_animatedSprite.Play("Moving");
+        }
+        else
+        {
+            m_animatedSprite.Play("Idle");
+        }
+
+        if (p_direction.X != 0)
+        {
+            m_animatedSprite.FlipH = p_direction.X < 0;
         }
     }
 
