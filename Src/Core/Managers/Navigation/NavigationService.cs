@@ -3,19 +3,32 @@ namespace Core.Managers.Navigation;
 using System;
 using System.Collections.Generic;
 using Core.Domain.Models;
+using Core.Events;
 using Core.Interfaces;
 using Core.Interfaces.Navigation;
 
 public class NavigationService : INavigationService
 {
     private readonly ISignalManager m_signalManager;
+    private readonly IEventBus m_eventBus;
     private readonly Random m_random = new Random();
 
     private readonly string[] m_biomes = { "Normal", "Rare", "Dangerous" };
 
-    public NavigationService(ISignalManager p_signalManager)
+    public NavigationService(ISignalManager p_signalManager, IEventBus p_eventBus)
     {
         m_signalManager = p_signalManager;
+        m_eventBus = p_eventBus;
+
+        m_eventBus.Subscribe<NavigationApprovedEvent>(OnNavigationApproved);
+    }
+
+    private void OnNavigationApproved(NavigationApprovedEvent p_event)
+    {
+        // Internal logic for when navigation is actually approved
+        // e.g. signaling to the Godot frontend that it's safe to load the scene.
+        // Currently handled partially by NavigationManager in Godot listening to signals,
+        // so we'll let the event bus bridge this to Godot later if needed.
     }
 
     public IReadOnlyList<IslandDestination> GenerateDestinations(int p_count)
@@ -60,42 +73,14 @@ public class NavigationService : INavigationService
         return destinations.AsReadOnly();
     }
 
-    public bool TryNavigate(IInventoryManager p_inventoryManager, IslandDestination p_destination)
+    public bool TryNavigate(IslandDestination p_destination)
     {
-        // HomeIsland is free
-        if (p_destination.Id == IslandDestination.HomeIsland.Id)
-        {
-            // Do not emit here, wait for portal interaction
-            return true;
-        }
+        // Instead of directly coupling with IInventoryManager to deduct items,
+        // we publish an event. InventoryManager will subscribe, validate, and emit NavigationApproved/Rejected.
+        m_eventBus.Publish(new NavigationRequestedEvent(p_destination));
 
-        int requiredCost = p_destination.ResourceCost;
-
-        if (requiredCost > 0)
-        {
-            bool hasViande = p_inventoryManager.GetMaterialCount("Viande") >= requiredCost;
-            bool hasBois = p_inventoryManager.GetMaterialCount("Bois") >= requiredCost;
-            bool hasRoche = p_inventoryManager.GetMaterialCount("Roche") >= requiredCost;
-            bool hasOr = p_inventoryManager.GetMaterialCount("Or") >= requiredCost;
-
-            if (!hasViande || !hasBois || !hasRoche || !hasOr)
-            {
-                return false;
-            }
-
-            p_inventoryManager.RemoveMaterial("Viande", requiredCost);
-            m_signalManager.EmitResourceSpent(this, "Viande", requiredCost);
-
-            p_inventoryManager.RemoveMaterial("Bois", requiredCost);
-            m_signalManager.EmitResourceSpent(this, "Bois", requiredCost);
-
-            p_inventoryManager.RemoveMaterial("Roche", requiredCost);
-            m_signalManager.EmitResourceSpent(this, "Roche", requiredCost);
-
-            p_inventoryManager.RemoveMaterial("Or", requiredCost);
-            m_signalManager.EmitResourceSpent(this, "Or", requiredCost);
-        }
-
+        // Since we are transitioning to async/queued events, the return value here might need to be removed in future passes.
+        // For now, returning true implies the request was successfully dispatched.
         return true;
     }
 }
