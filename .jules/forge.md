@@ -61,3 +61,6 @@
 - **Implementation**: The script seeds `ResourceItems`, `Players`, `Stats`, `PlayerConfig`, and `Inventory`.
 - **Constraint**: Base Speed ("vitesse de base") is explicitly set to 1 for all initial players in the `Stats` table as per gameplay requirements.
 - **Strategy**: Used T-SQL variables (`@ForgeId`, etc.) to maintain referential integrity across related tables (`Stats`, `Inventory`, `PlayerConfig`) during the seeding process.
+### Movement System (US 5.4)
+- **Decision:** Maintained movement logic (`MovementController`) inside the `IslandSurvivor` (Godot Client) project rather than moving it to `Core`.
+- **Reasoning:** Movement relies heavily on Godot's built-in physics engine and the `MoveAndSlide()` native API to handle collisions and slopes correctly. Implementing a custom 2D physics/collision solver in the C# `Core` would be redundant, error-prone, and suffer a performance hit compared to Godot's optimized C++ implementation.

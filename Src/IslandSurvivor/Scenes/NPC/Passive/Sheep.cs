@@ -3,6 +3,7 @@ using System;
 using Core.Domain;
 using IslandSurvivor.Logic.Entities;
 using IslandSurvivor.Interfaces;
+using IslandSurvivor.Nodes.Movement;
 using Core.Interfaces;
 
 public partial class Sheep : CharacterBody2D, INpc, IDamageable
@@ -15,6 +16,7 @@ public partial class Sheep : CharacterBody2D, INpc, IDamageable
     private NavigationAgent2D m_navigationAgent;
     private HealthComponent m_healthComponent;
     private SheepController m_sheepController;
+    private MovementController m_movementController;
     private Sprite2D m_sprite;
 
     public string CurrentState => m_sheepController?.CurrentState ?? SheepStates.IDLE;
@@ -28,6 +30,7 @@ public partial class Sheep : CharacterBody2D, INpc, IDamageable
 
         m_navigationAgent = GetNodeOrNull<NavigationAgent2D>("NavigationAgent2D");
         m_sprite = GetNodeOrNull<Sprite2D>("Sprite2D");
+        m_movementController = GetNodeOrNull<MovementController>("MovementController");
 
         if (m_navigationAgent == null)
         {
@@ -41,30 +44,29 @@ public partial class Sheep : CharacterBody2D, INpc, IDamageable
 
         m_sheepController.Update((float)p_delta);
 
-        Vector2 targetVelocity = Vector2.Zero;
         Vector2 direction = m_sheepController.CurrentDirection;
 
-        if (m_sheepController.CurrentState == SheepStates.IDLE)
+        float targetSpeed = IdleSpeed;
+        if (m_sheepController.CurrentState == SheepStates.FLEE)
         {
-            targetVelocity = direction * IdleSpeed;
+            targetSpeed = FleeSpeed;
         }
-        else if (m_sheepController.CurrentState == SheepStates.FLEE)
-        {
-            targetVelocity = direction * FleeSpeed;
-            // Optionally, if NavigationAgent2D is configured with a target, we could use it here.
-            // For simple fleeing, moving in the opposite vector direction while relying on CharacterBody2D's
-            // collision (MoveAndSlide) to slide along obstacles is often sufficient and creates a panicky behavior.
-        }
-
-        Velocity = targetVelocity;
 
         // Flip sprite based on movement direction
-        if (m_sprite != null && Velocity.X != 0)
+        if (m_sprite != null && direction.X != 0)
         {
-            m_sprite.FlipH = Velocity.X < 0;
+            m_sprite.FlipH = direction.X < 0;
         }
 
-        MoveAndSlide();
+        if (m_movementController != null)
+        {
+            m_movementController.Move(direction, targetSpeed);
+        }
+        else
+        {
+            Velocity = direction * targetSpeed;
+            MoveAndSlide();
+        }
     }
 
     public void TakeDamage(int p_amount, object p_attacker)
