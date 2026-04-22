@@ -46,3 +46,8 @@
 - **Discovery**: Using `Polygon2D` with `Geometry2D.IsPointInPolygon` provides a flexible way to define irregular spawning zones in Godot.
 - **Quirk**: When calculating random points within a polygon, it's safer to work in the node's local space and use `ToLocal(ToGlobal(point))` when comparing against child polygon coordinates to avoid issues with nested transformations.
 - **Performance**: Pre-loading `PackedScene` resources before a spawning loop significantly reduces overhead compared to calling `GD.Load` inside the loop.
+
+### 2026-04-21 - TreeZone Physical Obstruction & Safe Zone
+- **Bug**: Player was stuck at spawn because trees could spawn directly on the starting position, and their `StaticBody2D` (Layer 1) collided with the Player (Mask 1).
+- **Solution**: Implemented a "Safe Zone" mechanism in `TreeZone.cs`. It uses `SafeZoneRadius` and `SafeZoneCenter` properties to define an area where tree spawning is prohibited.
+- **Quirk**: Even if a `Polygon2D` is used for the spawning area, it does not inherently provide collision. The blockage was caused by the instantiated tree scenes which are intended to be solid obstacles.

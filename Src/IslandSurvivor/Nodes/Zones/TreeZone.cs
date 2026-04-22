@@ -15,6 +15,16 @@ public partial class TreeZone : Node2D, ITreePopulator
     [Export] public int TreeCount { get; set; } = 10;
     [Export] public Polygon2D SpawningArea { get; set; }
 
+    /// <summary>
+    /// Radius around SafeZoneCenter where no trees will spawn.
+    /// </summary>
+    [Export] public float SafeZoneRadius { get; set; } = 150f;
+
+    /// <summary>
+    /// Center of the safe zone, in local coordinates.
+    /// </summary>
+    [Export] public Vector2 SafeZoneCenter { get; set; } = Vector2.Zero;
+
     private const string TREE_RESOURCES_PATH = "res://Scenes/Ressources/Tree";
 
     public override void _Ready()
@@ -76,8 +86,12 @@ public partial class TreeZone : Node2D, ITreePopulator
             // polygon is in SpawningArea's local space
             if (Geometry2D.IsPointInPolygon(SpawningArea.ToLocal(ToGlobal(randomPoint)), polygon))
             {
-                SpawnTree(treeScenes[random.Next(treeScenes.Count)], randomPoint);
-                spawnedCount++;
+                // Check if the point is outside the safe zone
+                if (randomPoint.DistanceTo(SafeZoneCenter) >= SafeZoneRadius)
+                {
+                    SpawnTree(treeScenes[random.Next(treeScenes.Count)], randomPoint);
+                    spawnedCount++;
+                }
             }
         }
 
