@@ -21,6 +21,7 @@ public partial class Spawn : Marker2D
             return;
         }
         GD.Print("Juste avant CallDeferred");
+
         CallDeferred(nameof(SpawnPlayer));
         GD.Print("Juste après CallDeferred");
 

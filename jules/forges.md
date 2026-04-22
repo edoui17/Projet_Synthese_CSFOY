@@ -4,77 +4,63 @@ Ce document centralise les décisions architecturales, les particularités de Go
 
 ---
 
-## 1. Contexte & Architecture Global
-- **Moteur :** Godot 4.6.1 (.NET 8 / C#)
-- **Architecture :** N-Tier (Core, API, Client, Infrastructure, Web)
-- **Principe Fondamental :** Séparation stricte Core/Client. 
-    - Le projet **Core** est indépendant de Godot et utilise `System.Numerics` pour rester agnostique.
-    - Le **Client** (IslandSurvivor) utilise les APIs natives (`Godot.Vector2`, `MoveAndSlide()`) pour la performance et la cohésion.
-- **Audit de Domaine (Phase 1) :** Les entités liées à la boucle de jeu (`SheepController`, `HealthComponent`) résident dans le Client (`Logic/Entities/`). Garder du code spécifique aux visuels dans le Core violerait l'objectif d'une couche pure partageable avec une API ASP.NET.
+## 1. Architecture Globale & Injection (N-Tier)
 
----
+- **Structure :** Séparation stricte entre **Core** (.NET 8 agnostique, `System.Numerics`) et **Client** (Godot 4.6.1).
+- **ServiceRegistry (Autoload DI) :** Instancie l'**EventBus** (`Core.Services.EventBus`) et les services lors du `_EnterTree()`.
+    - **Injection :** L'instance est passée aux Managers du Core via l'interface `IEventBus` par injection de constructeur.
+    - **PubSub & File d'attente :** L'implémentation utilise une file d'attente différée. L'Autoload **doit** appeler `EventBus.ProcessEvents()` dans son `_Process(double delta)` pour drainer la file à chaque frame.
+    - **Namespace :** Utiliser `global::Core.Services.EventBus` pour éviter les collisions MSBuild avec les projets de tests unitaires.
 
-## 2. Conventions de Codage (Strict Enforcements)
-Pour maintenir une cohérence absolue, les règles suivantes sont appliquées :
+## 2. Conventions de Codage & Naming
 
-- **Typage :** Le mot-clé `var` est strictement interdit. Tous les types doivent être explicites (ex: `List<string> items = new List<string>()`).
-- **Isolation des Classes :** Chaque classe doit résider dans son propre fichier.
-    - *Nuance d'Encapsulation* : Les classes privées imbriquées (ex: `WeakDelegate` dans `WeakEvent`) ne doivent pas être dégroupées pour préserver l'atomicité du système.
-- **Ordre des Membres :**
-    1. **Variables membres :** Champs privés commençant par `m_`.
-    2. **Constructeurs :** Immédiatement après les variables.
-    3. **Propriétés :** Immédiatement après les constructeurs.
-    4. **Méthodes :** À la fin de la classe.
+- **Nomenclature (Standardisation) :**
+    - **Manager :** Pour les systèmes globaux et services (ex: `SignalManager`).
+    - **Controller :** Pour la logique spécifique attachée aux nœuds Godot (ex: `SheepController`).
+    - **Paramètres :** Préfixer par `p_` dans les `delegate` de signaux Godot.
+    - **Champs privés :** Commencer par `m_`.
+- **Typage :** Mot-clé `var` strictement **interdit**. Types explicites uniquement.
+- **Isolation des Classes :** Une classe par fichier. 
+    - *Exception d'atomicité* : Les classes privées imbriquées (ex: `WeakDelegate` dans `WeakEvent`) restent groupées pour l'encapsulation.
+- **Ordre des membres :** 1. Champs privés (`m_`) | 2. Constructeurs | 3. Propriétés | 4. Méthodes.
 
----
+## 3. Communication : Bridge Pattern & Événements
 
-## 3. Gestion des Événements & Bridge Pattern
-**Problématique :** Coupler la logique métier aux signaux Godot lie le Core au moteur.
+- **Core (WeakEvent) :** Utilise `WeakReference`. Inscription via `.AddListener()` et désinscription via `.RemoveListener()` (les opérateurs `+=` / `-=` sont proscrits).
+- **Bridge Godot (SignalManager) :** Le Bridge (Autoload) intercepte les `WeakEvents` et les ré-émet via des `[Signal]`.
+- **Décomposition des Types :** Les signaux Godot ne supportent pas les classes C# pures. Le Bridge doit décomposer les objets complexes (ex: `IslandDestination`) en types primitifs (`string`, `int`) lors de la ré-émission.
 
-- **Core (WeakEvent) :** Implémentation utilisant `WeakReference`. 
-    - *Découverte* : Utilise `.AddListener()` et `.RemoveListener()` au lieu des opérateurs standards `+=` / `-=`.
-- **Godot (Proxy/Bridge) :** Le `SignalManager` (Autoload) écoute les `WeakEvents` du Core et les relaie via des `[Signal]` natifs.
-- **Injection .NET 8 :** Les signaux Godot ne supportent pas les classes C# pures. Le Bridge doit décomposer les objets complexes (ex: `IslandDestination`) en types primitifs (`string`, `int`) lors de la ré-émission.
+## 4. Systèmes de Jeu & Physique (Client Godot)
 
----
+- **Audit de Domaine :** Les entités liées à la boucle visuelle/physique (`SheepController`, `HealthComponent`) résident dans le Client (`Logic/Entities/`). Le Core reste pur pour être partageable avec une API.
+- **Mouvement (US 5.4) :** Le `MovementController` utilise `MoveAndSlide()`. L'usage de la physique native Godot est prioritaire sur un solveur personnalisé dans le Core pour la performance.
+- **Physique :** **Layer** = Identité du nœud | **Mask** = Ce que le nœud détecte.
+- **Nettoyage :** Appeler `SignalManager.Instance.EmitMaterialDestroyed(...)` puis `QueueFree()` pour garantir la libération mémoire.
 
-## 4. Systèmes de Jeu & UI (Client Godot)
+## 5. UI et Interaction (CanvasLayer)
 
-### UI et Placement
-- **CanvasLayer :** Placer les menus interactifs globaux (`NavigationMenu`) dans un `CanvasLayer` pour éviter qu'ils ne soient masqués par des éléments du monde ou affectés par la caméra.
-- **Filtres d'entrée :** Les éléments UI profonds dans l'arbre `Node2D` peuvent voir leurs inputs absorbés par des collisions ou filtres de souris.
+- **CanvasLayer :** Les menus globaux (`NavigationMenu`) doivent y être placés pour rester au premier plan du viewport et ne pas être affectés par la caméra.
+- **Input Absorption :** Évite que les collisions ou filtres de souris des `Node2D` n'absorbent les événements destinés à l'UI.
+- **Synchronisation :** L'état de l'UI (ex: bouton grisé) est piloté par la logique du Core relayée par le Bridge.
 
-### IA et Mouvement (US 4.4 & 5.4)
-- **MovementController :** Maintenu dans le projet Client. Utiliser le moteur physique de Godot (`MoveAndSlide`) est plus performant que de recréer un solveur de collision dans le Core.
-- **Loot & Destruction :** À la mort, les entités appellent `SignalManager.Instance.EmitMaterialDestroyed(...)` et utilisent `QueueFree()` pour garantir la libération de la mémoire.
+## 6. Navigation & Gestion de Scènes
 
-### Héritage de Scènes
-- Lors du refactoring vers des scènes héritées, les scènes enfants nécessitent un index pathing spécifique pour injecter des nœuds (ex: Map dans `MapContainer`) sans briser l'architecture de base.
+- **Validation :** Le `NavigationService` (Core) effectue une validation synchrone des ressources (via `IShopManager`/`IInventoryManager`) avant de dispatcher un `NavigationRequestedEvent`.
+- **Portails Auto-Actifs :** Les portails hors du `PlayerHub` s'activent au `_Ready()` via `GetTree().CurrentScene.SceneFilePath` pour servir de point de retour permanent.
+- **Injection de Joueur :** Le joueur est extrait des maps de base pour être placé directement dans les scènes `Level{X}.tscn`.
+- **Héritage de Scènes :** Requiert un index pathing spécifique dans le `.tscn` enfant pour injecter des éléments dans les conteneurs hérités (ex: `MapContainer`).
 
----
+## 7. Persistance & Base de Données (DBIslandSurvivor)
 
-## 5. Navigation & Persistance
+- **Infrastructure EF Core :** Domain models dans `Src/Core/Domain` et mappage Fluent API dans `Src/Infrastructure`.
+- **Schéma SQL :** - Clés primaires en **GUID** (`uniqueidentifier`).
+    - Longueurs de string IDs fixes pour correspondre au schéma SQL.
+    - **ExtraStats (NVARCHAR(MAX)) :** Colonne JSON pour la flexibilité sans migration.
+    - Champs exclus (non-essentiels API) : `Resolution`, `IsFullScreen`.
+- **Seeding (data.sql) :** Vitesse de base fixée à **1**. Utilisation de variables T-SQL (`@ForgeId`) pour garantir l'intégrité référentielle entre les tables `Stats`, `Inventory` et `PlayerConfig`.
+- **File System :** Utiliser `ProjectSettings.GlobalizePath("res://../../Save/")` avec `DirAccess`/`FileAccess` pour gérer les sauvegardes hors du dossier `res://`.
 
-### Architecture de Navigation
-- **NavigationManager :** Centralise les transitions via `SceneLoadingManager`.
-- **Auto-Active Portal (Retour) :** Les portails hors du `PlayerHub` s'activent automatiquement au `_Ready()` via `GetTree().CurrentScene.SceneFilePath` pour servir de point de retour permanent vers le Home.
-- **Localisation du Joueur :** Le joueur est extrait des maps de base pour être placé directement dans les scènes `Level{X}.tscn`.
+## 8. Maintenance & Quirks Techniques
 
-### Gestion des Sauvegardes
-- **Chemins de fichiers :** Pour sortir de `res://` vers la racine de la solution (`/Save/`), utiliser `ProjectSettings.GlobalizePath("res://../../Save/")`.
-- **API :** Prioriser `DirAccess` et `FileAccess` de Godot pour respecter les répertoires virtuels (`user://`).
-
----
-
-## 6. Maintenance & Quirks Techniques
-- **Audit Phase 3 (Ressources) :** - Les marqueurs de conflits Git (`<<<<<<< HEAD`) corrompent le parsing des fichiers `.tres` et `.tscn`. Correction manuelle requise.
-    - Préfixer les paramètres des `delegate` de signaux par `p_` pour la conformité.
-- **Physique :** - **Layer** = Ce que je suis (Player: Layer 3).
-    - **Mask** = Ce que je détecte (Interactibles: Mask 2).
-
-    ## Dependency Injection and EventBus
-
-*   **Initialization:** In an N-Tier architecture integrating with Godot, a central Autoload (`ServiceRegistry`) is the optimal location to instantiate cross-cutting infrastructure like the `EventBus` (`Core.Services.EventBus`).
-*   **Injection:** The `EventBus` instance should be passed to Core Managers via constructor injection during `ServiceRegistry._EnterTree()`.
-*   **Processing:** Since the custom `EventBus` implementation uses a deferred queue, the Autoload must override `_Process(double delta)` to call `EventBus.ProcessEvents()` every frame, ensuring the queue is actively drained.
-*   **Unit Tests & Namespaces:** When modifying Core Manager constructors to accept an `IEventBus` parameter, update corresponding unit tests. Use `global::Core.Services.EventBus` instead of just `Core.Services.EventBus` to prevent namespace collision errors (e.g., MSBuild mistaking it for `UnitTests.Core.Services`).
+- **Corruption Git :** Les marqueurs de conflit (`<<<<<<< HEAD`) corrompent le parsing des fichiers `.tres` et `.tscn`. Correction manuelle via éditeur de texte requise.
+- **Dépendances .NET :** En cas de migration de `System.Numerics.Vector2` (Core) vers le Client, privilégier `Godot.Vector2` pour la cohésion avec les APIs natives (`Normalized()`, `MoveAndSlide()`).

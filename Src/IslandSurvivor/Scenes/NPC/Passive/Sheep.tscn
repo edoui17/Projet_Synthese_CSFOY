@@ -4,8 +4,9 @@
 [ext_resource type="Script" uid="uid://fvn22w5rptq7" path="res://Scenes/NPC/Passive/Sheep.cs" id="1_d7b5k"]
 [ext_resource type="Texture2D" uid="uid://bhauap76rg7mv" path="res://Assets/TinySwords/Decorations/Sheep/HappySheep_Idle.png" id="2_d7b5k"]
 [ext_resource type="PackedScene" uid="uid://biqhbrp7fjfyj" path="res://Nodes/StatsManager/StatsManager.tscn" id="4_cdkpw"]
-[ext_resource type="Resource" uid="uid://baaektliv15bg" path="res://Resources/Stats/Entity/SheepStats.tres" id="5_ifvjj"]
+[ext_resource type="Resource" path="res://Resources/Stats/Entity/SheepStats.tres" id="5_ifvjj"]
 [ext_resource type="PackedScene" path="res://Nodes/Movement/MovementController.tscn" id="6_mov"]
+
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_5jkdo"]
 radius = 21.023796

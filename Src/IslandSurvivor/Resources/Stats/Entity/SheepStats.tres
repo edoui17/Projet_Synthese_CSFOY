@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 [gd_resource type="Resource" script_class="EntityStats" format=3 uid="uid://baaektliv15bg"]
 
 [ext_resource type="Script" uid="uid://d0614em0lx15v" path="res://Resources/Stats/Entity/EntityStats.cs" id="1_yi7x1"]
@@ -7,4 +8,16 @@ script = ExtResource("1_yi7x1")
 MaxHealth = 150.0
 Attack = 0.0
 Luck = -1.0
+=======
+[gd_resource type="Resource" script_class="EntityStats" format=3 uid="uid://sheepstats001"]
+
+[ext_resource type="Script" uid="uid://d0614em0lx15v" path="res://Resources/Stats/Entity/EntityStats.cs" id="1_u3qe7"]
+
+[resource]
+script = ExtResource("1_u3qe7")
+MaxHealth = 3.0
+Attack = 0.0
+Speed = 30.0
+Luck = 0.0
+>>>>>>> 8f6d5fedad237847e80102ee6b2427709cdf0652
 metadata/_custom_type_script = "uid://d0614em0lx15v"
