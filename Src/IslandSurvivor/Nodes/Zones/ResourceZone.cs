@@ -2,7 +2,6 @@ using Godot;
 using System;
 using System.Collections.Generic;
 using Core.Interfaces.Spawning;
-using System.Linq;
 
 namespace IslandSurvivor.Nodes.Zones;
 
@@ -17,9 +16,10 @@ public partial class ResourceZone : Node2D, IResourcePopulator
     [Export] public Polygon2D SpawningArea { get; set; }
 
     /// <summary>
-    /// Path to the folder containing resource scenes (.tscn).
+    /// List of resource scenes (.tscn) that can be spawned in this zone.
+    /// Drag and drop scenes from the FileSystem into this list in the Inspector.
     /// </summary>
-    [Export] public string ResourceFolderPath { get; set; } = "res://Scenes/Ressources/Tree";
+    [Export] public Godot.Collections.Array<PackedScene> ResourceScenes { get; set; } = new();
 
     /// <summary>
     /// Radius around SafeZoneCenter where no resources will spawn.
@@ -46,10 +46,10 @@ public partial class ResourceZone : Node2D, IResourcePopulator
     /// </summary>
     [Export] public TileMapLayer WaterTileMap { get; set; }
 
-    private List<PackedScene> m_resourceScenes = new();
     private readonly List<Node2D> m_activeResources = new();
     private float m_respawnTimer = 0f;
     private Random m_random = new();
+    private Rect2 m_cachedBounds;
 
     public override void _Ready()
     {
@@ -66,18 +66,23 @@ public partial class ResourceZone : Node2D, IResourcePopulator
             return;
         }
 
-        LoadResourceScenes();
+        m_cachedBounds = GetPolygonBounds(SpawningArea.Polygon);
         Populate();
     }
 
     public override void _Process(double p_delta)
     {
+        if (SpawningArea == null || SpawningArea.Polygon.Length < 3) return;
+
         // Handle respawning
         m_respawnTimer += (float)p_delta;
         if (m_respawnTimer >= RespawnInterval)
         {
             m_respawnTimer = 0f;
             CleanupDestroyedResources();
+
+            // Attempt to spawn multiple missing resources if necessary,
+            // but limit to one successful spawn per interval to spread performance cost
             if (m_activeResources.Count < ResourceCount)
             {
                 TrySpawnOne();
@@ -85,33 +90,13 @@ public partial class ResourceZone : Node2D, IResourcePopulator
         }
     }
 
-    private void LoadResourceScenes()
-    {
-        m_resourceScenes.Clear();
-        using var dir = DirAccess.Open(ResourceFolderPath);
-        if (dir == null)
-        {
-            GD.PushWarning($"[ResourceZone] Could not open directory: {ResourceFolderPath}");
-            return;
-        }
-
-        foreach (string fileName in dir.GetFiles())
-        {
-            if (fileName.EndsWith(".tscn"))
-            {
-                var fullPath = $"{ResourceFolderPath}/{fileName}";
-                var loadedScene = GD.Load<PackedScene>(fullPath);
-                if (loadedScene != null)
-                {
-                    m_resourceScenes.Add(loadedScene);
-                }
-            }
-        }
-    }
-
     public void Populate()
     {
-        if (m_resourceScenes.Count == 0) return;
+        if (ResourceScenes == null || ResourceScenes.Count == 0)
+        {
+             GD.PushWarning($"[ResourceZone] No ResourceScenes assigned for {Name}.");
+             return;
+        }
 
         CleanupDestroyedResources();
         int toSpawn = ResourceCount - m_activeResources.Count;
@@ -133,12 +118,11 @@ public partial class ResourceZone : Node2D, IResourcePopulator
 
     private bool TrySpawnOne()
     {
-        if (m_resourceScenes.Count == 0) return false;
+        if (ResourceScenes == null || ResourceScenes.Count == 0) return false;
 
-        Rect2 bounds = GetPolygonBounds(SpawningArea.Polygon);
         Vector2 randomPoint = new Vector2(
-            (float)m_random.NextDouble() * bounds.Size.X + bounds.Position.X,
-            (float)m_random.NextDouble() * bounds.Size.Y + bounds.Position.Y
+            (float)m_random.NextDouble() * m_cachedBounds.Size.X + m_cachedBounds.Position.X,
+            (float)m_random.NextDouble() * m_cachedBounds.Size.Y + m_cachedBounds.Position.Y
         );
 
         // Validation 1: Inside Polygon (SpawningArea local space)
@@ -167,12 +151,14 @@ public partial class ResourceZone : Node2D, IResourcePopulator
             }
         }
 
-        SpawnResource(m_resourceScenes[m_random.Next(m_resourceScenes.Count)], localPos);
+        SpawnResource(ResourceScenes[m_random.Next(ResourceScenes.Count)], localPos);
         return true;
     }
 
     private void SpawnResource(PackedScene p_scene, Vector2 p_localPos)
     {
+        if (p_scene == null) return;
+
         Node instance = p_scene.Instantiate();
         if (instance is Node2D resourceNode)
         {

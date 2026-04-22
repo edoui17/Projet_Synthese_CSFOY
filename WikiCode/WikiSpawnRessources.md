@@ -13,7 +13,7 @@ Le système suit une architecture N-Tier avec une approche "Interface First".
 - **`ResourceZone` (Node : Node2D)** : Définit une zone de peuplement.
     - Utilise un enfant **`Polygon2D`** (nommé "SpawningArea") pour définir la forme de la zone.
     - Gère une **Safe Zone** (Rayon et Centre) pour éviter le spawn sur le joueur.
-    - Scanne dynamiquement le dossier spécifié par `ResourceFolderPath`.
+    - Utilise une liste de **`ResourceScenes`** configurables via l'inspecteur (Drag & Drop).
     - Vérifie la validité du spawn (pas dans l'eau, distance minimale entre ressources).
     - Gère le **Respawn** automatique via un timer configurable.
     - Force la couche de collision (Layer 5 : Ressource).
@@ -23,7 +23,7 @@ Le système suit une architecture N-Tier avec une approche "Interface First".
 | Paramètre | Description | Défaut |
 | :--- | :--- | :--- |
 | `ResourceCount` | Nombre maximum de ressources dans la zone. | 10 |
-| `ResourceFolderPath` | Chemin vers le dossier des scènes `.tscn`. | `res://Scenes/Ressources/Tree` |
+| `ResourceScenes` | Liste de scènes `.tscn` à spawn (Drag & Drop depuis l'éditeur). | [] |
 | `SafeZoneRadius` | Distance minimale du centre de sécurité. | 150f |
 | `SafeZoneCenter` | Position locale du centre de sécurité. | (0, 0) |
 | `MinDistanceBetweenResources` | Distance minimale entre deux ressources. | 50f |
@@ -42,7 +42,7 @@ Le système suit une architecture N-Tier avec une approche "Interface First".
 1. Créez un node `Node2D` et attachez-lui le script `ResourceZone.cs`.
 2. Ajoutez un enfant `Polygon2D` nommé **"SpawningArea"**.
 3. Dessinez la forme de la zone.
-4. Configurez le `ResourceFolderPath` (ex: `res://Scenes/Ressources/Rock`).
+4. Dans l'inspecteur, ajoutez des éléments à la liste **`ResourceScenes`** en y glissant des scènes de ressources (ex: `Rock.tscn`).
 5. (Optionnel) Assignez le `WaterTileMap` de votre scène pour activer la validation.
 
 ## Déclenchement
