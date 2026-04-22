@@ -70,4 +70,12 @@ public class AgressorController
     {
         m_idleTimer = 0;
     }
+
+    public void ForceNewDirection()
+    {
+        if (m_currentState == NpcStates.IDLE)
+        {
+            PickNewRandomDirection();
+        }
+    }
 }
