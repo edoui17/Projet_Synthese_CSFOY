@@ -15,7 +15,7 @@ Persistence follows the project's N-Tier model:
 The database is named **`DBIslandSurvivor`**. The schema is designed for SQL Server and uses **GUIDs (uniqueidentifier)** for primary keys.
 
 ### Main Tables
-- **`Players`**: Player identity (Id, Username, CreatedAt).
+- **`Players`**: Player identity (Id, Username, PasswordHash, SessionToken, CreatedAt).
 - **`ResourceItems`**: Catalog of available items (ID as a string to match Core, Name, Type, IconPath).
 - **`Inventory`**: Junction table between players and items (PlayerId, ResourceItemId, Quantity).
 - **`Stats`**: Meta-progression statistics (PlayerId, Health, Attack, Speed, Luck).

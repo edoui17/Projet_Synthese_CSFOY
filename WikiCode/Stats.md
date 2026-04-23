@@ -77,3 +77,7 @@ Si vous devez ajouter une nouvelle statistique au jeu (ex: `Defense` ou `Mana`) 
 
 ## Persistance (Méta-Progression)
 Les statistiques de méta-progression (améliorations permanentes) sont gérées séparément via le [Persistence System](./Persistence_System.md). Elles sont stockées en base de données et chargées au démarrage du jeu pour être appliquées comme bonus permanents via `AddPermanentBonus`.
+
+**Synchronisation (US 8.1) :**
+- **Au lancement** : Appel à `/api/player/profile` pour récupérer les stats persistantes.
+- **En jeu** : Sauvegarde via `/api/stats/upsert` ou lors d'une synchronisation globale (`/api/player/sync`).
