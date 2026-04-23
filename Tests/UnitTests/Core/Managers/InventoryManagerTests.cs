@@ -10,7 +10,7 @@ namespace UnitTests.Core.Managers
         public void AddMaterial_WithNewItem_ShouldCreateSlot()
         {
             // Arrange
-            var manager = new InventoryManager();
+            var manager = new InventoryManager(new global::Core.Services.EventBus());
             var item = new ResourceItem("gold_01", "Or", "Gold", "res://icon.png");
 
             // Act
@@ -26,7 +26,7 @@ namespace UnitTests.Core.Managers
         public void AddMaterial_WithExistingItem_ShouldIncrementQuantity()
         {
             // Arrange
-            var manager = new InventoryManager();
+            var manager = new InventoryManager(new global::Core.Services.EventBus());
             var item = new ResourceItem("wood_01", "Bois", "Wood", "res://wood.png");
 
             // Act
@@ -42,7 +42,7 @@ namespace UnitTests.Core.Managers
         public void RemoveMaterial_WithValidAmount_ShouldDecrementQuantity()
         {
             // Arrange
-            var manager = new InventoryManager();
+            var manager = new InventoryManager(new global::Core.Services.EventBus());
             var item = new ResourceItem("rock_01", "Roche", "Rock", "res://rock.png");
             manager.AddMaterial(item, 10);
 
@@ -57,7 +57,7 @@ namespace UnitTests.Core.Managers
         public void RemoveMaterial_WithAmountGreaterThanStock_ShouldRemoveSlot()
         {
             // Arrange
-            var manager = new InventoryManager();
+            var manager = new InventoryManager(new global::Core.Services.EventBus());
             var item = new ResourceItem("rock_01", "Roche", "Rock", "res://rock.png");
             manager.AddMaterial(item, 5);
 
@@ -73,7 +73,7 @@ namespace UnitTests.Core.Managers
         public void GetMaterialCount_WithNonExistentItem_ShouldReturnZero()
         {
             // Arrange
-            var manager = new InventoryManager();
+            var manager = new InventoryManager(new global::Core.Services.EventBus());
 
             // Act
             int count = manager.GetMaterialCount("invalid_id");
@@ -86,7 +86,7 @@ namespace UnitTests.Core.Managers
         public void GetAllSlots_ShouldReturnReadOnlyCopy()
         {
             // Arrange
-            var manager = new InventoryManager();
+            var manager = new InventoryManager(new global::Core.Services.EventBus());
             var item1 = new ResourceItem("gold_01", "Or", "Gold", "res://gold.png");
             var item2 = new ResourceItem("rock_01", "Roche", "Rock", "res://rock.png");
 

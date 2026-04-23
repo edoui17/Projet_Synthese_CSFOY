@@ -6,3 +6,4 @@
 [node name="ScoreManager" type="Node2D" unique_id=961556133]
 script = ExtResource("1_15khw")
 SessionResource = ExtResource("2_cjy1r")
+metadata/_edit_vertical_guides_ = [334.0]

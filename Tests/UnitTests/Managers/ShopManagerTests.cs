@@ -11,7 +11,7 @@ public class ShopManagerTests
     public void CalculateCost_WithZeroUpgrades_ReturnsOne()
     {
         // Arrange
-        IShopManager shopManager = new ShopManager();
+        IShopManager shopManager = new ShopManager(new global::Core.Services.EventBus());
 
         // Act
         int cost = shopManager.CalculateCost(0);
@@ -24,7 +24,7 @@ public class ShopManagerTests
     public void CalculateCost_WithOneUpgrade_ReturnsThree()
     {
         // Arrange
-        IShopManager shopManager = new ShopManager();
+        IShopManager shopManager = new ShopManager(new global::Core.Services.EventBus());
 
         // Act
         int cost = shopManager.CalculateCost(1);
@@ -37,7 +37,7 @@ public class ShopManagerTests
     public void CalculateCost_WithTwoUpgrades_ReturnsSeven()
     {
         // Arrange
-        IShopManager shopManager = new ShopManager();
+        IShopManager shopManager = new ShopManager(new global::Core.Services.EventBus());
 
         // Act
         int cost = shopManager.CalculateCost(2);
@@ -50,8 +50,8 @@ public class ShopManagerTests
     public void CanAffordUpgrade_WithEnoughResources_ReturnsTrue()
     {
         // Arrange
-        IShopManager shopManager = new ShopManager();
-        IInventoryManager inventoryManager = new InventoryManager();
+        IShopManager shopManager = new ShopManager(new global::Core.Services.EventBus());
+        IInventoryManager inventoryManager = new InventoryManager(new global::Core.Services.EventBus());
         inventoryManager.AddMaterial(new ResourceItem("res1", "Viande", "Food", ""), 5);
 
         // Act
@@ -65,8 +65,8 @@ public class ShopManagerTests
     public void CanAffordUpgrade_WithInsufficientResources_ReturnsFalse()
     {
         // Arrange
-        IShopManager shopManager = new ShopManager();
-        IInventoryManager inventoryManager = new InventoryManager();
+        IShopManager shopManager = new ShopManager(new global::Core.Services.EventBus());
+        IInventoryManager inventoryManager = new InventoryManager(new global::Core.Services.EventBus());
         inventoryManager.AddMaterial(new ResourceItem("res1", "Viande", "Food", ""), 2);
 
         // Act
@@ -80,8 +80,8 @@ public class ShopManagerTests
     public void CanAffordIsland_WithEnoughOfAllResources_ReturnsTrue()
     {
         // Arrange
-        IShopManager shopManager = new ShopManager();
-        IInventoryManager inventoryManager = new InventoryManager();
+        IShopManager shopManager = new ShopManager(new global::Core.Services.EventBus());
+        IInventoryManager inventoryManager = new InventoryManager(new global::Core.Services.EventBus());
 
         inventoryManager.AddMaterial(new ResourceItem("Viande", "Viande", "Food", ""), 1);
         inventoryManager.AddMaterial(new ResourceItem("Bois", "Bois", "Material", ""), 1);
@@ -99,8 +99,8 @@ public class ShopManagerTests
     public void CanAffordIsland_WithInsufficientOfOneResource_ReturnsFalse()
     {
         // Arrange
-        IShopManager shopManager = new ShopManager();
-        IInventoryManager inventoryManager = new InventoryManager();
+        IShopManager shopManager = new ShopManager(new global::Core.Services.EventBus());
+        IInventoryManager inventoryManager = new InventoryManager(new global::Core.Services.EventBus());
 
         inventoryManager.AddMaterial(new ResourceItem("Viande", "Viande", "Food", ""), 1);
         inventoryManager.AddMaterial(new ResourceItem("Bois", "Bois", "Material", ""), 1);
