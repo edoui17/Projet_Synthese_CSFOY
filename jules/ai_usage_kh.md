@@ -149,3 +149,8 @@ Ce document retrace l'interaction entre Kevin Houle et les assistants IA (Forge/
 **Request**: Remove the text modifications and disabling of UI buttons in the Navigation Menu when the player cannot afford an island. Prefer using GD.Print logs and keeping UI active.
 **AI Contribution**: Reverted visual alterations inside `NavigationMenu.cs` so that the button strictly displays the destination data.
 **Decision Reasoning**: Retained the core functionality of blocking the backend purchase via the synchronous check in `NavigationService`, but restored the UI text so it doesn't clutter the user interface.
+
+### 2026-04-23 - [Système] Bridge Architecture Refactor
+**Request**: Implement the pub-sub architecture strictly. Refactor the SignalManager to act as a bridge between Godot Signals and the EventBus, ensuring Core managers no longer use WeakEvents directly.
+**AI Contribution**: Analyzed the project architecture. Deleted obsolete `ISignalManager` and `SignalManagerCore`. Created required `IEvent`s. Migrated `ScoreTracker`, `StatTracker`, and `NavigationService` to rely strictly on the `IEventBus`. Refactored Godot `SignalManager` to translate native Godot signals into `IEvent`s and vice-versa. Updated Global Godot Nodes (`ScoreManager`, `StatManager`) to directly subscribe to the `EventBus` for updates. Updated Unit tests to match the new dependencies.
+**Decision Reasoning**: In N-Tier architecture, the Core layer must remain completely agnostic of engine-specific concepts (like Godot Signals). Providing an event bus ensures loose coupling, and the Godot-side SignalManager translates interactions cleanly without bleeding engine paradigms into Core business logic.
