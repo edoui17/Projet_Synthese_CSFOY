@@ -15,9 +15,10 @@
 position = Vector2(-1, 0)
 
 [node name="Player" parent="." index="1"]
-position = Vector2(-132, -161)
+position = Vector2(38, -25)
 
 [node name="ResourceZone" type="Node2D" parent="." index="2" unique_id=2099294014]
+position = Vector2(0, 1)
 script = ExtResource("4_tree")
 ResourceCount = 50
 ResourceScenes = Array[PackedScene]([ExtResource("4_lx7e6"), ExtResource("5_k34qd"), ExtResource("6_35vrn"), ExtResource("7_42amy")])
