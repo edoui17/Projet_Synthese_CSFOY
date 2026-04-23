@@ -138,3 +138,23 @@ Pour maintenir une cohérence absolue, les règles suivantes sont appliquées :
 ### Movement System (US 5.4)
 - **Decision:** Maintained movement logic (`MovementController`) inside the `IslandSurvivor` (Godot Client) project rather than moving it to `Core`.
 - **Reasoning:** Movement relies heavily on Godot's built-in physics engine and the `MoveAndSlide()` native API to handle collisions and slopes correctly. Implementing a custom 2D physics/collision solver in the C# `Core` would be redundant, error-prone, and suffer a performance hit compared to Godot's optimized C++ implementation.
+## Godot Quirks & Physique
+- **Collision Layers vs Masks :**
+  - **Layer :** Ce que je suis.
+  - **Mask :** Ce que je détecte.
+- **Configuration IslandSurvivor :** Le Player (Layer 3) ne collisionne pas physiquement avec les objets interactifs (Layer 2), mais son Area2D de détection possède un Mask 2.
+- **Signaux Area2D :** Pour émettre body_exited, la propriété monitoring doit être à true.
+- **Singletons :** Pour maintenir l'état entre les scènes, InventoryNode utilise l'Autoload Godot combiné à des instances statiques pour son implémentation .NET.
+
+---
+
+## Synchronisation & Meta-Progression (US 8.1)
+**Problématique :** Assurer la persistance des données (Stats, Config, Inventaire) de manière sécurisée et optimisée.
+
+**Architecture de Synchronisation :**
+- **Sécurité :** Système de "Session Token" (API Key par utilisateur). Le login retourne un token qui doit être inclus dans le corps des requêtes POST ou dans les headers pour les GET.
+- **Optimisation (Consolidation) :**
+  - `GET /api/player/profile` : Récupère l'intégralité du profil (Joueur, Stats, Inventaire, Config) en un seul appel au lancement.
+  - `POST /api/player/sync` : Envoie l'état complet du jeu pour une sauvegarde atomique.
+- **Granularité :** Des endpoints individuels (Stats, Inventory) permettent des mises à jour incrémentales durant le gameplay sans surcharger le réseau.
+- **Mapping :** Mapping manuel systématique entre les `Entities` (Infrastructure) et les `Domain Models` (Core) pour garantir l'indépendance des couches.
