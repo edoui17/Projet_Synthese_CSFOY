@@ -69,3 +69,16 @@ Pour maintenir une cohérence absolue à travers les projets .NET 8, les règles
 - **Configuration IslandSurvivor :** Le Player (Layer 3) ne collisionne pas physiquement avec les objets interactifs (Layer 2), mais son Area2D de détection possède un Mask 2.
 - **Signaux Area2D :** Pour émettre body_exited, la propriété monitoring doit être à true.
 - **Singletons :** Pour maintenir l'état entre les scènes, InventoryNode utilise l'Autoload Godot combiné à des instances statiques pour son implémentation .NET.
+
+---
+
+## Synchronisation & Meta-Progression (US 8.1)
+**Problématique :** Assurer la persistance des données (Stats, Config, Inventaire) de manière sécurisée et optimisée.
+
+**Architecture de Synchronisation :**
+- **Sécurité :** Système de "Session Token" (API Key par utilisateur). Le login retourne un token qui doit être inclus dans le corps des requêtes POST ou dans les headers pour les GET.
+- **Optimisation (Consolidation) :**
+  - `GET /api/player/profile` : Récupère l'intégralité du profil (Joueur, Stats, Inventaire, Config) en un seul appel au lancement.
+  - `POST /api/player/sync` : Envoie l'état complet du jeu pour une sauvegarde atomique.
+- **Granularité :** Des endpoints individuels (Stats, Inventory) permettent des mises à jour incrémentales durant le gameplay sans surcharger le réseau.
+- **Mapping :** Mapping manuel systématique entre les `Entities` (Infrastructure) et les `Domain Models` (Core) pour garantir l'indépendance des couches.
