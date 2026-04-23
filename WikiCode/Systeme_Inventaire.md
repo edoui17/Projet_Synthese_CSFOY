@@ -30,16 +30,17 @@ Pour que Godot puisse interagir avec `InventoryManager`, une classe spéciale `I
    - Dans `_EnterTree()`, il s'assure qu'il est l'unique instance (`Instance = this`).
    - Cela lui permet de **survivre aux changements de scènes**. Si le joueur passe de la forêt à la mine, l'inventaire ne sera pas effacé car ce nœud global restera en vie.
 
-2. **Écouteur de Signaux et Injection de Dépendance** :
-   Dans `_Ready()`, `InventoryNode` récupère l'instance unique de `InventoryManager` via le `ServiceRegistry` (`ServiceRegistry.Instance.InventoryManager`) et s'abonne au signal global natif `SignalManager.Instance.MaterialDestroyed`.
+2. **Écouteur d'Événements et Injection de Dépendance** :
+   Dans `_Ready()`, `InventoryNode` récupère l'instance unique de `InventoryManager` et l'`EventBus` via le `ServiceRegistry`. Il s'abonne ensuite à l'événement `MaterialDestroyedEvent` via l'**EventBus**.
 
 ### Le Cycle Complet
-1. Un joueur détruit un arbre.
-2. L'arbre instancie un `ResourceItem` et émet `EmitMaterialDestroyed(..., item, 3)`.
-3. Le **SignalManagerCore** attrape ce signal et informe tous les abonnés.
-4. Le **InventoryNode** (Godot) reçoit le signal.
-5. Il appelle `m_inventoryManager.AddMaterial(item, 3)` (Core).
-6. L'inventaire est à jour et prêt à être persisté via le [Persistence System](./Persistence_System.md).
+1. Un joueur détruit un arbre dans Godot.
+2. Le script de l'arbre instancie un `ResourceItem` et publie un événement sur l'EventBus : `m_eventBus.Publish(new MaterialDestroyedEvent(item, 3))`.
+3. L'**EventBus** transmet cet événement à tous ses abonnés (ici l'`InventoryNode`).
+4. Le **InventoryNode** (Godot) reçoit l'événement.
+5. Il appelle `m_inventoryManager.AddMaterial(item, 3)` pour mettre à jour la logique Core.
+6. L'`InventoryManager` (Core) peut alors publier un `InventoryChangedEvent` pour indiquer qu'un objet a été ajouté.
+7. L'inventaire est à jour et prêt à être persisté via le [Persistence System](./Persistence_System.md).
 
 ### Synchronisation (US 8.1)
 L'inventaire est automatiquement synchronisé avec l'API :
