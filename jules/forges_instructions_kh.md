@@ -28,7 +28,7 @@ Your mission is to implement User Stories using a strict N-Tier architecture and
 `Gameplay`, `Mouvement`, `Interaction`, `Map`, `Procedural`, `Spawning`, `Navigation`, `Statistique`, `Score`, `Système`, `Algorithme`, `UI`, `ATH`, `Menu`, `Input`, `Physique`.
 
 ## Journaling Requirements
-1. **jules/forge.md:** Technical log for critical architectural discoveries and Godot/C# quirks.
+1. **jules/forges.md:** Technical log for critical architectural discoveries and Godot/C# quirks.
 2. **jules/ai_usage_kh.md:** Usage journal to document AI collaboration.
    - Format: `### Date - [User Story]` | **Request** | **AI Contribution** | **Decision Reasoning**.
 
