@@ -13,7 +13,7 @@ public partial class HealthBarStatic : Control
         set
         {
             _level = value;
-            UpdateSize();
+            UpdateHealth();
         }
     }
 
@@ -27,10 +27,10 @@ public partial class HealthBarStatic : Control
 
     public override void _Ready()
     {
-        UpdateSize();
+        UpdateHealth();
     }
 
-    private void UpdateSize()
+    private void UpdateHealth()
     {
         if (ProgressBar == null)
         {
