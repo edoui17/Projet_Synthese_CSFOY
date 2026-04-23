@@ -4,12 +4,8 @@
 [ext_resource type="Script" uid="uid://fvn22w5rptq7" path="res://Scenes/NPC/Passive/Sheep.cs" id="1_d7b5k"]
 [ext_resource type="Texture2D" uid="uid://bhauap76rg7mv" path="res://Assets/TinySwords/Decorations/Sheep/HappySheep_Idle.png" id="2_d7b5k"]
 [ext_resource type="PackedScene" uid="uid://biqhbrp7fjfyj" path="res://Nodes/StatsManager/StatsManager.tscn" id="4_cdkpw"]
-[ext_resource type="Resource" path="res://Resources/Stats/Entity/SheepStats.tres" id="5_ifvjj"]
+[ext_resource type="Resource" uid="uid://dlv80pje25mmb" path="res://Resources/Stats/Entity/SheepStat.tres" id="5_ifvjj"]
 [ext_resource type="PackedScene" path="res://Nodes/Movement/MovementController.tscn" id="6_mov"]
-
-
-[sub_resource type="CircleShape2D" id="CircleShape2D_5jkdo"]
-radius = 21.023796
 
 [sub_resource type="Animation" id="Animation_cdkpw"]
 resource_name = "FLEE"
@@ -141,15 +137,15 @@ _data = {
 &"RESET": SubResource("Animation_k2koy")
 }
 
-[node name="Sheep" type="Node2D" unique_id=1690845376]
+[sub_resource type="CircleShape2D" id="CircleShape2D_5jkdo"]
+radius = 21.023796
+
+[node name="Sheep" type="CharacterBody2D" unique_id=317789339 node_paths=PackedStringArray("Stats", "m_navigationAgent", "m_movementController", "m_sprite")]
 script = ExtResource("1_d7b5k")
-
-[node name="Area2D" type="Area2D" parent="." unique_id=1763956308]
-collision_layer = 16
-collision_mask = 8
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=2005726366]
-shape = SubResource("CircleShape2D_5jkdo")
+Stats = NodePath("StatsManager")
+m_navigationAgent = NodePath("NavigationAgent2D")
+m_movementController = NodePath("MovementController")
+m_sprite = NodePath("Sprite2D")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1496846451]
 libraries/ = SubResource("AnimationLibrary_366kf")
@@ -162,8 +158,10 @@ hframes = 8
 [node name="StatsManager" parent="." unique_id=1475410971 instance=ExtResource("4_cdkpw")]
 BaseStatsResource = ExtResource("5_ifvjj")
 
-[node name="MovementController" parent="." instance=ExtResource("6_mov")]
-Stats = NodePath("../StatsManager")
+[node name="MovementController" parent="." unique_id=473945652 instance=ExtResource("6_mov")]
 
 [node name="NavigationAgent2D" type="NavigationAgent2D" parent="." unique_id=1042935962]
 avoidance_enabled = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=2005726366]
+shape = SubResource("CircleShape2D_5jkdo")

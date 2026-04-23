@@ -16,10 +16,10 @@ public partial class Sheep : CharacterBody2D, INpc, IDamageable
     [Export] public float IdleSpeed { get; set; } = 30.0f;
     [Export] public float FleeSpeed { get; set; } = 120.0f;
 
-    private NavigationAgent2D m_navigationAgent;
-    private PassiveController m_passiveController;
-    private MovementController m_movementController;
-    private Sprite2D m_sprite;
+    [Export] private NavigationAgent2D m_navigationAgent;
+     private PassiveController m_passiveController;
+    [Export] private MovementController m_movementController;
+    [Export] private Sprite2D m_sprite;
     private bool m_wasKilledByPlayer = false;
 
     public string CurrentState => m_passiveController?.CurrentState ?? NpcStates.IDLE;
@@ -27,10 +27,6 @@ public partial class Sheep : CharacterBody2D, INpc, IDamageable
     public override void _Ready()
     {
         m_passiveController = new PassiveController();
-
-        m_navigationAgent = GetNodeOrNull<NavigationAgent2D>("NavigationAgent2D");
-        m_sprite = GetNodeOrNull<Sprite2D>("Sprite2D");
-        m_movementController = GetNodeOrNull<MovementController>("MovementController");
 
         if (m_navigationAgent == null)
         {
