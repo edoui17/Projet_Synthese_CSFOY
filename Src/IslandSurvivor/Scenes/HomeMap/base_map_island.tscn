@@ -431,6 +431,7 @@ tile_map_data = PackedByteArray("AAAGAAMAAQAHAAMAAAAFAAMAAQAGAAAAAAAEAAMAAQAGAAA
 tile_set = SubResource("TileSet_n51jr")
 
 [node name="ElementsTileMap" type="TileMapLayer" parent="." unique_id=1515628892]
+z_index = 1
 y_sort_enabled = true
 tile_map_data = PackedByteArray("AAAiAA8ABAAAAAAAAAAdAAkABAAAAAAAAAARABAABQAAAAAAAAAPAAcABQAAAAAAAAAkABAABgAAAAAAAAAMAA4ABgAAAAAAAAAnAAoABgAAAAAAAAAeAAwABgAAAAAAAAAQAAoAAgAAAAAAAAAcABEAAgAAAAAAAAAeAAsAAgAAAAAAAAAaAAQAAAAAAAAAAAAeAAcAAAAAAAAAAAAMAAwAAAAAAAAAAAAKABAAAAAAAAAAAAARAAcAAgAAAAAAAAAVAA0AAgAAAAAAAAAZAAwAAAAAAAAAAAA=")
 tile_set = ExtResource("7_t6485")
@@ -446,3 +447,4 @@ tile_map_data = PackedByteArray("AAD//wEAAAAAAAAAAAAFAP7/AAAAAAAAAAAIAAoAAQAAAAA
 tile_set = SubResource("TileSet_telec")
 
 [node name="BuildingNode" parent="." unique_id=408521942 instance=ExtResource("15_16xjv")]
+z_index = 2
