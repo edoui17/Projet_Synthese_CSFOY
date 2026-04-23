@@ -34,7 +34,8 @@ Chaque bouton est associé à une détection d’événement (clic), déclenchan
 
 ### Start
 - Action : change la scène active  
-- Résultat : redirige vers la map principale du jeu  
+- Résultat : redirige vers la map principale du jeu.
+- **Note US 8.1** : Au démarrage, le jeu appelle l'API de synchronisation (`GET /api/player/profile`) pour charger l'inventaire, les statistiques et les configurations du joueur identifié.
 
 ### Scoreboard
 - Action : change la scène vers le tableau des scores  
