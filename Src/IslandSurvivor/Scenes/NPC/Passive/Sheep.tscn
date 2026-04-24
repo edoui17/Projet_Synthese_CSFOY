@@ -137,15 +137,13 @@ _data = {
 &"RESET": SubResource("Animation_k2koy")
 }
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_5jkdo"]
-radius = 21.023796
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ifvjj"]
+size = Vector2(42, 32)
 
-[node name="Sheep" type="CharacterBody2D" unique_id=317789339 node_paths=PackedStringArray("Stats", "m_navigationAgent", "m_movementController", "m_sprite")]
+[node name="Sheep" type="CharacterBody2D" unique_id=317789339 node_paths=PackedStringArray("Stats")]
+motion_mode = 1
 script = ExtResource("1_d7b5k")
 Stats = NodePath("StatsManager")
-m_navigationAgent = NodePath("NavigationAgent2D")
-m_movementController = NodePath("MovementController")
-m_sprite = NodePath("Sprite2D")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1496846451]
 libraries/ = SubResource("AnimationLibrary_366kf")
@@ -160,8 +158,6 @@ BaseStatsResource = ExtResource("5_ifvjj")
 
 [node name="MovementController" parent="." unique_id=473945652 instance=ExtResource("6_mov")]
 
-[node name="NavigationAgent2D" type="NavigationAgent2D" parent="." unique_id=1042935962]
-avoidance_enabled = true
-
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=2005726366]
-shape = SubResource("CircleShape2D_5jkdo")
+light_mask = 4
+shape = SubResource("RectangleShape2D_ifvjj")

@@ -1,0 +1,21 @@
+<<<<<<< SEARCH
+    public void ResetDirectionChangeTimer()
+    {
+        m_idleTimer = 0;
+    }
+}
+=======
+    public void ResetDirectionChangeTimer()
+    {
+        m_idleTimer = 0;
+    }
+
+    public void ForceNewDirection()
+    {
+        if (m_currentState == NpcStates.IDLE)
+        {
+            PickNewRandomDirection();
+        }
+    }
+}
+>>>>>>> REPLACE
