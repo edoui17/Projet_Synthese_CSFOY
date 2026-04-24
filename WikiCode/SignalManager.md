@@ -17,49 +17,70 @@ Pour regler cela, nous n'utilisons pas le mot-cle `event` de C#. Nous avons cree
 
 Ces classes enveloppent l'abonne dans une `WeakReference`. Ainsi, quand Godot detruit un element de l'interface graphique (UI) ou un ennemi, la reference faible dans le `WeakEvent` devient nulle. Le Garbage Collector nettoie la memoire, et le `SignalManager` detectera automatiquement que l'abonne est mort (`IsAlive == false`) et le retirera de la liste silencieusement. Cela rend notre systeme robuste, evite les plantages, et libere les developpeurs de l'obligation absolue de se desabonner manuellement lors de la destruction des objets (bien que cela reste une bonne pratique).
 
+## Le Rôle de Bridge (Translator) et l'EventBus
+
+Dans l'architecture actuelle, **le `SignalManager` agit strictement comme un Translator (ou Bridge) entre Godot et le Core**. Le Core n'utilise plus les signaux natifs ou les événements C# de manière globale ; il repose entièrement sur l'**EventBus**.
+
+Les responsabilités du `SignalManager` sont donc de deux ordres :
+1. **Écouter le Core (EventBus) -> Émettre vers Godot (`[Signal]`)** : Le `SignalManager` s'abonne à certains `IEvent`s via l'EventBus (ex: `ScoreChangedEvent`). Lorsqu'il reçoit cet événement du Core, il émet un signal natif Godot (`EmitSignal(...)`) pour que les interfaces utilisateurs (UI) ou les nœuds visuels puissent réagir sans connaître l'EventBus.
+2. **Recevoir de Godot (`[Signal]`) -> Publier vers le Core (EventBus)** : Lorsqu'une interaction purement Godot survient (ex: clic sur un bouton d'interface ou collision), une méthode du `SignalManager` peut être appelée pour créer un `IEvent` (ex: `NavigationRequestedEvent`) et le publier sur l'EventBus, permettant au Core de traiter la demande sans dépendre de Godot.
+
 ## Architecture
-Le `SignalManager` sert de point de communication global (Observer Pattern) pour tous les systèmes du jeu. Il est conçu pour respecter l'architecture N-Tier du projet :
 
-- **Core (`Src/Core/Interfaces/ISignalManager.cs`)** : Définit les contrats (Interfaces) que tout gestionnaire de signaux doit implémenter.
-- **Utils (`Src/Core/Utils/WeakEvent.cs` et `Src/Core/Utils/WeakEventNonGeneric.cs`)** : Implémente le pattern **Weak Event** avec `WeakReference`. Cela garantit que si une scène est détruite dans Godot et qu'un `Node` n'est plus en mémoire, le système de signaux ne causera pas de fuite de mémoire ou de plantage (car le *Garbage Collector* pourra détruire le nœud abonné). Le pattern est séparé en deux fichiers pour la version générique (`<TEventArgs>`) et non générique.
-- **Core Implementation (`Src/Core/Managers/SignalManagerCore.cs`)** : Gère la logique pure C# de l'envoi de signaux.
-- **Godot (`Src/IslandSurvivor/Globals/SignalManager.cs`)** : Fait le pont entre l'architecture `Core` et le moteur Godot. Défini en tant qu'**Autoload**, il expose la logique `Core` via délégation.
+Le `SignalManager` (qui est un **Autoload** Godot dans `Src/IslandSurvivor/Globals/SignalManager.cs`) fait le pont entre l'architecture `Core` et le moteur Godot en utilisant l'injection de dépendances pour accéder à l'EventBus.
 
-## Comment ajouter un signal
+*Note : Les classes `ISignalManager` et `SignalManagerCore` avec leurs `WeakEvents` ont été supprimées de la communication inter-systèmes au profit de ce modèle strict Pub-Sub via l'EventBus.*
 
-Pour ajouter un nouveau signal global, suivez ces étapes :
+## Comment ajouter une nouvelle communication Godot <-> Core
 
-1.  **Dans `ISignalManager.cs`** : Déclarez votre type `EventArgs` (dans son propre fichier si public) et ajoutez la propriété `WeakEvent` ainsi que la méthode `Emit` associée dans l'interface.
-2.  **Dans `SignalManagerCore.cs`** : Implémentez l'instanciation de l'événement (donnée membre en haut) et sa méthode `Emit`.
-3.  **Dans `SignalManager.cs` (Autoload)** : Déléguez les appels vers la classe `SignalManagerCore`.
+Pour ajouter un nouveau signal global déclenché par le Core à destination de l'interface Godot :
 
-### Exemple
+1.  **Créer un événement dans le Core** : Créez un nouvel `IEvent` (ex: `MyCustomEvent.cs`) dans `Src/Core/Events/`.
+2.  **Déclarer le Signal natif dans Godot** : Dans `SignalManager.cs`, ajoutez l'attribut `[Signal]` et son délégué (ex: `[Signal] public delegate void MyCustomEventHandler();`).
+3.  **Abonnement dans le `_Ready`** : Dans le `_Ready` du `SignalManager.cs`, abonnez-vous à l'événement de l'EventBus : `m_eventBus.Subscribe<MyCustomEvent>(OnMyCustomEvent)`.
+4.  **Redéclencher le Signal** : Dans le callback (`OnMyCustomEvent`), émettez le signal natif : `EmitSignal(SignalName.MyCustomEvent)`.
 
-**Déclaration dans le Core (ISignalManager.cs) :**
+### Exemple complet : Mise à jour du Score
+
+**Dans le Core (ScoreTracker.cs publie un événement) :**
 ```csharp
-public class ScoreChangedEventArgs : EventArgs
-{
-    public ScoreChangedEventArgs(int p_newScore) => NewScore = p_newScore;
-
-    public int NewScore { get; }
-}
-
-WeakEvent<ScoreChangedEventArgs> OnScoreChanged { get; }
-void EmitScoreChanged(object p_sender, int p_newScore);
+// Le Core publie simplement l'événement
+m_eventBus.Publish(new ScoreChangedEvent(oldScore, newScore));
 ```
 
-**Implémentation dans le Client Godot :**
+**Dans le SignalManager (Bridge en Godot) :**
 ```csharp
-// S'abonner au signal natif Godot (Bridge)
-SignalManager.Instance.ScoreChanged += OnScoreChangedHandler;
+public partial class SignalManager : Node
+{
+    // 1. Définition du signal natif pour les autres noeuds Godot
+    [Signal]
+    public delegate void ScoreChangedEventHandler(int p_previousScore, int p_newScore);
 
-// Émettre un événement (Il passera par le Core avant de revenir en Godot)
-SignalManager.Instance.EmitScoreChanged(this, 1500);
+    public override void _Ready()
+    {
+        // 2. Abonnement à l'EventBus du Core
+        m_eventBus.Subscribe<ScoreChangedEvent>(OnScoreChanged);
+    }
 
-// Méthode de réception
+    private void OnScoreChanged(ScoreChangedEvent p_event)
+    {
+        // 3. Traduction en signal natif Godot
+        EmitSignal(SignalName.ScoreChanged, p_event.PreviousScore, p_event.NewScore);
+    }
+}
+```
+
+**Dans un noeud UI (ex: ScoreLabel.cs) :**
+```csharp
+public override void _Ready()
+{
+    // L'UI s'abonne au signal natif Godot de l'Autoload, ignorant totalement l'EventBus
+    SignalManager.Instance.ScoreChanged += OnScoreChangedHandler;
+}
+
 private void OnScoreChangedHandler(int p_previousScore, int p_newScore)
 {
-    // Mettre à jour l'UI avec p_newScore
+    Text = $"Score: {p_newScore}";
 }
 
 public override void _ExitTree()
@@ -72,4 +93,4 @@ public override void _ExitTree()
 }
 ```
 
-*Note sur le Bridge : Le Godot Client ne doit jamais utiliser `.AddListener` pour écouter des événements, seulement `+=` sur les signaux natifs (`[Signal]`). Les `WeakEvent` avec `.AddListener` sont réservés exclusivement à la logique interne du Core.*
+*Règle d'or : La couche `/Src/Core` doit strictement utiliser l'EventBus et ses `IEvent`s. Elle ne doit jamais utiliser de signaux Godot. La couche UI (`/Src/IslandSurvivor`) doit écouter les signaux natifs traduits par le `SignalManager` ou s'abonner occasionnellement à l'EventBus si elle a besoin d'interagir directement avec la logique métier.*

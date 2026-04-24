@@ -8,10 +8,11 @@ Placé dans `Src/Core/Services`, l'EventBus est considéré comme un service tra
 
 ## Principes Fondamentaux
 
-1. **Découplage** : Les émetteurs (Publishers) n'ont pas connaissance des récepteurs (Subscribers), et vice-versa.
-2. **Typage Fort** : L'EventBus utilise des événements génériques fortement typés garantissant la sécurité à la compilation via l'interface marqueur `IEvent`.
-3. **Sécurité Mémoire (WeakReference)** : Les souscriptions utilisent un wrapper (`WeakAction<T>`) autour des délégués (`Action<T>`). Cela garantit que si l'objet abonné (par exemple, un nœud Godot ou un menu temporaire) est détruit, l'EventBus ne maintiendra pas l'objet en vie, évitant ainsi les fuites de mémoire.
-4. **Désabonnement Explicite** : Bien que le système gère les références faibles, l'interface `IEventBus` fournit une méthode `Unsubscribe`. Celle-ci est **obligatoire** pour les objets à courte durée de vie (ex: menus d'interface utilisateur) afin qu'ils cessent de réagir aux événements dès qu'ils sont cachés ou désactivés, avant même le passage du ramasse-miettes (Garbage Collector).
+1. **Communication Exclusive du Core** : Le Core ne communique vers l'extérieur (ou entre ses propres systèmes internes) **que** par l'EventBus. Les `WeakEvents` et les événements C# classiques ne sont plus utilisés dans les Managers du Core pour la communication globale.
+2. **Découplage** : Les émetteurs (Publishers) n'ont pas connaissance des récepteurs (Subscribers), et vice-versa.
+3. **Typage Fort** : L'EventBus utilise des événements génériques fortement typés (souvent des records POCOs) garantissant la sécurité à la compilation via l'interface marqueur `IEvent`.
+4. **Sécurité Mémoire (WeakReference)** : Les souscriptions utilisent un wrapper (`WeakAction<T>`) autour des délégués (`Action<T>`). Cela garantit que si l'objet abonné (par exemple, un nœud Godot ou un menu temporaire) est détruit, l'EventBus ne maintiendra pas l'objet en vie, évitant ainsi les fuites de mémoire.
+5. **Désabonnement Explicite** : Bien que le système gère les références faibles, l'interface `IEventBus` fournit une méthode `Unsubscribe`. Celle-ci est **obligatoire** pour les objets à courte durée de vie (ex: menus d'interface utilisateur) afin qu'ils cessent de réagir aux événements dès qu'ils sont cachés ou désactivés, avant même le passage du ramasse-miettes (Garbage Collector).
 
 ## Implémentation Core
 
@@ -63,7 +64,7 @@ public partial class EventBusAutoload : Node
 ```
 
 ### 1. Créer un Événement
-Pour créer un nouvel événement, définissez un record ou une classe implémentant `IEvent`.
+Pour créer un nouvel événement, définissez un record ou une classe implémentant `IEvent`. Ces objets doivent être placés dans le dossier `Src/Core/Events/`.
 
 ```csharp
 using Core.Interfaces;
