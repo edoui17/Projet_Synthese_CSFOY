@@ -157,6 +157,7 @@ radius = 36.0
 height = 96.0
 
 [node name="Soldier" type="CharacterBody2D" unique_id=666187867]
+motion_mode = 1
 script = ExtResource("1_lf5hw")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=586828728]
@@ -166,7 +167,7 @@ sprite_frames = SubResource("SpriteFrames_8an0u")
 animation = &"Moving"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=22620120]
-light_mask = 17
+light_mask = 4
 position = Vector2(-7, 1.0000002)
 scale = Vector2(0.99999994, 0.99999994)
 shape = SubResource("CapsuleShape2D_v2bfp")

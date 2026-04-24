@@ -260,7 +260,7 @@ radius = 39.217342
 
 [node name="Player" type="CharacterBody2D" unique_id=661327324 node_paths=PackedStringArray("Stats", "m_animationPlayer", "m_sprite", "m_interactionLabel", "m_debugLabel", "m_interactionArea", "m_weaponArea")]
 collision_layer = 4
-collision_mask = 1
+motion_mode = 1
 script = ExtResource("1_s0eop")
 Stats = NodePath("StatManager")
 m_animationPlayer = NodePath("AnimationPlayer")
@@ -286,7 +286,6 @@ autoplay = &"IDLE"
 [node name="WeaponInteractionArea" type="Area2D" parent="." unique_id=395568969]
 collision_layer = 8
 collision_mask = 16
-groups=["Tool"]
 
 [node name="WeaponHitbox" type="CollisionShape2D" parent="WeaponInteractionArea" unique_id=241284209]
 visible = false
@@ -296,9 +295,9 @@ shape = SubResource("CapsuleShape2D_i5acl")
 disabled = true
 
 [node name="PlayerInteraction" type="Area2D" parent="." unique_id=46643777]
+light_mask = 2
 collision_layer = 0
 collision_mask = 2
-light_mask = 2
 monitorable = false
 
 [node name="InteractionHitbox" type="CollisionShape2D" parent="PlayerInteraction" unique_id=678127736]
@@ -306,9 +305,8 @@ shape = SubResource("CircleShape2D_jmcll")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=24708510]
 
-[node name="MovementController" parent="." instance=ExtResource("9_mov")]
+[node name="MovementController" parent="." unique_id=8303559 instance=ExtResource("9_mov")]
 Stats = NodePath("../StatManager")
-
 
 [node name="StatManager" parent="." unique_id=772458511 instance=ExtResource("7_stat")]
 BaseStatsResource = ExtResource("8_stat_res")
