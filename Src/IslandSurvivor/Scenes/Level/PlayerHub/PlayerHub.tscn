@@ -6,6 +6,9 @@
 
 [node name="Main" unique_id=935674309 instance=ExtResource("1_base")]
 
+[node name="MapContainer" parent="." index="0"]
+y_sort_enabled = true
+
 [node name="BaseMapIsland" parent="MapContainer" index="0" unique_id=2101831528 instance=ExtResource("2_map")]
 position = Vector2(-1, 0)
 
