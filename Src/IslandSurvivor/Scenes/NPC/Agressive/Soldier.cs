@@ -143,11 +143,13 @@ public partial class Soldier : CharacterBody2D, INpc, IEnemy, IDamageable
         if (m_targetPlayer == null || m_lineOfSightRay == null)
             return false;
 
-        // Point the RayCast towards the target
-        Vector2 targetDirection = m_targetPlayer.GlobalPosition - GlobalPosition;
+        // Point the RayCast towards the target using local coordinates relative to the RayCast2D
+        // The Soldier script is attached to CharacterBody2D, so ToLocal converts the target's
+        // global position into coordinates relative to the Soldier (and thus the RayCast, assuming it's positioned at 0,0).
+        Vector2 targetLocalPosition = ToLocal(m_targetPlayer.GlobalPosition);
 
         // RayCast TargetPosition is relative to the RayCast's position
-        m_lineOfSightRay.TargetPosition = targetDirection;
+        m_lineOfSightRay.TargetPosition = targetLocalPosition;
 
         // Force an update to get immediate collision results
         m_lineOfSightRay.ForceRaycastUpdate();
