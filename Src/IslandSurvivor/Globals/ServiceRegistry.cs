@@ -6,6 +6,8 @@ using Core.Managers;
 using Core.Managers.Stats;
 using Core.Managers.Navigation;
 using Core.Services;
+using Core.Domain;
+using Core.Events;
 
 namespace IslandSurvivor.Globals;
 
@@ -19,6 +21,7 @@ public partial class ServiceRegistry : Node
   public IScoreTracker ScoreTracker { get; private set; }
   public INavigationService NavigationService { get; private set; }
   public IEventBus EventBus { get; private set; }
+  public IApiService ApiService { get; private set; }
 
   public override void _EnterTree()
   {
@@ -41,6 +44,36 @@ public partial class ServiceRegistry : Node
     ISaveService saveService = new GodotSaveService();
     ScoreTracker = new ScoreTracker(saveService, EventBus);
     NavigationService = new NavigationService(EventBus, ShopManager, InventoryManager);
+
+    ApiService = new ApiService(saveService);
+  }
+
+  public override void _Ready()
+  {
+      CallDeferred(nameof(InitializeApiData));
+  }
+
+  private async void InitializeApiData()
+  {
+      GD.Print("[ServiceRegistry] Connecting to API...");
+
+      // Use temporary test credentials
+      string? token = await ApiService.LoginAsync("test", "test");
+      if (string.IsNullOrEmpty(token))
+      {
+          GD.Print("[ServiceRegistry] API Login failed, falling back to local cache if available.");
+      }
+      else
+      {
+          GD.Print("[ServiceRegistry] API Login successful.");
+      }
+
+      PlayerProfile? profile = await ApiService.GetProfileAsync();
+      if (profile != null)
+      {
+          GD.Print("[ServiceRegistry] Profile data loaded.");
+          EventBus.Publish(new ProfileLoadedEvent(profile));
+      }
   }
 
   public override void _Process(double delta)

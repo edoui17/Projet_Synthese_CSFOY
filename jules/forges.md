@@ -161,6 +161,11 @@ Ce document centralise les décisions architecturales, les particularités de Go
 - **Granularité :** Des endpoints individuels (Stats, Inventory) permettent des mises à jour incrémentales durant le gameplay sans surcharger le réseau.
 - **Mapping :** Mapping manuel systématique entre les `Entities` (Infrastructure) et les `Domain Models` (Core) pour garantir l'indépendance des couches.
 
+### $(date +"%Y-%m-%d") - Database Persistence & API Integration
+- **Feature**: Implemented API persistence to sync the game state to the remote database using the existing ASP.NET Core API infrastructure.
+- **Architecture**: Created `IApiService` and `ApiService` in `Src/Core` to maintain N-Tier strictness. The service uses `HttpClient` to communicate with the `http://localhost:5271` endpoints.
+- **Offline Mode**: If the API is unreachable (e.g. `HttpRequestException`), `ApiService` falls back to `ISaveService` (Godot client's local cache via `profile_cache.json`) to persist progression gracefully.
+- **Save Event Flow**: Scene transitions via `NavigationManager` now automatically serialize the current `InventoryNode` and `ScoreTracker` state into a `SyncRequest` payload sent to the `/api/player/sync` endpoint, completing the DB roundtrip.
 ## 2026-04-23: Pub-Sub Bridge Refactor
 - Eliminated hybrid `WeakEvent` bridging logic in Core managers in favor of pure `IEvent` payloads published to the `EventBus`.
 - `SignalManager` is now exclusively a Godot-side Autoload translator. It listens to Godot Signals and publishes `IEvent`s, and subscribes to `IEvent`s to emit Godot Signals for UI synchronization.

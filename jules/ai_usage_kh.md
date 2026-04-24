@@ -154,3 +154,12 @@ Ce document retrace l'interaction entre Kevin Houle et les assistants IA (Forge/
 **Request**: Implement the pub-sub architecture strictly. Refactor the SignalManager to act as a bridge between Godot Signals and the EventBus, ensuring Core managers no longer use WeakEvents directly.
 **AI Contribution**: Analyzed the project architecture. Deleted obsolete `ISignalManager` and `SignalManagerCore`. Created required `IEvent`s. Migrated `ScoreTracker`, `StatTracker`, and `NavigationService` to rely strictly on the `IEventBus`. Refactored Godot `SignalManager` to translate native Godot signals into `IEvent`s and vice-versa. Updated Global Godot Nodes (`ScoreManager`, `StatManager`) to directly subscribe to the `EventBus` for updates. Updated Unit tests to match the new dependencies.
 **Decision Reasoning**: In N-Tier architecture, the Core layer must remain completely agnostic of engine-specific concepts (like Godot Signals). Providing an event bus ensures loose coupling, and the Godot-side SignalManager translates interactions cleanly without bleeding engine paradigms into Core business logic.
+
+### $(date +"%Y-%m-%d") - [US 8.1 Data Persistence via API & DB]
+- **Request**: Implement the data synchronization logic to communicate with the existing database schema and API, redirecting the local save logic to act as a fallback cache.
+- **AI Contribution**:
+  1. Removed default WeatherForecast endpoint from `API/Program.cs` and enabled standard controllers mapping.
+  2. Implemented `IApiService` and `ApiService` for HTTP `LoginAsync`, `GetProfileAsync`, and `SyncAsync`.
+  3. Integrated `ApiService` into Godot's Autoload `ServiceRegistry` to fetch and publish `ProfileLoadedEvent` upon startup.
+  4. Updated `NavigationManager` to construct a `SyncRequest` from the core managers and post it via `ApiService.SyncAsync` upon every scene transition.
+- **Decision Reasoning**: Preserving `ISaveService` inside `ApiService` satisfies the offline fallback requirement. Executing sync calls during scene transitions leverages the existing, safe synchronization barrier (`NavigationManager` handling deferred loads). By generating new `IEvent` payloads (`SyncStartedEvent`, etc.), the architecture strictly honors the Pub-Sub boundaries instead of introducing coupling.
