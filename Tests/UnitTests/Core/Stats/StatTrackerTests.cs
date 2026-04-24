@@ -10,7 +10,7 @@ public class StatTrackerTests
     public void InitializeStats_SetsValuesCorrectly()
     {
         // Arrange
-        StatTracker tracker = new StatTracker();
+        StatTracker tracker = new StatTracker(new global::Core.Services.EventBus());
         Dictionary<StatType, float> baseStats = new Dictionary<StatType, float>
         {
             { StatType.Health, 100f },
@@ -30,7 +30,7 @@ public class StatTrackerTests
     public void ModifyCurrentValue_ClampsAtZeroAndMax()
     {
         // Arrange
-        StatTracker tracker = new StatTracker();
+        StatTracker tracker = new StatTracker(new global::Core.Services.EventBus());
         Dictionary<StatType, float> baseStats = new Dictionary<StatType, float>
         {
             { StatType.Health, 100f }
@@ -54,7 +54,7 @@ public class StatTrackerTests
     public void AddPermanentBonus_UpdatesMaxAndCurrentSimultaneously()
     {
         // Arrange
-        StatTracker tracker = new StatTracker();
+        StatTracker tracker = new StatTracker(new global::Core.Services.EventBus());
         Dictionary<StatType, float> baseStats = new Dictionary<StatType, float>
         {
             { StatType.Attack, 10f }
@@ -73,7 +73,7 @@ public class StatTrackerTests
     public void Events_TriggerOnModifyAndBonus()
     {
         // Arrange
-        StatTracker tracker = new StatTracker();
+        StatTracker tracker = new StatTracker(new global::Core.Services.EventBus());
         Dictionary<StatType, float> baseStats = new Dictionary<StatType, float>
         {
             { StatType.Health, 100f }

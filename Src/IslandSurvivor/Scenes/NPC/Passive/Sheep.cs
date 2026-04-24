@@ -5,49 +5,44 @@ using IslandSurvivor.Logic.Entities;
 using IslandSurvivor.Interfaces;
 using IslandSurvivor.Nodes.Movement;
 using Core.Interfaces;
+using IslandSurvivor.Nodes;
+using Core.Managers.Stats;
 
 public partial class Sheep : CharacterBody2D, INpc, IDamageable
 {
+    [Export] public StatManager Stats { get; set; }
+
     [Export] public string NpcType { get; set; } = "Passive";
     [Export] public float IdleSpeed { get; set; } = 30.0f;
     [Export] public float FleeSpeed { get; set; } = 120.0f;
-    [Export] public int MaxHealth { get; set; } = 3;
 
-    private NavigationAgent2D m_navigationAgent;
-    private HealthComponent m_healthComponent;
-    private SheepController m_sheepController;
-    private MovementController m_movementController;
-    private Sprite2D m_sprite;
+    private PassiveController m_passiveController;
+    [Export] private MovementController m_movementController;
+    [Export] private Sprite2D m_sprite;
+    private bool m_wasKilledByPlayer = false;
 
-    public string CurrentState => m_sheepController?.CurrentState ?? SheepStates.IDLE;
+    public string CurrentState => m_passiveController?.CurrentState ?? NpcStates.IDLE;
 
     public override void _Ready()
     {
-        m_healthComponent = new HealthComponent(MaxHealth);
-        m_healthComponent.OnDeath += HandleDeath;
+        m_passiveController = new PassiveController();
 
-        m_sheepController = new SheepController();
-
-        m_navigationAgent = GetNodeOrNull<NavigationAgent2D>("NavigationAgent2D");
-        m_sprite = GetNodeOrNull<Sprite2D>("Sprite2D");
-        m_movementController = GetNodeOrNull<MovementController>("MovementController");
-
-        if (m_navigationAgent == null)
+        if (Stats != null)
         {
-            GD.PrintErr("Sheep node requires a NavigationAgent2D child node.");
+            Stats.SetCurrentValue(StatType.Health, 3);
         }
     }
 
     public override void _PhysicsProcess(double p_delta)
     {
-        if (m_healthComponent.IsDead) return;
+        if (m_passiveController.CurrentState == NpcStates.DEAD) return;
 
-        m_sheepController.Update((float)p_delta);
+        m_passiveController.Update((float)p_delta);
 
-        Vector2 direction = m_sheepController.CurrentDirection;
-
+        Vector2 direction = m_passiveController.CurrentDirection;
         float targetSpeed = IdleSpeed;
-        if (m_sheepController.CurrentState == SheepStates.FLEE)
+
+        if (m_passiveController.CurrentState == NpcStates.FLEE)
         {
             targetSpeed = FleeSpeed;
         }
@@ -67,55 +62,75 @@ public partial class Sheep : CharacterBody2D, INpc, IDamageable
             Velocity = direction * targetSpeed;
             MoveAndSlide();
         }
+
+        // Obstacle avoidance in IDLE state
+        if (m_passiveController.CurrentState == NpcStates.IDLE && GetSlideCollisionCount() > 0)
+        {
+            m_passiveController.ForceNewDirection();
+        }
     }
 
     public void TakeDamage(int p_amount, object p_attacker)
     {
-        if (m_healthComponent.IsDead) return;
+        if (m_passiveController.CurrentState == NpcStates.DEAD) return;
 
-        m_healthComponent.TakeDamage(p_amount);
-
-        if (!m_healthComponent.IsDead && p_attacker is Node2D attackerNode)
+        if (Stats != null)
         {
-            Vector2 myPos = GlobalPosition;
-            Vector2 attackerPos = attackerNode.GlobalPosition;
+            // Just apply damage logically here since we don't have a direct Stats.TakeDamage method visible
+            float currentHp = Stats.GetCurrentValue(StatType.Health);
+            Stats.SetCurrentValue(StatType.Health, currentHp - p_amount);
+        }
 
-            m_sheepController.StartFleeing(myPos, attackerPos);
+        bool isDead = Stats == null || Stats.GetCurrentValue(StatType.Health) <= 0;
 
-            // Visual feedback
-            Modulate = new Color(1, 0.5f, 0.5f);
-            GetTree().CreateTimer(0.2f).Timeout += () =>
+        if (p_attacker is Node2D attackerNode)
+        {
+            if (isDead && attackerNode.IsInGroup("Player"))
             {
-                if (IsInstanceValid(this)) Modulate = Colors.White;
-            };
+                m_wasKilledByPlayer = true;
+            }
+
+            if (!isDead)
+            {
+                // Let the controller compute flee direction
+                m_passiveController.StartFleeing(GlobalPosition, attackerNode.GlobalPosition);
+
+                // Visual feedback
+                Modulate = new Color(1, 0.5f, 0.5f);
+                GetTree().CreateTimer(0.2f).Timeout += () =>
+                {
+                    if (IsInstanceValid(this)) Modulate = Colors.White;
+                };
+            }
+        }
+
+        if (isDead)
+        {
+            HandleDeath();
         }
     }
 
-    private void HandleDeath(object p_sender, EventArgs p_args)
+    private void HandleDeath()
     {
-        m_sheepController.SetDead();
+        m_passiveController.SetDead();
 
-        // Check if killed by player (assuming player is named "Player" or in group "Player")
-        // The Acceptance Criteria says "attacker is the player". Since our TakeDamage doesn't pass the attacker
-        // to the OnDeath event easily without custom args, we can just assume any death drops it to inventory for now,
-        // or we could track the last attacker. Let's create the meat.
-
-        // Generate random meat amount between 1 and 5
-        int meatAmount = GD.RandRange(1, 5);
-
-        // Emitting the signal directly to inventory via SignalManager
-        ResourceItem meatResource = new ResourceItem("meat", "Viande de Mouton", "Food", "res://Assets/Images/meat.png");
-
-        if (SignalManager.Instance != null)
+        if (m_wasKilledByPlayer)
         {
-            SignalManager.Instance.EmitMaterialDestroyed(this, meatResource, meatAmount);
-            GD.Print($"Sheep died. Sent {meatAmount} meat to inventory.");
-        }
-        else
-        {
-            GD.PrintErr("SignalManager is not available.");
+            int meatAmount = 1;
+            ResourceItem meatResource = new ResourceItem("meat_01", "Viande", "Meat", "res://Assets/TinySwords/TinySwords(Update010)/Deco/17.png");
+
+            if (SignalManager.Instance != null)
+            {
+                SignalManager.Instance.EmitMaterialDestroyed(this, meatResource, meatAmount);
+                GD.Print($"Sheep died. Sent {meatAmount} meat to inventory.");
+            }
+            else
+            {
+                GD.PrintErr("SignalManager is not available.");
+            }
         }
 
         QueueFree();
     }
 }
+
