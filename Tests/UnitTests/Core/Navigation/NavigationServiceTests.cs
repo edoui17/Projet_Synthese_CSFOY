@@ -12,7 +12,6 @@ using global::Core.Events;
 
 public class NavigationServiceTests
 {
-    private readonly Mock<ISignalManager> m_signalManagerMock;
     private readonly NavigationService m_navigationService;
     private readonly Mock<IEventBus> m_eventBusMock;
     private readonly Mock<IShopManager> m_shopManagerMock;
@@ -20,11 +19,10 @@ public class NavigationServiceTests
 
     public NavigationServiceTests()
     {
-        m_signalManagerMock = new Mock<ISignalManager>();
         m_eventBusMock = new Mock<IEventBus>();
         m_shopManagerMock = new Mock<IShopManager>();
         m_inventoryManagerMock = new Mock<IInventoryManager>();
-        m_navigationService = new NavigationService(m_signalManagerMock.Object, m_eventBusMock.Object, m_shopManagerMock.Object, m_inventoryManagerMock.Object);
+        m_navigationService = new NavigationService(m_eventBusMock.Object, m_shopManagerMock.Object, m_inventoryManagerMock.Object);
     }
 
     [Fact]
