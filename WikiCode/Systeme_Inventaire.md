@@ -40,3 +40,8 @@ Pour que Godot puisse interagir avec `InventoryManager`, une classe spéciale `I
 4. Le **InventoryNode** (Godot) reçoit le signal.
 5. Il appelle `m_inventoryManager.AddMaterial(item, 3)` (Core).
 6. L'inventaire est à jour et prêt à être persisté via le [Persistence System](./Persistence_System.md).
+
+### Synchronisation (US 8.1)
+L'inventaire est automatiquement synchronisé avec l'API :
+- **Chargement** : Au lancement (`GET /api/player/profile`).
+- **Sauvegarde** : Via les endpoints de synchronisation (`POST /api/player/sync` ou `/api/inventory/upsert`).
