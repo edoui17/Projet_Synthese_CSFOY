@@ -36,12 +36,12 @@ public class ApiService : IApiService
     {
         try
         {
-            var request = new LoginRequest { Username = p_username, Password = p_password };
-            var response = await m_httpClient.PostAsJsonAsync("/api/auth/login", request);
+            LoginRequest request = new LoginRequest { Username = p_username, Password = p_password };
+            HttpResponseMessage response = await m_httpClient.PostAsJsonAsync("/api/auth/login", request);
 
             if (response.IsSuccessStatusCode)
             {
-                var result = await response.Content.ReadFromJsonAsync<LoginResponse>();
+                LoginResponse? result = await response.Content.ReadFromJsonAsync<LoginResponse>();
                 m_sessionToken = result?.SessionToken;
                 return m_sessionToken;
             }
@@ -59,14 +59,14 @@ public class ApiService : IApiService
         {
             try
             {
-                var request = new HttpRequestMessage(HttpMethod.Get, "/api/player/profile");
+                HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, "/api/player/profile");
                 request.Headers.Add("X-Session-Token", m_sessionToken);
 
-                var response = await m_httpClient.SendAsync(request);
+                HttpResponseMessage response = await m_httpClient.SendAsync(request);
 
                 if (response.IsSuccessStatusCode)
                 {
-                    var profile = await response.Content.ReadFromJsonAsync<PlayerProfile>(m_jsonOptions);
+                    PlayerProfile? profile = await response.Content.ReadFromJsonAsync<PlayerProfile>(m_jsonOptions);
                     if (profile != null)
                     {
                         CacheProfileLocally(profile);
@@ -100,7 +100,7 @@ public class ApiService : IApiService
 
         try
         {
-            var response = await m_httpClient.PostAsJsonAsync("/api/player/sync", p_request, m_jsonOptions);
+            HttpResponseMessage response = await m_httpClient.PostAsJsonAsync("/api/player/sync", p_request, m_jsonOptions);
             return response.IsSuccessStatusCode;
         }
         catch (HttpRequestException)
@@ -133,7 +133,7 @@ public class ApiService : IApiService
 
     private void UpdateLocalCache(SyncRequest p_request)
     {
-        var profile = GetCachedProfile() ?? new PlayerProfile();
+        PlayerProfile profile = GetCachedProfile() ?? new PlayerProfile();
 
         if (p_request.Stats != null)
         {
