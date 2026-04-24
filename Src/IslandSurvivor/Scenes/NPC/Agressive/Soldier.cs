@@ -76,8 +76,18 @@ public partial class Soldier : CharacterBody2D, INpc, IEnemy, IDamageable
         if (m_agressorController.CurrentState == NpcStates.DEAD) return;
 
         bool hasLineOfSight = CheckLineOfSight();
+        string previousState = m_agressorController.CurrentState;
 
         m_agressorController.Update((float)p_delta, m_targetPlayer != null, hasLineOfSight);
+
+        if (m_agressorController.CurrentState == NpcStates.CHASE && previousState != NpcStates.CHASE)
+        {
+            GD.Print("[Soldier] Ligne de vue confirmee, debut de la poursuite !");
+        }
+        else if (m_agressorController.CurrentState != NpcStates.CHASE && previousState == NpcStates.CHASE)
+        {
+            GD.Print("[Soldier] Cible perdue de vue, abandon de la poursuite.");
+        }
 
         Vector2 direction = m_agressorController.CurrentDirection;
         float targetSpeed = IdleSpeed;
@@ -135,28 +145,40 @@ public partial class Soldier : CharacterBody2D, INpc, IEnemy, IDamageable
 
         // Point the RayCast towards the target
         Vector2 targetDirection = m_targetPlayer.GlobalPosition - GlobalPosition;
+
+        // RayCast TargetPosition is relative to the RayCast's position
         m_lineOfSightRay.TargetPosition = targetDirection;
+
+        // Force an update to get immediate collision results
         m_lineOfSightRay.ForceRaycastUpdate();
 
-        // If it's not colliding, the line of sight is clear.
-        // Or if it's colliding with the player itself (though typically the mask should only check walls).
+        // If it's colliding with something
         if (m_lineOfSightRay.IsColliding())
         {
             GodotObject collider = m_lineOfSightRay.GetCollider();
-            if (collider is Node2D node && node.IsInGroup("Player"))
+
+            // If it hit the player directly, we have line of sight
+            if (collider is Node2D node && (node.IsInGroup("Player") || node.Name == "Player"))
             {
                 return true;
             }
-            return false; // Hit a wall or something else
+
+            // If we hit something else (like a wall on Mask 1), it blocks the view.
+            return false;
         }
 
-        return true; // No obstacles
+        // If the ray cast doesn't collide with ANYTHING, it means the player is out of reach of the ray,
+        // OR the ray only checks walls (Mask 1) and didn't hit any wall.
+        // If the ray is long enough to reach the player, and hits nothing, the path is clear.
+        return true;
     }
 
     private void OnDetectionAreaBodyEntered(Node2D p_body)
     {
-        if (p_body.IsInGroup("Player"))
+        // Check group or name as fallback to ensure the player is detected
+        if (p_body.IsInGroup("Player") || p_body.Name == "Player")
         {
+            GD.Print("[Soldier] Joueur detecte dans l'Area2D !");
             m_targetPlayer = p_body;
         }
     }
