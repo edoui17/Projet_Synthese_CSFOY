@@ -36,12 +36,12 @@ private void OnAreaEntered(Area2D p_area)
 }
 ```
 
-## 3. Destruction et Signal Global
+## 3. Destruction et Publication (EventBus)
 
 Une fois la ressource validée comme étant "détruite" :
 1. Une quantité aléatoire est générée.
 2. Un objet purement C# `ResourceItem` est instancié avec les données de la ressource (`IconPath`, `Name`, etc.).
-3. Un signal global est émis via le **SignalManager** (`SignalManager.Instance.EmitMaterialDestroyed(...)`).
+3. Un événement `MaterialDestroyedEvent` est publié sur l'**EventBus** pour informer les autres systèmes (comme l'inventaire) de la récolte, sans dépendre du `SignalManager`.
 4. La ressource s'efface de la scène avec `QueueFree()`.
 
-Cette approche garantit que la logique de récolte reste très proche du moteur Godot (collisions), mais que l'envoi des données respecte la stricte séparation (le Core).
+Cette approche garantit que la logique de récolte reste très proche du moteur Godot (collisions), mais que l'envoi des données respecte la stricte séparation avec le Core via l'EventBus.

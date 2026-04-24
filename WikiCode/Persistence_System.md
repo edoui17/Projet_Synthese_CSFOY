@@ -82,3 +82,10 @@ To add a new persistent statistic:
 1. Add a column to the `Stats` table in the SQL script (if it's a primary stat) OR add it to the `ExtraStats` JSON object.
 2. Update the corresponding `PlayerStats` domain model in the `Core` project.
 3. Update the `StatsEntity` and repository mapping in the `Infrastructure` project.
+
+## 7. Godot Client Integration
+The Godot client in `Src/IslandSurvivor` syncs its data utilizing `ApiService` in `Src/Core`.
+- The `ServiceRegistry` autoload logs the player in and loads the profile via the `IApiService`.
+- A `ProfileLoadedEvent` is published into the `EventBus` to notify systems of the initial data fetch.
+- When transitioning scenes, the `NavigationManager` packages the active state into a `SyncRequest` and performs an atomic sync to the database through `/api/player/sync`.
+- To support offline gameplay (when the API is unavailable), `ApiService` uses `ISaveService` under the hood to maintain a cache in `profile_cache.json`.

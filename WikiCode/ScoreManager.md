@@ -6,7 +6,7 @@ Le système de score a été conçu en respectant l'architecture N-Tier du proje
 
 1.  **Core (`SessionState`, `ScoreTracker`)** : Gère l'état vivant (Live State). Il valide les points, accumule le score et gère la logique de record (High Score).
 2.  **Godot Resources (`SessionResource`)** : Agit comme un template immuable. Il fournit les valeurs de départ lors de l'initialisation.
-3.  **Bridge (`ScoreManager`)** : C'est le nœud Godot qui fait le lien. Il écoute les événements du Core (`WeakEvent`) et les transforme en signaux Godot (`[Signal]`).
+3.  **Bridge (`ScoreManager` / `SignalManager`)** : Ce sont les nœuds Godot qui font le lien. Ils écoutent les événements du Core (`ScoreChangedEvent` via l'**EventBus**) et les transforment en signaux Godot (`[Signal]`).
 4.  **Save System (`ISaveService`, `GodotSaveService`)** : Le Core utilise une interface pour sauvegarder les données, ce qui permet à Godot d'injecter sa propre implémentation utilisant `FileAccess`.
 
 ---
@@ -102,6 +102,6 @@ public partial class ScoreUI : Control
 1. Action Godot -> `ScoreManager.AddScore(X)`
 2. `ScoreManager` -> `ScoreTracker.AddScore(X)` (Core)
 3. `ScoreTracker` valide l'action et modifie `SessionState`
-4. `ScoreTracker` émet un `WeakEvent`
-5. `ScoreManager` reçoit le `WeakEvent` et émet le signal natif Godot `ScoreChanged`
-6. `ScoreUI` reçoit le signal et met à jour l'affichage.
+4. `ScoreTracker` publie un événement `ScoreChangedEvent` via l'**EventBus**
+5. Le Bridge (ex: `SignalManager` ou `ScoreManager` en Godot) reçoit l'événement de l'EventBus et émet le signal natif Godot `ScoreChanged`
+6. `ScoreUI` reçoit le signal Godot et met à jour l'affichage.
