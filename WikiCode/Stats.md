@@ -11,8 +11,8 @@ L'idée centrale est de ne jamais modifier les valeurs de base directement dans 
 
 1. **La Ressource (`EntityStats`) :** Contient les valeurs de *départ* de l'entité (Vie Max, Attaque, Chance, Vitesse). Elle est strictement en **Lecture Seule** pendant l'exécution du jeu.
 2. **Le Node (`StatManager`) :** Attaché à l'entité, il lit la Ressource au `_Ready()` et l'injecte dans le Core.
-3. **Le Core (`StatTracker`) :** Maintien un dictionnaire (`Dictionary<StatType, Stat>`). Il calcule les valeurs effectives et s'assure qu'elles ne descendent pas sous `0` ou ne dépassent pas la valeur maximale.
-4. **La Communication :** Quand une statistique change dans le Core, un `WeakEvent` est déclenché sans risque de fuite de mémoire. Le `StatManager` de Godot écoute ce `WeakEvent` et ré-émet un `[Signal]` natif pour que l'éditeur visuel de Godot puisse y connecter des barres de vie ou des effets sonores.
+3. **Le Core (`StatTracker`) :** Maintient un dictionnaire (`Dictionary<StatType, Stat>`). Il calcule les valeurs effectives et s'assure qu'elles ne descendent pas sous `0` ou ne dépassent pas la valeur maximale.
+4. **La Communication :** Quand une statistique change dans le Core, un `StatChangedEvent` est publié via l'**EventBus**. Le `StatManager` de Godot, via injection de l'EventBus, s'abonne à cet événement et ré-émet un `[Signal]` natif pour que l'éditeur visuel de Godot puisse y connecter des barres de vie ou des effets sonores sans couplage direct avec le C#.
 
 ## Comment l'utiliser dans Godot ?
 

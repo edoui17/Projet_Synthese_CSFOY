@@ -1,6 +1,6 @@
 # Documentation du Système de Navigation
 
-Ce document décrit l'architecture et le fonctionnement "End-to-End" du système de navigation dans *IslandSurvivor*. Le système respecte une architecture N-Tier stricte, séparant la logique métier (Core) du moteur de jeu (Godot), et utilise le pattern de Bridge avec des `WeakEvent` pour la communication inter-systèmes.
+Ce document décrit l'architecture et le fonctionnement "End-to-End" du système de navigation dans *IslandSurvivor*. Le système respecte une architecture N-Tier stricte, séparant la logique métier (Core) du moteur de jeu (Godot), et utilise le pattern de Bridge et l'**EventBus** pour la communication inter-systèmes.
 
 ## 1. Vue d'ensemble du Flux (End-to-End)
 
@@ -9,8 +9,8 @@ La navigation entre les îles se déroule en plusieurs étapes :
 1. **Génération et Sélection :** Le joueur interagit avec un planificateur qui affiche le menu de navigation (`NavigationMenu`). Le `NavigationService` (Core) génère les destinations possibles et leurs coûts en ressources.
 2. **Paiement et Validation :** Le joueur sélectionne une destination. Le `NavigationService` vérifie si l'inventaire (`IInventoryManager`) contient les ressources requises et les déduit le cas échéant.
 3. **Activation du Portail :** Si la validation réussit, le `Portal` est activé dans la scène et se voit attribuer la destination choisie.
-4. **Interaction et Événement :** Le joueur interagit avec le `PortalInteraction`. Cela déclenche l'émission de l'événement de navigation via le gestionnaire de signaux.
-5. **Sauvegarde d'État :** Le `NavigationManager` (Godot) intercepte l'événement de navigation, sauvegarde l'inventaire et l'état de la session (comme `CurrentIslandId` dans `SessionState`). Cette sauvegarde garantit la persistance des données indépendamment du cycle de vie des scènes Godot.
+4. **Interaction et Événement :** Le joueur interagit avec le `PortalInteraction`. Cela publie un événement `NavigationRequestedEvent` sur l'EventBus.
+5. **Sauvegarde d'État :** L'Autoload `NavigationManager` (Godot) écoute cet événement, sauvegarde l'inventaire et l'état de la session (comme `CurrentIslandId` dans `SessionState`). Cette sauvegarde garantit la persistance des données indépendamment du cycle de vie des scènes Godot.
 6. **Transition de Scène :** Le `NavigationManager` délègue le changement effectif de scène au `SceneLoadingManager`.
 
 ---
@@ -27,15 +27,12 @@ Implémenté dans `Src/Core/Managers/Navigation/NavigationService.cs`, ce servic
 
 L'avantage est que cette logique est découplée de toute interface utilisateur ou nœud Godot. Elle n'interagit qu'avec des interfaces C# abstraites (comme `IInventoryManager`).
 
-### 2.2 Bridge Pattern et WeakEvents
+### 2.2 Communication via l'EventBus
 
-Pour communiquer du Core vers Godot sans créer de fuites de mémoire (Memory Leaks), nous utilisons une implémentation personnalisée de `WeakEvent`.
+Pour communiquer du Core vers Godot sans créer de fuites de mémoire et en respectant l'isolation stricte, le système utilise l'**EventBus**.
 
-Les nœuds Godot ne s'abonnent pas aux événements C# standards (`+=`, `-=`). Ils utilisent les méthodes d'extension :
-- `.AddListener()`
-- `.RemoveListener()`
-
-Le point central de cette communication est le `SignalManager` (qui possède une contrepartie Core `SignalManagerCore`).
+- Le Core publie des événements (ex: `NavigationApprovedEvent` ou `NavigationRejectedEvent`).
+- Le `SignalManager` (qui agit comme Translator/Bridge en Godot) ou le `NavigationManager` s'abonnent à ces `IEvent`s et gèrent la logique propre au moteur Godot (effets visuels, chargement de scène).
 
 ---
 
@@ -67,26 +64,26 @@ public void Interact()
 {
     if (m_destination != null)
     {
-        GD.Print($"[PortalInteraction] Emitting NavigationRequested for destination: {m_destination.Biome}");
-        // Émission de l'événement vers le système global
-        SignalManager.Instance.EmitNavigationRequested(this, m_destination);
+        GD.Print($"[PortalInteraction] Emitting NavigationRequestedEvent for destination: {m_destination.Biome}");
+        // Émission de l'événement sur l'EventBus
+        ServiceRegistry.Get<IEventBus>().Publish(new NavigationRequestedEvent(m_destination));
     }
 }
 ```
 
 ### C. Réception de l'événement, Sauvegarde et Transition
 
-Le `NavigationManager` en Godot écoute `OnNavigationRequested`. Avant de changer la scène, il s'assure que tout l'état de jeu est persisté (inventaire et SessionState).
+Le `NavigationManager` en Godot (Autoload) s'abonne au `NavigationRequestedEvent`. Avant de changer la scène, il s'assure que tout l'état de jeu est persisté (inventaire et SessionState).
 
 ```csharp
 // Extrait de NavigationManager.cs
 public override void _Ready()
 {
-    // Utilisation du signal natif Godot (Bridge Pattern)
-    SignalManager.Instance.NavigationRequested += OnNavigationRequested;
+    // Abonnement direct à l'EventBus
+    ServiceRegistry.Get<IEventBus>().Subscribe<NavigationRequestedEvent>(OnNavigationRequested);
 }
 
-private void OnNavigationRequested(string p_islandId, string p_scenePath, string p_biome, int p_difficulty, int p_resourceCost, int p_dangerLevel)
+private void OnNavigationRequested(NavigationRequestedEvent p_event)
 {
     // 1. Sauvegarde de l'inventaire via GodotSaveService
     var saveService = new GodotSaveService();
@@ -97,7 +94,7 @@ private void OnNavigationRequested(string p_islandId, string p_scenePath, string
     var tracker = ServiceRegistry.Instance.ScoreTracker;
     if (tracker != null)
     {
-        tracker.UpdateCurrentIsland(p_islandId);
+        tracker.UpdateCurrentIsland(p_event.Destination.Id);
         string sessionJson = JsonSerializer.Serialize(tracker.GetSessionState());
         saveService.SaveData("session_save.json", sessionJson);
     }
@@ -106,7 +103,7 @@ private void OnNavigationRequested(string p_islandId, string p_scenePath, string
     var slm = GetNodeOrNull<Managers.SceneLoadingManager>("/root/SceneLoadingManager");
     if (slm != null)
     {
-        slm.LoadScene(p_scenePath);
+        slm.LoadScene(p_event.Destination.ScenePath);
     }
 }
 ```
@@ -140,4 +137,4 @@ private void ChangeScene(string scenePath)
 * **`SessionState`** : L'état dynamique mutable du joueur (score, île actuelle) est géré dans le `SessionState`. Cette approche complète la nature immuable des ressources Godot et ne dépend pas des nœuds du cycle de vie de la scène.
 * **Coût Zéro "Test Island"** : Le premier élément de navigation (index 0) aura un coût forcé de zéro. Il s'agit d'un choix de Game Design et de développement (Test Island) qu'il ne faut pas traiter comme un bug.
 * **Home Island** : La destination `HomeIsland` est persistée en tant que `IslandDestination.HomeIsland` (id: `home_hub`). S'y rendre est toujours gratuit (sans déduction de ressources).
-* **Nettoyage des Events** : Le `NavigationManager` doit se désabonner des événements dans `_ExitTree()` avec `RemoveListener()` pour prévenir toute fuite de mémoire ou appel d'objets détruits.
+* **Nettoyage des Events** : Même avec l'EventBus, il est recommandé aux nœuds Godot non-globaux (ex: une UI) de se désabonner des événements dans `_ExitTree()` avec `Unsubscribe<T>()` pour prévenir toute fuite de mémoire ou appel d'objets détruits. L'Autoload `NavigationManager`, persistant durant toute la durée de vie du jeu, le gère de façon globale.
