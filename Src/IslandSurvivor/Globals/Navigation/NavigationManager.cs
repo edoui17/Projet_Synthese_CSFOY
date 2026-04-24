@@ -1,5 +1,8 @@
 using Godot;
 using System;
+using System.Linq;
+using System.Collections.Generic;
+using Core.Domain;
 using Core.Domain.Models;
 using Core.Interfaces;
 
@@ -26,35 +29,47 @@ public partial class NavigationManager : Node
         GD.Print("NavigationManager ready. Listening for navigation requests.");
     }
 
-    private void OnNavigationRequested(string p_islandId, string p_scenePath, string p_biome, int p_difficulty, int p_resourceCost, int p_dangerLevel)
+    private async void OnNavigationRequested(string p_islandId, string p_scenePath, string p_biome, int p_difficulty, int p_resourceCost, int p_dangerLevel)
     {
         GD.Print($"[Navigation] Changing scene to {p_scenePath} (Island ID: {p_islandId})");
 
-        // Save current inventory to persist between islands
-        if (InventoryNode.Instance != null && InventoryNode.Instance.Manager != null)
+        // Sync Data using ApiService
+        if (ServiceRegistry.Instance?.ApiService != null)
         {
-            var saveService = new GodotSaveService();
-            var slots = InventoryNode.Instance.Manager.GetAllSlots();
+            var syncRequest = new SyncRequest();
 
-            // Serialize and save inventory
-            string inventoryJson = System.Text.Json.JsonSerializer.Serialize(slots);
-            saveService.SaveData("inventory_save.json", inventoryJson);
-            GD.Print("[Navigation] Inventory state saved.");
-
-            // Save SessionState
-        // ScoreTracker is now in ServiceRegistry
-        var tracker = ServiceRegistry.Instance.ScoreTracker;
-        if (tracker != null)
+            // Build Inventory Sync
+            if (InventoryNode.Instance != null && InventoryNode.Instance.Manager != null)
             {
-            tracker.UpdateCurrentIsland(p_islandId);
+                var slots = InventoryNode.Instance.Manager.GetAllSlots();
+                var inventoryEntries = new List<InventoryEntry>();
+                foreach (var slot in slots)
+                {
+                    inventoryEntries.Add(new InventoryEntry
+                    {
+                        ResourceItemId = slot.Item.Id,
+                        Quantity = slot.Quantity
+                    });
+                }
+                syncRequest.Inventory = inventoryEntries;
+            }
 
-                string sessionJson = System.Text.Json.JsonSerializer.Serialize(tracker.GetSessionState());
-                saveService.SaveData("session_save.json", sessionJson);
-                GD.Print("[Navigation] Session state saved.");
+            // Update session state locally before sync
+            var tracker = ServiceRegistry.Instance.ScoreTracker;
+            if (tracker != null)
+            {
+                tracker.UpdateCurrentIsland(p_islandId);
+            }
+
+            // Fire sync task
+            bool success = await ServiceRegistry.Instance.ApiService.SyncAsync(syncRequest);
+            if (success)
+            {
+                GD.Print("[Navigation] Sync to API complete.");
             }
             else
             {
-            GD.PrintErr("[Navigation] Could not find ScoreTracker to save SessionState.");
+                GD.Print("[Navigation] Sync to API failed, data cached locally.");
             }
         }
 
@@ -63,11 +78,11 @@ public partial class NavigationManager : Node
         var slm = GetNodeOrNull<Managers.SceneLoadingManager>("/root/SceneLoadingManager");
         if (slm != null)
         {
-        slm.LoadScene(p_scenePath);
+            slm.LoadScene(p_scenePath);
         }
         else
         {
-        CallDeferred(nameof(ChangeScene), p_scenePath);
+            CallDeferred(nameof(ChangeScene), p_scenePath);
         }
     }
 
