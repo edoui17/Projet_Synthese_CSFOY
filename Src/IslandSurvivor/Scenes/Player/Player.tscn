@@ -259,7 +259,6 @@ height = 37.964
 radius = 39.217342
 
 [node name="Player" type="CharacterBody2D" unique_id=661327324 node_paths=PackedStringArray("Stats", "m_animationPlayer", "m_sprite", "m_interactionLabel", "m_debugLabel", "m_interactionArea", "m_weaponArea")]
-y_sort_enabled = true
 collision_layer = 4
 
 motion_mode = 1
@@ -274,7 +273,6 @@ m_interactionArea = NodePath("PlayerInteraction")
 m_weaponArea = NodePath("WeaponInteractionArea")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1359797056]
-y_sort_enabled = true
 texture = ExtResource("2_ft8w5")
 hframes = 8
 frame = 1
@@ -309,9 +307,13 @@ shape = SubResource("CircleShape2D_jmcll")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=24708510]
 
+<<<<<<< HEAD
 [node name="MovementController" parent="." unique_id=8303559 instance=ExtResource("9_mov")]
 
 Stats = NodePath("../StatManager")
+=======
+[node name="MovementController" parent="." unique_id=779695224 instance=ExtResource("9_mov")]
+>>>>>>> 7f3d078e46e93bb8ab4f5740ddd1b26981cfd4a9
 
 [node name="StatManager" parent="." unique_id=772458511 instance=ExtResource("7_stat")]
 BaseStatsResource = ExtResource("8_stat_res")
