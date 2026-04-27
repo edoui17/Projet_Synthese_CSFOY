@@ -18,7 +18,7 @@ public partial class Soldier : CharacterBody2D, INpc, IEnemy, IDamageable
     [Export] public float IdleSpeed { get; set; } = 30.0f;
     [Export] public float ChaseSpeed { get; set; } = 150.0f;
     [Export] public float DetectionRadius { get; set; } = 250.0f;
-    [Export] public float StoppingDistance { get; set; } = 65.0f;
+    [Export] public float StoppingDistance { get; set; } = 82.0f;
 
     private AgressorController m_agressorController;
     private MovementController m_movementController;
