@@ -1,0 +1,3 @@
+### Godot Collision Logic with Overlapping Areas
+When writing AoE combat logic in Godot using `Area2D`, utilizing `GetOverlappingAreas()` or `GetOverlappingBodies()` captures everything in a single frame. However, because entities might be composed of a `CharacterBody2D` (body) with child `Area2D` nodes (hitboxes), scanning both lists can lead to applying damage twice if the entity implements `IDamageable` on the parent node and the child area forwards the reference or also gets casted.
+**Solution:** Always funnel the gathered `IDamageable` targets into a `HashSet<IDamageable>` before calling `TakeDamage()`. This ensures that even if the engine detects multiple colliders belonging to the same entity, damage is only applied once per attack.

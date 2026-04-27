@@ -5,6 +5,7 @@ using IslandSurvivor.Logic.Entities;
 using IslandSurvivor.Interfaces;
 using IslandSurvivor.Nodes.Movement;
 using Core.Interfaces;
+using Core.Interfaces.Stats;
 using IslandSurvivor.Nodes;
 using Core.Managers.Stats;
 
@@ -255,6 +256,12 @@ public partial class Soldier : CharacterBody2D, INpc, IEnemy, IDamageable
                 SignalManager.Instance.EmitMaterialDestroyed(this, goldResource, goldAmount);
                 GD.Print($"Soldier died. Sent {goldAmount} gold to inventory.");
             }
+        }
+
+        // Notify ScoreManager to add score points
+        if (IslandSurvivor.Globals.ServiceRegistry.Instance != null)
+        {
+            IslandSurvivor.Globals.ServiceRegistry.Instance.ScoreTracker.AddScore(10); // Example score value
         }
 
         QueueFree();

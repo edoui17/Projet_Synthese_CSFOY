@@ -1,3 +1,4 @@
+using Core.Interfaces.Stats;
 using Core.Managers.Stats;
 using Godot;
 using IslandSurvivor.Enums;
@@ -44,10 +45,6 @@ public partial class Player : CharacterBody2D
 			m_interactionArea.AreaExited += OnInteractionAreaExited;
 		}
 
-		if (m_weaponArea != null)
-		{
-			m_weaponArea.AreaEntered += OnWeaponAreaEntered;
-		}
 	}
 
 	public override void _PhysicsProcess(double p_delta)
@@ -156,6 +153,41 @@ public partial class Player : CharacterBody2D
 	{
 		SetState(PlayerState.Attacking);
 
+        if (m_weaponArea != null)
+        {
+            // Execute AoE Damage immediately
+            int attackDamage = (int)(Stats?.GetCurrentValue(StatType.Attack) ?? 10f); // Default to 10 if missing
+
+            var hitTargets = new HashSet<IDamageable>();
+
+            var overlappingAreas = m_weaponArea.GetOverlappingAreas();
+            foreach (var area in overlappingAreas)
+            {
+                if (area is IDamageable damageable)
+                {
+                    hitTargets.Add(damageable);
+                }
+                else if (area.GetParent() is IDamageable parentDamageable)
+                {
+                    hitTargets.Add(parentDamageable);
+                }
+            }
+
+            var overlappingBodies = m_weaponArea.GetOverlappingBodies();
+            foreach (var body in overlappingBodies)
+            {
+                if (body is IDamageable damageable)
+                {
+                    hitTargets.Add(damageable);
+                }
+            }
+
+            foreach (var target in hitTargets)
+            {
+                target.TakeDamage(attackDamage, this);
+            }
+        }
+
 		if (m_animationPlayer != null && m_animationPlayer.HasAnimation("ATTACK"))
 		{
 			m_animationPlayer.Play("ATTACK");
@@ -215,11 +247,4 @@ public partial class Player : CharacterBody2D
     }
   }
 
-  private void OnWeaponAreaEntered(Area2D p_area)
-	{
-		if (m_currentState == PlayerState.Attacking && p_area is IAttackable attackable)
-		{
-			attackable.OnAttacked();
-		}
-	}
 }

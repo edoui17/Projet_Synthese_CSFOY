@@ -1,3 +1,4 @@
+using Core.Interfaces.Stats;
 using Core.Managers.Stats;
 using Godot;
 using IslandSurvivor.Interfaces;
@@ -6,7 +7,7 @@ using IslandSurvivor.Nodes.StatsManager;
 using IslandSurvivor.Resources;
 using System;
 
-public partial class ConiferTree : Area2D, ITree
+public partial class ConiferTree : Area2D, ITree, IDamageable
 {
   [Export] public StatManager Stats { get; set; }
   [Export] public ScoreManager Scorer { get; set; }
@@ -50,9 +51,11 @@ public partial class ConiferTree : Area2D, ITree
     QueueFree();
   }
 
-  public void TakeDamage(float p_damage)
+  public void TakeDamage(int p_amount, object p_attacker)
   {
-    Stats.ModifyCurrentValue(StatType.Health, -p_damage);
+    if (Stats == null) return;
+
+    Stats.ModifyCurrentValue(StatType.Health, -p_amount);
 
     if (Stats.GetCurrentValue(StatType.Health) <= 0)
     {
