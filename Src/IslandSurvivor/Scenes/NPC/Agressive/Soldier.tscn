@@ -156,13 +156,16 @@ animations = [{
 radius = 36.0
 height = 96.0
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_e1oyk"]
+radius = 250.0
+
 [node name="Soldier" type="CharacterBody2D" unique_id=666187867]
 motion_mode = 1
 script = ExtResource("1_lf5hw")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=586828728]
-position = Vector2(-3, 0)
-scale = Vector2(1.251587, 1.4513752)
+position = Vector2(-0.07618117, 1.1660129)
+scale = Vector2(1.1362101, 1.1788126)
 sprite_frames = SubResource("SpriteFrames_8an0u")
 animation = &"Moving"
 
@@ -176,3 +179,15 @@ shape = SubResource("CapsuleShape2D_v2bfp")
 
 [node name="StatsManager" parent="." unique_id=1475410971 instance=ExtResource("6_hx8j2")]
 BaseStatsResource = ExtResource("7_8t73o")
+
+[node name="LineOfSightRay" type="RayCast2D" parent="." unique_id=1704468108]
+collision_mask = 5
+
+[node name="DetectionArea" type="Area2D" parent="." unique_id=1567510452]
+light_mask = 5
+collision_layer = 5
+collision_mask = 5
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DetectionArea" unique_id=245786031]
+position = Vector2(0, 3)
+shape = SubResource("CircleShape2D_e1oyk")
