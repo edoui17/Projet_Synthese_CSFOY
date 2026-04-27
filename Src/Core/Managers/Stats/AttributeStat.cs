@@ -3,20 +3,18 @@ using Core.Utils;
 
 namespace Core.Managers.Stats;
 
-public class Stat
+public class AttributeStat : IStat
 {
     private readonly StatType m_statType;
     private float m_baseValue;
     private float m_additionalValue;
-    private float m_currentValue;
     private readonly WeakEvent<StatChangedEventArgs> m_onStatChanged;
 
-    public Stat(StatType p_statType, float p_baseValue)
+    public AttributeStat(StatType p_statType, float p_baseValue)
     {
         m_statType = p_statType;
         m_baseValue = p_baseValue;
         m_additionalValue = 0f;
-        m_currentValue = EffectiveMaxValue;
         m_onStatChanged = new WeakEvent<StatChangedEventArgs>();
     }
 
@@ -24,50 +22,30 @@ public class Stat
     public float BaseValue => m_baseValue;
     public float AdditionalValue => m_additionalValue;
     public float EffectiveMaxValue => m_baseValue + m_additionalValue;
-    public float CurrentValue => m_currentValue;
+    public float CurrentValue => EffectiveMaxValue; // Attributes do not have a separate current value
     public WeakEvent<StatChangedEventArgs> OnStatChanged => m_onStatChanged;
 
     public void AddBonus(float p_amount)
     {
         m_additionalValue += p_amount;
-
-        // When the max value changes (e.g. from 100 to 150),
-        // the current value heals by the exact same amount (+50)
-        // so 50/100 HP becomes 100/150 HP.
-        m_currentValue += p_amount;
-
-        ClampCurrentValue();
         NotifyStatChanged();
     }
 
     public void ModifyCurrentValue(float p_amount)
     {
-        m_currentValue += p_amount;
-        ClampCurrentValue();
-        NotifyStatChanged();
+        // For attribute stats, we don't have a temporary current value to modify.
+        // If needed, this could throw an exception or be a no-op.
+        // For now, let's treat it as a temporary bonus/penalty, but it's better to just ignore or throw if not supported.
+        // Since IStat requires it, we'll no-op or throw. No-op is safer for now.
     }
 
     public void SetCurrentValue(float p_value)
     {
-        m_currentValue = p_value;
-        ClampCurrentValue();
-        NotifyStatChanged();
-    }
-
-    private void ClampCurrentValue()
-    {
-        if (m_currentValue < 0f)
-        {
-            m_currentValue = 0f;
-        }
-        else if (m_currentValue > EffectiveMaxValue)
-        {
-            m_currentValue = EffectiveMaxValue;
-        }
+        // Similar to ModifyCurrentValue, attributes don't have a separate current value.
     }
 
     private void NotifyStatChanged()
     {
-        m_onStatChanged.Invoke(this, new StatChangedEventArgs(m_statType, m_currentValue, EffectiveMaxValue));
+        m_onStatChanged.Invoke(this, new StatChangedEventArgs(m_statType, CurrentValue, EffectiveMaxValue));
     }
 }
