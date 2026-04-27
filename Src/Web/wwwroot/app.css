@@ -1,5 +1,8 @@
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background-image: url(images/bgd.png);
+    background-repeat: no-repeat;
+    background-size: cover;
 }
 
 a, .btn-link {
@@ -57,4 +60,102 @@ h1:focus {
 
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
     text-align: start;
+}
+
+#navbar {
+    width: 100%;
+    height: 80px;
+    background-image: url("images/navbar.png");
+    background-repeat: repeat-x;
+    background-size: auto 100%;
+    display: flex;
+    justify-content:space-between;
+    align-items: center;
+    position: relative;
+    padding: 0px 50px;
+    margin-bottom: 75px;
+}
+
+#logo {
+    position: absolute;
+    height: 90px;
+    z-index: 10;
+    left: 50%;
+    bottom: 0;
+    transform: translate(-50%, 40%); 
+
+}
+
+a {
+    color: white;
+    text-decoration: none;
+}
+
+section div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 3%;
+}
+
+div#searchBar {
+    background-image: url(images/searchbar.png);
+    background-repeat: no-repeat;
+    background-size: 100% 100%; 
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 12px;
+    width: 220px;
+}
+
+input[type="search"] {
+  background: transparent;
+  border: none;
+  outline: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  color: white;
+  padding-top: 0px;
+  height: 100%;
+}
+
+#refreshButton {
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+#refreshButton img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+#sortRank select {
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: white;
+    text-align: center;
+}
+
+div#sortRank {
+    background-image: url(images/Group45.png);
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    width: 150px;
+}
+
+#searchBar,
+#refreshButton,
+#sortRank {
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
