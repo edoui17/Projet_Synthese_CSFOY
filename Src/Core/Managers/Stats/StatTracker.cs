@@ -9,13 +9,13 @@ namespace Core.Managers.Stats;
 
 public class StatTracker : IStatTracker
 {
-    private readonly Dictionary<StatType, Stat> m_stats;
+    private readonly Dictionary<StatType, IStat> m_stats;
     private readonly WeakEvent<StatChangedEventArgs> m_onAnyStatChanged;
     private readonly IEventBus m_eventBus;
 
     public StatTracker(IEventBus p_eventBus)
     {
-        m_stats = new Dictionary<StatType, Stat>();
+        m_stats = new Dictionary<StatType, IStat>();
         m_onAnyStatChanged = new WeakEvent<StatChangedEventArgs>();
         m_eventBus = p_eventBus;
 
@@ -43,7 +43,16 @@ public class StatTracker : IStatTracker
         m_stats.Clear();
         foreach (KeyValuePair<StatType, float> kvp in p_baseStats)
         {
-            Stat newStat = new Stat(kvp.Key, kvp.Value);
+            IStat newStat;
+            if (kvp.Key == StatType.Health)
+            {
+                newStat = new PoolStat(kvp.Key, kvp.Value);
+            }
+            else
+            {
+                newStat = new AttributeStat(kvp.Key, kvp.Value);
+            }
+
             newStat.OnStatChanged.AddListener(OnSingleStatChanged);
             m_stats.Add(kvp.Key, newStat);
         }
@@ -51,7 +60,7 @@ public class StatTracker : IStatTracker
 
     public float GetCurrentValue(StatType p_statType)
     {
-        if (m_stats.TryGetValue(p_statType, out Stat? stat))
+        if (m_stats.TryGetValue(p_statType, out IStat? stat))
         {
             return stat.CurrentValue;
         }
@@ -60,7 +69,7 @@ public class StatTracker : IStatTracker
 
     public float GetEffectiveMaxValue(StatType p_statType)
     {
-        if (m_stats.TryGetValue(p_statType, out Stat? stat))
+        if (m_stats.TryGetValue(p_statType, out IStat? stat))
         {
             return stat.EffectiveMaxValue;
         }
@@ -69,7 +78,7 @@ public class StatTracker : IStatTracker
 
     public void ModifyCurrentValue(StatType p_statType, float p_amount)
     {
-        if (m_stats.TryGetValue(p_statType, out Stat? stat))
+        if (m_stats.TryGetValue(p_statType, out IStat? stat))
         {
             stat.ModifyCurrentValue(p_amount);
         }
@@ -77,7 +86,7 @@ public class StatTracker : IStatTracker
 
     public void SetCurrentValue(StatType p_statType, float p_value)
     {
-        if (m_stats.TryGetValue(p_statType, out Stat? stat))
+        if (m_stats.TryGetValue(p_statType, out IStat? stat))
         {
             stat.SetCurrentValue(p_value);
         }
@@ -85,7 +94,7 @@ public class StatTracker : IStatTracker
 
     public void AddPermanentBonus(StatType p_statType, float p_amount)
     {
-        if (m_stats.TryGetValue(p_statType, out Stat? stat))
+        if (m_stats.TryGetValue(p_statType, out IStat? stat))
         {
             stat.AddBonus(p_amount);
         }

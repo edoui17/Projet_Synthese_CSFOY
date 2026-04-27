@@ -109,8 +109,10 @@ public partial class Player : CharacterBody2D
 		else
 		{
 			// Fallback
-			float speed = Stats?.GetCurrentValue(StatType.Speed) ?? 300f;
-			Velocity = direction * speed;
+			float baseSpeed = 300f;
+			float speedStat = Stats?.GetCurrentValue(StatType.Speed) ?? 0f;
+			float finalSpeed = baseSpeed * (1f + (speedStat * 0.05f));
+			Velocity = direction * finalSpeed;
 			MoveAndSlide();
 		}
 	}

@@ -57,16 +57,35 @@ public class StatTrackerTests
         StatTracker tracker = new StatTracker(new global::Core.Services.EventBus());
         Dictionary<StatType, float> baseStats = new Dictionary<StatType, float>
         {
-            { StatType.Attack, 10f }
+            { StatType.Health, 100f }
         };
         tracker.InitializeStats(baseStats);
 
         // Act - Add permanent +5
-        tracker.AddPermanentBonus(StatType.Attack, 5f);
+        tracker.AddPermanentBonus(StatType.Health, 5f);
 
         // Assert
-        Assert.Equal(15f, tracker.GetEffectiveMaxValue(StatType.Attack));
-        Assert.Equal(15f, tracker.GetCurrentValue(StatType.Attack)); // According to Scenario 4, Current adjusts with Max
+        Assert.Equal(105f, tracker.GetEffectiveMaxValue(StatType.Health));
+        Assert.Equal(105f, tracker.GetCurrentValue(StatType.Health)); // According to Scenario 4, Current adjusts with Max
+    }
+
+    [Fact]
+    public void AttributeStat_IncrementsCorrectly_WithoutMaxLogic()
+    {
+        // Arrange
+        StatTracker tracker = new StatTracker(new global::Core.Services.EventBus());
+        Dictionary<StatType, float> baseStats = new Dictionary<StatType, float>
+        {
+            { StatType.Speed, 5f }
+        };
+        tracker.InitializeStats(baseStats);
+
+        // Act - Add permanent +1
+        tracker.AddPermanentBonus(StatType.Speed, 1f);
+
+        // Assert
+        Assert.Equal(6f, tracker.GetCurrentValue(StatType.Speed));
+        Assert.Equal(6f, tracker.GetEffectiveMaxValue(StatType.Speed));
     }
 
     [Fact]

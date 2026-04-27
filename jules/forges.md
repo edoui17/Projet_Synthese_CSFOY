@@ -170,3 +170,10 @@ Ce document centralise les décisions architecturales, les particularités de Go
 - Eliminated hybrid `WeakEvent` bridging logic in Core managers in favor of pure `IEvent` payloads published to the `EventBus`.
 - `SignalManager` is now exclusively a Godot-side Autoload translator. It listens to Godot Signals and publishes `IEvent`s, and subscribes to `IEvent`s to emit Godot Signals for UI synchronization.
 - **Godot Quirk**: Godot signals don't handle C# custom objects well, so complex Core events (`IEvent`) are decomposed into primitive types (int, string) before being emitted as native signals by the `SignalManager`.
+
+### 2026-04-27 - [Architecture - Statistiques Core et Intégration Client]
+**Sujet** : Refonte de la classe de statistiques et intégration mathématique dans le client Godot.
+**Observation** : L'utilisation d'une classe unique `Stat` pour gérer à la fois les pools (Santé, avec un système Max/Current) et les attributs statiques (Vitesse, Attaque) entraînait une complexité inutile pour ces derniers (qui n'ont pas besoin de limitation ni de régénération). De plus, l'impact de la statistique sur les systèmes du jeu devait être décorrélé de sa valeur absolue en base de données.
+**Décision** :
+1. **Core N-Tier (Interfaces First)** : Introduction de `IStat`. `Stat` devient `PoolStat` (pour la santé), et ajout de `AttributeStat` (pour les variables statiques). Cette séparation par interface garantit une meilleure évolutivité (ex: on ne pourra pas "soigner" de la vitesse).
+2. **Client Godot** : La traduction d'un "point" de statistique en effet réel dans le jeu appartient au client. Le `MovementController` extrait la statistique brute (ex: 1 en Vitesse) et applique la formule mathématique d'impact de gameplay (1 point = +5% de vitesse de base). Cela permet un équilibrage simple côté jeu sans perturber le stockage des valeurs en DB.
