@@ -18,6 +18,7 @@ public partial class Soldier : CharacterBody2D, INpc, IEnemy, IDamageable
     [Export] public float IdleSpeed { get; set; } = 30.0f;
     [Export] public float ChaseSpeed { get; set; } = 150.0f;
     [Export] public float DetectionRadius { get; set; } = 250.0f;
+    [Export] public float StoppingDistance { get; set; } = 65.0f;
 
     private AgressorController m_agressorController;
     private MovementController m_movementController;
@@ -94,9 +95,18 @@ public partial class Soldier : CharacterBody2D, INpc, IEnemy, IDamageable
 
         if (m_agressorController.CurrentState == NpcStates.CHASE && m_targetPlayer != null)
         {
-            targetSpeed = ChaseSpeed;
-            m_agressorController.UpdateChaseDirection(GlobalPosition, m_targetPlayer.GlobalPosition);
-            direction = m_agressorController.CurrentDirection;
+            float distanceToPlayer = GlobalPosition.DistanceTo(m_targetPlayer.GlobalPosition);
+            if (distanceToPlayer <= StoppingDistance)
+            {
+                targetSpeed = 0f;
+                direction = Vector2.Zero;
+            }
+            else
+            {
+                targetSpeed = ChaseSpeed;
+                m_agressorController.UpdateChaseDirection(GlobalPosition, m_targetPlayer.GlobalPosition);
+                direction = m_agressorController.CurrentDirection;
+            }
         }
 
         // Apply movement
