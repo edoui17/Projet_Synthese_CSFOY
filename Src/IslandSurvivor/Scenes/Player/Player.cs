@@ -12,6 +12,7 @@ using System.Collections.Generic;
 public partial class Player : CharacterBody2D
 {
 	[Export] public StatManager? Stats { get; set; }
+	[Export] public float BaseDamage { get; set; } = 10f;
 
 	private PlayerState m_currentState = PlayerState.Idle;
 
@@ -219,9 +220,19 @@ public partial class Player : CharacterBody2D
 
   private void OnWeaponAreaEntered(Area2D p_area)
 	{
-		if (m_currentState == PlayerState.Attacking && p_area is IAttackable attackable)
+		if (m_currentState == PlayerState.Attacking)
 		{
-			attackable.OnAttacked();
+			// Check if the area or its parent is Damageable
+			IDamageable? damageable = p_area as IDamageable ?? p_area.GetParent() as IDamageable;
+
+			if (damageable != null)
+			{
+				float attackStat = Stats?.GetCurrentValue(StatType.Attack) ?? 0f;
+				float finalDamageFloat = BaseDamage * (1f + (attackStat * 0.05f));
+				int finalDamage = Mathf.RoundToInt(finalDamageFloat);
+
+				damageable.TakeDamage(finalDamage, this);
+			}
 		}
 	}
 }
