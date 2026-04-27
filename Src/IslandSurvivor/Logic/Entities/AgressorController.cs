@@ -7,6 +7,7 @@ public class AgressorController
 {
     private string m_currentState;
     private float m_idleTimer;
+    private float m_disengageTimer;
     private Vector2 m_currentDirection;
 
     private readonly Random m_random = new Random();
@@ -15,6 +16,7 @@ public class AgressorController
     public Vector2 CurrentDirection => m_currentDirection;
 
     public const float IDLE_DIRECTION_CHANGE_INTERVAL = 2.0f;
+    public const float DISENGAGE_TIME = 3.0f;
 
     public AgressorController()
     {
@@ -22,16 +24,29 @@ public class AgressorController
         PickNewRandomDirection();
     }
 
-    public void Update(float p_delta, bool p_hasTarget)
+    public void Update(float p_delta, bool p_hasTarget, bool p_hasLineOfSight)
     {
         if (m_currentState == NpcStates.DEAD) return;
 
-        if (p_hasTarget)
+        if (p_hasTarget && p_hasLineOfSight)
         {
             m_currentState = NpcStates.CHASE;
+            m_disengageTimer = DISENGAGE_TIME; // Reset the timer while we have line of sight
+        }
+        else if (m_currentState == NpcStates.CHASE)
+        {
+            // We have a target but lost line of sight
+            m_disengageTimer -= p_delta;
+            if (m_disengageTimer <= 0)
+            {
+                // Timer expired, return to idle
+                m_currentState = NpcStates.IDLE;
+                PickNewRandomDirection();
+            }
         }
         else
         {
+            // IDLE behavior
             m_currentState = NpcStates.IDLE;
             m_idleTimer -= p_delta;
             if (m_idleTimer <= 0)

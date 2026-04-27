@@ -18,12 +18,15 @@ public partial class Soldier : CharacterBody2D, INpc, IEnemy, IDamageable
     [Export] public float IdleSpeed { get; set; } = 30.0f;
     [Export] public float ChaseSpeed { get; set; } = 150.0f;
     [Export] public float DetectionRadius { get; set; } = 250.0f;
+    [Export] public float StoppingDistance { get; set; } = 82.0f;
 
     private AgressorController m_agressorController;
     private MovementController m_movementController;
     private AnimatedSprite2D m_animatedSprite;
     private Node2D m_targetPlayer;
     private bool m_wasKilledByPlayer = false;
+    private Area2D m_detectionArea;
+    private RayCast2D m_lineOfSightRay;
 
     public string CurrentState => m_agressorController?.CurrentState ?? NpcStates.IDLE;
 
@@ -33,6 +36,8 @@ public partial class Soldier : CharacterBody2D, INpc, IEnemy, IDamageable
 
         m_animatedSprite = GetNodeOrNull<AnimatedSprite2D>("AnimatedSprite2D");
         m_movementController = GetNodeOrNull<MovementController>("MovementController");
+        m_detectionArea = GetNodeOrNull<Area2D>("DetectionArea");
+        m_lineOfSightRay = GetNodeOrNull<RayCast2D>("LineOfSightRay");
 
         if (m_animatedSprite == null)
         {
@@ -42,6 +47,22 @@ public partial class Soldier : CharacterBody2D, INpc, IEnemy, IDamageable
         if (m_movementController == null)
         {
             GD.PrintErr("Soldier node requires a MovementController child node.");
+        }
+
+        if (m_detectionArea == null)
+        {
+            GD.PrintErr("Soldier node requires an Area2D child node named 'DetectionArea'.");
+        }
+        else
+        {
+            // Connect to Area2D signals. We use Callable.From to ensure correct typing.
+            m_detectionArea.BodyEntered += OnDetectionAreaBodyEntered;
+            m_detectionArea.BodyExited += OnDetectionAreaBodyExited;
+        }
+
+        if (m_lineOfSightRay == null)
+        {
+            GD.PrintErr("Soldier node requires a RayCast2D child node named 'LineOfSightRay'.");
         }
 
         if (Stats != null)
@@ -55,18 +76,37 @@ public partial class Soldier : CharacterBody2D, INpc, IEnemy, IDamageable
     {
         if (m_agressorController.CurrentState == NpcStates.DEAD) return;
 
-        UpdateTarget();
+        bool hasLineOfSight = CheckLineOfSight();
+        string previousState = m_agressorController.CurrentState;
 
-        m_agressorController.Update((float)p_delta, m_targetPlayer != null);
+        m_agressorController.Update((float)p_delta, m_targetPlayer != null, hasLineOfSight);
+
+        if (m_agressorController.CurrentState == NpcStates.CHASE && previousState != NpcStates.CHASE)
+        {
+            GD.Print("[Soldier] Ligne de vue confirmee, debut de la poursuite !");
+        }
+        else if (m_agressorController.CurrentState != NpcStates.CHASE && previousState == NpcStates.CHASE)
+        {
+            GD.Print("[Soldier] Cible perdue de vue, abandon de la poursuite.");
+        }
 
         Vector2 direction = m_agressorController.CurrentDirection;
         float targetSpeed = IdleSpeed;
 
         if (m_agressorController.CurrentState == NpcStates.CHASE && m_targetPlayer != null)
         {
-            targetSpeed = ChaseSpeed;
-            m_agressorController.UpdateChaseDirection(GlobalPosition, m_targetPlayer.GlobalPosition);
-            direction = m_agressorController.CurrentDirection;
+            float distanceToPlayer = GlobalPosition.DistanceTo(m_targetPlayer.GlobalPosition);
+            if (distanceToPlayer <= StoppingDistance)
+            {
+                targetSpeed = 0f;
+                direction = Vector2.Zero;
+            }
+            else
+            {
+                targetSpeed = ChaseSpeed;
+                m_agressorController.UpdateChaseDirection(GlobalPosition, m_targetPlayer.GlobalPosition);
+                direction = m_agressorController.CurrentDirection;
+            }
         }
 
         // Apply movement
@@ -108,23 +148,56 @@ public partial class Soldier : CharacterBody2D, INpc, IEnemy, IDamageable
         }
     }
 
-    private void UpdateTarget()
+    private bool CheckLineOfSight()
     {
-        // Simple detection using group
-        Godot.Collections.Array<Node> players = GetTree().GetNodesInGroup("Player");
-        if (players.Count > 0)
+        if (m_targetPlayer == null || m_lineOfSightRay == null)
+            return false;
+
+        // Point the RayCast towards the target using local coordinates relative to the RayCast2D
+        // The Soldier script is attached to CharacterBody2D, so ToLocal converts the target's
+        // global position into coordinates relative to the Soldier (and thus the RayCast, assuming it's positioned at 0,0).
+        Vector2 targetLocalPosition = ToLocal(m_targetPlayer.GlobalPosition);
+
+        // RayCast TargetPosition is relative to the RayCast's position
+        m_lineOfSightRay.TargetPosition = targetLocalPosition;
+
+        // Force an update to get immediate collision results
+        m_lineOfSightRay.ForceRaycastUpdate();
+
+        // If it's colliding with something
+        if (m_lineOfSightRay.IsColliding())
         {
-            Node2D playerNode = players[0] as Node2D;
-            if (playerNode != null && GlobalPosition.DistanceTo(playerNode.GlobalPosition) <= DetectionRadius)
+            GodotObject collider = m_lineOfSightRay.GetCollider();
+
+            // If it hit the player directly, we have line of sight
+            if (collider is Node2D node && (node.IsInGroup("Player") || node.Name == "Player"))
             {
-                m_targetPlayer = playerNode;
+                return true;
             }
-            else
-            {
-                m_targetPlayer = null;
-            }
+
+            // If we hit something else (like a wall on Mask 1), it blocks the view.
+            return false;
         }
-        else
+
+        // If the ray cast doesn't collide with ANYTHING, it means the player is out of reach of the ray,
+        // OR the ray only checks walls (Mask 1) and didn't hit any wall.
+        // If the ray is long enough to reach the player, and hits nothing, the path is clear.
+        return true;
+    }
+
+    private void OnDetectionAreaBodyEntered(Node2D p_body)
+    {
+        // Check group or name as fallback to ensure the player is detected
+        if (p_body.IsInGroup("Player") || p_body.Name == "Player")
+        {
+            GD.Print("[Soldier] Joueur detecte dans l'Area2D !");
+            m_targetPlayer = p_body;
+        }
+    }
+
+    private void OnDetectionAreaBodyExited(Node2D p_body)
+    {
+        if (p_body == m_targetPlayer)
         {
             m_targetPlayer = null;
         }
