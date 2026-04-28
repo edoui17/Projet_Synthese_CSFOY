@@ -71,4 +71,31 @@ public class PlayerController : ControllerBase
 
         return Ok();
     }
+
+    [HttpGet("leaderboard")]
+    public async Task<IActionResult> GetLeaderboard()
+    {
+        var players = await m_playerRepository.GetAllAsync();
+
+        var leaderboard = players.Select(p => new PlayerLeaderboardEntry
+        {
+            Id = p.Id,
+            Username = p.Username,
+            Health = p.Stats?.Health ?? 0,
+            Attack = p.Stats?.Attack ?? 0,
+            Speed = p.Stats?.Speed ?? 0,
+            Luck = p.Stats?.Luck ?? 0,
+            Level = CalculateLevel(p.Stats)
+        });
+
+        return Ok(leaderboard);
+    }
+
+    private int CalculateLevel(PlayerStats? stats)
+    {
+        if (stats == null) return 1;
+        // Basic calculation based on total stats. Adjust as needed for specific game logic.
+        float totalStats = stats.Health + stats.Attack + stats.Speed + stats.Luck;
+        return Math.Max(1, (int)(totalStats / 10)); // Example: 1 level per 10 stat points
+    }
 }
