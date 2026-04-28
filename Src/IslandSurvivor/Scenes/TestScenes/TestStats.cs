@@ -29,8 +29,8 @@ public partial class TestStats : Node2D
       return;
     }
 
-    // Connect the signal
-    _statManager.Connect(StatManager.SignalName.StatChanged, Callable.From<int, float, float>(OnStatChanged));
+    // Connect the signal directly from the global SignalManager
+    SignalManager.Instance.Connect(SignalManager.SignalName.StatChanged, Callable.From<int, float, float>(OnStatChanged));
 
     GD.Print($"--- Testing Stats for: {TreeEntity.Name} ---");
 

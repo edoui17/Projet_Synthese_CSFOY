@@ -70,6 +70,29 @@ public class StatTrackerTests
     }
 
     [Fact]
+    public void AddPermanentBonus_WithDamagedCurrentValue_MaintainsDeficit()
+    {
+        // Arrange
+        StatTracker tracker = new StatTracker(new global::Core.Services.EventBus());
+        Dictionary<StatType, float> baseStats = new Dictionary<StatType, float>
+        {
+            { StatType.Health, 100f }
+        };
+        tracker.InitializeStats(baseStats);
+
+        // Take 50 damage -> Current HP is 50
+        tracker.ModifyCurrentValue(StatType.Health, -50f);
+
+        // Act - Add permanent +10 HP (Health upgrade)
+        tracker.AddPermanentBonus(StatType.Health, 10f);
+
+        // Assert
+        // Max HP becomes 110, Current HP should become 60
+        Assert.Equal(110f, tracker.GetEffectiveMaxValue(StatType.Health));
+        Assert.Equal(60f, tracker.GetCurrentValue(StatType.Health));
+    }
+
+    [Fact]
     public void AttributeStat_IncrementsCorrectly_WithoutMaxLogic()
     {
         // Arrange
@@ -111,7 +134,8 @@ public class StatTrackerTests
     public void Events_TriggerOnModifyAndBonus()
     {
         // Arrange
-        StatTracker tracker = new StatTracker(new global::Core.Services.EventBus());
+        var eventBus = new global::Core.Services.EventBus();
+        StatTracker tracker = new StatTracker(eventBus);
         Dictionary<StatType, float> baseStats = new Dictionary<StatType, float>
         {
             { StatType.Health, 100f }
@@ -119,7 +143,7 @@ public class StatTrackerTests
         tracker.InitializeStats(baseStats);
 
         bool eventTriggered = false;
-        tracker.OnAnyStatChanged.AddListener((sender, args) =>
+        eventBus.Subscribe<global::Core.Events.StatChangedEvent>(args =>
         {
             if (args.StatType == StatType.Health)
             {
@@ -131,6 +155,9 @@ public class StatTrackerTests
 
         // Act
         tracker.ModifyCurrentValue(StatType.Health, -20f);
+
+        // Wait for deferred event bus to process
+        eventBus.ProcessEvents();
 
         // Assert
         Assert.True(eventTriggered);

@@ -177,3 +177,11 @@ Ce document centralise les décisions architecturales, les particularités de Go
 **Décision** :
 1. **Core N-Tier (Interfaces First)** : Introduction de `IStat`. `Stat` devient `PoolStat` (pour la santé), et ajout de `AttributeStat` (pour les variables statiques). Cette séparation par interface garantit une meilleure évolutivité (ex: on ne pourra pas "soigner" de la vitesse).
 2. **Client Godot** : La traduction d'un "point" de statistique en effet réel dans le jeu appartient au client. Le `MovementController` extrait la statistique brute (ex: 1 en Vitesse) et applique la formule mathématique d'impact de gameplay (1 point = +5% de vitesse de base). Cela permet un équilibrage simple côté jeu sans perturber le stockage des valeurs en DB.
+
+### 2026-04-27 - [Architecture - Statistiques Core et Intégration Client - Santé]
+**Sujet** : Mise à jour en temps réel de l'UI Godot (Barre de Santé) en réaction à des événements Core via le Bridge Pattern.
+**Observation** : L'utilisation de `WeakEvent` pour notifier les composants UI (comme le HUD) depuis le Core violait le modèle d'EventBus établi. L'UI (comme `HealthBarStatic.cs`) contenait en outre de la logique métier (calcul `BaseHealth + Level * HealthPerLevel`) de manière isolée et non synchronisée.
+**Décision** :
+1. **Core N-Tier** : L'abonnement natif à `OnAnyStatChanged` de `StatTracker` a été remplacé par une émission structurée `m_eventBus.Publish(new StatChangedEvent(...))`.
+2. **Client Godot (Bridge)** : Le `SignalManager` (Autoload) s'abonne à `StatChangedEvent` du Core, la décompose en primitives (int, float, float), et émet le `[Signal] StatChanged`.
+3. **UI** : L'interface visuelle `HealthBarStatic.cs` obtient ses valeurs d'initialisation via l'injection `ServiceRegistry.Instance.StatTracker`, puis s'abonne uniquement au `SignalManager`. Cette approche permet à l'UI de rester "stupide" et de se contenter d'afficher les valeurs réelles calculées par la couche métier.

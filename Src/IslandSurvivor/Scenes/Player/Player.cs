@@ -9,7 +9,7 @@ using IslandSurvivor.Nodes.Movement;
 using System;
 using System.Collections.Generic;
 
-public partial class Player : CharacterBody2D
+public partial class Player : CharacterBody2D, IDamageable
 {
 	[Export] public StatManager? Stats { get; set; }
 	[Export] public float BaseDamage { get; set; } = 10f;
@@ -191,6 +191,16 @@ public partial class Player : CharacterBody2D
 	public void SetState(PlayerState p_newState)
 	{
 		m_currentState = p_newState;
+	}
+
+	public void TakeDamage(int p_amount, object p_attacker)
+	{
+		if (Stats == null) return;
+
+		float currentHealth = Stats.GetCurrentValue(StatType.Health);
+		if (currentHealth <= 0) return; // Already dead
+
+		Stats.ModifyCurrentValue(StatType.Health, -p_amount);
 	}
 
   private void OnInteractionAreaEntered(Area2D p_area)
