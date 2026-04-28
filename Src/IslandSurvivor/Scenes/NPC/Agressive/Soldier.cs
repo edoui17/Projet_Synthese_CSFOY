@@ -175,6 +175,20 @@ public partial class Soldier : CharacterBody2D, INpc, IEnemy, IDamageable
         if (m_wasKilledByPlayer)
         {
             int goldAmount = 2;
+
+            float luck = IslandSurvivor.Globals.ServiceRegistry.Instance.StatTracker.GetCurrentValue(Core.Managers.Stats.StatType.Luck);
+            float bonusChance = luck * 0.05f;
+            int bonusQuantity = (int)bonusChance;
+            float fractionalChance = bonusChance - bonusQuantity;
+
+            Random random = new();
+            if (random.NextDouble() < fractionalChance)
+            {
+                bonusQuantity++;
+            }
+
+            goldAmount += bonusQuantity;
+
             ResourceItem goldResource = new ResourceItem("gold_coin", "Piece d'Or", "Gold Coin", "res://Assets/TinySwords/TinySwords(Update010)/Resources/Gold_Coin.png");
 
             if (SignalManager.Instance != null)
