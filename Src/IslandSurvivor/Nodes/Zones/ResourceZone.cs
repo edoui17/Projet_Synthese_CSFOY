@@ -57,7 +57,7 @@ public partial class ResourceZone : Node2D, IResourcePopulator
 
         if (SpawningArea == null)
         {
-            SpawningArea = GetNodeOrNull<Polygon2D>("SpawningArea");
+            SpawningArea = GetNodeOrNull<Polygon2D>("SpawningArea3");
         }
 
         if (SpawningArea == null || SpawningArea.Polygon.Length < 3)

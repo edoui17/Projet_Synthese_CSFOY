@@ -1,6 +1,6 @@
 using Godot;
 using Core.Interfaces.Stats;
-using Core.Managers.Stats;
+using Core.Events;
 using IslandSurvivor.Resources.Stats;
 using IslandSurvivor.Globals;
 
@@ -10,6 +10,7 @@ public partial class ScoreManager : Node
 {
     private SessionResource? m_sessionResource;
     private IScoreTracker m_scoreTracker;
+    private Core.Interfaces.IEventBus m_eventBus;
 
     [Export]
     public SessionResource? SessionResource
@@ -26,6 +27,7 @@ public partial class ScoreManager : Node
         base._Ready();
 
         m_scoreTracker = ServiceRegistry.Instance.ScoreTracker;
+        m_eventBus = ServiceRegistry.Instance.EventBus;
 
         if (m_sessionResource != null)
         {
@@ -41,7 +43,7 @@ public partial class ScoreManager : Node
             m_scoreTracker.Initialize(0, 0, string.Empty);
         }
 
-        m_scoreTracker.OnScoreChanged.AddListener(OnCoreScoreChanged);
+        m_eventBus.Subscribe<ScoreChangedEvent>(OnCoreScoreChanged);
     }
 
     public int GetCurrentScore()
@@ -69,16 +71,16 @@ public partial class ScoreManager : Node
         return m_scoreTracker;
     }
 
-    private void OnCoreScoreChanged(object? p_sender, ScoreChangedEventArgs p_args)
+    private void OnCoreScoreChanged(ScoreChangedEvent p_event)
     {
-        EmitSignal(SignalName.ScoreChanged, p_args.PreviousScore, p_args.NewScore);
+        EmitSignal(SignalName.ScoreChanged, p_event.PreviousScore, p_event.NewScore);
     }
 
     protected override void Dispose(bool p_disposing)
     {
-        if (p_disposing && m_scoreTracker != null)
+        if (p_disposing && m_eventBus != null)
         {
-            m_scoreTracker.OnScoreChanged.RemoveListener(OnCoreScoreChanged);
+            m_eventBus.Unsubscribe<ScoreChangedEvent>(OnCoreScoreChanged);
         }
         base.Dispose(p_disposing);
     }

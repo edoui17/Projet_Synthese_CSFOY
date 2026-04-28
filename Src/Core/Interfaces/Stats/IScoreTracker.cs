@@ -5,8 +5,6 @@ using Core.Utils;
 
 public interface IScoreTracker
 {
-    WeakEvent<ScoreChangedEventArgs> OnScoreChanged { get; }
-
     int CurrentScore { get; }
     int HighScore { get; }
     int MapCount { get; }

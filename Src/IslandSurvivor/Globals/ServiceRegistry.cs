@@ -6,6 +6,8 @@ using Core.Managers;
 using Core.Managers.Stats;
 using Core.Managers.Navigation;
 using Core.Services;
+using Core.Domain;
+using Core.Events;
 
 namespace IslandSurvivor.Globals;
 
@@ -18,8 +20,8 @@ public partial class ServiceRegistry : Node
   public IStatTracker StatTracker { get; private set; }
   public IScoreTracker ScoreTracker { get; private set; }
   public INavigationService NavigationService { get; private set; }
-  public ISignalManager SignalManagerCore { get; private set; }
   public IEventBus EventBus { get; private set; }
+  public IApiService ApiService { get; private set; }
 
   public override void _EnterTree()
   {
@@ -34,16 +36,44 @@ public partial class ServiceRegistry : Node
     // Initialize Core Managers
     EventBus = new EventBus();
 
-    SignalManagerCore = new SignalManagerCore();
     InventoryManager = new InventoryManager(EventBus);
     ShopManager = new ShopManager(EventBus);
     StatTracker = new StatTracker(EventBus);
 
     // Pass Godot specific implementation of ISaveService
     ISaveService saveService = new GodotSaveService();
-    ScoreTracker = new ScoreTracker(saveService);
-    NavigationService = new NavigationService(SignalManagerCore, EventBus, ShopManager, InventoryManager);
+    ScoreTracker = new ScoreTracker(saveService, EventBus);
+    NavigationService = new NavigationService(EventBus, ShopManager, InventoryManager);
 
+    ApiService = new ApiService(saveService);
+  }
+
+  public override void _Ready()
+  {
+      CallDeferred(nameof(InitializeApiData));
+  }
+
+  private async void InitializeApiData()
+  {
+      GD.Print("[ServiceRegistry] Connecting to API...");
+
+      // Use temporary test credentials
+      string? token = await ApiService.LoginAsync("test", "test");
+      if (string.IsNullOrEmpty(token))
+      {
+          GD.Print("[ServiceRegistry] API Login failed, falling back to local cache if available.");
+      }
+      else
+      {
+          GD.Print("[ServiceRegistry] API Login successful.");
+      }
+
+      PlayerProfile? profile = await ApiService.GetProfileAsync();
+      if (profile != null)
+      {
+          GD.Print("[ServiceRegistry] Profile data loaded.");
+          EventBus.Publish(new ProfileLoadedEvent(profile));
+      }
   }
 
   public override void _Process(double delta)

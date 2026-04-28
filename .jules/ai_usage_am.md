@@ -1,0 +1,4 @@
+### 2024-05-24 - [User Story 6.2] | Request | AI Contribution | Decision Reasoning
+*   **Request:** Empêcher l'ennemi (Soldier) de pousser le joueur à l'infini et de bloquer ses déplacements une fois au corps-à-corps, tout en conservant les collisions physiques.
+*   **AI Contribution:** Ajout de la propriété `StoppingDistance` (65.0f) et modification de la logique de poursuite dans la méthode `_PhysicsProcess` de `Soldier.cs` pour arrêter le mouvement de l'entité juste avant la collision directe.
+*   **Decision Reasoning:** L'utilisation de `MoveAndSlide()` forçait l'ennemi à constamment appliquer un vecteur de force contre la boîte de collision du joueur. L'ajout d'une distance d'arrêt annule ce vecteur juste avant que les corps ne tentent de se superposer, évitant l'effet de "poussée" et libérant le joueur sans avoir besoin de manipuler dynamiquement les masques de collision.

@@ -16,8 +16,7 @@ public partial class Sheep : CharacterBody2D, INpc, IDamageable
     [Export] public float IdleSpeed { get; set; } = 30.0f;
     [Export] public float FleeSpeed { get; set; } = 120.0f;
 
-    [Export] private NavigationAgent2D m_navigationAgent;
-     private PassiveController m_passiveController;
+    private PassiveController m_passiveController;
     [Export] private MovementController m_movementController;
     [Export] private Sprite2D m_sprite;
     private bool m_wasKilledByPlayer = false;
@@ -27,18 +26,6 @@ public partial class Sheep : CharacterBody2D, INpc, IDamageable
     public override void _Ready()
     {
         m_passiveController = new PassiveController();
-
-        if (m_navigationAgent == null)
-        {
-            GD.PrintErr("Sheep node requires a NavigationAgent2D child node.");
-        }
-        else
-        {
-            m_navigationAgent.PathDesiredDistance = 4.0f;
-            m_navigationAgent.TargetDesiredDistance = 4.0f;
-            // No need for VelocityComputed if we just use direction + MovementController,
-            // but left here in case Godot navigation avoidance is enabled later.
-        }
 
         if (Stats != null)
         {
@@ -53,33 +40,11 @@ public partial class Sheep : CharacterBody2D, INpc, IDamageable
         m_passiveController.Update((float)p_delta);
 
         Vector2 direction = m_passiveController.CurrentDirection;
-
         float targetSpeed = IdleSpeed;
+
         if (m_passiveController.CurrentState == NpcStates.FLEE)
         {
             targetSpeed = FleeSpeed;
-        }
-        else if (m_passiveController.CurrentState == NpcStates.IDLE)
-        {
-            // Set navigation target based on current direction to wander using navmesh
-            if (m_navigationAgent != null)
-            {
-                // Give a short distance to walk in that direction
-                Vector2 targetPos = GlobalPosition + (m_passiveController.CurrentDirection * 50f);
-                m_navigationAgent.TargetPosition = targetPos;
-
-                if (!m_navigationAgent.IsNavigationFinished())
-                {
-                    Vector2 nextPathPosition = m_navigationAgent.GetNextPathPosition();
-                    direction = GlobalPosition.DirectionTo(nextPathPosition);
-                }
-                else
-                {
-                    direction = Vector2.Zero;
-                    // Force a new direction pick sooner if we hit a wall
-                    m_passiveController.ResetDirectionChangeTimer();
-                }
-            }
         }
 
         // Flip sprite based on movement direction
@@ -96,6 +61,12 @@ public partial class Sheep : CharacterBody2D, INpc, IDamageable
         {
             Velocity = direction * targetSpeed;
             MoveAndSlide();
+        }
+
+        // Obstacle avoidance in IDLE state
+        if (m_passiveController.CurrentState == NpcStates.IDLE && GetSlideCollisionCount() > 0)
+        {
+            m_passiveController.ForceNewDirection();
         }
     }
 

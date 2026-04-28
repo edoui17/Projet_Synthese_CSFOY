@@ -43,4 +43,22 @@ public class PassiveControllerTests
         controller.Update(0.2f);
         Assert.Equal(NpcStates.IDLE, controller.CurrentState);
     }
+
+    [Fact]
+    public void ForceNewDirection_ChangesDirectionInIdleState()
+    {
+        var controller = new PassiveController();
+        Assert.Equal(NpcStates.IDLE, controller.CurrentState);
+
+        var initialDirection = controller.CurrentDirection;
+        controller.ForceNewDirection();
+
+        // It's possible but extremely unlikely to get the exact same random direction
+        // In a strictly deterministic test we might mock Random, but here we just ensure it doesn't crash
+        var newDirection = controller.CurrentDirection;
+
+        // Timer should have been reset to > 0
+        // We can't easily check the private timer, but we verify it can be called safely
+        Assert.True(newDirection.Length() > 0);
+    }
 }

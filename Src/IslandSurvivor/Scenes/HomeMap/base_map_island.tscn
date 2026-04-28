@@ -437,7 +437,6 @@ tile_set = ExtResource("7_t6485")
 
 [node name="ElementsForElevationTileMap" type="TileMapLayer" parent="." unique_id=22687592]
 z_index = 1
-y_sort_enabled = true
 tile_map_data = PackedByteArray("AAAGAAsABQAAAAAAAAAiAAcABQAAAAAAAAAkAAkABQAAAAAAAAAIAAgABAAAAAAAAAAmAAYAAgAAAAAAAAAIAAwAAgAAAAAAAAAEAAsABgAAAAAAAAAGAAgAAAAAAAAAAAALAAcAAAAAAAAAAAA=")
 tile_set = ExtResource("7_t6485")
 
@@ -446,3 +445,4 @@ tile_map_data = PackedByteArray("AAD//wEAAAAAAAAAAAAFAP7/AAAAAAAAAAAIAAoAAQAAAAA
 tile_set = SubResource("TileSet_telec")
 
 [node name="BuildingNode" parent="." unique_id=408521942 instance=ExtResource("15_16xjv")]
+z_index = 2
