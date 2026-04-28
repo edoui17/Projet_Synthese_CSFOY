@@ -117,6 +117,20 @@ public partial class Sheep : CharacterBody2D, INpc, IDamageable
         if (m_wasKilledByPlayer)
         {
             int meatAmount = 1;
+
+            float luck = IslandSurvivor.Globals.ServiceRegistry.Instance.StatTracker.GetCurrentValue(Core.Managers.Stats.StatType.Luck);
+            float bonusChance = luck * 0.05f;
+            int bonusQuantity = (int)bonusChance;
+            float fractionalChance = bonusChance - bonusQuantity;
+
+            Random random = new();
+            if (random.NextDouble() < fractionalChance)
+            {
+                bonusQuantity++;
+            }
+
+            meatAmount += bonusQuantity;
+
             ResourceItem meatResource = new ResourceItem("meat_01", "Viande", "Meat", "res://Assets/TinySwords/TinySwords(Update010)/Deco/17.png");
 
             if (SignalManager.Instance != null)

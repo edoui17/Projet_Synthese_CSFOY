@@ -108,6 +108,25 @@ public class StatTrackerTests
     }
 
     [Fact]
+    public void LuckStat_IncrementsCorrectly_WithAttributeStatLogic()
+    {
+        // Arrange
+        StatTracker tracker = new StatTracker(new global::Core.Services.EventBus());
+        Dictionary<StatType, float> baseStats = new Dictionary<StatType, float>
+        {
+            { StatType.Luck, 1f }
+        };
+        tracker.InitializeStats(baseStats);
+
+        // Act - Add permanent +1
+        tracker.AddPermanentBonus(StatType.Luck, 1f);
+
+        // Assert
+        Assert.Equal(2f, tracker.GetCurrentValue(StatType.Luck));
+        Assert.Equal(2f, tracker.GetEffectiveMaxValue(StatType.Luck));
+    }
+
+    [Fact]
     public void Events_TriggerOnModifyAndBonus()
     {
         // Arrange

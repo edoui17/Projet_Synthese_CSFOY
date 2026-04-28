@@ -45,6 +45,18 @@ public partial class Gold : Area2D, IOre
         Random random = new();
         int quantity = random.Next(1, 5);
 
+        float luck = IslandSurvivor.Globals.ServiceRegistry.Instance.StatTracker.GetCurrentValue(Core.Managers.Stats.StatType.Luck);
+        float bonusChance = luck * 0.05f;
+        int bonusQuantity = (int)bonusChance;
+        float fractionalChance = bonusChance - bonusQuantity;
+
+        if (random.NextDouble() < fractionalChance)
+        {
+            bonusQuantity++;
+        }
+
+        quantity += bonusQuantity;
+
         ResourceItem item = new ResourceItem(EntityId, MaterialName, MaterialType, IconPath);
 
         SignalManager.Instance.EmitMaterialDestroyed(this, item, quantity);

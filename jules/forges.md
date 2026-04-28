@@ -177,3 +177,11 @@ Ce document centralise les décisions architecturales, les particularités de Go
 **Décision** :
 1. **Core N-Tier (Interfaces First)** : Introduction de `IStat`. `Stat` devient `PoolStat` (pour la santé), et ajout de `AttributeStat` (pour les variables statiques). Cette séparation par interface garantit une meilleure évolutivité (ex: on ne pourra pas "soigner" de la vitesse).
 2. **Client Godot** : La traduction d'un "point" de statistique en effet réel dans le jeu appartient au client. Le `MovementController` extrait la statistique brute (ex: 1 en Vitesse) et applique la formule mathématique d'impact de gameplay (1 point = +5% de vitesse de base). Cela permet un équilibrage simple côté jeu sans perturber le stockage des valeurs en DB.
+
+### $(date +%Y-%m-%d) - Intégration des Statistiques : AttributeStat vs PoolStat
+- **Découverte/Observation :** L'architecture du `StatTracker` sépare explicitement les types de statistiques en deux implémentations : `PoolStat` (ex: Santé) et `AttributeStat` (ex: Vitesse, Attaque, Chance).
+- **Détails Techniques :**
+  - `PoolStat` possède une notion de valeur courante et valeur maximale effective, idéale pour les jauges. L'ajout d'un bonus augmente la limite maximale et restaure proportionnellement la valeur courante.
+  - `AttributeStat` s'incrémente linéairement. Elle n'impose pas de "plafond", l'ajout d'un bonus incrémente la stat actuelle sans se soucier du calcul des pourcentages par rapport à un maximum.
+  - La logique s'intègre parfaitement aux tests xUnit (`AddPermanentBonus_UpdatesMaxAndCurrentSimultaneously` vs `AttributeStat_IncrementsCorrectly_WithoutMaxLogic`), où `StatType.Luck` suit exactement le comportement d'`AttributeStat`.
+  - Lors de l'influence de la "Chance" (Luck) sur le butin dans Godot, les valeurs de statistiques sont lues depuis la logique `Core` (`ServiceRegistry.Instance.StatTracker.GetCurrentValue(StatType.Luck)`) afin de préserver l'architecture propre, plutôt que de dépendre de Godot.
