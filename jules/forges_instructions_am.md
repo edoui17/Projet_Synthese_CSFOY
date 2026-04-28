@@ -1,16 +1,35 @@
-# Godot Setup Instructions (Combat System)
+# Setup de la scène Player - IslandSurvivor
 
-## Player Node Setup
-1. **Area2D Configuration (`m_weaponArea`)**:
-   - Verify that the `Player` scene has an `Area2D` child node configured as the attack hitbox (assigned to `m_weaponArea` in the script export).
-   - **Collision Layer**: Should be set to an appropriate layer for the player's weapon (e.g., Layer 4).
-   - **Collision Mask**: Must include the layers for Enemies (e.g., Layer 3) and Resources (e.g., Layer 5) so `GetOverlappingAreas()` and `GetOverlappingBodies()` can detect them.
+Suite aux modifications dans `Player.cs` pour utiliser une logique d'attaque basée sur des signaux (Option B), voici les instructions pour vérifier ou configurer manuellement les nœuds dans l'éditeur Godot.
 
-## Resource Nodes (Rock, Gold, Trees)
-1. **Collision Mask/Layer**:
-   - Ensure the `Area2D` nodes for `Rock`, `Gold`, `AutomnTree`, and `ConiferTree` are on the collision layer that the Player's weapon Area2D is scanning (e.g., Layer 5).
-   - Ensure the scripts have `Stats` exported and linked to their `StatManager` child node.
+## Nœud : WeaponInteractionArea (`Area2D`)
 
-## Enemy Nodes (Soldier)
-1. **Collision Mask/Layer**:
-   - Ensure the `CharacterBody2D` (or its child hitbox Area2D) is on the collision layer scanned by the Player's weapon (e.g., Layer 3).
+1. Ouvrez `Player.tscn` dans Godot.
+2. Localisez le nœud enfant **WeaponInteractionArea** (sous `Player`).
+3. Dans l'inspecteur, vérifiez les **Collision** :
+    - **Layer** : Activez la couche `4` (Combat). Godot affichera que sa valeur (mask) est `8`.
+    - **Mask** : Activez la couche `5` (Ressource / Ennemi). Godot affichera que sa valeur (mask) est `16`.
+4. Sélectionnez le nœud **WeaponInteractionArea** et allez dans l'onglet **Node** (à côté d'Inspector) > **Signals**.
+5. Si ce n'est pas déjà fait par le code `_Ready()`, vous pouvez lier les signaux manuellement pour vous assurer de la redondance :
+    - Double-cliquez sur le signal **`area_entered`**.
+    - Connectez-le au script du nœud `Player`, en choisissant la méthode `OnWeaponAreaEntered`.
+    - Double-cliquez sur le signal **`body_entered`**.
+    - Connectez-le au script du nœud `Player`, en choisissant la méthode `OnWeaponBodyEntered`.
+
+## Nœud : WeaponHitbox (`CollisionShape2D`)
+
+1. Ce nœud est un enfant de `WeaponInteractionArea`.
+2. Par défaut, sa propriété **Disabled** doit être **cochée** (Activé / Vrai). Le collider ne doit pas exister en temps normal.
+
+## Nœud : AnimationPlayer
+
+1. Sélectionnez le nœud **AnimationPlayer**.
+2. Ouvrez l'animation `ATTACK` dans le panneau d'animation en bas.
+3. Vérifiez la piste (track) ciblant la propriété `disabled` de `WeaponHitbox` :
+    - Au temps **0.0s** ou de base, elle doit être `true` (désactivée).
+    - Vers **0.2s** (lorsque le coup part), il doit y avoir une clé mettant la propriété `disabled` à `false` (activée).
+    - Vers **0.4s** (à la fin de la frappe), il doit y avoir une autre clé la remettant à `true` (désactivée).
+
+## Test du fonctionnement
+
+Lorsque l'animation se lance (appui sur espace), la Hitbox va s'activer à `0.2s`. À cet instant précis, le moteur physique de Godot va détecter ce qui chevauche la zone et déclencher les événements `area_entered` ou `body_entered` pour toute entité sur le Masque 5, provoquant ainsi l'application des dégâts.

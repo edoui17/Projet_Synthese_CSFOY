@@ -27,6 +27,7 @@ public partial class Player : CharacterBody2D
 	private IInteractable? m_bestTarget;
 	private readonly IInteractionService m_interactionService = new InteractionService();
 	private MovementController? m_movementController;
+    private readonly HashSet<IDamageable> m_hitTargetsThisAttack = new();
 
 	public override void _Ready()
 	{
@@ -45,6 +46,11 @@ public partial class Player : CharacterBody2D
 			m_interactionArea.AreaExited += OnInteractionAreaExited;
 		}
 
+        if (m_weaponArea != null)
+        {
+            m_weaponArea.AreaEntered += OnWeaponAreaEntered;
+            m_weaponArea.BodyEntered += OnWeaponBodyEntered;
+        }
 	}
 
 	public override void _PhysicsProcess(double p_delta)
@@ -151,42 +157,9 @@ public partial class Player : CharacterBody2D
 
 	private async void ExecuteAttack()
 	{
+        GD.Print("[COMBAT] Attack started!");
 		SetState(PlayerState.Attacking);
-
-        if (m_weaponArea != null)
-        {
-            // Execute AoE Damage immediately
-            int attackDamage = (int)(Stats?.GetCurrentValue(StatType.Attack) ?? 10f); // Default to 10 if missing
-
-            var hitTargets = new HashSet<IDamageable>();
-
-            var overlappingAreas = m_weaponArea.GetOverlappingAreas();
-            foreach (var area in overlappingAreas)
-            {
-                if (area is IDamageable damageable)
-                {
-                    hitTargets.Add(damageable);
-                }
-                else if (area.GetParent() is IDamageable parentDamageable)
-                {
-                    hitTargets.Add(parentDamageable);
-                }
-            }
-
-            var overlappingBodies = m_weaponArea.GetOverlappingBodies();
-            foreach (var body in overlappingBodies)
-            {
-                if (body is IDamageable damageable)
-                {
-                    hitTargets.Add(damageable);
-                }
-            }
-
-            foreach (var target in hitTargets)
-            {
-                target.TakeDamage(attackDamage, this);
-            }
-        }
+        m_hitTargetsThisAttack.Clear();
 
 		if (m_animationPlayer != null && m_animationPlayer.HasAnimation("ATTACK"))
 		{
@@ -201,6 +174,42 @@ public partial class Player : CharacterBody2D
 
 		SetState(PlayerState.Idle);
 	}
+
+    private void OnWeaponAreaEntered(Area2D p_area)
+    {
+        if (m_currentState != PlayerState.Attacking) return;
+
+        if (p_area is IDamageable damageable)
+        {
+            ApplyDamage(damageable);
+        }
+        else if (p_area.GetParent() is IDamageable parentDamageable)
+        {
+            ApplyDamage(parentDamageable);
+        }
+    }
+
+    private void OnWeaponBodyEntered(Node2D p_body)
+    {
+        if (m_currentState != PlayerState.Attacking) return;
+
+        if (p_body is IDamageable damageable)
+        {
+            ApplyDamage(damageable);
+        }
+    }
+
+    private void ApplyDamage(IDamageable p_target)
+    {
+        if (m_hitTargetsThisAttack.Contains(p_target)) return;
+
+        m_hitTargetsThisAttack.Add(p_target);
+
+        int attackDamage = (int)(Stats?.GetCurrentValue(StatType.Attack) ?? 10f); // Default to 10 if missing
+
+        GD.Print($"[COMBAT] Hit target! Dealing {attackDamage} damage.");
+        p_target.TakeDamage(attackDamage, this);
+    }
 
 	private void UpdateAnimation()
 	{
