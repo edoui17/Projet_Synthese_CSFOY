@@ -72,8 +72,14 @@ h1:focus {
     justify-content:space-between;
     align-items: center;
     position: relative;
-    padding: 0px 50px;
+    padding: 0px 50px 9px 50px;
     margin-bottom: 75px;
+}
+
+nav > div {
+    display: flex;
+    align-items: center;
+    gap: 15px;
 }
 
 #logo {
@@ -86,16 +92,64 @@ h1:focus {
 
 }
 
+div.profile {
+    background-image: url(images/SmallBlueRoundButton_Regular.png);
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+
+    width: 70px;
+    height: 70px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+div.profile img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+}
+
 a {
     color: white;
     text-decoration: none;
+    font-family: "Jersey 20", sans-serif;
+    font-weight: 400;
+    font-size: 40px;
 }
 
-section div {
+a:hover {
+    color: #FEECD1;
+}
+
+h2.headerNiv {
+    font-family: "Jersey 20", sans-serif;
+    font-weight: 400;
+    font-size: 40px;
+    color: white;
+    margin: 0;
+}
+
+section {
     display: flex;
+    flex-direction:column;
     justify-content: center;
+    width: 700px;
+    margin: 0 auto;
+}
+
+section > div:first-child {
+    display: flex;
+    justify-content: space-around;
+    margin: 0px 10px;
     align-items: center;
     gap: 3%;
+}
+
+.sortAndRefresh {
+    display: flex;
 }
 
 div#searchBar {
@@ -138,10 +192,15 @@ input[type="search"] {
     width: 100%;
     height: 100%;
     background: transparent;
+    color: #FDEBD0; 
     border: none;
     outline: none;
-    color: white;
     text-align: center;
+    appearance: none;
+}
+
+#sortRank select option {
+    background: #525B66;
 }
 
 div#sortRank {
@@ -158,4 +217,62 @@ div#sortRank {
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+div.rank {
+    margin-top: 15px;
+    overflow-y: auto;
+    scrollbar-width: auto;
+    overflow: hidden;
+}
+
+.rank img {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+img.middleBar {
+    padding: 0px 9px
+}
+
+.rank {
+    overflow-y: scroll; /* force le scroll ici */
+    overflow-x: hidden;
+
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.rank::-webkit-scrollbar {
+    display: none;
+}
+
+.rank > div {
+    position: relative;
+}
+
+.rank > div h3,
+.rank > div h2 {
+    position: absolute;
+    color: white;
+    margin: 0;
+}
+
+/* Pseudo */
+.rank > div h3 {
+    top: 50%;
+    left: 10%;
+    font-family: "Jersey 20", sans-serif;
+    font-weight: 400;
+    font-size: 40px;
+}
+
+/* Level */
+.rank > div h2 {
+    top: 50%;
+    right: 10%;
+    font-family: "Jersey 20", sans-serif;
+    font-weight: 400;
+    font-size: 40px;
 }
