@@ -185,3 +185,10 @@ Ce document centralise les décisions architecturales, les particularités de Go
 1. **Core N-Tier** : L'abonnement natif à `OnAnyStatChanged` de `StatTracker` a été remplacé par une émission structurée `m_eventBus.Publish(new StatChangedEvent(...))`.
 2. **Client Godot (Bridge)** : Le `SignalManager` (Autoload) s'abonne à `StatChangedEvent` du Core, la décompose en primitives (int, float, float), et émet le `[Signal] StatChanged`.
 3. **UI** : L'interface visuelle `HealthBarStatic.cs` obtient ses valeurs d'initialisation via l'injection `ServiceRegistry.Instance.StatTracker`, puis s'abonne uniquement au `SignalManager`. Cette approche permet à l'UI de rester "stupide" et de se contenter d'afficher les valeurs réelles calculées par la couche métier.
+### $(date +%Y-%m-%d) - Intégration des Statistiques : AttributeStat vs PoolStat
+- **Découverte/Observation :** L'architecture du `StatTracker` sépare explicitement les types de statistiques en deux implémentations : `PoolStat` (ex: Santé) et `AttributeStat` (ex: Vitesse, Attaque, Chance).
+- **Détails Techniques :**
+  - `PoolStat` possède une notion de valeur courante et valeur maximale effective, idéale pour les jauges. L'ajout d'un bonus augmente la limite maximale et restaure proportionnellement la valeur courante.
+  - `AttributeStat` s'incrémente linéairement. Elle n'impose pas de "plafond", l'ajout d'un bonus incrémente la stat actuelle sans se soucier du calcul des pourcentages par rapport à un maximum.
+  - La logique s'intègre parfaitement aux tests xUnit (`AddPermanentBonus_UpdatesMaxAndCurrentSimultaneously` vs `AttributeStat_IncrementsCorrectly_WithoutMaxLogic`), où `StatType.Luck` suit exactement le comportement d'`AttributeStat`.
+  - Lors de l'influence de la "Chance" (Luck) sur le butin dans Godot, les valeurs de statistiques sont lues depuis la logique `Core` (`ServiceRegistry.Instance.StatTracker.GetCurrentValue(StatType.Luck)`) afin de préserver l'architecture propre, plutôt que de dépendre de Godot.
