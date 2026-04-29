@@ -57,6 +57,8 @@ public partial class ConiferTree : Area2D, ITree, IDamageable
 
     Stats.ModifyCurrentValue(StatType.Health, -p_amount);
 
+    IslandSurvivor.Extensions.NodeExtensions.PlayHitFlash(this);
+
     if (Stats.GetCurrentValue(StatType.Health) <= 0)
     {
       DestroyResource();

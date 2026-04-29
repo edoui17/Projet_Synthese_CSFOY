@@ -1,19 +1,14 @@
-# Godot Editor Instructions
+# Godot Editor Setup Instructions
 
-## Fix NPCs Phasing Through Walls
+## 1. Soldier Node Collision Fix (Bug 2.3.8)
 
-The `Sheep` and `Soldier` entities are currently passing through walls because they are missing the correct collision mask bit to detect the map environment (which is typically placed on Layer 1).
+Currently, the player is unable to attack the `Soldier` because its Collision Layer is incorrect.
 
-### For the Sheep
+To fix this:
+1. Open `Src/IslandSurvivor/Scenes/NPC/Agressive/Soldier.tscn` in the Godot Editor.
+2. Select the Root node (`Soldier`).
+3. In the Inspector, go to the **Collision** section under **CollisionObject2D**.
+4. Change the **Layer** mask. It is currently on Layer 4 (Value 8, the Weapon layer). Uncheck Layer 4 and check **Layer 5 (Value 16)**, which is the "Enemies/Resources" layer.
+5. Save the scene.
 
-1. Open `res://Scenes/NPC/Passive/Sheep.tscn`
-2. Select the root node `Sheep` (CharacterBody2D)
-3. In the Inspector, under **Collision**, open the **Mask** property.
-4. **Enable Layer 1**. (Currently it only has Layer 4 or 8 depending on the mask configuration, make sure Layer 1 is checked so it collides with walls).
-
-### For the Soldier
-
-1. Open `res://Scenes/NPC/Agressive/Soldier.tscn`
-2. Select the root node `Soldier` (CharacterBody2D)
-3. In the Inspector, under **Collision**, open the **Mask** property.
-4. **Enable Layer 1**. (It currently has Layer 16 and 5, make sure Layer 1 is checked).
+With this change, the Player's weapon (which relies on `collision_mask = 16`) will properly intersect and trigger the attack logic against the Soldier.
