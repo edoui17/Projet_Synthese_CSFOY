@@ -63,6 +63,8 @@ public partial class Gold : Area2D, IOre, IDamageable
 
         Stats.ModifyCurrentValue(StatType.Health, - p_amount);
 
+        IslandSurvivor.Extensions.NodeExtensions.PlayHitFlash(this);
+
         if (Stats.GetCurrentValue(StatType.Health) <= 0)
         {
             DestroyResource();

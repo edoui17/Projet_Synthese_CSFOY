@@ -97,11 +97,7 @@ public partial class Sheep : CharacterBody2D, INpc, IDamageable
                 m_passiveController.StartFleeing(GlobalPosition, attackerNode.GlobalPosition);
 
                 // Visual feedback
-                Modulate = new Color(1, 0.5f, 0.5f);
-                GetTree().CreateTimer(0.2f).Timeout += () =>
-                {
-                    if (IsInstanceValid(this)) Modulate = Colors.White;
-                };
+                IslandSurvivor.Extensions.NodeExtensions.PlayHitFlash(this);
             }
         }
 

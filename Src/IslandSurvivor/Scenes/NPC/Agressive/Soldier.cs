@@ -228,11 +228,7 @@ public partial class Soldier : CharacterBody2D, INpc, IEnemy, IDamageable
                 // Force target to whoever hit it
                 m_targetPlayer = attackerNode;
 
-                Modulate = new Color(1, 0.5f, 0.5f);
-                GetTree().CreateTimer(0.2f).Timeout += () =>
-                {
-                    if (IsInstanceValid(this)) Modulate = Colors.White;
-                };
+                IslandSurvivor.Extensions.NodeExtensions.PlayHitFlash(this);
             }
         }
 
@@ -245,18 +241,6 @@ public partial class Soldier : CharacterBody2D, INpc, IEnemy, IDamageable
     private void HandleDeath()
     {
         m_agressorController.SetDead();
-
-        if (m_wasKilledByPlayer)
-        {
-            int goldAmount = 2;
-            ResourceItem goldResource = new ResourceItem("gold_coin", "Piece d'Or", "Gold Coin", "res://Assets/TinySwords/TinySwords(Update010)/Resources/Gold_Coin.png");
-
-            if (SignalManager.Instance != null)
-            {
-                SignalManager.Instance.EmitMaterialDestroyed(this, goldResource, goldAmount);
-                GD.Print($"Soldier died. Sent {goldAmount} gold to inventory.");
-            }
-        }
 
         // Notify ScoreManager to add score points
         if (IslandSurvivor.Globals.ServiceRegistry.Instance != null)
