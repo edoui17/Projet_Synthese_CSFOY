@@ -258,8 +258,9 @@ height = 37.964
 [sub_resource type="CircleShape2D" id="CircleShape2D_jmcll"]
 radius = 39.217342
 
-[node name="Player" type="CharacterBody2D" unique_id=661327324 node_paths=PackedStringArray("Stats", "m_animationPlayer", "m_sprite", "m_interactionLabel", "m_debugLabel", "m_interactionArea", "m_weaponArea")]
+[node name="Player" type="CharacterBody2D" unique_id=661327324 node_paths=PackedStringArray("Stats", "m_animationPlayer", "m_sprite", "m_interactionLabel", "m_debugLabel", "m_interactionArea", "m_weaponArea") groups=["Player"]]
 collision_layer = 4
+motion_mode = 1
 script = ExtResource("1_s0eop")
 Stats = NodePath("StatManager")
 m_animationPlayer = NodePath("AnimationPlayer")

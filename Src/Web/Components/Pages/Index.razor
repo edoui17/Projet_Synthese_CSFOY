@@ -1,6 +1,59 @@
 @page "/"
+<Header>
+    <nav id="navbar">
+        <div>
+            <div class="profile">
+                <img src="images/profile/Avatars_06.png" alt="profile picture">
+            </div>
 
-<h1>Mon titre</h1>
-<p>Bonjour</p>
-<p>:)</p>
-<p>heyyyy</p>
+            <a href="#">Se connecter</a>
+        </div>
+        <img src="images/logo.png" alt="Logo Island Survivor" id="logo">
+        <h2 class="headerNiv">N.33 9999999</h2>
+    </nav>
+</Header>
+
+<section>
+    <div>
+        <div id="searchBar">
+            <input type="search" id="site-search" name="q" />
+        </div>
+        <div class="sortAndRefresh">
+            <button id="refreshButton">
+                <img src="images/refreshbutton1.png" alt="Rafraîchir le classement">
+            </button>
+            <div id="sortRank">
+                <select name="ranks" id="rank-select">
+                <option value="">Meilleurs</option>
+                <option value="1">Temps</option>
+                <option value="2">Level</option>
+                <option value="3">Pires</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div style="height:500px;scrollbar-base-color:gold;overflow:auto;" class="rank">
+        <div>
+            <img src="images/rankBarTop.png" alt="Top bar">
+            <h3>PSEUDONYME</h3>
+            <h2>Lvl 999999</h2>
+        </div>
+
+        <div>
+            <img src="images/rankMiddleBar.png" alt="middle bar" class="middleBar">
+        </div>
+
+        <div>
+            <img src="images/rankMiddleBar.png" alt="middle bar" class="middleBar">
+        </div>
+
+        <div>
+            <img src="images/rankMiddleBar.png" alt="middle bar" class="middleBar">
+        </div>
+
+        <div>
+            <img src="images/rankBarBottom.png" alt="bottom bar">
+        </div>
+    </div>
+</section>

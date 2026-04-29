@@ -13,10 +13,10 @@
 
 [node name="Main" unique_id=1230220837 instance=ExtResource("1_base")]
 
-[node name="Map2" parent="MapContainer" index="0" unique_id=1333386273 instance=ExtResource("2_map")]
+[node name="Map2" parent="." index="1" unique_id=1333386273 instance=ExtResource("2_map")]
 position = Vector2(-1, 0)
 
-[node name="ResourceZone" type="Node2D" parent="." index="2" unique_id=2045029762 node_paths=PackedStringArray("SpawningArea")]
+[node name="ResourceZone" type="Node2D" parent="." index="3" unique_id=2045029762 node_paths=PackedStringArray("SpawningArea")]
 position = Vector2(0, 1)
 script = ExtResource("3_jjjh0")
 ResourceCount = 50
@@ -31,14 +31,14 @@ scale = Vector2(1.045625, 1)
 polygon = PackedVector2Array(1450.3287, -1175, 1346.0848, -1098, 1338.434, 1150, 108.547516, 1154, 131.5003, 483, 638.3742, 483, 646.0251, 163, 843.0365, 99, 843.0365, 673, 255.82785, 689, 259.65332, 919, 1117.5134, 932, 1128.9899, -928, 259.65332, -941, 252.0024, -702, 843.0365, -674, 846.86194, 86, 646.0251, 155, 638.3742, -403, 97.07114, -395, 108.547516, -1082, 27.256426, -1078, 27.256426, -411, -468.14108, -415, -448.0574, 147, -676.62885, 95, -649.8506, -710, -177.40587, -718, -181.23132, -912, -835.38556, -928, -839.211, 903, -173.5804, 932, -154.45308, 693, -668.9779, 681, -672.80334, 107, -444.23193, 151, -471.96655, 495, 15.780037, 499, 19.6055, 1146, -1047.6987, 1154, -1024.746, -1098, 1330.7831, -1098, 1442.6779, -1171, -1171.07, -1183, -1159.5935, 1247, 1431.2014, 1235)
 uv = PackedVector2Array(-277.30957, 36.86975)
 
-[node name="Sheep" parent="." index="3" unique_id=1690845376 instance=ExtResource("3_3e544")]
+[node name="Sheep" parent="." index="4" unique_id=1690845376 instance=ExtResource("3_3e544")]
 position = Vector2(-369, -247)
 
-[node name="Portal" parent="." index="4" unique_id=504895432 instance=ExtResource("3_portal")]
+[node name="Portal" parent="." index="5" unique_id=504895432 instance=ExtResource("3_portal")]
 position = Vector2(0, 50)
 
-[node name="CanvasLayer" parent="." index="6"]
+[node name="CanvasLayer" parent="." index="7"]
 visible = false
 
-[node name="Soldier" parent="." index="7" unique_id=666187867 instance=ExtResource("5_abuu6")]
-position = Vector2(-6, -285)
+[node name="Soldier" parent="." index="8" unique_id=666187867 instance=ExtResource("5_abuu6")]
+position = Vector2(70, -424)
