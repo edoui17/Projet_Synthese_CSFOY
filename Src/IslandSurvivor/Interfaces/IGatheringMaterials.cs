@@ -15,7 +15,5 @@ namespace IslandSurvivor.Interfaces
 
         void OnAreaEntered(Area2D area);
         void DestroyResource();
-
-        void TakeDamage(float damage);
     }
 }

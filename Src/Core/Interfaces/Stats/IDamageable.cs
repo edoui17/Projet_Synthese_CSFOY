@@ -1,4 +1,4 @@
-namespace IslandSurvivor.Interfaces;
+namespace Core.Interfaces.Stats;
 
 public interface IDamageable
 {
