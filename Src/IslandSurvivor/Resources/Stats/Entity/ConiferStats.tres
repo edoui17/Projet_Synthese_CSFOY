@@ -4,7 +4,7 @@
 
 [resource]
 script = ExtResource("1_hfm3k")
-MaxHealth = 1.0
+MaxHealth = 1000.0
 Attack = 0.0
 Speed = 0.0
 Luck = 0.0

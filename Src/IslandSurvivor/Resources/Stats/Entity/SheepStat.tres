@@ -4,7 +4,7 @@
 
 [resource]
 script = ExtResource("1_afv6s")
-MaxHealth = 1.0
+MaxHealth = 50.0
 Attack = 0.0
 Luck = 0.0
 metadata/_custom_type_script = "uid://d0614em0lx15v"
