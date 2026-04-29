@@ -10,13 +10,11 @@ namespace Core.Managers.Stats;
 public class StatTracker : IStatTracker
 {
     private readonly Dictionary<StatType, IStat> m_stats;
-    private readonly WeakEvent<StatChangedEventArgs> m_onAnyStatChanged;
     private readonly IEventBus m_eventBus;
 
     public StatTracker(IEventBus p_eventBus)
     {
         m_stats = new Dictionary<StatType, IStat>();
-        m_onAnyStatChanged = new WeakEvent<StatChangedEventArgs>();
         m_eventBus = p_eventBus;
 
         m_eventBus.Subscribe<ResourceHarvestedEvent>(OnResourceHarvested);
@@ -33,8 +31,6 @@ public class StatTracker : IStatTracker
     {
         // Example: Logging or updating "Total Resources Spent" stat
     }
-
-    public WeakEvent<StatChangedEventArgs> OnAnyStatChanged => m_onAnyStatChanged;
 
     public void InitializeStats(Dictionary<StatType, float> p_baseStats)
     {
@@ -102,6 +98,6 @@ public class StatTracker : IStatTracker
 
     private void OnSingleStatChanged(object? p_sender, StatChangedEventArgs p_args)
     {
-        m_onAnyStatChanged.Invoke(this, p_args);
+        m_eventBus.Publish(new StatChangedEvent(p_args.StatType, p_args.CurrentValue, p_args.EffectiveMaxValue));
     }
 }

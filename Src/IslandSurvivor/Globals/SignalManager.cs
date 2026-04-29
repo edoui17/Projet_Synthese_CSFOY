@@ -17,6 +17,7 @@ public partial class SignalManager : Node
     [Signal] public delegate void StatUpgradePurchasedEventHandler(int p_statType);
     [Signal] public delegate void NavigationRequestedEventHandler(string p_islandId, string p_scenePath, string p_biome, int p_difficulty, int p_resourceCost, int p_dangerLevel);
     [Signal] public delegate void BuildingShopToggledEventHandler(bool p_isOpen, string p_buildingId);
+    [Signal] public delegate void StatChangedEventHandler(int p_statType, float p_currentValue, float p_effectiveMaxValue);
 
     public override void _EnterTree()
     {
@@ -41,6 +42,7 @@ public partial class SignalManager : Node
             m_eventBus.Subscribe<StatUpgradePurchasedEvent>(OnStatUpgradePurchasedEvent);
             m_eventBus.Subscribe<NavigationRequestedEvent>(OnNavigationRequestedEvent);
             m_eventBus.Subscribe<BuildingShopToggledEvent>(OnBuildingShopToggledEvent);
+            m_eventBus.Subscribe<StatChangedEvent>(OnStatChangedEvent);
         }
         else
         {
@@ -72,6 +74,11 @@ public partial class SignalManager : Node
     private void OnBuildingShopToggledEvent(BuildingShopToggledEvent e)
     {
         EmitSignal(SignalName.BuildingShopToggled, e.IsOpen, e.BuildingId);
+    }
+
+    private void OnStatChangedEvent(StatChangedEvent e)
+    {
+        EmitSignal(SignalName.StatChanged, (int)e.StatType, e.CurrentValue, e.EffectiveMaxValue);
     }
 
     // --- Godot -> Core Bridge (Proxy methods to emit into Core EventBus) ---
@@ -109,6 +116,7 @@ public partial class SignalManager : Node
             m_eventBus.Unsubscribe<StatUpgradePurchasedEvent>(OnStatUpgradePurchasedEvent);
             m_eventBus.Unsubscribe<NavigationRequestedEvent>(OnNavigationRequestedEvent);
             m_eventBus.Unsubscribe<BuildingShopToggledEvent>(OnBuildingShopToggledEvent);
+            m_eventBus.Unsubscribe<StatChangedEvent>(OnStatChangedEvent);
         }
         base.Dispose(p_disposing);
     }

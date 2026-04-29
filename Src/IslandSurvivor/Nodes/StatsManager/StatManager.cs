@@ -19,9 +19,6 @@ public partial class StatManager : Node
         set => m_baseStatsResource = value;
     }
 
-    [Signal]
-    public delegate void StatChangedEventHandler(int p_statType, float p_currentValue, float p_effectiveMaxValue);
-
     public override void _Ready()
     {
         base._Ready();
@@ -46,8 +43,6 @@ public partial class StatManager : Node
         {
             GD.PushWarning("StatManager: BaseStatsResource is not assigned.");
         }
-
-        m_statTracker.OnAnyStatChanged.AddListener(OnCoreStatChanged);
     }
 
     public float GetCurrentValue(StatType p_statType)
@@ -75,23 +70,19 @@ public partial class StatManager : Node
         m_statTracker.AddPermanentBonus(p_statType, p_amount);
     }
 
-    private void OnCoreStatChanged(object? p_sender, StatChangedEventArgs p_args)
-    {
-        EmitSignal(SignalName.StatChanged, (int)p_args.StatType, p_args.CurrentValue, p_args.EffectiveMaxValue);
-    }
-
     private void OnStatUpgradePurchased(int p_statType)
     {
-        // Each upgrade adds +1 permanent bonus to the stat
-        AddPermanentBonus((StatType)p_statType, 1f);
-        GD.Print($"[StatManager] Received StatUpgradePurchased for {(StatType)p_statType}. Adding +1 permanent bonus.");
+        StatType type = (StatType)p_statType;
+        float amount = type == StatType.Health ? 10f : 1f;
+
+        AddPermanentBonus(type, amount);
+        GD.Print($"[StatManager] Received StatUpgradePurchased for {type}. Adding +{amount} permanent bonus.");
     }
 
     protected override void Dispose(bool p_disposing)
     {
         if (p_disposing && m_statTracker != null)
         {
-            m_statTracker.OnAnyStatChanged.RemoveListener(OnCoreStatChanged);
             if (SignalManager.Instance != null)
             {
                 SignalManager.Instance.StatUpgradePurchased -= OnStatUpgradePurchased;
