@@ -50,7 +50,9 @@ public partial class Player : CharacterBody2D
         if (m_weaponAreaRight != null)
         {
             m_weaponAreaRight.AreaEntered += OnWeaponAreaEntered;
-            //m_weaponAreaRight.BodyEntered += OnWeaponBodyEntered;
+            m_weaponAreaRight.BodyEntered += OnWeaponBodyEntered;
+            m_weaponAreaLeft.AreaEntered += OnWeaponAreaEntered;
+            m_weaponAreaLeft.BodyEntered += OnWeaponBodyEntered;
         }
     }
 
@@ -206,15 +208,15 @@ public partial class Player : CharacterBody2D
         }
     }
 
-    //private void OnWeaponBodyEntered(Node2D p_body)
-    //{
-    //    if (m_currentState != PlayerState.Attacking) return;
+    private void OnWeaponBodyEntered(Node2D p_body)
+    {
+        if (m_currentState != PlayerState.Attacking) return;
 
-    //    if (p_body is IDamageable damageable)
-    //    {
-    //        ApplyDamage(damageable);
-    //    }
-    //}
+        if (p_body is IDamageable damageable)
+        {
+            ApplyDamage(damageable);
+        }
+    }
 
     private void ApplyDamage(IDamageable p_target)
     {
