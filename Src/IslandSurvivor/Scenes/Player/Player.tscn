@@ -323,6 +323,8 @@ shape = SubResource("CapsuleShape2D_i5acl")
 disabled = true
 
 [node name="WeaponAttackLeft" type="Area2D" parent="." unique_id=974881817]
+collision_layer = 8
+collision_mask = 16
 
 [node name="WeaponHitboxL" type="CollisionShape2D" parent="WeaponAttackLeft" unique_id=1539213508]
 position = Vector2(-46.000015, 13.000002)

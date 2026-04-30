@@ -141,8 +141,10 @@ _data = {
 size = Vector2(43, 33)
 
 [node name="Sheep" type="CharacterBody2D" unique_id=317789339 node_paths=PackedStringArray("Stats")]
-collision_layer = 16
-collision_mask = 8
+z_index = 1
+y_sort_enabled = true
+collision_layer = 17
+collision_mask = 9
 motion_mode = 1
 script = ExtResource("1_d7b5k")
 Stats = NodePath("StatsManager")
