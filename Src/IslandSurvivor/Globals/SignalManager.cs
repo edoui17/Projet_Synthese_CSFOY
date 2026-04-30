@@ -43,11 +43,8 @@ public partial class SignalManager : Node
             m_eventBus.Subscribe<StatUpgradePurchasedEvent>(OnStatUpgradePurchasedEvent);
             m_eventBus.Subscribe<NavigationRequestedEvent>(OnNavigationRequestedEvent);
             m_eventBus.Subscribe<BuildingShopToggledEvent>(OnBuildingShopToggledEvent);
-<<<<<<< HEAD
             m_eventBus.Subscribe<StatChangedEvent>(OnStatChangedEvent);
-=======
             m_eventBus.Subscribe<InventoryChangedEvent>(OnInventoryChangedEvent);
->>>>>>> 86de5e04737cfcfe64043368b9c13b0401c3dfc7
         }
         else
         {
@@ -81,15 +78,14 @@ public partial class SignalManager : Node
         EmitSignal(SignalName.BuildingShopToggled, e.IsOpen, e.BuildingId);
     }
 
-<<<<<<< HEAD
     private void OnStatChangedEvent(StatChangedEvent e)
     {
         EmitSignal(SignalName.StatChanged, (int)e.StatType, e.CurrentValue, e.EffectiveMaxValue);
-=======
+    }
+
     private void OnInventoryChangedEvent(InventoryChangedEvent e)
     {
         EmitSignal(SignalName.InventoryChanged, e.ResourceId, e.TotalAmount);
->>>>>>> 86de5e04737cfcfe64043368b9c13b0401c3dfc7
     }
 
     // --- Godot -> Core Bridge (Proxy methods to emit into Core EventBus) ---
@@ -127,11 +123,8 @@ public partial class SignalManager : Node
             m_eventBus.Unsubscribe<StatUpgradePurchasedEvent>(OnStatUpgradePurchasedEvent);
             m_eventBus.Unsubscribe<NavigationRequestedEvent>(OnNavigationRequestedEvent);
             m_eventBus.Unsubscribe<BuildingShopToggledEvent>(OnBuildingShopToggledEvent);
-<<<<<<< HEAD
             m_eventBus.Unsubscribe<StatChangedEvent>(OnStatChangedEvent);
-=======
             m_eventBus.Unsubscribe<InventoryChangedEvent>(OnInventoryChangedEvent);
->>>>>>> 86de5e04737cfcfe64043368b9c13b0401c3dfc7
         }
         base.Dispose(p_disposing);
     }
