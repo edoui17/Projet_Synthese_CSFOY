@@ -16,15 +16,16 @@ When the player attacks (`Espace` / Spacebar), the attack animation plays and th
 The player's script applies damage to all discovered `IDamageable` entities in the area simultaneously.
 
 ### 2. Destruction (Resources)
-When a resource's HP drops to 0 or below, it triggers `DestroyResource()`.
+When a resource's HP drops to 0 or below, its local `StatManager` fires a `LocalStatChanged` signal which triggers `DestroyResource(object p_attacker)`.
+- It extracts the `StatManager` from the `p_attacker` to calculate the `Luck` bonus.
 - It instantiates a `ResourceItem`.
-- It invokes `SignalManager.Instance.EmitMaterialDestroyed(...)`.
+- It invokes `SignalManager.Instance.EmitMaterialDestroyed(...)` with the calculated bonus amount.
 - `InventoryNode.cs` intercepts the signal and adds the dropped materials to the player's inventory using `IInventoryManager`.
 - The resource calls `QueueFree()`.
 
 ### 3. Death (Enemies)
-When an enemy's HP drops to 0 or below, it triggers `HandleDeath()`.
+When an enemy's HP drops to 0 or below, its local `StatManager` fires a `LocalStatChanged` signal which triggers `HandleDeath(object p_attacker)`.
 - The death animation/logic plays via its specific controller (e.g., `AgressorController`).
-- Passive entities like Sheep may drop materials via `SignalManager.Instance.EmitMaterialDestroyed(...)`.
+- Entities like Sheep and Soldiers extract the `p_attacker`'s `Luck` stat to calculate their resource drop quantity and notify the player via `EmitMaterialDestroyed`.
 - Aggressive enemies like Soldiers notify the `ScoreManager` (`ServiceRegistry.Instance.ScoreTracker.AddScore(...)`) to grant the player points.
 - The enemy calls `QueueFree()`.
