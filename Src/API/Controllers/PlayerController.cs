@@ -71,7 +71,7 @@ public class PlayerController : ControllerBase
 
         return Ok();
     }
-
+/*
     [HttpGet("leaderboard")]
     public async Task<IActionResult> GetLeaderboard()
     {
@@ -87,6 +87,21 @@ public class PlayerController : ControllerBase
             Luck = p.Stats?.Luck ?? 0,
             Level = CalculateLevel(p.Stats)
         });
+
+        return Ok(leaderboard);
+    }*/
+
+    [HttpGet("leaderboard")]
+    public async Task<IActionResult> GetLeaderboard()
+    {
+        // Ligne temporaire pour tester
+        var leaderboard = new List<PlayerLeaderboardEntry>
+        {
+            new PlayerLeaderboardEntry { Id = Guid.NewGuid(), Username = "SuperGamer", Level = 50, Health = 500, Speed = 20 },
+            new PlayerLeaderboardEntry { Id = Guid.NewGuid(), Username = "Marcorse", Level = -2, Health = 20, Speed = 1 },
+            new PlayerLeaderboardEntry { Id = Guid.NewGuid(), Username = "SpeedRunner", Level = 45, Health = 100, Speed = 99 },
+            new PlayerLeaderboardEntry { Id = Guid.NewGuid(), Username = "JoueurTest", Level = 4, Health = 3, Speed = 12 }
+        };
 
         return Ok(leaderboard);
     }

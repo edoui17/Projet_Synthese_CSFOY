@@ -13,7 +13,7 @@
             <a href="#">Se connecter</a>
         </div>
         <img src="images/logo.png" alt="Logo Island Survivor" id="logo">
-        <h2 class="headerNiv">N.33 9999999</h2>
+        <h2 class="headerNiv"></h2>
     </nav>
 </header>
 
@@ -51,28 +51,39 @@
             var playersList = FilteredAndSortedPlayers.ToList();
             var totalPlayers = playersList.Count;
 
-            for (int i = 0; i < totalPlayers; i++)
+            if (totalPlayers == 1)
             {
-                var player = playersList[i];
-                string barImage = "images/rankMiddleBar.png";
-                string cssClass = "middleBar";
-
-                if (i == 0)
-                {
-                    barImage = "images/rankBarTop.png";
-                    cssClass = "";
-                }
-                else if (i == totalPlayers - 1)
-                {
-                    barImage = "images/rankBarBottom.png";
-                    cssClass = "";
-                }
-
-                <div>
-                    <img src="@barImage" alt="rank bar" class="@cssClass">
+                var player = playersList[0];
+                <div class="solo">
+                    <img src="images/solobar.png" alt="rank bar">
                     <h3>@player.Username.ToUpper()</h3>
                     <h2>Lvl @player.Level</h2>
                 </div>
+            }
+            else{
+                for (int i = 0; i < totalPlayers; i++)
+                {
+                    var player = playersList[i];
+                    string barImage = "images/rankMiddleBar2.png";
+                    string cssClass = "middle";
+
+                    if (i == 0)
+                    {
+                        barImage = "images/ranktopbar.png";
+                        cssClass = "top";
+                    }
+                    else if (i == totalPlayers - 1)
+                    {
+                        barImage = "images/rankBarBottom2.png";
+                        cssClass = "bottom";
+                    }
+
+                    <div class="@cssClass">
+                        <img src="@barImage" alt="rank bar">
+                        <h3>@player.Username.ToUpper()</h3>
+                        <h2>Lvl @player.Level</h2>
+                    </div>
+                }
             }
         }
     </div>
