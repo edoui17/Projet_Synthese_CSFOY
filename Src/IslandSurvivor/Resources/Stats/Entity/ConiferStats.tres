@@ -1,7 +1,11 @@
-[gd_resource type="Resource" script_class="ResourceStats" format=3 uid="uid://bgduawnxd4hah"]
+[gd_resource type="Resource" script_class="EntityStats" format=3 uid="uid://bgduawnxd4hah"]
 
-[ext_resource type="Script" uid="uid://d0614em0lx15v" path="res://Resources/Stats/Entity/ResourceStats.cs" id="1_4n2g7"]
+[ext_resource type="Script" uid="uid://d0614em0lx15v" path="res://Resources/Stats/Entity/EntityStats.cs" id="1_hfm3k"]
 
 [resource]
-script = ExtResource("1_4n2g7")
-m_maxHealth = 40.0
+script = ExtResource("1_hfm3k")
+MaxHealth = 1000.0
+Attack = 0.0
+Speed = 0.0
+Luck = 0.0
+metadata/_custom_type_script = "uid://d0614em0lx15v"

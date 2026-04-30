@@ -1,4 +1,3 @@
-using Core.Domain;
 using Core.Interfaces.Stats;
 using Core.Managers.Stats;
 using Godot;
@@ -9,8 +8,7 @@ using System;
 
 public partial class AutomnTree : Area2D, ITree, IDamageable
 {
-    [Export] private IslandSurvivor.Nodes.StatManager _stats;
-
+    [Export] public StatManager Stats { get; set; }
     [Export] public string EntityId { get; set; } = "tree_automn_01";
     [Export] public Timer Timer { get; set; }
 
@@ -19,25 +17,14 @@ public partial class AutomnTree : Area2D, ITree, IDamageable
     [Export] public string IconPath { get; set; } = "res://Assets/TinySwords(FreePack)/TinySwords(FreePack)/Terrain/Resources/Wood/Trees/Tree4.png";
 
 
-    private DamageContext? m_lastContext;
-
-
-    public float GetHealth()
-    {
-        return _stats?.GetCurrentValue(Core.Managers.Stats.StatType.Health) ?? 0f;
-    }
-
-    public void Heal(float p_amount)
-    {
-        _stats?.ModifyCurrentValue(Core.Managers.Stats.StatType.Health, p_amount);
-    }
+    private object? m_lastAttacker;
 
     public override void _Ready()
     {
-        if (_stats != null)
+        if (Stats != null)
         {
-            _stats.SetCurrentValue(StatType.Health, 10);
-            _stats.Connect(StatManager.SignalName.LocalStatChanged, Callable.From<int, float, float>(OnStatChanged));
+            Stats.SetCurrentValue(StatType.Health, 10);
+            Stats.Connect(StatManager.SignalName.LocalStatChanged, Callable.From<int, float, float>(OnStatChanged));
         }
         AreaEntered += OnAreaEntered;
     }
@@ -46,11 +33,11 @@ public partial class AutomnTree : Area2D, ITree, IDamageable
     {
         if ((StatType)p_statType == StatType.Health && p_currentValue <= 0)
         {
-            if (_stats != null)
+            if (Stats != null)
             {
-                _stats.Disconnect(StatManager.SignalName.LocalStatChanged, Callable.From<int, float, float>(OnStatChanged));
+                Stats.Disconnect(StatManager.SignalName.LocalStatChanged, Callable.From<int, float, float>(OnStatChanged));
             }
-            DestroyResource(m_lastContext);
+            DestroyResource(m_lastAttacker);
         }
     }
 
@@ -61,24 +48,25 @@ public partial class AutomnTree : Area2D, ITree, IDamageable
             if (Timer == null || Timer.IsStopped())
             {
                 Timer?.Start();
-                float attackerLuck = 0f;
-                var attacker = p_area.GetParent() ?? p_area;
-                if (attacker is ILuckyEntity luckyEntity)
-                {
-                    attackerLuck = luckyEntity.GetLuck();
-                }
-                var ctx = new DamageContext(attackerLuck, attacker);
-                DestroyResource(ctx);
+                DestroyResource(p_area.GetParent() ?? p_area);
             }
         }
     }
 
-    public void DestroyResource(DamageContext p_context = null)
+    public void DestroyResource(object p_attacker = null)
     {
         Random random = new();
         int quantity = random.Next(1, 5);
 
-        float luck = p_context?.AttackerLuck ?? 0f;
+        float luck = 0f;
+        if (p_attacker is Node GodotAttacker)
+        {
+            StatManager attackerStats = GodotAttacker.GetNodeOrNull<StatManager>("StatManager");
+            if (attackerStats != null)
+            {
+                luck = attackerStats.GetCurrentValue(StatType.Luck);
+            }
+        }
 
         float bonusChance = luck * 0.05f;
         int bonusQuantity = (int)bonusChance;
@@ -96,12 +84,12 @@ public partial class AutomnTree : Area2D, ITree, IDamageable
         QueueFree();
     }
 
-    public void TakeDamage(int p_amount, DamageContext p_context)
+    public void TakeDamage(int p_amount, object p_attacker)
     {
-        if (_stats == null) return;
+        if (Stats == null) return;
 
-        m_lastContext = p_context;
-        _stats.ModifyCurrentValue(StatType.Health, -p_amount);
+        m_lastAttacker = p_attacker;
+        Stats.ModifyCurrentValue(StatType.Health, -p_amount);
 
         IslandSurvivor.Extensions.NodeExtensions.PlayHitFlash(this);
     }

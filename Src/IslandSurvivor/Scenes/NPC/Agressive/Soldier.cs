@@ -11,8 +11,7 @@ using Core.Managers.Stats;
 
 public partial class Soldier : CharacterBody2D, INpc, IEnemy, IDamageable
 {
-    [Export] private IslandSurvivor.Nodes.StatManager _stats;
-
+    [Export] public StatManager Stats { get; set; }
 
     [Export] public string NpcType { get; set; } = "Agressive";
     [Export] public string EnemyType { get; set; } = "Soldier";
@@ -32,18 +31,7 @@ public partial class Soldier : CharacterBody2D, INpc, IEnemy, IDamageable
 
     public string CurrentState => m_agressorController?.CurrentState ?? NpcStates.IDLE;
 
-    private DamageContext? m_lastContext;
-
-
-    public float GetHealth()
-    {
-        return _stats?.GetCurrentValue(Core.Managers.Stats.StatType.Health) ?? 0f;
-    }
-
-    public void Heal(float p_amount)
-    {
-        _stats?.ModifyCurrentValue(Core.Managers.Stats.StatType.Health, p_amount);
-    }
+    private object? m_lastAttacker;
 
     public override void _Ready()
     {
@@ -80,11 +68,11 @@ public partial class Soldier : CharacterBody2D, INpc, IEnemy, IDamageable
             GD.PrintErr("Soldier node requires a RayCast2D child node named 'LineOfSightRay'.");
         }
 
-        if (_stats != null)
+        if (Stats != null)
         {
-            _stats.SetCurrentValue(StatType.Health, 10);
+            Stats.SetCurrentValue(StatType.Health, 10);
             // Example for base damage. Can use StatType.Attack if it exists in StatType
-            _stats.Connect(StatManager.SignalName.LocalStatChanged, Callable.From<int, float, float>(OnStatChanged));
+            Stats.Connect(StatManager.SignalName.LocalStatChanged, Callable.From<int, float, float>(OnStatChanged));
         }
     }
 
@@ -92,11 +80,11 @@ public partial class Soldier : CharacterBody2D, INpc, IEnemy, IDamageable
     {
         if ((StatType)p_statType == StatType.Health && p_currentValue <= 0)
         {
-            if (_stats != null)
+            if (Stats != null)
             {
-                _stats.Disconnect(StatManager.SignalName.LocalStatChanged, Callable.From<int, float, float>(OnStatChanged));
+                Stats.Disconnect(StatManager.SignalName.LocalStatChanged, Callable.From<int, float, float>(OnStatChanged));
             }
-            HandleDeath(m_lastContext);
+            HandleDeath(m_lastAttacker);
         }
     }
 
@@ -231,21 +219,21 @@ public partial class Soldier : CharacterBody2D, INpc, IEnemy, IDamageable
         }
     }
 
-    public void TakeDamage(int p_amount, DamageContext p_context)
+    public void TakeDamage(int p_amount, object p_attacker)
     {
         if (m_agressorController.CurrentState == NpcStates.DEAD) return;
 
-        m_lastContext = p_context;
+        m_lastAttacker = p_attacker;
 
-        if (_stats != null)
+        if (Stats != null)
         {
-            float currentHp = _stats.GetCurrentValue(StatType.Health);
-            _stats.SetCurrentValue(StatType.Health, currentHp - p_amount);
+            float currentHp = Stats.GetCurrentValue(StatType.Health);
+            Stats.SetCurrentValue(StatType.Health, currentHp - p_amount);
         }
 
-        bool isDead = _stats == null || _stats.GetCurrentValue(StatType.Health) <= 0;
+        bool isDead = Stats == null || Stats.GetCurrentValue(StatType.Health) <= 0;
 
-        if (p_context?.Attacker is Node2D attackerNode)
+        if (p_attacker is Node2D attackerNode)
         {
             if (isDead && attackerNode.IsInGroup("Player"))
             {
@@ -262,7 +250,7 @@ public partial class Soldier : CharacterBody2D, INpc, IEnemy, IDamageable
         }
     }
 
-    private void HandleDeath(DamageContext p_context = null)
+    private void HandleDeath(object p_attacker = null)
     {
         m_agressorController.SetDead();
 
@@ -271,7 +259,15 @@ public partial class Soldier : CharacterBody2D, INpc, IEnemy, IDamageable
         {
             int goldAmount = 2;
 
-            float luck = p_context?.AttackerLuck ?? 0f;
+            float luck = 0f;
+            if (p_attacker is Node GodotAttacker)
+            {
+                StatManager attackerStats = GodotAttacker.GetNodeOrNull<StatManager>("StatManager");
+                if (attackerStats != null)
+                {
+                    luck = attackerStats.GetCurrentValue(StatType.Luck);
+                }
+            }
 
             float bonusChance = luck * 0.05f;
             int bonusQuantity = (int)bonusChance;

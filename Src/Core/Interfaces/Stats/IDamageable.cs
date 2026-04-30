@@ -1,8 +1,6 @@
-using Core.Domain;
-
 namespace Core.Interfaces.Stats;
 
 public interface IDamageable
 {
-    void TakeDamage(int p_amount, DamageContext p_context);
+    void TakeDamage(int p_amount, object p_attacker);
 }

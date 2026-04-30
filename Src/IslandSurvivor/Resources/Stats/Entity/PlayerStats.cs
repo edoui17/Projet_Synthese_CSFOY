@@ -5,7 +5,12 @@ namespace IslandSurvivor.Resources;
 [GlobalClass]
 public partial class PlayerStats : CombatEntityStats
 {
-    [Export] private float m_luck = 1f;
+    private float m_luck = 1f;
 
-    public float Luck => m_luck;
+    [Export]
+    public float Luck
+    {
+        get => m_luck;
+        protected set => m_luck = value;
+    }
 }

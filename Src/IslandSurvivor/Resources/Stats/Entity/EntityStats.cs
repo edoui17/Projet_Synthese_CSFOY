@@ -5,7 +5,12 @@ namespace IslandSurvivor.Resources;
 [GlobalClass]
 public partial class EntityStats : Resource
 {
-    [Export] private float m_maxHealth = 100f;
+    private float m_maxHealth = 100f;
 
-    public float MaxHealth => m_maxHealth;
+    [Export]
+    public float MaxHealth
+    {
+        get => m_maxHealth;
+        protected set => m_maxHealth = value;
+    }
 }

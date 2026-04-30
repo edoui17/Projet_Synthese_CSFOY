@@ -1,4 +1,3 @@
-using Core.Domain;
 using System;
 using Xunit;
 using Core.Interfaces.Stats;
@@ -17,14 +16,14 @@ namespace UnitTests.Core.Stats
             Health = initialHealth;
         }
 
-        public void TakeDamage(int p_amount, DamageContext p_context)
+        public void TakeDamage(int p_amount, object p_attacker)
         {
             if (p_amount < 0) return; // Ignore negative damage
 
             Health -= p_amount;
             if (Health < 0) Health = 0; // Prevent health from dropping below 0
 
-            LastAttacker = p_context?.Attacker;
+            LastAttacker = p_attacker;
         }
     }
 
@@ -38,7 +37,7 @@ namespace UnitTests.Core.Stats
             var attacker = new object();
 
             // Act
-            entity.TakeDamage(20, new DamageContext(0f, attacker));
+            entity.TakeDamage(20, attacker);
 
             // Assert
             Assert.Equal(80, entity.Health);
@@ -54,7 +53,7 @@ namespace UnitTests.Core.Stats
             var attacker = new object();
 
             // Act
-            entity.TakeDamage(100, new DamageContext(0f, attacker));
+            entity.TakeDamage(100, attacker);
 
             // Assert
             Assert.Equal(0, entity.Health);
@@ -70,7 +69,7 @@ namespace UnitTests.Core.Stats
             var attacker = new object();
 
             // Act
-            entity.TakeDamage(30, new DamageContext(0f, attacker));
+            entity.TakeDamage(30, attacker);
 
             // Assert
             Assert.Equal(0, entity.Health);
@@ -85,7 +84,7 @@ namespace UnitTests.Core.Stats
             var attacker = new object();
 
             // Act
-            entity.TakeDamage(-10, new DamageContext(0f, attacker));
+            entity.TakeDamage(-10, attacker);
 
             // Assert
             Assert.Equal(50, entity.Health);

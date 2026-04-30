@@ -11,8 +11,7 @@ using Core.Managers.Stats;
 
 public partial class Sheep : CharacterBody2D, INpc, IDamageable
 {
-    [Export] private IslandSurvivor.Nodes.StatManager _stats;
-
+    [Export] public StatManager Stats { get; set; }
 
     [Export] public string NpcType { get; set; } = "Passive";
     [Export] public float IdleSpeed { get; set; } = 30.0f;
@@ -25,27 +24,16 @@ public partial class Sheep : CharacterBody2D, INpc, IDamageable
 
     public string CurrentState => m_passiveController?.CurrentState ?? NpcStates.IDLE;
 
-    private DamageContext? m_lastContext;
-
-
-    public float GetHealth()
-    {
-        return _stats?.GetCurrentValue(Core.Managers.Stats.StatType.Health) ?? 0f;
-    }
-
-    public void Heal(float p_amount)
-    {
-        _stats?.ModifyCurrentValue(Core.Managers.Stats.StatType.Health, p_amount);
-    }
+    private object? m_lastAttacker;
 
     public override void _Ready()
     {
         m_passiveController = new PassiveController();
 
-        if (_stats != null)
+        if (Stats != null)
         {
-            _stats.SetCurrentValue(StatType.Health, 3);
-            _stats.Connect(StatManager.SignalName.LocalStatChanged, Callable.From<int, float, float>(OnStatChanged));
+            Stats.SetCurrentValue(StatType.Health, 3);
+            Stats.Connect(StatManager.SignalName.LocalStatChanged, Callable.From<int, float, float>(OnStatChanged));
         }
     }
 
@@ -53,11 +41,11 @@ public partial class Sheep : CharacterBody2D, INpc, IDamageable
     {
         if ((StatType)p_statType == StatType.Health && p_currentValue <= 0)
         {
-            if (_stats != null)
+            if (Stats != null)
             {
-                _stats.Disconnect(StatManager.SignalName.LocalStatChanged, Callable.From<int, float, float>(OnStatChanged));
+                Stats.Disconnect(StatManager.SignalName.LocalStatChanged, Callable.From<int, float, float>(OnStatChanged));
             }
-            HandleDeath(m_lastContext);
+            HandleDeath(m_lastAttacker);
         }
     }
 
@@ -98,22 +86,22 @@ public partial class Sheep : CharacterBody2D, INpc, IDamageable
         }
     }
 
-    public void TakeDamage(int p_amount, DamageContext p_context)
+    public void TakeDamage(int p_amount, object p_attacker)
     {
         if (m_passiveController.CurrentState == NpcStates.DEAD) return;
 
-        m_lastContext = p_context;
+        m_lastAttacker = p_attacker;
 
-        if (_stats != null)
+        if (Stats != null)
         {
-            // Just apply damage logically here since we don't have a direct _stats.TakeDamage method visible
-            float currentHp = _stats.GetCurrentValue(StatType.Health);
-            _stats.SetCurrentValue(StatType.Health, currentHp - p_amount);
+            // Just apply damage logically here since we don't have a direct Stats.TakeDamage method visible
+            float currentHp = Stats.GetCurrentValue(StatType.Health);
+            Stats.SetCurrentValue(StatType.Health, currentHp - p_amount);
         }
 
-        bool isDead = _stats == null || _stats.GetCurrentValue(StatType.Health) <= 0;
+        bool isDead = Stats == null || Stats.GetCurrentValue(StatType.Health) <= 0;
 
-        if (p_context?.Attacker is Node2D attackerNode)
+        if (p_attacker is Node2D attackerNode)
         {
             if (isDead && attackerNode.IsInGroup("Player"))
             {
@@ -131,7 +119,7 @@ public partial class Sheep : CharacterBody2D, INpc, IDamageable
         }
     }
 
-    private void HandleDeath(DamageContext p_context = null)
+    private void HandleDeath(object p_attacker = null)
     {
         m_passiveController.SetDead();
 
@@ -139,7 +127,15 @@ public partial class Sheep : CharacterBody2D, INpc, IDamageable
         {
             int meatAmount = 1;
 
-            float luck = p_context?.AttackerLuck ?? 0f;
+            float luck = 0f;
+            if (p_attacker is Node GodotAttacker)
+            {
+                StatManager attackerStats = GodotAttacker.GetNodeOrNull<StatManager>("StatManager");
+                if (attackerStats != null)
+                {
+                    luck = attackerStats.GetCurrentValue(StatType.Luck);
+                }
+            }
 
             float bonusChance = luck * 0.05f;
             int bonusQuantity = (int)bonusChance;

@@ -1,4 +1,3 @@
-using Core.Domain;
 using Core.Interfaces.Stats;
 using Core.Managers.Stats;
 using Godot;
@@ -11,10 +10,9 @@ using IslandSurvivor.Nodes.Movement;
 using System;
 using System.Collections.Generic;
 
-public partial class Player : CharacterBody2D, IDamageable, ILuckyEntity
+public partial class Player : CharacterBody2D, IDamageable
 {
-    [Export] private IslandSurvivor.Nodes.StatManager? _stats;
-
+    [Export] public StatManager? Stats { get; set; }
     [Export] public float BaseDamage { get; set; } = 10f;
 
     private PlayerState m_currentState = PlayerState.Idle;
@@ -33,25 +31,14 @@ public partial class Player : CharacterBody2D, IDamageable, ILuckyEntity
     private MovementController? m_movementController;
     private readonly HashSet<IDamageable> m_hitTargetsThisAttack = new();
 
-
-    public float GetHealth()
-    {
-        return _stats?.GetCurrentValue(Core.Managers.Stats.StatType.Health) ?? 0f;
-    }
-
-    public void Heal(float p_amount)
-    {
-        _stats?.ModifyCurrentValue(Core.Managers.Stats.StatType.Health, p_amount);
-    }
-
     public override void _Ready()
     {
-        GD.Print("Attaque du joueur : " + _stats?.GetCurrentValue(StatType.Attack));
+        GD.Print("Attaque du joueur : " + Stats?.GetCurrentValue(StatType.Attack));
         if (m_interactionLabel != null) m_interactionLabel.Visible = false;
 
         m_movementController = GetNodeOrNull<MovementController>("MovementController");
 
-        if (_stats == null)
+        if (Stats == null)
         {
             GD.PushWarning("Player: StatManager not assigned.");
         }
@@ -134,7 +121,7 @@ public partial class Player : CharacterBody2D, IDamageable, ILuckyEntity
         {
             // Fallback
             float baseSpeed = 300f;
-            float speedStat = _stats?.GetCurrentValue(StatType.Speed) ?? 0f;
+            float speedStat = Stats?.GetCurrentValue(StatType.Speed) ?? 0f;
             float finalSpeed = baseSpeed * (1f + (speedStat * 0.05f));
             Velocity = direction * finalSpeed;
             MoveAndSlide();
@@ -224,25 +211,19 @@ public partial class Player : CharacterBody2D, IDamageable, ILuckyEntity
         }
     }
 
-
-    public float GetLuck()
-    {
-        return _stats?.GetCurrentValue(StatType.Luck) ?? 0f;
-    }
-
     public void SetState(PlayerState p_newState)
     {
         m_currentState = p_newState;
     }
 
-    public void TakeDamage(int p_amount, DamageContext p_context)
+    public void TakeDamage(int p_amount, object p_attacker)
     {
-        if (_stats == null) return;
+        if (Stats == null) return;
 
-        float currentHealth = _stats.GetCurrentValue(StatType.Health);
+        float currentHealth = Stats.GetCurrentValue(StatType.Health);
         if (currentHealth <= 0) return;
 
-        _stats.ModifyCurrentValue(StatType.Health, -p_amount);
+        Stats.ModifyCurrentValue(StatType.Health, -p_amount);
     }
 
     private void ApplyDamage(IDamageable p_target)
@@ -251,14 +232,12 @@ public partial class Player : CharacterBody2D, IDamageable, ILuckyEntity
 
         m_hitTargetsThisAttack.Add(p_target);
 
-        float attackStat = _stats?.GetCurrentValue(StatType.Attack) ?? 0f;
+        float attackStat = Stats?.GetCurrentValue(StatType.Attack) ?? 0f;
         float finalDamageFloat = BaseDamage * (1f + (attackStat * 0.05f));
         int finalDamage = Mathf.RoundToInt(finalDamageFloat);
 
         GD.Print($"[COMBAT] Hit target! Dealing {finalDamage} damage.");
-        float attackerLuck = _stats?.GetCurrentValue(StatType.Luck) ?? 0f;
-        DamageContext ctx = new DamageContext(attackerLuck, this);
-        p_target.TakeDamage(finalDamage, ctx);
+        p_target.TakeDamage(finalDamage, this);
     }
 
     private void OnWeaponAreaEntered(Area2D p_area)
