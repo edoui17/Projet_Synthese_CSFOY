@@ -305,7 +305,8 @@ shape = SubResource("CircleShape2D_jmcll")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=24708510]
 
-[node name="MovementController" parent="." unique_id=779695224 instance=ExtResource("9_mov")]
+[node name="MovementController" parent="." unique_id=779695224 node_paths=PackedStringArray("Stats") instance=ExtResource("9_mov")]
+Stats = NodePath("../StatManager")
 
 [node name="StatManager" parent="." unique_id=772458511 instance=ExtResource("7_stat")]
 BaseStatsResource = ExtResource("8_stat_res")
