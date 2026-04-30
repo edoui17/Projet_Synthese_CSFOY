@@ -5,6 +5,7 @@ using IslandSurvivor.Logic.Entities;
 using IslandSurvivor.Interfaces;
 using IslandSurvivor.Nodes.Movement;
 using Core.Interfaces;
+using Core.Interfaces.Stats;
 using IslandSurvivor.Nodes;
 using Core.Managers.Stats;
 
@@ -227,11 +228,7 @@ public partial class Soldier : CharacterBody2D, INpc, IEnemy, IDamageable
                 // Force target to whoever hit it
                 m_targetPlayer = attackerNode;
 
-                Modulate = new Color(1, 0.5f, 0.5f);
-                GetTree().CreateTimer(0.2f).Timeout += () =>
-                {
-                    if (IsInstanceValid(this)) Modulate = Colors.White;
-                };
+                IslandSurvivor.Extensions.NodeExtensions.PlayHitFlash(this);
             }
         }
 
@@ -245,7 +242,8 @@ public partial class Soldier : CharacterBody2D, INpc, IEnemy, IDamageable
     {
         m_agressorController.SetDead();
 
-        if (m_wasKilledByPlayer)
+        // Notify ScoreManager to add score points
+        if (IslandSurvivor.Globals.ServiceRegistry.Instance != null)
         {
             int goldAmount = 2;
 
@@ -269,6 +267,7 @@ public partial class Soldier : CharacterBody2D, INpc, IEnemy, IDamageable
                 SignalManager.Instance.EmitMaterialDestroyed(this, goldResource, goldAmount);
                 GD.Print($"Soldier died. Sent {goldAmount} gold to inventory.");
             }
+            IslandSurvivor.Globals.ServiceRegistry.Instance.ScoreTracker.AddScore(10); // Example score value
         }
 
         QueueFree();
