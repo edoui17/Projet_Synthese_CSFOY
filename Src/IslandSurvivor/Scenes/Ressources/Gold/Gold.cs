@@ -1,4 +1,5 @@
 using Core.Domain;
+using Core.Interfaces.Stats;
 using Core.Managers.Stats;
 using Godot;
 using IslandSurvivor.Classes;
@@ -7,7 +8,7 @@ using IslandSurvivor.Nodes;
 using IslandSurvivor.Resources;
 using System;
 
-public partial class Gold : Area2D, IOre
+public partial class Gold : Area2D, IOre, IDamageable
 {
     [Export] public StatManager Stats { get; set; } 
     [Export] public string EntityId { get; set; } = "gold_01";
@@ -35,7 +36,7 @@ public partial class Gold : Area2D, IOre
             if (Timer == null || Timer.IsStopped())
             {
                 Timer?.Start();
-               TakeDamage(10f); // Example damage value, adjust as needed
+               TakeDamage(10, this); // Example damage value, adjust as needed
             }
         }
     }
@@ -56,9 +57,13 @@ public partial class Gold : Area2D, IOre
         OnAreaEntered(p_area);
     }
 
-    public void TakeDamage(float p_damage)
+    public void TakeDamage(int p_amount, object p_attacker)
     {
-        Stats.ModifyCurrentValue(StatType.Health, - p_damage);
+        if (Stats == null) return;
+
+        Stats.ModifyCurrentValue(StatType.Health, - p_amount);
+
+        IslandSurvivor.Extensions.NodeExtensions.PlayHitFlash(this);
 
         if (Stats.GetCurrentValue(StatType.Health) <= 0)
         {

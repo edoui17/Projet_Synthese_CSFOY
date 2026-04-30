@@ -138,9 +138,11 @@ _data = {
 }
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ifvjj"]
-size = Vector2(42, 32)
+size = Vector2(43, 33)
 
 [node name="Sheep" type="CharacterBody2D" unique_id=317789339 node_paths=PackedStringArray("Stats")]
+collision_layer = 20
+collision_mask = 9
 motion_mode = 1
 script = ExtResource("1_d7b5k")
 Stats = NodePath("StatsManager")
@@ -159,5 +161,6 @@ BaseStatsResource = ExtResource("5_ifvjj")
 [node name="MovementController" parent="." unique_id=473945652 instance=ExtResource("6_mov")]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=2005726366]
-light_mask = 4
+light_mask = 5
+position = Vector2(0.5, 0.5)
 shape = SubResource("RectangleShape2D_ifvjj")

@@ -1,3 +1,4 @@
+using Core.Interfaces.Stats;
 using Core.Managers.Stats;
 using Godot;
 using IslandSurvivor.Interfaces;
@@ -5,7 +6,7 @@ using IslandSurvivor.Nodes;
 using IslandSurvivor.Resources;
 using System;
 
-public partial class AutomnTree : Area2D, ITree
+public partial class AutomnTree : Area2D, ITree, IDamageable
 {
     [Export] public StatManager Stats { get; set; }
     [Export] public string EntityId { get; set; } = "tree_automn_01";
@@ -47,9 +48,13 @@ public partial class AutomnTree : Area2D, ITree
         QueueFree();
     }
 
-    public void TakeDamage(float p_damage)
+    public void TakeDamage(int p_amount, object p_attacker)
     {
-        Stats.ModifyCurrentValue(StatType.Health, - p_damage);
+        if (Stats == null) return;
+
+        Stats.ModifyCurrentValue(StatType.Health, -p_amount);
+
+        IslandSurvivor.Extensions.NodeExtensions.PlayHitFlash(this);
 
         if (Stats.GetCurrentValue(StatType.Health) <= 0)
         {
