@@ -32,6 +32,7 @@ public partial class Player : CharacterBody2D
 
     public override void _Ready()
     {
+        GD.Print("Attaque du joueur : " + Stats?.GetCurrentValue(StatType.Attack));
         m_interactionLabel.Visible = false;
 
         m_movementController = GetNodeOrNull<MovementController>("MovementController");
@@ -50,7 +51,9 @@ public partial class Player : CharacterBody2D
         if (m_weaponAreaRight != null)
         {
             m_weaponAreaRight.AreaEntered += OnWeaponAreaEntered;
-            //m_weaponAreaRight.BodyEntered += OnWeaponBodyEntered;
+            m_weaponAreaRight.BodyEntered += OnWeaponBodyEntered;
+            m_weaponAreaLeft.AreaEntered += OnWeaponAreaEntered;
+            m_weaponAreaLeft.BodyEntered += OnWeaponBodyEntered;
         }
     }
 
@@ -206,15 +209,15 @@ public partial class Player : CharacterBody2D
         }
     }
 
-    //private void OnWeaponBodyEntered(Node2D p_body)
-    //{
-    //    if (m_currentState != PlayerState.Attacking) return;
+    private void OnWeaponBodyEntered(Node2D p_body)
+    {
+        if (m_currentState != PlayerState.Attacking) return;
 
-    //    if (p_body is IDamageable damageable)
-    //    {
-    //        ApplyDamage(damageable);
-    //    }
-    //}
+        if (p_body is IDamageable damageable)
+        {
+            ApplyDamage(damageable);
+        }
+    }
 
     private void ApplyDamage(IDamageable p_target)
     {
@@ -222,7 +225,7 @@ public partial class Player : CharacterBody2D
 
         m_hitTargetsThisAttack.Add(p_target);
 
-        int attackDamage = (int)(Stats?.GetCurrentValue(StatType.Attack) ?? 1000f); // Default to 10 if missing
+        int attackDamage = (int)(Stats?.GetCurrentValue(StatType.Attack) ?? 10f); // Default to 10 if missing
 
         GD.Print($"[COMBAT] Hit target! Dealing {attackDamage} damage.");
         p_target.TakeDamage(attackDamage, this);

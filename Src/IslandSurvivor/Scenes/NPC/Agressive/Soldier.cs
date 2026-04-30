@@ -66,11 +66,14 @@ public partial class Soldier : CharacterBody2D, INpc, IEnemy, IDamageable
             GD.PrintErr("Soldier node requires a RayCast2D child node named 'LineOfSightRay'.");
         }
 
-        if (Stats != null)
+        if (Stats != null && Stats.GetCurrentValue(StatType.Health) <= 0)
         {
-            Stats.SetCurrentValue(StatType.Health, 10);
-            // Example for base damage. Can use StatType.Attack if it exists in StatType
+            Stats.SetCurrentValue(StatType.Health, 25);
         }
+        GD.Print("Santé du soldat : " + Stats?.GetCurrentValue(StatType.Health));
+        GD.Print("Vitesse du soldat : " + Stats?.GetCurrentValue(StatType.Speed));
+        GD.Print("Chance du soldat : " + Stats?.GetCurrentValue(StatType.Luck));
+        GD.Print("Dégâts du soldat : " + Stats?.GetCurrentValue(StatType.Attack));
     }
 
     public override void _PhysicsProcess(double p_delta)

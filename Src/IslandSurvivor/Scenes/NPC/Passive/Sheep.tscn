@@ -141,6 +141,7 @@ _data = {
 size = Vector2(43, 33)
 
 [node name="Sheep" type="CharacterBody2D" unique_id=317789339 node_paths=PackedStringArray("Stats")]
+<<<<<<< HEAD
 z_index = 1
 y_sort_enabled = true
 collision_layer = 17
