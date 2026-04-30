@@ -1,0 +1,54 @@
+[gd_scene load_steps=3 format=3 uid="uid://testplayerstatsuid"]
+
+[ext_resource type="Script" path="res://Scenes/TestScenes/TestPlayerStats.cs" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://cqo7rlgy61vfa" path="res://Scenes/Player/Player.tscn" id="2_player"]
+[ext_resource type="PackedScene" uid="uid://djv45romp3vxj" path="res://Scenes/HomeMap/PlayerHUD.tscn" id="3_hud"]
+
+[node name="TestPlayerStats" type="Node2D"]
+script = ExtResource("1_script")
+
+[node name="Player" parent="." instance=ExtResource("2_player")]
+position = Vector2(500, 300)
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="PlayerHUD" parent="CanvasLayer" instance=ExtResource("3_hud")]
+
+[node name="UIControls" type="Control" parent="CanvasLayer"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/UIControls"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -300.0
+offset_top = 50.0
+offset_right = -50.0
+offset_bottom = 200.0
+grow_horizontal = 0
+
+[node name="BtnDamagePlayer" type="Button" parent="CanvasLayer/UIControls/VBoxContainer"]
+layout_mode = 2
+text = "Take 10 Damage"
+
+[node name="BtnUpgradeHealth" type="Button" parent="CanvasLayer/UIControls/VBoxContainer"]
+layout_mode = 2
+text = "Upgrade Health"
+
+[node name="BtnUpgradeAttack" type="Button" parent="CanvasLayer/UIControls/VBoxContainer"]
+layout_mode = 2
+text = "Upgrade Attack"
+
+[node name="BtnUpgradeSpeed" type="Button" parent="CanvasLayer/UIControls/VBoxContainer"]
+layout_mode = 2
+text = "Upgrade Speed"
+
+[node name="BtnUpgradeLuck" type="Button" parent="CanvasLayer/UIControls/VBoxContainer"]
+layout_mode = 2
+text = "Upgrade Luck"

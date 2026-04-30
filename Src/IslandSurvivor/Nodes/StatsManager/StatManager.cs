@@ -34,7 +34,10 @@ public partial class StatManager : Node
 
         m_localEventBus.Subscribe<StatChangedEvent>(OnStatChangedEvent);
 
-        SignalManager.Instance.StatUpgradePurchased += OnStatUpgradePurchased;
+        if (m_baseStatsResource is PlayerStats)
+        {
+            SignalManager.Instance.StatUpgradePurchased += OnStatUpgradePurchased;
+        }
 
         if (m_baseStatsResource != null)
         {
