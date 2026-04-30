@@ -26,7 +26,7 @@ public partial class Gold : Area2D, IOre, IDamageable
     {
         if (Stats != null)
         {
-            Stats.SetCurrentValue(StatType.Health, 5000);
+            Stats.SetCurrentValue(StatType.Health, 30);
             Stats.Connect(StatManager.SignalName.LocalStatChanged, Callable.From<int, float, float>(OnStatChanged));
         }
         AreaEntered += OnAreaEntered;

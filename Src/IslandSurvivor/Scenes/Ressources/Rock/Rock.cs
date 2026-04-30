@@ -24,7 +24,7 @@ public partial class Rock : Area2D, IOre, IDamageable
     {
         if (Stats != null)
         {
-            Stats.SetCurrentValue(StatType.Health, 3000);
+            Stats.SetCurrentValue(StatType.Health, 20);
             Stats.Connect(StatManager.SignalName.LocalStatChanged, Callable.From<int, float, float>(OnStatChanged));
         }
         AreaEntered += OnAreaEntered;

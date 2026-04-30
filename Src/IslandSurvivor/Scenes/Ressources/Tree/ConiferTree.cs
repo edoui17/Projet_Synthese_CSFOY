@@ -24,7 +24,7 @@ public partial class ConiferTree : Area2D, ITree, IDamageable
   {
     if (Stats != null)
     {
-      Stats.SetCurrentValue(StatType.Health, 2500);
+      Stats.SetCurrentValue(StatType.Health, 40);
       Stats.Connect(StatManager.SignalName.LocalStatChanged, Callable.From<int, float, float>(OnStatChanged));
     }
     AreaEntered += OnAreaEntered;

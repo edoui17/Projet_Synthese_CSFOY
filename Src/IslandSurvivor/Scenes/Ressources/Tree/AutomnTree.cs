@@ -23,7 +23,7 @@ public partial class AutomnTree : Area2D, ITree, IDamageable
     {
         if (Stats != null)
         {
-            Stats.SetCurrentValue(StatType.Health, 1000);
+            Stats.SetCurrentValue(StatType.Health, 10);
             Stats.Connect(StatManager.SignalName.LocalStatChanged, Callable.From<int, float, float>(OnStatChanged));
         }
         AreaEntered += OnAreaEntered;
