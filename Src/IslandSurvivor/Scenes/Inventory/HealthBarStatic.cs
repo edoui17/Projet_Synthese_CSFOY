@@ -8,6 +8,8 @@ public partial class HealthBarStatic : Control
     [Export] public TextureProgressBar ProgressBar;
     [Export] public Label HealthLabel;
 
+    private IslandSurvivor.Nodes.StatManager m_playerStats;
+
     public override void _Ready()
     {
         if (Engine.IsEditorHint())
@@ -15,17 +17,25 @@ public partial class HealthBarStatic : Control
             return;
         }
 
-        // Fetch initial values
-        if (IslandSurvivor.Globals.ServiceRegistry.Instance != null && IslandSurvivor.Globals.ServiceRegistry.Instance.StatTracker != null)
-        {
-            float maxHealth = IslandSurvivor.Globals.ServiceRegistry.Instance.StatTracker.GetEffectiveMaxValue(StatType.Health);
-            float currentHealth = IslandSurvivor.Globals.ServiceRegistry.Instance.StatTracker.GetCurrentValue(StatType.Health);
-            UpdateHealthUI(currentHealth, maxHealth);
-        }
+        CallDeferred(nameof(InitializePlayerConnection));
+    }
 
-        if (SignalManager.Instance != null)
+    private void InitializePlayerConnection()
+    {
+        // Find player and their StatManager
+        var player = GetTree().GetFirstNodeInGroup("Player") as Node;
+        if (player != null)
         {
-            SignalManager.Instance.Connect(SignalManager.SignalName.StatChanged, Callable.From<int, float, float>(OnStatChanged));
+            m_playerStats = player.GetNodeOrNull<IslandSurvivor.Nodes.StatManager>("StatManager");
+
+            if (m_playerStats != null)
+            {
+                float maxHealth = m_playerStats.GetEffectiveMaxValue(StatType.Health);
+                float currentHealth = m_playerStats.GetCurrentValue(StatType.Health);
+                UpdateHealthUI(currentHealth, maxHealth);
+
+                m_playerStats.Connect(IslandSurvivor.Nodes.StatManager.SignalName.LocalStatChanged, Callable.From<int, float, float>(OnStatChanged));
+            }
         }
     }
 
@@ -53,9 +63,9 @@ public partial class HealthBarStatic : Control
 
     protected override void Dispose(bool p_disposing)
     {
-        if (p_disposing && SignalManager.Instance != null && !Engine.IsEditorHint())
+        if (p_disposing && m_playerStats != null && !Engine.IsEditorHint())
         {
-            SignalManager.Instance.Disconnect(SignalManager.SignalName.StatChanged, Callable.From<int, float, float>(OnStatChanged));
+            m_playerStats.Disconnect(IslandSurvivor.Nodes.StatManager.SignalName.LocalStatChanged, Callable.From<int, float, float>(OnStatChanged));
         }
         base.Dispose(p_disposing);
     }

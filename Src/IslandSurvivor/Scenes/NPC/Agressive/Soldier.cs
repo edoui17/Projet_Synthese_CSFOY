@@ -31,6 +31,8 @@ public partial class Soldier : CharacterBody2D, INpc, IEnemy, IDamageable
 
     public string CurrentState => m_agressorController?.CurrentState ?? NpcStates.IDLE;
 
+    private object? m_lastAttacker;
+
     public override void _Ready()
     {
         m_agressorController = new AgressorController();
@@ -70,6 +72,19 @@ public partial class Soldier : CharacterBody2D, INpc, IEnemy, IDamageable
         {
             Stats.SetCurrentValue(StatType.Health, 10);
             // Example for base damage. Can use StatType.Attack if it exists in StatType
+            Stats.Connect(StatManager.SignalName.LocalStatChanged, Callable.From<int, float, float>(OnStatChanged));
+        }
+    }
+
+    private void OnStatChanged(int p_statType, float p_currentValue, float p_effectiveMaxValue)
+    {
+        if ((StatType)p_statType == StatType.Health && p_currentValue <= 0)
+        {
+            if (Stats != null)
+            {
+                Stats.Disconnect(StatManager.SignalName.LocalStatChanged, Callable.From<int, float, float>(OnStatChanged));
+            }
+            HandleDeath(m_lastAttacker);
         }
     }
 
@@ -208,6 +223,8 @@ public partial class Soldier : CharacterBody2D, INpc, IEnemy, IDamageable
     {
         if (m_agressorController.CurrentState == NpcStates.DEAD) return;
 
+        m_lastAttacker = p_attacker;
+
         if (Stats != null)
         {
             float currentHp = Stats.GetCurrentValue(StatType.Health);
@@ -231,14 +248,9 @@ public partial class Soldier : CharacterBody2D, INpc, IEnemy, IDamageable
                 IslandSurvivor.Extensions.NodeExtensions.PlayHitFlash(this);
             }
         }
-
-        if (isDead)
-        {
-            HandleDeath();
-        }
     }
 
-    private void HandleDeath()
+    private void HandleDeath(object p_attacker = null)
     {
         m_agressorController.SetDead();
 
@@ -247,7 +259,16 @@ public partial class Soldier : CharacterBody2D, INpc, IEnemy, IDamageable
         {
             int goldAmount = 2;
 
-            float luck = IslandSurvivor.Globals.ServiceRegistry.Instance.StatTracker.GetCurrentValue(Core.Managers.Stats.StatType.Luck);
+            float luck = 0f;
+            if (p_attacker is Node GodotAttacker)
+            {
+                StatManager attackerStats = GodotAttacker.GetNodeOrNull<StatManager>("StatManager");
+                if (attackerStats != null)
+                {
+                    luck = attackerStats.GetCurrentValue(StatType.Luck);
+                }
+            }
+
             float bonusChance = luck * 0.05f;
             int bonusQuantity = (int)bonusChance;
             float fractionalChance = bonusChance - bonusQuantity;
