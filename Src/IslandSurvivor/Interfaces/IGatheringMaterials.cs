@@ -7,13 +7,12 @@ namespace IslandSurvivor.Interfaces
 {
     public interface IGatheringMaterials
     {
-        StatManager Stats { get; }
-        string MaterialName { get; }
+string MaterialName { get; }
         string MaterialType { get; }
         string EntityId { get; }
         Timer Timer { get; }
 
         void OnAreaEntered(Area2D area);
-        void DestroyResource(object p_attacker = null);
+        void DestroyResource(Core.Domain.DamageContext p_context = null);
     }
 }

@@ -1,11 +1,7 @@
-[gd_resource type="Resource" script_class="EntityStats" format=3 uid="uid://dcigqom8pfk3u"]
+[gd_resource type="Resource" script_class="ResourceStats" format=3 uid="uid://dcigqom8pfk3u"]
 
-[ext_resource type="Script" uid="uid://d0614em0lx15v" path="res://Resources/Stats/Entity/EntityStats.cs" id="1_ng3wn"]
+[ext_resource type="Script" uid="uid://d0614em0lx15v" path="res://Resources/Stats/Entity/ResourceStats.cs" id="1_ng3wn"]
 
 [resource]
 script = ExtResource("1_ng3wn")
-MaxHealth = 5000.0
-Attack = 0.0
-Speed = 0.0
-Luck = 0.0
-metadata/_custom_type_script = "uid://d0614em0lx15v"
+m_maxHealth = 10.0
