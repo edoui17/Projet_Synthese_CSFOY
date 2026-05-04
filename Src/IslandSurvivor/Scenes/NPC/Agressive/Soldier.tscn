@@ -153,15 +153,14 @@ animations = [{
 }]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_v2bfp"]
-radius = 21.0
-height = 42.0
+radius = 15.0
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_e1oyk"]
 radius = 250.0
 
 [node name="Soldier" type="CharacterBody2D" unique_id=666187867 node_paths=PackedStringArray("Stats")]
 y_sort_enabled = true
-collision_layer = 20
+collision_layer = 17
 collision_mask = 9
 motion_mode = 1
 script = ExtResource("1_lf5hw")
