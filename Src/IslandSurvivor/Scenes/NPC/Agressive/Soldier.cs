@@ -27,6 +27,7 @@ public partial class Soldier : CharacterBody2D, INpc, IEnemy, IDamageable
     private Node2D m_targetPlayer;
     private bool m_wasKilledByPlayer = false;
     private Area2D m_detectionArea;
+    private Area2D m_hitboxArea;
     private RayCast2D m_lineOfSightRay;
 
     public string CurrentState => m_agressorController?.CurrentState ?? NpcStates.IDLE;
@@ -61,6 +62,16 @@ public partial class Soldier : CharacterBody2D, INpc, IEnemy, IDamageable
             // Connect to Area2D signals. We use Callable.From to ensure correct typing.
             m_detectionArea.BodyEntered += OnDetectionAreaBodyEntered;
             m_detectionArea.BodyExited += OnDetectionAreaBodyExited;
+        }
+
+        m_hitboxArea = GetNodeOrNull<Area2D>("HitboxArea");
+        if (m_hitboxArea == null)
+        {
+            GD.PrintErr("Soldier node requires an Area2D child node named 'HitboxArea'.");
+        }
+        else
+        {
+            m_hitboxArea.BodyEntered += OnHitboxAreaBodyEntered;
         }
 
         if (m_lineOfSightRay == null)
@@ -219,9 +230,20 @@ public partial class Soldier : CharacterBody2D, INpc, IEnemy, IDamageable
         }
     }
 
+    private void OnHitboxAreaBodyEntered(Node2D p_body)
+    {
+        if (CurrentState == NpcStates.DEAD) return;
+
+        if (p_body.IsInGroup("Player") && p_body is IDamageable playerDamageable)
+        {
+            GD.Print("[Soldier] Player in attack range, applying damage!");
+            playerDamageable.TakeDamage(5, this);
+        }
+    }
+
     public void TakeDamage(int p_amount, object p_attacker)
     {
-        if (m_agressorController.CurrentState == NpcStates.DEAD) return;
+        if (CurrentState == NpcStates.DEAD) return;
 
         m_lastAttacker = p_attacker;
 

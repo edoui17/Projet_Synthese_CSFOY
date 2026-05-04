@@ -15,3 +15,7 @@ When adjusting a `RayCast2D`'s `TargetPosition` via code attached to a parent no
   - Using `await ToSignal(GetTree().CreateTimer(0.25f), SceneTreeTimer.SignalName.Timeout)` and then `GetOverlappingAreas()` works but can feel brittle.
   - The more idiomatic Godot solution is relying on the signals `AreaEntered` and `BodyEntered` emitted natively by the `Area2D` when the `disabled` flag flips to `false` during the animation frame.
 - **Architectural Shift:** Moving from a procedural execution list to an event-driven `HashSet<IDamageable>` tracking mechanism ensures single-hits per target per attack frame while leveraging Godot's built-in physics event queue.
+
+## 2024-05-18 - Melee Hitbox Implementation
+- **Architectural Shift:** For enemy melee attacks, instead of using continuous overlap checks via `GetOverlappingBodies()`, a dedicated `HitboxArea` (`Area2D`) handles collision tracking. The `BodyEntered` signal ensures that damage is applied instantly (once) upon contact when the player enters the area.
+- **Quirk/Discovery:** It's important to configure the Godot Collision Masks accurately. To prevent enemies hitting themselves or other entities, the `HitboxArea` mask is set explicitly to the Player layer (Layer 3), and the logic enforces that the target is in the 'Player' group and implements `IDamageable`.
