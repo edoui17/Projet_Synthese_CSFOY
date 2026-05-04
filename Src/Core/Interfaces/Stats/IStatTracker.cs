@@ -11,6 +11,4 @@ public interface IStatTracker
     void ModifyCurrentValue(Managers.Stats.StatType p_statType, float p_amount);
     void SetCurrentValue(Managers.Stats.StatType p_statType, float p_value);
     void AddPermanentBonus(Managers.Stats.StatType p_statType, float p_amount);
-
-    WeakEvent<Managers.Stats.StatChangedEventArgs> OnAnyStatChanged { get; }
 }

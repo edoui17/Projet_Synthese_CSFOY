@@ -1,7 +1,8 @@
 -- Seed Data for DBIslandSurvivor
 -- This script populates the database with initial configuration and test data.
-
 -- Clear existing data to ensure a clean state
+USE DBIslandSurvivor;
+
 DELETE FROM Inventory;
 DELETE FROM Stats;
 DELETE FROM PlayerConfig;

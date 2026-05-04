@@ -6,7 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://bnrdwqhy84a5e" path="res://Assets/TinySwords/Sprites/Pawn/Blue/Pawn_Run.png" id="4_4wape"]
 [ext_resource type="Texture2D" uid="uid://cff20mi4vyhg2" path="res://Assets/TinySwords/Sprites/Pawn/Blue/Pawn_Run Axe.png" id="5_t26db"]
 [ext_resource type="PackedScene" uid="uid://biqhbrp7fjfyj" path="res://Nodes/StatsManager/StatsManager.tscn" id="7_stat"]
-[ext_resource type="Resource" path="res://Resources/Stats/Entity/PlayerStats.tres" id="8_stat_res"]
+[ext_resource type="Resource" uid="uid://83xndc2parlb" path="res://Resources/Stats/Entity/PlayerStats.tres" id="8_stat_res"]
 [ext_resource type="PackedScene" path="res://Nodes/Movement/MovementController.tscn" id="9_mov"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_h54ih"]
@@ -56,10 +56,22 @@ tracks/2/keys = {
 tracks/3/type = "value"
 tracks/3/imported = false
 tracks/3/enabled = true
-tracks/3/path = NodePath("WeaponInteractionArea/WeaponHitbox:disabled")
+tracks/3/path = NodePath("WeaponAttackRight/WeaponHitboxR:disabled")
 tracks/3/interp = 1
 tracks/3/loop_wrap = true
 tracks/3/keys = {
+"times": PackedFloat32Array(0.2, 0.4),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [false, true]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("WeaponAttackLeft/WeaponHitboxL:disabled")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
 "times": PackedFloat32Array(0.2, 0.4),
 "transitions": PackedFloat32Array(1, 1),
 "update": 1,
@@ -190,10 +202,22 @@ tracks/2/keys = {
 tracks/3/type = "value"
 tracks/3/imported = false
 tracks/3/enabled = true
-tracks/3/path = NodePath("WeaponInteractionArea/WeaponHitbox:disabled")
+tracks/3/path = NodePath("WeaponAttackRight/WeaponHitboxR:disabled")
 tracks/3/interp = 1
 tracks/3/loop_wrap = true
 tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("WeaponAttackLeft/WeaponHitboxL:disabled")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 1,
@@ -252,13 +276,17 @@ _data = {
 }
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_i5acl"]
-radius = 11.98863
-height = 37.964
+radius = 24.98892
+height = 91.98764
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_fk5o5"]
+radius = 24.10585
+height = 90.01888
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_jmcll"]
 radius = 39.217342
 
-[node name="Player" type="CharacterBody2D" unique_id=661327324 node_paths=PackedStringArray("Stats", "m_animationPlayer", "m_sprite", "m_interactionLabel", "m_debugLabel", "m_interactionArea", "m_weaponArea") groups=["Player"]]
+[node name="Player" type="CharacterBody2D" unique_id=661327324 node_paths=PackedStringArray("Stats", "m_animationPlayer", "m_sprite", "m_interactionLabel", "m_debugLabel", "m_interactionArea", "m_weaponAreaRight", "m_weaponAreaLeft") groups=["Player"]]
 collision_layer = 4
 motion_mode = 1
 script = ExtResource("1_s0eop")
@@ -268,7 +296,8 @@ m_sprite = NodePath("Sprite2D")
 m_interactionLabel = NodePath("InteractionLabel")
 m_debugLabel = NodePath("DebugLabel")
 m_interactionArea = NodePath("PlayerInteraction")
-m_weaponArea = NodePath("WeaponInteractionArea")
+m_weaponAreaRight = NodePath("WeaponAttackRight")
+m_weaponAreaLeft = NodePath("WeaponAttackLeft")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1359797056]
 texture = ExtResource("2_ft8w5")
@@ -283,15 +312,24 @@ shape = SubResource("CapsuleShape2D_h54ih")
 libraries/ = SubResource("AnimationLibrary_4wape")
 autoplay = &"IDLE"
 
-[node name="WeaponInteractionArea" type="Area2D" parent="." unique_id=395568969]
+[node name="WeaponAttackRight" type="Area2D" parent="." unique_id=395568969]
 collision_layer = 8
 collision_mask = 16
 
-[node name="WeaponHitbox" type="CollisionShape2D" parent="WeaponInteractionArea" unique_id=241284209]
-visible = false
-position = Vector2(43, 18)
+[node name="WeaponHitboxR" type="CollisionShape2D" parent="WeaponAttackRight" unique_id=241284209]
+position = Vector2(45, 14)
 rotation = 1.5720258
 shape = SubResource("CapsuleShape2D_i5acl")
+disabled = true
+
+[node name="WeaponAttackLeft" type="Area2D" parent="." unique_id=974881817]
+collision_layer = 8
+collision_mask = 16
+
+[node name="WeaponHitboxL" type="CollisionShape2D" parent="WeaponAttackLeft" unique_id=1539213508]
+position = Vector2(-46.000015, 13.000002)
+rotation = 1.5771921
+shape = SubResource("CapsuleShape2D_fk5o5")
 disabled = true
 
 [node name="PlayerInteraction" type="Area2D" parent="." unique_id=46643777]
@@ -305,7 +343,8 @@ shape = SubResource("CircleShape2D_jmcll")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=24708510]
 
-[node name="MovementController" parent="." unique_id=779695224 instance=ExtResource("9_mov")]
+[node name="MovementController" parent="." unique_id=779695224 node_paths=PackedStringArray("Stats") instance=ExtResource("9_mov")]
+Stats = NodePath("../StatManager")
 
 [node name="StatManager" parent="." unique_id=772458511 instance=ExtResource("7_stat")]
 BaseStatsResource = ExtResource("8_stat_res")

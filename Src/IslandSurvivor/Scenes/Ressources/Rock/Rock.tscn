@@ -5,7 +5,6 @@
 [ext_resource type="PackedScene" uid="uid://biqhbrp7fjfyj" path="res://Nodes/StatsManager/StatsManager.tscn" id="3_tc8id"]
 [ext_resource type="Resource" uid="uid://cqu3ltwqau142" path="res://Resources/Stats/Entity/RockStats.tres" id="4_boi77"]
 
-
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_pv240"]
 size = Vector2(38, 23)
 
@@ -13,6 +12,8 @@ size = Vector2(38, 23)
 radius = 21.095022
 
 [node name="Rock" type="Area2D" unique_id=2011989865 node_paths=PackedStringArray("Stats", "Timer")]
+z_index = 2
+y_sort_enabled = true
 collision_layer = 16
 collision_mask = 8
 script = ExtResource("1_pv240")
