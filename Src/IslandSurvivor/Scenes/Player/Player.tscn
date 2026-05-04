@@ -15,7 +15,7 @@ height = 58.0
 
 [sub_resource type="Animation" id="Animation_fk5o5"]
 resource_name = "ATTACK"
-length = 0.9
+length = 0.6
 step = 0.1
 tracks/0/type = "value"
 tracks/0/imported = false
@@ -343,7 +343,8 @@ shape = SubResource("CircleShape2D_jmcll")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=24708510]
 
-[node name="MovementController" parent="." unique_id=779695224 instance=ExtResource("9_mov")]
+[node name="MovementController" parent="." unique_id=779695224 node_paths=PackedStringArray("Stats") instance=ExtResource("9_mov")]
+Stats = NodePath("../StatManager")
 
 [node name="StatManager" parent="." unique_id=772458511 instance=ExtResource("7_stat")]
 BaseStatsResource = ExtResource("8_stat_res")

@@ -10,9 +10,10 @@ using IslandSurvivor.Nodes.Movement;
 using System;
 using System.Collections.Generic;
 
-public partial class Player : CharacterBody2D
+public partial class Player : CharacterBody2D, IDamageable
 {
     [Export] public StatManager? Stats { get; set; }
+    [Export] public float BaseDamage { get; set; } = 10f;
 
     private PlayerState m_currentState = PlayerState.Idle;
 
@@ -33,7 +34,7 @@ public partial class Player : CharacterBody2D
     public override void _Ready()
     {
         GD.Print("Attaque du joueur : " + Stats?.GetCurrentValue(StatType.Attack));
-        m_interactionLabel.Visible = false;
+        if (m_interactionLabel != null) m_interactionLabel.Visible = false;
 
         m_movementController = GetNodeOrNull<MovementController>("MovementController");
 
@@ -48,12 +49,16 @@ public partial class Player : CharacterBody2D
             m_interactionArea.AreaExited += OnInteractionAreaExited;
         }
 
-        if (m_weaponAreaRight != null)
+        if (m_weaponAreaRight != null && m_weaponAreaLeft != null)
         {
             m_weaponAreaRight.AreaEntered += OnWeaponAreaEntered;
             m_weaponAreaRight.BodyEntered += OnWeaponBodyEntered;
             m_weaponAreaLeft.AreaEntered += OnWeaponAreaEntered;
             m_weaponAreaLeft.BodyEntered += OnWeaponBodyEntered;
+
+            // Désactivé par défaut
+            m_weaponAreaRight.Monitoring = false;
+            m_weaponAreaLeft.Monitoring = false;
         }
     }
 
@@ -70,7 +75,6 @@ public partial class Player : CharacterBody2D
             MoveAndSlide();
             return;
         }
-
 
         ApplyMovement();
         UpdateBestTarget();
@@ -116,8 +120,10 @@ public partial class Player : CharacterBody2D
         else
         {
             // Fallback
-            float speed = Stats?.GetCurrentValue(StatType.Speed) ?? 300f;
-            Velocity = direction * speed;
+            float baseSpeed = 300f;
+            float speedStat = Stats?.GetCurrentValue(StatType.Speed) ?? 0f;
+            float finalSpeed = baseSpeed * (1f + (speedStat * 0.05f));
+            Velocity = direction * finalSpeed;
             MoveAndSlide();
         }
     }
@@ -126,20 +132,22 @@ public partial class Player : CharacterBody2D
     {
         m_bestTarget = m_interactionService.GetBestInteractable(GlobalPosition.X, GlobalPosition.Y, m_nearbyInteractables);
 
-        if (m_bestTarget != null && m_interactionLabel != null)
+        if (m_interactionLabel != null)
         {
-            m_interactionLabel.Text = m_bestTarget.InteractionPrompt;
-            m_interactionLabel.Visible = true;
-        }
-        else if (m_interactionLabel != null)
-        {
-            m_interactionLabel.Visible = false;
+            if (m_bestTarget != null)
+            {
+                m_interactionLabel.Text = m_bestTarget.InteractionPrompt;
+                m_interactionLabel.Visible = true;
+            }
+            else
+            {
+                m_interactionLabel.Visible = false;
+            }
         }
     }
 
     private async void ExecuteInteraction()
     {
-        GD.Print(m_bestTarget == null);
         if (m_bestTarget == null) return;
 
         SetState(PlayerState.Interacting);
@@ -152,7 +160,6 @@ public partial class Player : CharacterBody2D
         }
         else
         {
-            // Fallback if animation is missing
             await ToSignal(GetTree().CreateTimer(0.2f), SceneTreeTimer.SignalName.Timeout);
         }
 
@@ -165,18 +172,11 @@ public partial class Player : CharacterBody2D
         SetState(PlayerState.Attacking);
         m_hitTargetsThisAttack.Clear();
 
+        // Activation de la zone d'arme selon l'orientation
         if (m_sprite != null && m_weaponAreaLeft != null && m_weaponAreaRight != null)
         {
-            if (m_sprite.FlipH)
-            {
-                m_weaponAreaLeft.Monitoring = true;
-                m_weaponAreaRight.Monitoring = false;
-            }
-            else
-            {
-                m_weaponAreaLeft.Monitoring = false;
-                m_weaponAreaRight.Monitoring = true;
-            }
+            m_weaponAreaLeft.Monitoring = m_sprite.FlipH;
+            m_weaponAreaRight.Monitoring = !m_sprite.FlipH;
         }
 
         if (m_animationPlayer != null && m_animationPlayer.HasAnimation("ATTACK"))
@@ -186,49 +186,14 @@ public partial class Player : CharacterBody2D
         }
         else
         {
-            GD.Print("[COMBAT] Attack triggered (no animation found)");
+            GD.Print("[COMBAT] No animation found");
             await ToSignal(GetTree().CreateTimer(0.4f), SceneTreeTimer.SignalName.Timeout);
         }
+
         if (m_weaponAreaLeft != null) m_weaponAreaLeft.Monitoring = false;
         if (m_weaponAreaRight != null) m_weaponAreaRight.Monitoring = false;
 
         SetState(PlayerState.Idle);
-    }
-
-    private void OnWeaponAreaEntered(Area2D p_area)
-    {
-        if (m_currentState != PlayerState.Attacking) return;
-
-        if (p_area is IDamageable damageable)
-        {
-            ApplyDamage(damageable);
-        }
-        else if (p_area.GetParent() is IDamageable parentDamageable)
-        {
-            ApplyDamage(parentDamageable);
-        }
-    }
-
-    private void OnWeaponBodyEntered(Node2D p_body)
-    {
-        if (m_currentState != PlayerState.Attacking) return;
-
-        if (p_body is IDamageable damageable)
-        {
-            ApplyDamage(damageable);
-        }
-    }
-
-    private void ApplyDamage(IDamageable p_target)
-    {
-        if (m_hitTargetsThisAttack.Contains(p_target)) return;
-
-        m_hitTargetsThisAttack.Add(p_target);
-
-        int attackDamage = (int)(Stats?.GetCurrentValue(StatType.Attack) ?? 10f); // Default to 10 if missing
-
-        GD.Print($"[COMBAT] Hit target! Dealing {attackDamage} damage.");
-        p_target.TakeDamage(attackDamage, this);
     }
 
     private void UpdateAnimation()
@@ -251,29 +216,62 @@ public partial class Player : CharacterBody2D
         m_currentState = p_newState;
     }
 
+    public void TakeDamage(int p_amount, object p_attacker)
+    {
+        if (Stats == null) return;
+
+        float currentHealth = Stats.GetCurrentValue(StatType.Health);
+        if (currentHealth <= 0) return;
+
+        Stats.ModifyCurrentValue(StatType.Health, -p_amount);
+    }
+
+    private void ApplyDamage(IDamageable p_target)
+    {
+        if (m_hitTargetsThisAttack.Contains(p_target)) return;
+
+        m_hitTargetsThisAttack.Add(p_target);
+
+        float attackStat = Stats?.GetCurrentValue(StatType.Attack) ?? 0f;
+        float finalDamageFloat = BaseDamage * (1f + (attackStat * 0.05f));
+        int finalDamage = Mathf.RoundToInt(finalDamageFloat);
+
+        GD.Print($"[COMBAT] Hit target! Dealing {finalDamage} damage.");
+        p_target.TakeDamage(finalDamage, this);
+    }
+
+    private void OnWeaponAreaEntered(Area2D p_area)
+    {
+        if (m_currentState != PlayerState.Attacking) return;
+
+        IDamageable? damageable = p_area as IDamageable ?? p_area.GetParent() as IDamageable;
+        if (damageable != null) ApplyDamage(damageable);
+    }
+
+    private void OnWeaponBodyEntered(Node2D p_body)
+    {
+        if (m_currentState != PlayerState.Attacking) return;
+
+        if (p_body is IDamageable damageable) ApplyDamage(damageable);
+    }
+
     private void OnInteractionAreaEntered(Area2D p_area)
     {
-        // LOG DE DEBUG : Si ce message s'affiche, la collision fonctionne !
-        GD.Print("PHYSIQUE : Collision détectée avec le nœud : " + p_area.Name);
+        GD.Print("PHYSIQUE : Collision détectée avec : " + p_area.Name);
+        IInteractable? interactable = p_area as IInteractable ?? p_area.GetParent() as IInteractable;
 
-        IInteractable interactable = p_area as IInteractable ?? p_area.GetParent() as IInteractable;
-
-        if (interactable != null)
+        if (interactable != null && !m_nearbyInteractables.Contains(interactable))
         {
-            GD.Print("LOGIQUE : IInteractable trouvé sur " + p_area.GetParent().Name);
-            if (!m_nearbyInteractables.Contains(interactable))
-                m_nearbyInteractables.Add(interactable);
+            m_nearbyInteractables.Add(interactable);
         }
     }
 
     private void OnInteractionAreaExited(Area2D p_area)
     {
         IInteractable? interactable = p_area as IInteractable ?? p_area.GetParent() as IInteractable;
-
         if (interactable != null)
         {
             m_nearbyInteractables.Remove(interactable);
         }
     }
-
 }

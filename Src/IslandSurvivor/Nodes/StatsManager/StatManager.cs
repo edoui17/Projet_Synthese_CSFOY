@@ -3,6 +3,8 @@ using Godot;
 using Core.Interfaces.Stats;
 using Core.Interfaces;
 using Core.Managers.Stats;
+using Core.Services;
+using Core.Events;
 using IslandSurvivor.Resources;
 
 namespace IslandSurvivor.Nodes;
@@ -11,6 +13,10 @@ public partial class StatManager : Node
 {
     private EntityStats? m_baseStatsResource;
     private IStatTracker m_statTracker;
+    private IEventBus m_localEventBus;
+
+    [Signal]
+    public delegate void LocalStatChangedEventHandler(int p_statType, float p_currentValue, float p_effectiveMaxValue);
 
     [Export]
     public EntityStats? BaseStatsResource
@@ -19,26 +25,37 @@ public partial class StatManager : Node
         set => m_baseStatsResource = value;
     }
 
-    [Signal]
-    public delegate void StatChangedEventHandler(int p_statType, float p_currentValue, float p_effectiveMaxValue);
-
     public override void _Ready()
     {
         base._Ready();
 
-        m_statTracker = IslandSurvivor.Globals.ServiceRegistry.Instance.StatTracker;
+        m_localEventBus = new EventBus();
+        m_statTracker = new StatTracker(m_localEventBus);
 
-        SignalManager.Instance.StatUpgradePurchased += OnStatUpgradePurchased;
+        m_localEventBus.Subscribe<StatChangedEvent>(OnStatChangedEvent);
+
+        if (m_baseStatsResource is PlayerStats)
+        {
+            SignalManager.Instance.StatUpgradePurchased += OnStatUpgradePurchased;
+        }
 
         if (m_baseStatsResource != null)
         {
             Dictionary<StatType, float> initialStats = new Dictionary<StatType, float>
             {
-                { StatType.Health, m_baseStatsResource.MaxHealth },
-                { StatType.Attack, m_baseStatsResource.Attack },
-                { StatType.Speed, m_baseStatsResource.Speed },
-                { StatType.Luck, m_baseStatsResource.Luck }
+                { StatType.Health, m_baseStatsResource.MaxHealth }
             };
+
+            if (m_baseStatsResource is CombatEntityStats combatStats)
+            {
+                initialStats.Add(StatType.Attack, combatStats.Attack);
+                initialStats.Add(StatType.Speed, combatStats.Speed);
+            }
+
+            if (m_baseStatsResource is PlayerStats playerStats)
+            {
+                initialStats.Add(StatType.Luck, playerStats.Luck);
+            }
 
             m_statTracker.InitializeStats(initialStats);
         }
@@ -46,8 +63,17 @@ public partial class StatManager : Node
         {
             GD.PushWarning("StatManager: BaseStatsResource is not assigned.");
         }
+    }
 
-        m_statTracker.OnAnyStatChanged.AddListener(OnCoreStatChanged);
+    public override void _Process(double delta)
+    {
+        base._Process(delta);
+        m_localEventBus?.ProcessEvents();
+    }
+
+    private void OnStatChangedEvent(StatChangedEvent e)
+    {
+        EmitSignal(SignalName.LocalStatChanged, (int)e.StatType, e.CurrentValue, e.EffectiveMaxValue);
     }
 
     public float GetCurrentValue(StatType p_statType)
@@ -75,23 +101,23 @@ public partial class StatManager : Node
         m_statTracker.AddPermanentBonus(p_statType, p_amount);
     }
 
-    private void OnCoreStatChanged(object? p_sender, StatChangedEventArgs p_args)
-    {
-        EmitSignal(SignalName.StatChanged, (int)p_args.StatType, p_args.CurrentValue, p_args.EffectiveMaxValue);
-    }
-
     private void OnStatUpgradePurchased(int p_statType)
     {
-        // Each upgrade adds +1 permanent bonus to the stat
-        AddPermanentBonus((StatType)p_statType, 1f);
-        GD.Print($"[StatManager] Received StatUpgradePurchased for {(StatType)p_statType}. Adding +1 permanent bonus.");
+        StatType type = (StatType)p_statType;
+        float amount = type == StatType.Health ? 10f : 1f;
+
+        AddPermanentBonus(type, amount);
+        GD.Print($"[StatManager] Received StatUpgradePurchased for {type}. Adding +{amount} permanent bonus.");
     }
 
     protected override void Dispose(bool p_disposing)
     {
-        if (p_disposing && m_statTracker != null)
+        if (p_disposing)
         {
-            m_statTracker.OnAnyStatChanged.RemoveListener(OnCoreStatChanged);
+            if (m_localEventBus != null)
+            {
+                m_localEventBus.Unsubscribe<StatChangedEvent>(OnStatChangedEvent);
+            }
             if (SignalManager.Instance != null)
             {
                 SignalManager.Instance.StatUpgradePurchased -= OnStatUpgradePurchased;
