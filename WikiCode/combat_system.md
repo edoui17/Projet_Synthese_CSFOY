@@ -16,6 +16,6 @@ The combat system for IslandSurvivor uses a unified Area of Effect (AoE) attack 
 5.  **Damage Application**: `TakeDamage(amount, playerInstance)` is invoked on each valid target in the `HashSet`.
 
 ## Subsystem Integrations
-*   **StatManager**: Used by both the attacker (to determine outgoing damage) and the defender (to deduct health from `StatType.Health`).
-*   **InventorySystem**: When a resource's health reaches 0, it instantiates a `ResourceItem` and broadcasts its destruction via `SignalManager.Instance.EmitMaterialDestroyed()`. The global `InventoryNode` listens to this signal and increments the player's inventory.
-*   **ScoreManager**: When an enemy (like `Soldier`) dies, it notifies the core `ScoreTracker` via `ServiceRegistry.Instance.ScoreTracker.AddScore(int)` to increment the player's score.
+*   **StatManager**: Since the major stats refactoring, every entity has an isolated `StatManager` utilizing a local `EventBus`. The attacker determines its outgoing damage (Base Damage + Attack multiplier). The defender deducts health and uses the `LocalStatChanged` signal to trigger its death sequence if health reaches 0.
+*   **InventorySystem**: When a resource (or an enemy with drops) reaches 0 health, it receives the `p_attacker` object. It extracts the attacker's local `StatManager` to calculate the `Luck` bonus, instantiates a `ResourceItem`, and broadcasts its destruction via `SignalManager.Instance.EmitMaterialDestroyed()`. The global `InventoryNode` listens to this signal and increments the player's inventory.
+*   **ScoreManager**: When an aggressive enemy (like `Soldier`) dies, it notifies the core `ScoreTracker` via `ServiceRegistry.Instance.ScoreTracker.AddScore(int)` to increment the player's score.

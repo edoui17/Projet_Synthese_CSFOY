@@ -20,13 +20,28 @@ public partial class Gold : Area2D, IOre, IDamageable
 
     
 
+    private object? m_lastAttacker;
+
     public override void _Ready()
     {
         if (Stats != null)
         {
-            Stats.SetCurrentValue(StatType.Health, 5000);
+            Stats.SetCurrentValue(StatType.Health, 30);
+            Stats.Connect(StatManager.SignalName.LocalStatChanged, Callable.From<int, float, float>(OnStatChanged));
         }
         AreaEntered += OnAreaEntered;
+    }
+
+    private void OnStatChanged(int p_statType, float p_currentValue, float p_effectiveMaxValue)
+    {
+        if ((StatType)p_statType == StatType.Health && p_currentValue <= 0)
+        {
+            if (Stats != null)
+            {
+                Stats.Disconnect(StatManager.SignalName.LocalStatChanged, Callable.From<int, float, float>(OnStatChanged));
+            }
+            DestroyResource(m_lastAttacker);
+        }
     }
 
     private void OnAreaEntered(Area2D p_area)
@@ -36,15 +51,36 @@ public partial class Gold : Area2D, IOre, IDamageable
             if (Timer == null || Timer.IsStopped())
             {
                 Timer?.Start();
-               TakeDamage(10, this); // Example damage value, adjust as needed
+               TakeDamage(10, p_area.GetParent() ?? p_area); // Example damage value, adjust as needed
             }
         }
     }
 
-    public void DestroyResource()
+    public void DestroyResource(object p_attacker = null)
     {
         Random random = new();
         int quantity = random.Next(1, 5);
+
+        float luck = 0f;
+        if (p_attacker is Node GodotAttacker)
+        {
+            StatManager attackerStats = GodotAttacker.GetNodeOrNull<StatManager>("StatManager");
+            if (attackerStats != null)
+            {
+                luck = attackerStats.GetCurrentValue(StatType.Luck);
+            }
+        }
+
+        float bonusChance = luck * 0.05f;
+        int bonusQuantity = (int)bonusChance;
+        float fractionalChance = bonusChance - bonusQuantity;
+
+        if (random.NextDouble() < fractionalChance)
+        {
+            bonusQuantity++;
+        }
+
+        quantity += bonusQuantity;
 
         ResourceItem item = new ResourceItem(EntityId, MaterialName, MaterialType, IconPath);
 
@@ -61,13 +97,9 @@ public partial class Gold : Area2D, IOre, IDamageable
     {
         if (Stats == null) return;
 
+        m_lastAttacker = p_attacker;
         Stats.ModifyCurrentValue(StatType.Health, - p_amount);
 
         IslandSurvivor.Extensions.NodeExtensions.PlayHitFlash(this);
-
-        if (Stats.GetCurrentValue(StatType.Health) <= 0)
-        {
-            DestroyResource();
-        }
     }
 }

@@ -181,7 +181,8 @@ position = Vector2(-7, 1.0000002)
 scale = Vector2(0.99999994, 0.99999994)
 shape = SubResource("CapsuleShape2D_v2bfp")
 
-[node name="MovementController" parent="." unique_id=1324976384 instance=ExtResource("5_hx8j2")]
+[node name="MovementController" parent="." unique_id=1324976384 node_paths=PackedStringArray("Stats") instance=ExtResource("5_hx8j2")]
+Stats = NodePath("../StatsManager")
 
 [node name="StatsManager" parent="." unique_id=1475410971 instance=ExtResource("6_hx8j2")]
 BaseStatsResource = ExtResource("7_8t73o")

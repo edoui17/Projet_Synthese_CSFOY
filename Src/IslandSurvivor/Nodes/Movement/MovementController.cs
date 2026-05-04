@@ -28,16 +28,10 @@ public partial class MovementController : Node
         if (m_parentBody == null) return;
 
         float baseSpeedToUse = p_customBaseSpeed ?? BaseSpeed;
-        float speedMultiplier = 1.0f;
 
-        if (Stats != null)
-        {
-            float speedStat = Stats.GetCurrentValue(StatType.Speed);
-            // Treat the stat as a percentage increase. For example, 10 means +10% speed.
-            speedMultiplier += (speedStat / 100f);
-        }
-
-        float finalSpeed = baseSpeedToUse * speedMultiplier;
+        // 1 stat point = +5% speed
+        float speedStat = Stats?.GetCurrentValue(StatType.Speed) ?? 0f;
+        float finalSpeed = baseSpeedToUse * (1f + (speedStat * 0.05f));
 
         m_parentBody.Velocity = p_direction * finalSpeed;
         m_parentBody.MoveAndSlide();
