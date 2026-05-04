@@ -5,6 +5,7 @@ using IslandSurvivor.Logic.Entities;
 using IslandSurvivor.Interfaces;
 using IslandSurvivor.Nodes.Movement;
 using Core.Interfaces;
+using Core.Interfaces.Stats;
 using IslandSurvivor.Nodes;
 using Core.Managers.Stats;
 
@@ -23,6 +24,8 @@ public partial class Sheep : CharacterBody2D, INpc, IDamageable
 
     public string CurrentState => m_passiveController?.CurrentState ?? NpcStates.IDLE;
 
+    private object? m_lastAttacker;
+
     public override void _Ready()
     {
         m_passiveController = new PassiveController();
@@ -30,6 +33,19 @@ public partial class Sheep : CharacterBody2D, INpc, IDamageable
         if (Stats != null)
         {
             Stats.SetCurrentValue(StatType.Health, 3);
+            Stats.Connect(StatManager.SignalName.LocalStatChanged, Callable.From<int, float, float>(OnStatChanged));
+        }
+    }
+
+    private void OnStatChanged(int p_statType, float p_currentValue, float p_effectiveMaxValue)
+    {
+        if ((StatType)p_statType == StatType.Health && p_currentValue <= 0)
+        {
+            if (Stats != null)
+            {
+                Stats.Disconnect(StatManager.SignalName.LocalStatChanged, Callable.From<int, float, float>(OnStatChanged));
+            }
+            HandleDeath(m_lastAttacker);
         }
     }
 
@@ -74,6 +90,8 @@ public partial class Sheep : CharacterBody2D, INpc, IDamageable
     {
         if (m_passiveController.CurrentState == NpcStates.DEAD) return;
 
+        m_lastAttacker = p_attacker;
+
         if (Stats != null)
         {
             // Just apply damage logically here since we don't have a direct Stats.TakeDamage method visible
@@ -96,27 +114,41 @@ public partial class Sheep : CharacterBody2D, INpc, IDamageable
                 m_passiveController.StartFleeing(GlobalPosition, attackerNode.GlobalPosition);
 
                 // Visual feedback
-                Modulate = new Color(1, 0.5f, 0.5f);
-                GetTree().CreateTimer(0.2f).Timeout += () =>
-                {
-                    if (IsInstanceValid(this)) Modulate = Colors.White;
-                };
+                IslandSurvivor.Extensions.NodeExtensions.PlayHitFlash(this);
             }
-        }
-
-        if (isDead)
-        {
-            HandleDeath();
         }
     }
 
-    private void HandleDeath()
+    private void HandleDeath(object p_attacker = null)
     {
         m_passiveController.SetDead();
 
         if (m_wasKilledByPlayer)
         {
             int meatAmount = 1;
+
+            float luck = 0f;
+            if (p_attacker is Node GodotAttacker)
+            {
+                StatManager attackerStats = GodotAttacker.GetNodeOrNull<StatManager>("StatManager");
+                if (attackerStats != null)
+                {
+                    luck = attackerStats.GetCurrentValue(StatType.Luck);
+                }
+            }
+
+            float bonusChance = luck * 0.05f;
+            int bonusQuantity = (int)bonusChance;
+            float fractionalChance = bonusChance - bonusQuantity;
+
+            Random random = new();
+            if (random.NextDouble() < fractionalChance)
+            {
+                bonusQuantity++;
+            }
+
+            meatAmount += bonusQuantity;
+
             ResourceItem meatResource = new ResourceItem("meat_01", "Viande", "Meat", "res://Assets/TinySwords/TinySwords(Update010)/Deco/17.png");
 
             if (SignalManager.Instance != null)

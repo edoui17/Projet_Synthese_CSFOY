@@ -138,12 +138,16 @@ _data = {
 }
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ifvjj"]
-size = Vector2(42, 32)
+size = Vector2(43, 33)
 
-[node name="Sheep" type="CharacterBody2D" unique_id=317789339 node_paths=PackedStringArray("Stats")]
+[node name="Sheep" type="CharacterBody2D" unique_id=317789339 node_paths=PackedStringArray("Stats", "m_movementController", "m_sprite")]
+collision_layer = 20
+collision_mask = 9
 motion_mode = 1
 script = ExtResource("1_d7b5k")
 Stats = NodePath("StatsManager")
+m_movementController = NodePath("MovementController")
+m_sprite = NodePath("Sprite2D")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1496846451]
 libraries/ = SubResource("AnimationLibrary_366kf")
@@ -156,8 +160,10 @@ hframes = 8
 [node name="StatsManager" parent="." unique_id=1475410971 instance=ExtResource("4_cdkpw")]
 BaseStatsResource = ExtResource("5_ifvjj")
 
-[node name="MovementController" parent="." unique_id=473945652 instance=ExtResource("6_mov")]
+[node name="MovementController" parent="." unique_id=473945652 node_paths=PackedStringArray("Stats") instance=ExtResource("6_mov")]
+Stats = NodePath("../StatsManager")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=2005726366]
-light_mask = 4
+light_mask = 5
+position = Vector2(0.5, 0.5)
 shape = SubResource("RectangleShape2D_ifvjj")

@@ -17,7 +17,6 @@ public partial class ServiceRegistry : Node
 
   public IInventoryManager InventoryManager { get; private set; }
   public IShopManager ShopManager { get; private set; }
-  public IStatTracker StatTracker { get; private set; }
   public IScoreTracker ScoreTracker { get; private set; }
   public INavigationService NavigationService { get; private set; }
   public IEventBus EventBus { get; private set; }
@@ -38,7 +37,6 @@ public partial class ServiceRegistry : Node
 
     InventoryManager = new InventoryManager(EventBus);
     ShopManager = new ShopManager(EventBus);
-    StatTracker = new StatTracker(EventBus);
 
     // Pass Godot specific implementation of ISaveService
     ISaveService saveService = new GodotSaveService();

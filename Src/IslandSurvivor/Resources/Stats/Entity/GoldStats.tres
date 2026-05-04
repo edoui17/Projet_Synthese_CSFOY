@@ -4,8 +4,4 @@
 
 [resource]
 script = ExtResource("1_vspx4")
-MaxHealth = 5000.0
-Attack = 0.0
-Speed = 0.0
-Luck = 0.0
 metadata/_custom_type_script = "uid://d0614em0lx15v"
