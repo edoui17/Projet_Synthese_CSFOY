@@ -97,7 +97,7 @@ animations = [{
 }],
 "loop": true,
 "name": &"Attack",
-"speed": 5.0
+"speed": 1.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -155,8 +155,11 @@ animations = [{
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_v2bfp"]
 radius = 15.0
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_e1oyk"]
-radius = 250.0
+[sub_resource type="ConvexPolygonShape2D" id="ConvexPolygonShape2D_cufr3"]
+points = PackedVector2Array(136.1136, -87.149826, 314.62393, -185.81113, 335.53763, -0.72029537, 349.35388, 152.26247, 184.3324, 85.31451, 0, 0)
+
+[sub_resource type="ConvexPolygonShape2D" id="ConvexPolygonShape2D_e1oyk"]
+points = PackedVector2Array(-13.612099, 97.322716, 10.449953, 33.057507, -2.877327, 6.68738, -53.910072, -13.02706, -17.485147, -32.346092, 15.161295, -32.804497, 46.210938, -13.912188, 55.17482, 11.477749, 49.720512, 41.879234, 29.911264, 70.889465)
 
 [node name="Soldier" type="CharacterBody2D" unique_id=666187867 node_paths=PackedStringArray("Stats")]
 y_sort_enabled = true
@@ -164,13 +167,14 @@ collision_layer = 17
 collision_mask = 9
 motion_mode = 1
 script = ExtResource("1_lf5hw")
-Stats = NodePath("StatsManager")
+Stats = NodePath("StatManager")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=586828728]
 position = Vector2(-0.07618117, 1.1660129)
 scale = Vector2(1.1362101, 1.1788126)
 sprite_frames = SubResource("SpriteFrames_8an0u")
-animation = &"Moving"
+animation = &"Attack"
+frame_progress = 0.6533148
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=22620120]
 light_mask = 4
@@ -181,9 +185,9 @@ scale = Vector2(0.99999994, 0.99999994)
 shape = SubResource("CapsuleShape2D_v2bfp")
 
 [node name="MovementController" parent="." unique_id=1324976384 node_paths=PackedStringArray("Stats") instance=ExtResource("5_hx8j2")]
-Stats = NodePath("../StatsManager")
+Stats = NodePath("../StatManager")
 
-[node name="StatsManager" parent="." unique_id=1475410971 instance=ExtResource("6_hx8j2")]
+[node name="StatManager" parent="." unique_id=1475410971 instance=ExtResource("6_hx8j2")]
 BaseStatsResource = ExtResource("7_8t73o")
 
 [node name="LineOfSightRay" type="RayCast2D" parent="." unique_id=1704468108]
@@ -196,4 +200,13 @@ collision_mask = 5
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="DetectionArea" unique_id=245786031]
 position = Vector2(1, 1)
-shape = SubResource("CircleShape2D_e1oyk")
+rotation = 0.03385403
+shape = SubResource("ConvexPolygonShape2D_cufr3")
+
+[node name="Area2D" type="Area2D" parent="." unique_id=48499246]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=364693784]
+visible = false
+position = Vector2(34.000004, -1.0000029)
+rotation = 0.8926729
+shape = SubResource("ConvexPolygonShape2D_e1oyk")

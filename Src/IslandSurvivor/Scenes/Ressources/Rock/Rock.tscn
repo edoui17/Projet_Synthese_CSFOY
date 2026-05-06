@@ -17,7 +17,7 @@ y_sort_enabled = true
 collision_layer = 16
 collision_mask = 8
 script = ExtResource("1_pv240")
-Stats = NodePath("StatsManager")
+Stats = NodePath("StatManager")
 Timer = NodePath("Timer")
 
 [node name="StaticBody2D" type="StaticBody2D" parent="." unique_id=2091260846]
@@ -36,5 +36,5 @@ texture = ExtResource("2_45lah")
 
 [node name="Timer" type="Timer" parent="." unique_id=17732308]
 
-[node name="StatsManager" parent="." unique_id=1475410971 instance=ExtResource("3_tc8id")]
+[node name="StatManager" parent="." unique_id=1475410971 instance=ExtResource("3_tc8id")]
 BaseStatsResource = ExtResource("4_boi77")

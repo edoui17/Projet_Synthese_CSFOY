@@ -145,7 +145,7 @@ collision_layer = 20
 collision_mask = 9
 motion_mode = 1
 script = ExtResource("1_d7b5k")
-Stats = NodePath("StatsManager")
+Stats = NodePath("StatManager")
 m_movementController = NodePath("MovementController")
 m_sprite = NodePath("Sprite2D")
 
@@ -157,11 +157,11 @@ autoplay = &"IDLE"
 texture = ExtResource("2_d7b5k")
 hframes = 8
 
-[node name="StatsManager" parent="." unique_id=1475410971 instance=ExtResource("4_cdkpw")]
+[node name="StatManager" parent="." unique_id=1475410971 instance=ExtResource("4_cdkpw")]
 BaseStatsResource = ExtResource("5_ifvjj")
 
 [node name="MovementController" parent="." unique_id=473945652 node_paths=PackedStringArray("Stats") instance=ExtResource("6_mov")]
-Stats = NodePath("../StatsManager")
+Stats = NodePath("../StatManager")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=2005726366]
 light_mask = 5
