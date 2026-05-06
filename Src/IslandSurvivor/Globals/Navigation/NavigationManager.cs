@@ -26,11 +26,11 @@ public partial class NavigationManager : Node
 
     public override void _Ready()
     {
-        SignalManager.Instance.NavigationRequested += OnNavigationRequested;
-        GD.Print("NavigationManager ready. Listening for navigation requests.");
+        SignalManager.Instance.TeleportRequested += OnTeleportRequested;
+        GD.Print("NavigationManager ready. Listening for teleport requests.");
     }
 
-    private async void OnNavigationRequested(string p_islandId, string p_scenePath, string p_biome, int p_difficulty, int p_resourceCost, int p_dangerLevel)
+    private async void OnTeleportRequested(string p_islandId, string p_scenePath, string p_biome, int p_difficulty, int p_resourceCost, int p_dangerLevel)
     {
         GD.Print($"[Navigation] Changing scene to {p_scenePath} (Island ID: {p_islandId})");
 
@@ -100,7 +100,7 @@ public partial class NavigationManager : Node
     {
         if (SignalManager.Instance != null)
         {
-            SignalManager.Instance.NavigationRequested -= OnNavigationRequested;
+            SignalManager.Instance.TeleportRequested -= OnTeleportRequested;
         }
     }
 }

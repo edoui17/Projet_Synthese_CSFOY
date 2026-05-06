@@ -45,3 +45,21 @@
 ### 2026-04-30 - Decentralized Stat Tracking and Godot Signals
 - **Discovery**: Relying on a global `ServiceRegistry.Instance.StatTracker` caused all entities to share exactly the same health, making independent combat interactions impossible.
 - **Technical Detail**: The solution leverages pure C# composition combined with Godot Signals. The Godot `StatManager` node was refactored to spawn its own *local* `EventBus` and `StatTracker` upon `_Ready()`, creating true instances per entity. To communicate updates up to Godot components (like floating HP bars) without polluting the global `SignalManager`, `StatManager` listens to the C# `StatChangedEvent` on its isolated bus and re-emits a `[Signal] LocalStatChanged`. This keeps Godot UI components completely agnostic of Core interfaces while preserving N-Tier boundaries per entity.
+
+# Forge Technical Log
+
+## 2026-04-24 - Line of Sight Implementation
+- **Quirk/Discovery:** When implementing `RayCast2D` checks in the `_PhysicsProcess`, it is important to call `ForceRaycastUpdate()` after modifying `TargetPosition` to ensure the collision check is accurate for the current frame before evaluating `.IsColliding()`. This prevents off-by-one frame lag in detection.
+- **Quirk/Discovery:** Godot will throw `can_instantiate: Cannot instantiate C# script because the associated class could not be found` if a pure C# class (like `AgressorController` that does not inherit from `Node`) is attached directly to a node in the `.tscn` file. Pure logic scripts must be instantiated manually in the C# script of the node they belong to (e.g., `_logic = new AgressorController()`).
+- **Quirk/Discovery:** When using `RayCast2D` for obstacle detection, if `IsColliding()` is checked, it will hit *anything* on its Collision Mask. Therefore, if the RayCast is meant to detect walls *between* the enemy and the player, it needs to explicitly check if the hit `GodotObject` is the player. If it hits something else, it's an obstacle. If the `TargetPosition` is set to the player's position, and the ray hits *nothing*, it could mean the player is out of range, or the ray doesn't interact with the player's layer but reached the target without hitting a wall.
+
+### RayCast2D TargetPosition Quirk
+When adjusting a `RayCast2D`'s `TargetPosition` via code attached to a parent node to point toward a global target (like the Player), you must convert the target's global position into local coordinates. `TargetPosition` uses the local coordinate space of the RayCast itself.
+**Incorrect:** `Vector2 targetDirection = target.GlobalPosition - GlobalPosition;` (This breaks when parent nodes rotate or move).
+**Correct:** `Vector2 targetLocalPosition = ToLocal(target.GlobalPosition);` (Assuming the RayCast2D is at 0,0 relative to the script's parent).
+
+## 2024-05-18 - Signal-Based Attack Logic vs Area Polling
+- **Quirk/Discovery:** In Godot, when activating a `CollisionShape2D` hitbox mid-animation via `AnimationPlayer` (e.g., turning `disabled` off at 0.2s), polling for overlapping areas manually in the same C# function call using `GetOverlappingAreas()` will fail if called instantly.
+  - Using `await ToSignal(GetTree().CreateTimer(0.25f), SceneTreeTimer.SignalName.Timeout)` and then `GetOverlappingAreas()` works but can feel brittle.
+  - The more idiomatic Godot solution is relying on the signals `AreaEntered` and `BodyEntered` emitted natively by the `Area2D` when the `disabled` flag flips to `false` during the animation frame.
+- **Architectural Shift:** Moving from a procedural execution list to an event-driven `HashSet<IDamageable>` tracking mechanism ensures single-hits per target per attack frame while leveraging Godot's built-in physics event queue.
