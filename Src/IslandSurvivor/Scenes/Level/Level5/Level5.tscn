@@ -11,10 +11,10 @@
 
 [node name="Main" unique_id=956225192 instance=ExtResource("1_base")]
 
-[node name="Map5" parent="MapContainer" index="0" unique_id=888819281 instance=ExtResource("2_map")]
+[node name="Map5" parent="MapContainer" parent_id_path=PackedInt32Array(179494246) index="0" unique_id=888819281 instance=ExtResource("2_map")]
 position = Vector2(-1, 0)
 
-[node name="Player" parent="." index="1"]
+[node name="Player" parent="." index="1" unique_id=108008]
 position = Vector2(409, -226)
 
 [node name="ResourceZone" type="Node2D" parent="." index="2" unique_id=800104028 node_paths=PackedStringArray("SpawningArea")]
@@ -34,6 +34,3 @@ uv = PackedVector2Array(-277.30957, 36.86975)
 
 [node name="Portal" parent="." index="3" unique_id=2065766671 instance=ExtResource("3_portal")]
 position = Vector2(353, -109)
-
-[node name="CanvasLayer" parent="." index="5"]
-visible = false

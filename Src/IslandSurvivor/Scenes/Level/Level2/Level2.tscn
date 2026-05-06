@@ -37,8 +37,5 @@ position = Vector2(-369, -247)
 [node name="Portal" parent="." index="5" unique_id=504895432 instance=ExtResource("3_portal")]
 position = Vector2(0, 50)
 
-[node name="CanvasLayer" parent="." index="7"]
-visible = false
-
 [node name="Soldier" parent="." index="8" unique_id=666187867 instance=ExtResource("5_abuu6")]
 position = Vector2(70, -424)

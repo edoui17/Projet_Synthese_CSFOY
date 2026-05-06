@@ -6,11 +6,8 @@
 
 [node name="Main" unique_id=1668444121 instance=ExtResource("1_base")]
 
-[node name="Map4" parent="MapContainer" index="0" unique_id=717091441 instance=ExtResource("2_map")]
+[node name="Map4" parent="MapContainer" parent_id_path=PackedInt32Array(179494246) index="0" unique_id=717091441 instance=ExtResource("2_map")]
 position = Vector2(-1, 0)
 
 [node name="Portal" parent="." index="2" unique_id=1825158975 instance=ExtResource("3_portal")]
 position = Vector2(0, 50)
-
-[node name="CanvasLayer" parent="." index="4"]
-visible = false
