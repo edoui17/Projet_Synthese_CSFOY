@@ -19,3 +19,7 @@ To finalize the combat system integration for the Soldier, follow these steps in
    - Select the `AnimatedSprite2D` node on the `Soldier`.
    - Ensure an animation named exactly `Attack` exists (case-sensitive as per the code `m_animatedSprite.Play("Attack");`).
    - Confirm that the `Moving` and `Idle` animations exist and are spelled correctly.
+
+4. **Verify Soldier Max Health**:
+   - Open `res://Resources/Stats/Entity/SoldierStats.tres`.
+   - Update the `MaxHealth` property in the inspector to `200.0`. I have removed the hardcoded `10` HP value in the script, so it will now correctly pull the value from this `.tres` resource.
