@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using System.Collections.Generic;
 using Core.Domain;
 using IslandSurvivor.Logic.Entities;
 using IslandSurvivor.Interfaces;
@@ -8,6 +9,7 @@ using Core.Interfaces;
 using Core.Interfaces.Stats;
 using IslandSurvivor.Nodes;
 using Core.Managers.Stats;
+using Core.Interfaces.Entities;
 
 public partial class Soldier : CharacterBody2D, INpc, IEnemy, IDamageable
 {
@@ -30,6 +32,7 @@ public partial class Soldier : CharacterBody2D, INpc, IEnemy, IDamageable
     private Area2D m_hitboxArea;
     private RayCast2D m_lineOfSightRay;
 
+    private HashSet<IDamageable> m_playersInHitbox = new HashSet<IDamageable>();
     public string CurrentState => m_agressorController?.CurrentState ?? NpcStates.IDLE;
 
     private object? m_lastAttacker;
@@ -72,6 +75,7 @@ public partial class Soldier : CharacterBody2D, INpc, IEnemy, IDamageable
         else
         {
             m_hitboxArea.BodyEntered += OnHitboxAreaBodyEntered;
+            m_hitboxArea.BodyExited += OnHitboxAreaBodyExited;
         }
 
         if (m_lineOfSightRay == null)
@@ -81,7 +85,6 @@ public partial class Soldier : CharacterBody2D, INpc, IEnemy, IDamageable
 
         if (Stats != null)
         {
-            Stats.SetCurrentValue(StatType.Health, 10);
             // Example for base damage. Can use StatType.Attack if it exists in StatType
             Stats.Connect(StatManager.SignalName.LocalStatChanged, Callable.From<int, float, float>(OnStatChanged));
         }
@@ -105,6 +108,25 @@ public partial class Soldier : CharacterBody2D, INpc, IEnemy, IDamageable
 
         bool hasLineOfSight = CheckLineOfSight();
         string previousState = m_agressorController.CurrentState;
+
+        // Handle Attacking State
+        if (m_playersInHitbox.Count > 0 && m_agressorController is IAgressorController controller && controller.CanAttack())
+        {
+            controller.StartAttack();
+            // Apply damage mid-animation or immediately. Since we have duration, we can apply here
+            foreach (var player in m_playersInHitbox)
+            {
+                GD.Print("[Soldier] Applying damage to player!");
+                player.TakeDamage(5, this); // Adjust damage value as needed
+            }
+        }
+
+        if (m_agressorController.CurrentState == NpcStates.ATTACK)
+        {
+            m_agressorController.Update((float)p_delta, m_targetPlayer != null, hasLineOfSight);
+            UpdateAnimation(Vector2.Zero);
+            return; // Stop moving while attacking
+        }
 
         m_agressorController.Update((float)p_delta, m_targetPlayer != null, hasLineOfSight);
 
@@ -160,6 +182,11 @@ public partial class Soldier : CharacterBody2D, INpc, IEnemy, IDamageable
     {
         if (m_animatedSprite == null) return;
 
+        if (m_agressorController.CurrentState == NpcStates.ATTACK)
+        {
+            m_animatedSprite.Play("Attack");
+            return;
+        }
         if (Velocity.LengthSquared() > 0)
         {
             m_animatedSprite.Play("Moving");
@@ -236,8 +263,17 @@ public partial class Soldier : CharacterBody2D, INpc, IEnemy, IDamageable
 
         if (p_body.IsInGroup("Player") && p_body is IDamageable playerDamageable)
         {
-            GD.Print("[Soldier] Player in attack range, applying damage!");
-            playerDamageable.TakeDamage(5, this);
+            GD.Print("[Soldier] Player entered attack range!");
+            m_playersInHitbox.Add(playerDamageable);
+        }
+    }
+
+    private void OnHitboxAreaBodyExited(Node2D p_body)
+    {
+        if (p_body.IsInGroup("Player") && p_body is IDamageable playerDamageable)
+        {
+            GD.Print("[Soldier] Player exited attack range.");
+            m_playersInHitbox.Remove(playerDamageable);
         }
     }
 

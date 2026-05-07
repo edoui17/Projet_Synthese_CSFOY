@@ -18,3 +18,8 @@ When adjusting a `RayCast2D`'s `TargetPosition` via code attached to a parent no
 ## 2024-05-18 - Melee Hitbox Implementation
 - **Architectural Shift:** For enemy melee attacks, instead of using continuous overlap checks via `GetOverlappingBodies()`, a dedicated `HitboxArea` (`Area2D`) handles collision tracking. The `BodyEntered` signal ensures that damage is applied instantly (once) upon contact when the player enters the area.
 - **Quirk/Discovery:** It's important to configure the Godot Collision Masks accurately. To prevent enemies hitting themselves or other entities, the `HitboxArea` mask is set explicitly to the Player layer (Layer 3), and the logic enforces that the target is in the 'Player' group and implements `IDamageable`.
+
+## Combat System Update & Architecture
+
+-   **Godot Quirks:** When dynamically switching states from an Area2D overlap check (like a melee `HitboxArea`), it's safer to maintain a `HashSet<IDamageable>` of currently overlapping targets using `BodyEntered` and `BodyExited` rather than relying solely on `GetOverlappingBodies()`. This allows a continuously updated reference to targets, especially useful when an attack has a duration and we need to verify if the target is still in range during the attack frame.
+-   **Architecture:** Formalized `IAgressorController` in `Src/Core/Interfaces/Entities/` to define the state machine API for aggressive NPCs. By moving attack duration and cooldown tracking into the core controller, the Godot client (`Soldier.cs`) simply queries `CanAttack()` and `StartAttack()`, mapping these logical states to visual animations (`m_animatedSprite.Play("Attack")`) without polluting the Godot script with timer logic.

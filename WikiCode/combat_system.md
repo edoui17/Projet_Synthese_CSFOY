@@ -24,3 +24,16 @@ The combat system for IslandSurvivor uses a unified Area of Effect (AoE) attack 
 *   **StatManager**: Since the major stats refactoring, every entity has an isolated `StatManager` utilizing a local `EventBus`. The attacker determines its outgoing damage (Base Damage + Attack multiplier). The defender deducts health and uses the `LocalStatChanged` signal to trigger its death sequence if health reaches 0.
 *   **InventorySystem**: When a resource (or an enemy with drops) reaches 0 health, it receives the `p_attacker` object. It extracts the attacker's local `StatManager` to calculate the `Luck` bonus, instantiates a `ResourceItem`, and broadcasts its destruction via `SignalManager.Instance.EmitMaterialDestroyed()`. The global `InventoryNode` listens to this signal and increments the player's inventory.
 *   **ScoreManager**: When an aggressive enemy (like `Soldier`) dies, it notifies the core `ScoreTracker` via `ServiceRegistry.Instance.ScoreTracker.AddScore(int)` to increment the player's score.
+## Enemy Combat System (Melee)
+
+The enemy combat system in IslandSurvivor follows the N-Tier architecture, separating business logic from the Godot client representation.
+
+### Core Logic (Src/Core)
+- **Interfaces:** `IAttackable`, `IDamageable` dictate the fundamental interaction for dealing and receiving damage.
+- **Controllers:** `IAgressorController` handles the state machine for aggressive entities. It tracks states (`IDLE`, `CHASE`, `ATTACK`, `DEAD`) and manages attack cooldowns and durations purely in C# logic, oblivious to Godot frames.
+
+### Godot Client (Src/IslandSurvivor)
+- **Hit Detection:** Melee attacks use dedicated `Area2D` nodes (`HitboxArea` on enemies, `WeaponAttack` on players).
+- **Target Tracking:** Entities utilize `BodyEntered` and `BodyExited` signals to maintain a `HashSet<IDamageable>` of currently overlapping targets. This approach is more reliable than polling `GetOverlappingBodies()` mid-animation.
+- **Visuals:** The `_PhysicsProcess` queries the Controller's current state. If the state is `ATTACK`, movement is halted, and the `AnimatedSprite2D` transitions to the "Attack" animation.
+- **Stats Integration:** Damage calculations and health modifications are processed through the attached `StatManager`, ensuring all entity stats are centralized and driven by `EntityStats` resources.
