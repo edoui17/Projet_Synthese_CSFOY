@@ -17,6 +17,12 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<AppDbContext>(p_options =>
     p_options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+// Register DI Repositories
+builder.Services.AddScoped<Core.Interfaces.IPlayerRepository, Infrastructure.Repositories.PlayerRepository>();
+builder.Services.AddScoped<Core.Interfaces.IInventoryRepository, Infrastructure.Repositories.InventoryRepository>();
+builder.Services.AddScoped<Core.Interfaces.IStatsRepository, Infrastructure.Repositories.StatsRepository>();
+builder.Services.AddScoped<Core.Interfaces.IAuthRepository, Infrastructure.Repositories.AuthRepository>();
+
 WebApplication app = builder.Build();
 
 // Configure the HTTP request pipeline.
