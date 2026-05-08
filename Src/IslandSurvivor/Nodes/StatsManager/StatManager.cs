@@ -13,7 +13,10 @@ public partial class StatManager : Node
 {
     private EntityStats? m_baseStatsResource;
     private IStatTracker m_statTracker;
-    private IEventBus m_localEventBus;
+    private IEventBus m_eventBus;
+
+    [Export]
+    private bool m_isGlobal;
 
     [Signal]
     public delegate void LocalStatChangedEventHandler(int p_statType, float p_currentValue, float p_effectiveMaxValue);
@@ -29,10 +32,19 @@ public partial class StatManager : Node
     {
         base._Ready();
 
-        m_localEventBus = new EventBus();
-        m_statTracker = new StatTracker(m_localEventBus);
+        if (m_isGlobal)
+        {
+            m_eventBus = Globals.ServiceRegistry.Instance.EventBus;
+            m_statTracker = Globals.ServiceRegistry.Instance.StatTracker;
+            m_eventBus.Subscribe<ProfileLoadedEvent>(OnProfileLoaded);
+        }
+        else
+        {
+            m_eventBus = new EventBus();
+            m_statTracker = new StatTracker(m_eventBus);
+        }
 
-        m_localEventBus.Subscribe<StatChangedEvent>(OnStatChangedEvent);
+        m_eventBus.Subscribe<StatChangedEvent>(OnStatChangedEvent);
 
         if (m_baseStatsResource is PlayerStats)
         {
@@ -68,7 +80,22 @@ public partial class StatManager : Node
     public override void _Process(double delta)
     {
         base._Process(delta);
-        m_localEventBus?.ProcessEvents();
+        if (!m_isGlobal)
+        {
+            m_eventBus?.ProcessEvents();
+        }
+    }
+
+    private void OnProfileLoaded(ProfileLoadedEvent e)
+    {
+        if (e.Profile?.Stats != null)
+        {
+            GD.Print("[StatManager] Profile Loaded. Syncing global stats.");
+            SetCurrentValue(StatType.Health, e.Profile.Stats.Health);
+            SetCurrentValue(StatType.Attack, e.Profile.Stats.Attack);
+            SetCurrentValue(StatType.Speed, e.Profile.Stats.Speed);
+            SetCurrentValue(StatType.Luck, e.Profile.Stats.Luck);
+        }
     }
 
     private void OnStatChangedEvent(StatChangedEvent e)
@@ -114,9 +141,13 @@ public partial class StatManager : Node
     {
         if (p_disposing)
         {
-            if (m_localEventBus != null)
+            if (m_eventBus != null)
             {
-                m_localEventBus.Unsubscribe<StatChangedEvent>(OnStatChangedEvent);
+                m_eventBus.Unsubscribe<StatChangedEvent>(OnStatChangedEvent);
+                if (m_isGlobal)
+                {
+                    m_eventBus.Unsubscribe<ProfileLoadedEvent>(OnProfileLoaded);
+                }
             }
             if (SignalManager.Instance != null)
             {
