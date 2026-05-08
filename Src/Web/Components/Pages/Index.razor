@@ -1,5 +1,9 @@
 @page "/"
-<Header>
+@using Core.Domain
+@inject HttpClient Http
+@rendermode InteractiveServer
+
+<header>
     <nav id="navbar">
         <div>
             <div class="profile">
@@ -9,51 +13,144 @@
             <a href="#">Se connecter</a>
         </div>
         <img src="images/logo.png" alt="Logo Island Survivor" id="logo">
-        <h2 class="headerNiv">N.33 9999999</h2>
+        <h2 class="headerNiv"></h2>
     </nav>
-</Header>
+</header>
 
 <section>
     <div>
         <div id="searchBar">
-            <input type="search" id="site-search" name="q" />
+            <input type="search" id="site-search" name="q" @bind="SearchQuery" @bind:event="oninput" placeholder="Chercher un joueur..." />
         </div>
         <div class="sortAndRefresh">
-            <button id="refreshButton">
+            <button id="refreshButton" @onclick="RefreshLeaderboard">
                 <img src="images/refreshbutton1.png" alt="Rafraîchir le classement">
             </button>
             <div id="sortRank">
-                <select name="ranks" id="rank-select">
-                <option value="">Meilleurs</option>
-                <option value="1">Temps</option>
-                <option value="2">Level</option>
-                <option value="3">Pires</option>
+                <select name="ranks" id="rank-select" @bind="SortCriteria">
+                <option value="Best">Meilleurs</option>
+                <option value="Worst">Pires</option>
+                <option value="Level">Level</option>
+                <option value="Speed">Vitesse</option>
                 </select>
             </div>
         </div>
     </div>
 
     <div style="height:500px;scrollbar-base-color:gold;overflow:auto;" class="rank">
-        <div>
-            <img src="images/rankBarTop.png" alt="Top bar">
-            <h3>PSEUDONYME</h3>
-            <h2>Lvl 999999</h2>
-        </div>
+        @if (m_players == null)
+        {
+            <p style="color: white; text-align: center;">Chargement du classement...</p>
+        }
+        else if (!FilteredAndSortedPlayers.Any())
+        {
+            <p style="color: white; text-align: center;">Aucun joueur trouvé.</p>
+        }
+        else
+        {
+            var playersList = FilteredAndSortedPlayers.ToList();
+            var totalPlayers = playersList.Count;
 
-        <div>
-            <img src="images/rankMiddleBar.png" alt="middle bar" class="middleBar">
-        </div>
+            if (totalPlayers == 1)
+            {
+                var entry = playersList[0];
+                <div class="solo">
+                    <img src="images/solobar.png" alt="rank bar">
+                    <h3>@entry.Rank. @entry.Player.Username.ToUpper()</h3>
+                    <h2>Lvl @entry.Player.Level</h2>
+                </div>
+            }
+            else
+            {
+                for (int i = 0; i < totalPlayers; i++)
+                {
+                    var entry = playersList[i];
+                    string barImage = "images/rankMiddleBar2.png";
+                    string cssClass = "middle";
 
-        <div>
-            <img src="images/rankMiddleBar.png" alt="middle bar" class="middleBar">
-        </div>
+                    if (i == 0) { barImage = "images/ranktopbar.png"; cssClass = "top"; }
+                    else if (i == totalPlayers - 1) { barImage = "images/rankBarBottom2.png"; cssClass = "bottom"; }
 
-        <div>
-            <img src="images/rankMiddleBar.png" alt="middle bar" class="middleBar">
-        </div>
-
-        <div>
-            <img src="images/rankBarBottom.png" alt="bottom bar">
-        </div>
+                    <div class="@cssClass">
+                        <img src="@barImage" alt="rank bar">
+                        <h3>@entry.Rank. @entry.Player.Username.ToUpper()</h3>
+                        <h2>Lvl @entry.Player.Level</h2>
+                    </div>
+                }
+            }
+        }
     </div>
 </section>
+
+@code {
+    private IEnumerable<PlayerLeaderboardEntry>? m_players;
+    private string m_searchQuery = string.Empty;
+    private string m_sortCriteria = "Best";
+
+    public string SearchQuery
+    {
+        get => m_searchQuery;
+        set
+        {
+            m_searchQuery = value;
+            // Update happens automatically due to @bind:event="oninput"
+        }
+    }
+
+    public string SortCriteria
+    {
+        get => m_sortCriteria;
+        set
+        {
+            m_sortCriteria = value;
+            // Update happens automatically when selection changes
+        }
+    }
+
+    private IEnumerable<(int Rank, PlayerLeaderboardEntry Player)> FilteredAndSortedPlayers
+    {
+        get
+        {
+            if (m_players == null) return Array.Empty<(int, PlayerLeaderboardEntry)>();
+
+            var sorted = SortCriteria switch
+            {
+                "Best" => m_players.OrderByDescending(p => p.Level).ThenByDescending(p => p.Health),
+                "Worst" => m_players.OrderBy(p => p.Level).ThenBy(p => p.Health),
+                "Level" => m_players.OrderByDescending(p => p.Level),
+                "Speed" => m_players.OrderByDescending(p => p.Speed),
+                _ => m_players.OrderByDescending(p => p.Level)
+            };
+
+            var ranked = sorted.Select((p, index) => (Rank: index + 1, Player: p));
+
+            if (!string.IsNullOrWhiteSpace(SearchQuery))
+                ranked = ranked.Where(r => r.Player.Username.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase));
+
+            return ranked;
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadLeaderboardAsync();
+    }
+
+    private async Task RefreshLeaderboard()
+    {
+        await LoadLeaderboardAsync();
+    }
+
+    private async Task LoadLeaderboardAsync()
+    {
+        try
+        {
+            m_players = await Http.GetFromJsonAsync<IEnumerable<PlayerLeaderboardEntry>>("api/player/leaderboard");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching leaderboard: {ex.Message}");
+            m_players = new List<PlayerLeaderboardEntry>();
+        }
+    }
+}
