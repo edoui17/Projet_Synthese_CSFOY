@@ -39,15 +39,15 @@ public class PlayerController : ControllerBase
 
         IEnumerable<InventoryEntry> inventory = await m_inventoryRepository.GetByPlayerIdAsync(player.Id);
 
-        PlayerProfile profile = new PlayerProfile
+        ProfileResponse response = new ProfileResponse
         {
-            Player = player,
-            Inventory = inventory,
+            Username = player.Username,
             Stats = player.Stats,
-            Config = player.Config
+            Config = player.Config,
+            Inventory = inventory
         };
 
-        return Ok(profile);
+        return Ok(response);
     }
 
     [HttpPost("sync")]
@@ -94,32 +94,27 @@ public class PlayerController : ControllerBase
     [HttpGet("leaderboard")]
     public async Task<IActionResult> GetLeaderboard()
     {
-        // Ligne temporaire pour tester
-        var leaderboard = new List<PlayerLeaderboardEntry>
+        IEnumerable<Player> players = await m_playerRepository.GetAllAsync();
+
+        IEnumerable<PlayerLeaderboardEntry> leaderboard = players.Select(p => new PlayerLeaderboardEntry
         {
-            new PlayerLeaderboardEntry { Id = Guid.NewGuid(), Username = "SuperGamer", Level = 50, Health = 500, Speed = 20 },
-            new PlayerLeaderboardEntry { Id = Guid.NewGuid(), Username = "Marcorse", Level = -2, Health = 20, Speed = 1 },
-            new PlayerLeaderboardEntry { Id = Guid.NewGuid(), Username = "SpeedRunner", Level = 45, Health = 100, Speed = 99 },
-            new PlayerLeaderboardEntry { Id = Guid.NewGuid(), Username = "JoueurTest", Level = 4, Health = 3, Speed = 12 },
-            new PlayerLeaderboardEntry { Id = Guid.NewGuid(), Username = "SuperGamer1", Level = 50, Health = 500, Speed = 20 },
-            new PlayerLeaderboardEntry { Id = Guid.NewGuid(), Username = "Marcorse1", Level = -2, Health = 20, Speed = 1 },
-            new PlayerLeaderboardEntry { Id = Guid.NewGuid(), Username = "SpeedRunner1", Level = 45, Health = 100, Speed = 99 },
-            new PlayerLeaderboardEntry { Id = Guid.NewGuid(), Username = "JoueurTest1", Level = 4, Health = 3, Speed = 12 },
-            new PlayerLeaderboardEntry { Id = Guid.NewGuid(), Username = "SuperGamer2", Level = 50, Health = 500, Speed = 20 },
-            new PlayerLeaderboardEntry { Id = Guid.NewGuid(), Username = "Marcorse2", Level = -2, Health = 20, Speed = 1 },
-            new PlayerLeaderboardEntry { Id = Guid.NewGuid(), Username = "SpeedRunner2", Level = 45, Health = 100, Speed = 99 },
-            new PlayerLeaderboardEntry { Id = Guid.NewGuid(), Username = "JoueurTest2", Level = 4, Health = 3, Speed = 12 }
-            
-        };
+            Id = p.Id,
+            Username = p.Username,
+            Health = p.Stats?.Health ?? 0,
+            Attack = p.Stats?.Attack ?? 0,
+            Speed = p.Stats?.Speed ?? 0,
+            Luck = p.Stats?.Luck ?? 0,
+            Level = CalculateLevel(p.Stats)
+        });
 
         return Ok(leaderboard);
     }
 
-    private int CalculateLevel(PlayerStats? stats)
+    private int CalculateLevel(PlayerStats? p_stats)
     {
-        if (stats == null) return 1;
+        if (p_stats == null) return 1;
         // Basic calculation based on total stats. Adjust as needed for specific game logic.
-        float totalStats = stats.Health + stats.Attack + stats.Speed + stats.Luck;
+        float totalStats = p_stats.Health + p_stats.Attack + p_stats.Speed + p_stats.Luck;
         return Math.Max(1, (int)(totalStats / 10)); // Example: 1 level per 10 stat points
     }
 }

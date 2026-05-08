@@ -63,3 +63,8 @@ When adjusting a `RayCast2D`'s `TargetPosition` via code attached to a parent no
   - Using `await ToSignal(GetTree().CreateTimer(0.25f), SceneTreeTimer.SignalName.Timeout)` and then `GetOverlappingAreas()` works but can feel brittle.
   - The more idiomatic Godot solution is relying on the signals `AreaEntered` and `BodyEntered` emitted natively by the `Area2D` when the `disabled` flag flips to `false` during the animation frame.
 - **Architectural Shift:** Moving from a procedural execution list to an event-driven `HashSet<IDamageable>` tracking mechanism ensures single-hits per target per attack frame while leveraging Godot's built-in physics event queue.
+
+## 2024-05-20 - API & DB Audit
+- **Security Discovery:** Plain text password storage is temporarily accepted for development validation, but the architecture is ready for BCrypt integration via `IAuthRepository`.
+- **Architectural Shift:** Introduced `AuthResponse` and `ProfileResponse` DTOs in the Core layer. This ensures that Database Entities (Infrastructure) never leak into the API responses, maintaining a strict N-Tier separation and preventing accidental exposure of sensitive fields like `PasswordHash`.
+- **Database Quirk:** EF Core `HasIndex(e => e.Username).IsUnique()` is essential even if the database has a `UNIQUE` constraint, as it allows EF to optimize queries and handle validation at the tracking level.

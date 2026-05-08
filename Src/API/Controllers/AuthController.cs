@@ -42,6 +42,12 @@ public class AuthController : ControllerBase
         string token = Guid.NewGuid().ToString();
         await m_authRepository.UpdateSessionTokenAsync(player.Id, token);
 
-        return Ok(new { SessionToken = token });
+        AuthResponse response = new AuthResponse
+        {
+            SessionToken = token,
+            Username = player.Username
+        };
+
+        return Ok(response);
     }
 }
