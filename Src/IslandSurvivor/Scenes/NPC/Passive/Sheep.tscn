@@ -159,6 +159,8 @@ hframes = 8
 
 [node name="StatManager" parent="." unique_id=1475410971 instance=ExtResource("4_cdkpw")]
 MaxHealth = 50.0
+m_entityType = 1
+
 
 
 [node name="MovementController" parent="." unique_id=473945652 node_paths=PackedStringArray("Stats") instance=ExtResource("6_mov")]
