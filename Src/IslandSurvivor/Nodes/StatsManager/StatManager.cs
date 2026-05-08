@@ -9,24 +9,22 @@ using IslandSurvivor.Resources;
 
 namespace IslandSurvivor.Nodes;
 
-public partial class StatManager : Node
+public partial class StatManager : Node2D
 {
-    private EntityStats? m_baseStatsResource;
     private IStatTracker m_statTracker;
     private IEventBus m_eventBus;
 
     [Export]
     private bool m_isGlobal;
 
+    [ExportGroup("Base Stats")]
+    [Export] public float MaxHealth { get; set; } = 100f;
+    [Export] public float BaseDamage { get; set; } = 10f;
+    [Export] public float BaseSpeed { get; set; } = 300f;
+    [Export] public float Luck { get; set; } = 0f;
+
     [Signal]
     public delegate void LocalStatChangedEventHandler(int p_statType, float p_currentValue, float p_effectiveMaxValue);
-
-    [Export]
-    public EntityStats? BaseStatsResource
-    {
-        get => m_baseStatsResource;
-        set => m_baseStatsResource = value;
-    }
 
     public override void _Ready()
     {
@@ -46,35 +44,20 @@ public partial class StatManager : Node
 
         m_eventBus.Subscribe<StatChangedEvent>(OnStatChangedEvent);
 
-        if (m_baseStatsResource is PlayerStats)
+        if (m_isGlobal)
         {
             SignalManager.Instance.StatUpgradePurchased += OnStatUpgradePurchased;
         }
 
-        if (m_baseStatsResource != null)
+        Dictionary<StatType, float> initialStats = new Dictionary<StatType, float>
         {
-            Dictionary<StatType, float> initialStats = new Dictionary<StatType, float>
-            {
-                { StatType.Health, m_baseStatsResource.MaxHealth }
-            };
+            { StatType.Health, MaxHealth },
+            { StatType.Attack, 0f }, // Stat points are 0 by default, modified by permanent upgrades
+            { StatType.Speed, 0f }, // Stat points are 0 by default
+            { StatType.Luck, Luck }
+        };
 
-            if (m_baseStatsResource is CombatEntityStats combatStats)
-            {
-                initialStats.Add(StatType.Attack, combatStats.Attack);
-                initialStats.Add(StatType.Speed, combatStats.Speed);
-            }
-
-            if (m_baseStatsResource is PlayerStats playerStats)
-            {
-                initialStats.Add(StatType.Luck, playerStats.Luck);
-            }
-
-            m_statTracker.InitializeStats(initialStats);
-        }
-        else
-        {
-            GD.PushWarning("StatManager: BaseStatsResource is not assigned.");
-        }
+        m_statTracker.InitializeStats(initialStats);
     }
 
     public override void _Process(double delta)

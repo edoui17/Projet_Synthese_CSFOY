@@ -6,7 +6,6 @@ namespace IslandSurvivor.Nodes.Movement;
 
 public partial class MovementController : Node
 {
-    [Export] public float BaseSpeed { get; set; } = 300f;
     [Export] public StatManager? Stats { get; set; }
 
     private CharacterBody2D? m_parentBody;
@@ -27,7 +26,7 @@ public partial class MovementController : Node
     {
         if (m_parentBody == null) return;
 
-        float baseSpeedToUse = p_customBaseSpeed ?? BaseSpeed;
+        float baseSpeedToUse = p_customBaseSpeed ?? Stats?.BaseSpeed ?? 300f;
 
         // 1 stat point = +5% speed
         float speedStat = Stats?.GetCurrentValue(StatType.Speed) ?? 0f;
