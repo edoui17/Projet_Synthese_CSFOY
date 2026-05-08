@@ -349,6 +349,8 @@ Stats = NodePath("../StatManager")
 
 [node name="StatManager" parent="." unique_id=772458511 instance=ExtResource("7_stat")]
 BaseSpeed = 400.0
+m_entityType = 0
+
 
 
 [node name="InteractionLabel" type="Label" parent="." unique_id=1913303428]

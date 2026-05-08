@@ -4,3 +4,4 @@
 
 [node name="StatsManager" type="Node2D" unique_id=1475410971]
 script = ExtResource("1_yp7qb")
+m_entityType = 1

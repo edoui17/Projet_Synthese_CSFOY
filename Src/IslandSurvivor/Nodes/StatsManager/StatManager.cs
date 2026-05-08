@@ -6,6 +6,7 @@ using Core.Managers.Stats;
 using Core.Services;
 using Core.Events;
 using IslandSurvivor.Resources;
+using IslandSurvivor.Enums;
 
 namespace IslandSurvivor.Nodes;
 
@@ -16,6 +17,9 @@ public partial class StatManager : Node2D
 
     [Export]
     private bool m_isGlobal;
+
+    [Export]
+    private EntityType m_entityType = EntityType.NPC;
 
     [ExportGroup("Base Stats")]
     [Export] public float MaxHealth { get; set; } = 100f;
@@ -51,11 +55,19 @@ public partial class StatManager : Node2D
 
         Dictionary<StatType, float> initialStats = new Dictionary<StatType, float>
         {
-            { StatType.Health, MaxHealth },
-            { StatType.Attack, 0f }, // Stat points are 0 by default, modified by permanent upgrades
-            { StatType.Speed, 0f }, // Stat points are 0 by default
-            { StatType.Luck, Luck }
+            { StatType.Health, MaxHealth }
         };
+
+        if (m_entityType == EntityType.NPC || m_entityType == EntityType.Player)
+        {
+            initialStats.Add(StatType.Attack, 0f);
+            initialStats.Add(StatType.Speed, 0f);
+        }
+
+        if (m_entityType == EntityType.Player)
+        {
+            initialStats.Add(StatType.Luck, Luck);
+        }
 
         m_statTracker.InitializeStats(initialStats);
     }
