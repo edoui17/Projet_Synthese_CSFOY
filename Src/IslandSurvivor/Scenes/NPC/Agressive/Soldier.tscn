@@ -6,7 +6,6 @@
 [ext_resource type="Texture2D" uid="uid://cy36cydp3xyku" path="res://Assets/TinySwords/Sprites/Warrior/Black/Warrior_Run.png" id="4_ftayq"]
 [ext_resource type="PackedScene" path="res://Nodes/Movement/MovementController.tscn" id="5_hx8j2"]
 [ext_resource type="PackedScene" uid="uid://biqhbrp7fjfyj" path="res://Nodes/StatsManager/StatsManager.tscn" id="6_hx8j2"]
-[ext_resource type="Resource" uid="uid://bf238lhuy7sdh" path="res://Resources/Stats/Entity/SoldierStats.tres" id="7_8t73o"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_8hhla"]
 atlas = ExtResource("2_ftayq")
@@ -191,9 +190,6 @@ Stats = NodePath("../StatManager")
 
 [node name="StatManager" parent="." unique_id=1475410971 instance=ExtResource("6_hx8j2")]
 MaxHealth = 200.0
-EntityType = 1
-
-
 
 [node name="LineOfSightRay" type="RayCast2D" parent="." unique_id=1704468108]
 collision_mask = 5

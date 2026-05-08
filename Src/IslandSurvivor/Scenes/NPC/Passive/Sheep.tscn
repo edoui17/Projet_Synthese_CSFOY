@@ -4,7 +4,6 @@
 [ext_resource type="Script" uid="uid://fvn22w5rptq7" path="res://Scenes/NPC/Passive/Sheep.cs" id="1_d7b5k"]
 [ext_resource type="Texture2D" uid="uid://bhauap76rg7mv" path="res://Assets/TinySwords/Decorations/Sheep/HappySheep_Idle.png" id="2_d7b5k"]
 [ext_resource type="PackedScene" uid="uid://biqhbrp7fjfyj" path="res://Nodes/StatsManager/StatsManager.tscn" id="4_cdkpw"]
-[ext_resource type="Resource" uid="uid://dlv80pje25mmb" path="res://Resources/Stats/Entity/SheepStat.tres" id="5_ifvjj"]
 [ext_resource type="PackedScene" path="res://Nodes/Movement/MovementController.tscn" id="6_mov"]
 
 [sub_resource type="Animation" id="Animation_cdkpw"]
@@ -159,9 +158,6 @@ hframes = 8
 
 [node name="StatManager" parent="." unique_id=1475410971 instance=ExtResource("4_cdkpw")]
 MaxHealth = 50.0
-EntityType = 1
-
-
 
 [node name="MovementController" parent="." unique_id=473945652 node_paths=PackedStringArray("Stats") instance=ExtResource("6_mov")]
 Stats = NodePath("../StatManager")

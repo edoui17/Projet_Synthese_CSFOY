@@ -6,7 +6,6 @@
 [ext_resource type="Texture2D" uid="uid://bnrdwqhy84a5e" path="res://Assets/TinySwords/Sprites/Pawn/Blue/Pawn_Run.png" id="4_4wape"]
 [ext_resource type="Texture2D" uid="uid://cff20mi4vyhg2" path="res://Assets/TinySwords/Sprites/Pawn/Blue/Pawn_Run Axe.png" id="5_t26db"]
 [ext_resource type="PackedScene" uid="uid://biqhbrp7fjfyj" path="res://Nodes/StatsManager/StatsManager.tscn" id="7_stat"]
-[ext_resource type="Resource" uid="uid://83xndc2parlb" path="res://Resources/Stats/Entity/PlayerStats.tres" id="8_stat_res"]
 [ext_resource type="PackedScene" path="res://Nodes/Movement/MovementController.tscn" id="9_mov"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_h54ih"]
@@ -348,10 +347,8 @@ shape = SubResource("CircleShape2D_jmcll")
 Stats = NodePath("../StatManager")
 
 [node name="StatManager" parent="." unique_id=772458511 instance=ExtResource("7_stat")]
-BaseSpeed = 400.0
 EntityType = 0
-
-
+BaseSpeed = 400.0
 
 [node name="InteractionLabel" type="Label" parent="." unique_id=1913303428]
 offset_left = -66.0
