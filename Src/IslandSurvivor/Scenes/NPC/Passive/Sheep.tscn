@@ -159,7 +159,7 @@ hframes = 8
 
 [node name="StatManager" parent="." unique_id=1475410971 instance=ExtResource("4_cdkpw")]
 MaxHealth = 50.0
-m_entityType = 1
+EntityType = 1
 
 
 

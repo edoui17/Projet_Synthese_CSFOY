@@ -10,6 +10,7 @@ using IslandSurvivor.Enums;
 
 namespace IslandSurvivor.Nodes;
 
+[Tool]
 public partial class StatManager : Node2D
 {
     private IStatTracker m_statTracker;
@@ -18,8 +19,18 @@ public partial class StatManager : Node2D
     [Export]
     private bool m_isGlobal;
 
-    [Export]
     private EntityType m_entityType = EntityType.NPC;
+
+    [Export]
+    public EntityType EntityType
+    {
+        get => m_entityType;
+        set
+        {
+            m_entityType = value;
+            NotifyPropertyListChanged();
+        }
+    }
 
     [ExportGroup("Base Stats")]
     [Export] public float MaxHealth { get; set; } = 100f;
@@ -30,9 +41,34 @@ public partial class StatManager : Node2D
     [Signal]
     public delegate void LocalStatChangedEventHandler(int p_statType, float p_currentValue, float p_effectiveMaxValue);
 
+    public override void _ValidateProperty(Godot.Collections.Dictionary property)
+    {
+        if (!Engine.IsEditorHint()) return;
+
+        string name = property["name"].AsString();
+
+        if (m_entityType == EntityType.Resource)
+        {
+            if (name == "BaseDamage" || name == "BaseSpeed" || name == "Luck")
+            {
+                var usage = property["usage"].As<PropertyUsageFlags>();
+                property["usage"] = (int)(usage & ~PropertyUsageFlags.Editor);
+            }
+        }
+        else if (m_entityType == EntityType.NPC)
+        {
+            if (name == "Luck")
+            {
+                var usage = property["usage"].As<PropertyUsageFlags>();
+                property["usage"] = (int)(usage & ~PropertyUsageFlags.Editor);
+            }
+        }
+    }
+
     public override void _Ready()
     {
         base._Ready();
+        if (Engine.IsEditorHint()) return;
 
         if (m_isGlobal)
         {
@@ -75,6 +111,8 @@ public partial class StatManager : Node2D
     public override void _Process(double delta)
     {
         base._Process(delta);
+        if (Engine.IsEditorHint()) return;
+
         if (!m_isGlobal)
         {
             m_eventBus?.ProcessEvents();
@@ -136,7 +174,7 @@ public partial class StatManager : Node2D
     {
         if (p_disposing)
         {
-            if (m_eventBus != null)
+            if (m_eventBus != null && !Engine.IsEditorHint())
             {
                 m_eventBus.Unsubscribe<StatChangedEvent>(OnStatChangedEvent);
                 if (m_isGlobal)
@@ -144,7 +182,7 @@ public partial class StatManager : Node2D
                     m_eventBus.Unsubscribe<ProfileLoadedEvent>(OnProfileLoaded);
                 }
             }
-            if (SignalManager.Instance != null)
+            if (SignalManager.Instance != null && !Engine.IsEditorHint())
             {
                 SignalManager.Instance.StatUpgradePurchased -= OnStatUpgradePurchased;
             }
