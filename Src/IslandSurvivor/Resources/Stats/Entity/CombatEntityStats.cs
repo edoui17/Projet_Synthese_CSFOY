@@ -5,20 +5,12 @@ namespace IslandSurvivor.Resources;
 [GlobalClass]
 public partial class CombatEntityStats : EntityStats
 {
+    [Export]
     private float m_attack = 10f;
+
+    [Export]
     private float m_speed = 5f;
 
-    [Export]
-    public float Attack
-    {
-        get => m_attack;
-        protected set => m_attack = value;
-    }
-
-    [Export]
-    public float Speed
-    {
-        get => m_speed;
-        protected set => m_speed = value;
-    }
+    public float Attack => m_attack;
+    public float Speed => m_speed;
 }
