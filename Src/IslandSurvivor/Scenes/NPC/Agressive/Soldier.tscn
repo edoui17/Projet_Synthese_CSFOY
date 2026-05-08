@@ -191,7 +191,7 @@ Stats = NodePath("../StatManager")
 
 [node name="StatManager" parent="." unique_id=1475410971 instance=ExtResource("6_hx8j2")]
 MaxHealth = 200.0
-m_entityType = 1
+EntityType = 1
 
 
 
