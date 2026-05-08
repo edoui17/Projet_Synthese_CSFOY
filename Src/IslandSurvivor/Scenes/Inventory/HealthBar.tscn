@@ -19,9 +19,10 @@ grow_vertical = 2
 anchors_preset = 0
 offset_left = -25.0
 offset_top = 568.0
-offset_right = 139.0
+offset_right = 325.0
 offset_bottom = 632.0
 script = ExtResource("1_pl14k")
+Level = 2
 ProgressBar = NodePath("TextureProgressBar")
 HealthLabel = NodePath("TextureProgressBar/Label")
 
@@ -50,7 +51,8 @@ layout_mode = 0
 offset_left = 50.0
 offset_right = 312.0
 offset_bottom = 64.0
-value = 100.0
+max_value = 150.0
+value = 150.0
 nine_patch_stretch = true
 texture_progress = ExtResource("2_4tbrl")
 
@@ -60,7 +62,7 @@ offset_left = 186.0
 offset_top = 20.0
 offset_right = 256.0
 offset_bottom = 43.0
-text = "100 / 100"
+text = "150 / 150"
 
 [node name="Control2" type="Control" parent="." unique_id=1030817356 node_paths=PackedStringArray("CenterBar", "ProgressBar")]
 visible = false

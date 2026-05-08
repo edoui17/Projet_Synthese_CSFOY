@@ -1,14 +1,25 @@
-# Godot Editor Setup Instructions
+# Editor Instructions: Soldier Combat System (US 6.3)
 
-## 1. Soldier Node Collision Fix (Bug 2.3.8)
+To finalize the combat system integration for the Soldier, follow these steps in the Godot Editor:
 
-Currently, the player is unable to attack the `Soldier` because its Collision Layer is incorrect.
+1. **Fix Soldier Hitbox Area**:
+   - Open `res://Scenes/NPC/Agressive/Soldier.tscn`.
+   - The user reported an error with `HitboxArea`. Ensure there is an `Area2D` named **exactly** `HitboxArea` as a child of the `Soldier` root node.
+   - Add a `CollisionShape2D` as a child of `HitboxArea`.
+   - Assign a new `CircleShape2D` (or adjust the shape points as seen in your screenshot) to the `CollisionShape2D`. Ensure the warning disappears.
+   - Position this shape in front of the Soldier to represent its melee attack range.
 
-To fix this:
-1. Open `Src/IslandSurvivor/Scenes/NPC/Agressive/Soldier.tscn` in the Godot Editor.
-2. Select the Root node (`Soldier`).
-3. In the Inspector, go to the **Collision** section under **CollisionObject2D**.
-4. Change the **Layer** mask. It is currently on Layer 4 (Value 8, the Weapon layer). Uncheck Layer 4 and check **Layer 5 (Value 16)**, which is the "Enemies/Resources" layer.
-5. Save the scene.
+2. **Configure HitboxArea Collision Layers**:
+   - Select the `HitboxArea` node.
+   - Go to the Inspector -> `CollisionObject2D` -> `Collision`.
+   - Set **Layer** to nothing (or a dedicated enemy attack layer if you have one, but it's an Area so it just needs to monitor).
+   - Set **Mask** to `3` (Player Layer) so it can detect the player entering its range.
 
-With this change, the Player's weapon (which relies on `collision_mask = 16`) will properly intersect and trigger the attack logic against the Soldier.
+3. **Verify AnimatedSprite2D**:
+   - Select the `AnimatedSprite2D` node on the `Soldier`.
+   - Ensure an animation named exactly `Attack` exists (case-sensitive as per the code `m_animatedSprite.Play("Attack");`).
+   - Confirm that the `Moving` and `Idle` animations exist and are spelled correctly.
+
+4. **Verify Soldier Max Health**:
+   - Open `res://Resources/Stats/Entity/SoldierStats.tres`.
+   - Update the `MaxHealth` property in the inspector to `200.0`. I have removed the hardcoded `10` HP value in the script, so it will now correctly pull the value from this `.tres` resource.

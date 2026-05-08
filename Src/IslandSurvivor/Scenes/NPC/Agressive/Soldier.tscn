@@ -158,38 +158,45 @@ radius = 15.0
 [sub_resource type="CircleShape2D" id="CircleShape2D_e1oyk"]
 radius = 250.0
 
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_e1oyk"]
+radius = 21.986078
+height = 70.16913
+
 [node name="Soldier" type="CharacterBody2D" unique_id=666187867 node_paths=PackedStringArray("Stats")]
 y_sort_enabled = true
 collision_layer = 17
 collision_mask = 9
 motion_mode = 1
 script = ExtResource("1_lf5hw")
-Stats = NodePath("StatsManager")
+Stats = NodePath("StatManager")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=586828728]
-position = Vector2(-0.07618117, 1.1660129)
-scale = Vector2(1.1362101, 1.1788126)
+position = Vector2(0, -5.722046e-06)
+scale = Vector2(0.9635416, 0.8975626)
 sprite_frames = SubResource("SpriteFrames_8an0u")
-animation = &"Moving"
+animation = &"Attack"
+frame = 2
+frame_progress = 0.44099978
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=22620120]
 light_mask = 4
 z_index = 1
 y_sort_enabled = true
-position = Vector2(-7, 1.0000002)
+position = Vector2(-2.0000005, 1)
 scale = Vector2(0.99999994, 0.99999994)
 shape = SubResource("CapsuleShape2D_v2bfp")
 
 [node name="MovementController" parent="." unique_id=1324976384 node_paths=PackedStringArray("Stats") instance=ExtResource("5_hx8j2")]
-Stats = NodePath("../StatsManager")
+Stats = NodePath("../StatManager")
 
-[node name="StatsManager" parent="." unique_id=1475410971 instance=ExtResource("6_hx8j2")]
+[node name="StatManager" parent="." unique_id=1475410971 instance=ExtResource("6_hx8j2")]
 BaseStatsResource = ExtResource("7_8t73o")
 
 [node name="LineOfSightRay" type="RayCast2D" parent="." unique_id=1704468108]
 collision_mask = 5
 
 [node name="DetectionArea" type="Area2D" parent="." unique_id=1567510452]
+visible = false
 light_mask = 5
 collision_layer = 5
 collision_mask = 5
@@ -197,3 +204,12 @@ collision_mask = 5
 [node name="CollisionShape2D" type="CollisionShape2D" parent="DetectionArea" unique_id=245786031]
 position = Vector2(1, 1)
 shape = SubResource("CircleShape2D_e1oyk")
+
+[node name="HitboxArea" type="Area2D" parent="." unique_id=48499246]
+collision_layer = 0
+collision_mask = 4
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxArea" unique_id=364693784]
+position = Vector2(30.000004, 6)
+rotation = 1.5352188
+shape = SubResource("CapsuleShape2D_e1oyk")
