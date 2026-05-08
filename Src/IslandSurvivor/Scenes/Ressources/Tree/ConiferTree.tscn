@@ -81,4 +81,4 @@ frame_progress = 0.5379155
 [node name="Timer" type="Timer" parent="." unique_id=3877963]
 
 [node name="StatManager" parent="." unique_id=1475410971 instance=ExtResource("3_5a382")]
-BaseStatsResource = ExtResource("4_moeyj")
+MaxHealth = 1000.0

@@ -158,7 +158,8 @@ texture = ExtResource("2_d7b5k")
 hframes = 8
 
 [node name="StatManager" parent="." unique_id=1475410971 instance=ExtResource("4_cdkpw")]
-BaseStatsResource = ExtResource("5_ifvjj")
+MaxHealth = 50.0
+
 
 [node name="MovementController" parent="." unique_id=473945652 node_paths=PackedStringArray("Stats") instance=ExtResource("6_mov")]
 Stats = NodePath("../StatManager")

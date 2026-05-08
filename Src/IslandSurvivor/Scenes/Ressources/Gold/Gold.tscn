@@ -38,4 +38,4 @@ texture = ExtResource("2_av1go")
 [node name="Timer" type="Timer" parent="." unique_id=1140467375]
 
 [node name="StatManager" parent="." unique_id=1475410971 instance=ExtResource("3_g4wyb")]
-BaseStatsResource = ExtResource("4_dl6ph")
+MaxHealth = 30.0

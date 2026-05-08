@@ -348,7 +348,8 @@ shape = SubResource("CircleShape2D_jmcll")
 Stats = NodePath("../StatManager")
 
 [node name="StatManager" parent="." unique_id=772458511 instance=ExtResource("7_stat")]
-BaseStatsResource = ExtResource("8_stat_res")
+BaseSpeed = 400.0
+
 
 [node name="InteractionLabel" type="Label" parent="." unique_id=1913303428]
 offset_left = -66.0
