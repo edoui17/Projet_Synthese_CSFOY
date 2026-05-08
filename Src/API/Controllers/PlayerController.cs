@@ -71,7 +71,7 @@ public class PlayerController : ControllerBase
 
         return Ok();
     }
-/*
+
     [HttpGet("leaderboard")]
     public async Task<IActionResult> GetLeaderboard()
     {
@@ -89,31 +89,31 @@ public class PlayerController : ControllerBase
         });
 
         return Ok(leaderboard);
-    }*/
-
-    [HttpGet("leaderboard")]
-    public async Task<IActionResult> GetLeaderboard()
-    {
-        // Ligne temporaire pour tester
-        var leaderboard = new List<PlayerLeaderboardEntry>
-        {
-            new PlayerLeaderboardEntry { Id = Guid.NewGuid(), Username = "SuperGamer", Level = 50, Health = 500, Speed = 20 },
-            new PlayerLeaderboardEntry { Id = Guid.NewGuid(), Username = "Marcorse", Level = -2, Health = 20, Speed = 1 },
-            new PlayerLeaderboardEntry { Id = Guid.NewGuid(), Username = "SpeedRunner", Level = 45, Health = 100, Speed = 99 },
-            new PlayerLeaderboardEntry { Id = Guid.NewGuid(), Username = "JoueurTest", Level = 4, Health = 3, Speed = 12 },
-            new PlayerLeaderboardEntry { Id = Guid.NewGuid(), Username = "SuperGamer1", Level = 50, Health = 500, Speed = 20 },
-            new PlayerLeaderboardEntry { Id = Guid.NewGuid(), Username = "Marcorse1", Level = -2, Health = 20, Speed = 1 },
-            new PlayerLeaderboardEntry { Id = Guid.NewGuid(), Username = "SpeedRunner1", Level = 45, Health = 100, Speed = 99 },
-            new PlayerLeaderboardEntry { Id = Guid.NewGuid(), Username = "JoueurTest1", Level = 4, Health = 3, Speed = 12 },
-            new PlayerLeaderboardEntry { Id = Guid.NewGuid(), Username = "SuperGamer2", Level = 50, Health = 500, Speed = 20 },
-            new PlayerLeaderboardEntry { Id = Guid.NewGuid(), Username = "Marcorse2", Level = -2, Health = 20, Speed = 1 },
-            new PlayerLeaderboardEntry { Id = Guid.NewGuid(), Username = "SpeedRunner2", Level = 45, Health = 100, Speed = 99 },
-            new PlayerLeaderboardEntry { Id = Guid.NewGuid(), Username = "JoueurTest2", Level = 4, Health = 3, Speed = 12 }
-            
-        };
-
-        return Ok(leaderboard);
     }
+
+    //[HttpGet("leaderboard")]
+    //public async Task<IActionResult> GetLeaderboard()
+    //{
+    //    Ligne temporaire pour tester
+    //    var leaderboard = new List<PlayerLeaderboardEntry>
+    //    {
+    //        new PlayerLeaderboardEntry { Id = Guid.NewGuid(), Username = "SuperGamer", Level = 50, Health = 500, Speed = 20 },
+    //        new PlayerLeaderboardEntry { Id = Guid.NewGuid(), Username = "Marcorse", Level = -2, Health = 20, Speed = 1 },
+    //        new PlayerLeaderboardEntry { Id = Guid.NewGuid(), Username = "SpeedRunner", Level = 45, Health = 100, Speed = 99 },
+    //        new PlayerLeaderboardEntry { Id = Guid.NewGuid(), Username = "JoueurTest", Level = 4, Health = 3, Speed = 12 },
+    //        new PlayerLeaderboardEntry { Id = Guid.NewGuid(), Username = "SuperGamer1", Level = 50, Health = 500, Speed = 20 },
+    //        new PlayerLeaderboardEntry { Id = Guid.NewGuid(), Username = "Marcorse1", Level = -2, Health = 20, Speed = 1 },
+    //        new PlayerLeaderboardEntry { Id = Guid.NewGuid(), Username = "SpeedRunner1", Level = 45, Health = 100, Speed = 99 },
+    //        new PlayerLeaderboardEntry { Id = Guid.NewGuid(), Username = "JoueurTest1", Level = 4, Health = 3, Speed = 12 },
+    //        new PlayerLeaderboardEntry { Id = Guid.NewGuid(), Username = "SuperGamer2", Level = 50, Health = 500, Speed = 20 },
+    //        new PlayerLeaderboardEntry { Id = Guid.NewGuid(), Username = "Marcorse2", Level = -2, Health = 20, Speed = 1 },
+    //        new PlayerLeaderboardEntry { Id = Guid.NewGuid(), Username = "SpeedRunner2", Level = 45, Health = 100, Speed = 99 },
+    //        new PlayerLeaderboardEntry { Id = Guid.NewGuid(), Username = "JoueurTest2", Level = 4, Health = 3, Speed = 12 }
+
+    //    };
+
+    //    return Ok(leaderboard);
+    //}
 
     private int CalculateLevel(PlayerStats? stats)
     {
