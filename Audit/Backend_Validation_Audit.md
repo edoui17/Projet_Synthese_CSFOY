@@ -1,5 +1,7 @@
 # Technical Dashboard: Audit, Security & Resilience (API & DB)
 
+**Date**: May 9, 2026
+
 ## 1. SQL Schema and DB Integrity Review
 
 | Element | Status | Observations |

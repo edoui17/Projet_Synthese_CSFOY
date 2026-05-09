@@ -22,6 +22,7 @@ builder.Services.AddScoped<Core.Interfaces.IPlayerRepository, Infrastructure.Rep
 builder.Services.AddScoped<Core.Interfaces.IInventoryRepository, Infrastructure.Repositories.InventoryRepository>();
 builder.Services.AddScoped<Core.Interfaces.IStatsRepository, Infrastructure.Repositories.StatsRepository>();
 builder.Services.AddScoped<Core.Interfaces.IAuthRepository, Infrastructure.Repositories.AuthRepository>();
+builder.Services.AddScoped<Core.Interfaces.IConfigRepository, Infrastructure.Repositories.ConfigRepository>();
 
 WebApplication app = builder.Build();
 

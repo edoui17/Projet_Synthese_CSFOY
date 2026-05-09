@@ -23,21 +23,22 @@ public class InventoryController : ControllerBase
     [HttpPost("upsert")]
     public async Task<IActionResult> Upsert([FromBody] InventoryUpsertRequest p_request)
     {
-        if (string.IsNullOrEmpty(p_request.SessionToken)) return Unauthorized();
+        try
+        {
+            if (string.IsNullOrEmpty(p_request.SessionToken)) return Unauthorized();
 
-        Player? player = await m_authRepository.GetBySessionTokenAsync(p_request.SessionToken);
-        if (player == null) return Unauthorized();
+            Player? player = await m_authRepository.GetBySessionTokenAsync(p_request.SessionToken);
+            if (player == null) return Unauthorized();
 
-        if (p_request.Inventory == null) return BadRequest("Inventory data is required.");
+            if (p_request.Inventory == null) return BadRequest("Inventory data is required.");
 
-        await m_inventoryRepository.UpdateInventoryAsync(player.Id, p_request.Inventory);
+            await m_inventoryRepository.UpdateInventoryAsync(player.Id, p_request.Inventory);
 
-        return Ok();
+            return Ok();
+        }
+        catch (Exception ex) when (ex is Microsoft.Data.SqlClient.SqlException || ex is InvalidOperationException)
+        {
+            return StatusCode(503, "Service Unavailable: Database connection lost.");
+        }
     }
-}
-
-public class InventoryUpsertRequest
-{
-    public string SessionToken { get; set; } = string.Empty;
-    public IEnumerable<InventoryEntry> Inventory { get; set; } = null!;
 }

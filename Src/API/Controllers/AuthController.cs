@@ -22,28 +22,35 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequest p_request)
     {
-        if (string.IsNullOrEmpty(p_request.Username) || string.IsNullOrEmpty(p_request.Password))
+        try
         {
-            return BadRequest("Username and password are required.");
+            if (string.IsNullOrEmpty(p_request.Username) || string.IsNullOrEmpty(p_request.Password))
+            {
+                return BadRequest("Username and password are required.");
+            }
+
+            // Logic temporarily simplified for audit phase.
+            // Verification will be implemented later with JWT.
+            Player? player = await m_playerRepository.GetByUsernameAsync(p_request.Username);
+            if (player == null)
+            {
+                return Unauthorized("Invalid username or password.");
+            }
+
+            string token = Guid.NewGuid().ToString();
+            await m_authRepository.UpdateSessionTokenAsync(player.Id, token);
+
+            AuthResponse response = new AuthResponse
+            {
+                SessionToken = token,
+                Username = player.Username
+            };
+
+            return Ok(response);
         }
-
-        // Logic temporarily simplified for audit phase.
-        // Verification will be implemented later with JWT.
-        Player? player = await m_playerRepository.GetByUsernameAsync(p_request.Username);
-        if (player == null)
+        catch (Exception ex) when (ex is Microsoft.Data.SqlClient.SqlException || ex is InvalidOperationException)
         {
-            return Unauthorized("Invalid username or password.");
+            return StatusCode(503, "Service Unavailable: Database connection lost.");
         }
-
-        string token = Guid.NewGuid().ToString();
-        await m_authRepository.UpdateSessionTokenAsync(player.Id, token);
-
-        AuthResponse response = new AuthResponse
-        {
-            SessionToken = token,
-            Username = player.Username
-        };
-
-        return Ok(response);
     }
 }
