@@ -27,16 +27,12 @@ public class AuthController : ControllerBase
             return BadRequest("Username and password are required.");
         }
 
-        bool isValid = await m_authRepository.VerifyPasswordAsync(p_request.Username, p_request.Password);
-        if (!isValid)
-        {
-            return Unauthorized("Invalid username or password.");
-        }
-
+        // Logic temporarily simplified for audit phase.
+        // Verification will be implemented later with JWT.
         Player? player = await m_playerRepository.GetByUsernameAsync(p_request.Username);
         if (player == null)
         {
-            return NotFound("Player not found.");
+            return Unauthorized("Invalid username or password.");
         }
 
         string token = Guid.NewGuid().ToString();

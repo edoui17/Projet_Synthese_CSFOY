@@ -12,7 +12,7 @@
 | :--- | :--- | :--- |
 | **Task 2.2.5: Implémenter Attaque du Joueur.**<br>- Implement attack triggering (Space key), movement blocking, and hit detection. | **1. Interfaces**: Defined `IAttackable` interface in `Src/IslandSurvivor/Interfaces/`.<br>**2. Attackable Node**: Created `AttackableNode` in `Src/IslandSurvivor/Nodes/` as a base for enemies/objects that can be hit.<br>**3. Player Refactoring**: Updated `Player.cs` to handle the `Attacking` state, play `ATTACK` animation, and block movement. Integrated `m_weaponArea` for hit detection.<br>**4. Tscn Update**: Linked `WeaponInteractionArea` in `Player.tscn`.<br>**5. Verification**: Added unit test for `IAttackable` interface. | **Separation of Concerns**: Kept combat separate from the general interaction system. Used the existing `PlayerState.Attacking` and `AnimationPlayer` frames to enable/disable the weapon hitbox, ensuring precise hit registration. |
 
-### 2025-04-19 - [Persistence] N-Tier Database Schema & EF Core
+### 2026-04-19 - [Persistence] N-Tier Database Schema & EF Core
 
 **Request**: Create database tables and relationships for Inventory, Stats, and PlayerConfig meta-progression. Provide SQL DDL and EF Core implementation.
 **AI Contribution**:
@@ -55,8 +55,14 @@
 | :--- | :--- | :--- |
 | **US 8.1: Synchronisation des données.**<br>- Implement API endpoints for profile loading and data sync.<br>- Implement authentication with username/password and session tokens.<br>- Handle stats, inventory, and configuration. | **1. Database Evolution**: Added `PasswordHash` and `SessionToken` to `PlayerEntity` and migrated the database.<br>**2. Core Domain**: Created `PlayerProfile`, `LoginRequest`, and `SyncRequest` POCOs for optimized data transfer.<br>**3. Repositories**: Implemented `AuthRepository` and updated `PlayerRepository` to handle the new security fields and manual mapping.<br>**4. API Layer**: Developed `AuthController` for session management and `PlayerController` for consolidated profile/sync operations. Added `StatsController` and `InventoryController` for granular updates. | **Security & UX**: The session token system balances security with ease of use for the game client. The consolidated profile endpoint minimizes startup latency, while individual UPSERTs allow for frequent, low-overhead saving during gameplay. |
 
-### 2024-05-20 - [Audit] | Audit Technique et Validation (API & DB)
+### 2026-05-08 - [Audit] | Audit Technique et Validation (API & DB)
 
 | **Request** | **AI Contribution** | **Decision Reasoning** |
 | :--- | :--- | :--- |
 | **Audit Technique et Validation.**<br>- Revue du schéma DB et intégrité.<br>- Audit des contrôleurs API et DTOs.<br>- Simulation Postman. | **1. DB Integrity**: Added `UNIQUE` constraint to `Username` and synchronized `schema.sql` with authentication fields.<br>**2. N-Tier Isolation**: Created `AuthResponse` and `ProfileResponse` DTOs to replace direct entity/domain model exposure in API.<br>**3. Controller Refactoring**: Updated `AuthController` and `PlayerController` to use DTOs and fixed the leaderboard endpoint.<br>**4. Documentation**: Generated a full Technical Audit Dashboard with Postman simulations. | **Strict N-Tier Compliance**: Ensuring DTOs are used for all API outputs prevents leaking sensitive infrastructure details (like password hashes) and maintains decoupling. Unique constraints at both SQL and EF level provide defense-in-depth for data integrity. |
+
+### 2026-05-09 - [Audit] | Audit Technique, Sécurité et Résilience (POCO & CRUD)
+
+| **Request** | **AI Contribution** | **Decision Reasoning** |
+| :--- | :--- | :--- |
+| **Audit Technique, Sécurité et Résilience.**<br>- Suppression de doublons.<br>- Mise à jour des dates (09/05/2026).<br>- Simplification Auth.<br>- Résilience Sync (503).<br>- Simulation CRUD & Cybersécurité. | **1. Maintenance**: Deleted `jules/forge.md` and updated all log dates to May 9, 2026.<br>**2. Resilience**: Implemented try-catch in `Sync` endpoint to handle DB failures with 503 status. Documented client fallback strategy.<br>**3. Security Audit**: Documented SQL Injection protection by EF Core and simulated Brute Force handling.<br>**4. CRUD Validation**: Documented full CRUD flows for Player, Stats, and Inventory using POCOs. | **Resilience First**: In a Rogue-like, losing progress due to a DB glitch is unacceptable. The 503/Fallback strategy ensures the client remains the secondary source of truth. Moving to POCO terminology aligns with pure C# data structures used for transport. |

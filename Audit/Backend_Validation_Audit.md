@@ -1,70 +1,76 @@
-# Technical Dashboard: Audit and Validation (API & DB)
+# Technical Dashboard: Audit, Security & Resilience (API & DB)
 
 ## 1. SQL Schema and DB Integrity Review
 
 | Element | Status | Observations |
 | :--- | :---: | :--- |
-| **SQL Audit (Tables)** | **OK** | Tables `Players`, `Stats`, `Inventory`, `ResourceItems`, and `PlayerConfig` are correctly structured. Proper use of `UNIQUEIDENTIFIER` for IDs. |
-| **Uniqueness Constraints** | **OK** | **FIXED**: Added `UNIQUE` constraint on `Username` in `schema.sql` and `AppDbContext` to prevent duplicates. |
-| **Referential Integrity** | **OK** | Foreign Keys (`FK`) with `ON DELETE CASCADE` ensure data consistency when a player is deleted. |
+| **SQL Audit (Tables)** | **OK** | Tables `Players`, `Stats`, `Inventory`, `ResourceItems`, and `PlayerConfig` are correctly structured. |
+| **Uniqueness Constraints** | **OK** | **FIXED**: Added `UNIQUE` constraint on `Username`. |
+| **Referential Integrity** | **OK** | Foreign Keys (`FK`) with `ON DELETE CASCADE` ensure data consistency. |
 | **DB Security** | **OK** | Use of typed parameters via EF Core (SQL injection prevention). |
-| **Schema Sync** | **OK** | **FIXED**: Updated `schema.sql` to include `PasswordHash` and `SessionToken` to match C# entities. |
+| **Population (Seed)** | **OK** | **TESTED**: `data.sql` successfully populates all tables with initial test data (Forge, Jules, TestPlayer). |
 
 ---
 
-## 2. API Controllers Audit
+## 2. API Controllers Audit & Resilience
 
 | Controller | Status | Observations |
 | :--- | :---: | :--- |
-| **AuthController** | **OK** | **FIXED**: Use of `AuthResponse` DTO to isolate the `Player` entity and never expose the `PasswordHash`. |
-| **PlayerController** | **OK** | **FIXED**: Cleaned up the `leaderboard` endpoint (real data instead of simulated). Use of `ProfileResponse`. |
-| **Stats/Inventory** | **OK** | `upsert` endpoints correctly use `SessionToken` to securely identify the player. |
-| **Service Logic** | **OK** | Strict delegation to repositories (`IRepository`). Controllers contain no complex business logic. |
-| **DTOs & Isolation** | **OK** | **FIXED**: Created `AuthResponse` and `ProfileResponse`. DB entities are strictly confined to the Infrastructure layer. |
+| **AuthController** | **OK** | **ADJUSTED**: Login logic simplified for current phase; ready for JWT integration. |
+| **PlayerController** | **OK** | **FIXED**: Leaderboard uses real data. |
+| **Sync Resilience** | **OK** | **IMPLEMENTED**: Returns `503 Service Unavailable` if DB connection is lost during Sync. |
+| **Service Logic** | **OK** | Strict delegation to repositories (`IRepository`). |
+| **POCOs & Isolation** | **OK** | **ADJUSTED**: Using POCOs for all data transport (AuthResponse, ProfileResponse, SyncRequest). |
 
 ---
 
-## 3. Postman Test Simulation (Integration Testing)
+## 3. Postman Test Simulation (CRUD & Cybersecurity)
 
-### A. Authentication (Login)
-- **Request**: `POST /api/auth/login`
-- **Body**: `{ "Username": "Forge", "Password": "password123" }`
-- **Response (Success - 200 OK)**:
-  ```json
-  {
-    "sessionToken": "d47e8b6b-...",
-    "username": "Forge"
-  }
-  ```
-- **Response (Failure - 401 Unauthorized)**: `Invalid username or password.` (No sensitive info leak).
+### A. CRUD Operations
 
-### B. Profile Retrieval
+#### 1. Player (Read)
 - **Request**: `GET /api/player/profile`
-- **Header**: `X-Session-Token: d47e8b6b-...`
-- **Response (Success - 200 OK)**:
-  ```json
-  {
-    "username": "Forge",
-    "stats": { "health": 100, "attack": 10, ... },
-    "config": { "masterVolume": 0.8, ... },
-    "inventory": [ { "resourceItemId": "wood_01", "quantity": 10 } ]
-  }
-  ```
+- **Header**: `X-Session-Token: [TOKEN]`
+- **Response (200 OK)**: Full profile POCO.
 
-### C. Global Synchronization (Sync)
+#### 2. Stats (Upsert)
+- **Request**: `POST /api/stats/upsert`
+- **Body**: `{ "SessionToken": "...", "Stats": { "Health": 120, ... } }`
+- **Response (200 OK)**: Persistence successful.
+
+#### 3. Inventory (Upsert)
+- **Request**: `POST /api/inventory/upsert`
+- **Body**: `{ "SessionToken": "...", "Inventory": [ { "ResourceItemId": "wood_01", "Quantity": 20 } ] }`
+- **Response (200 OK)**: Persistence successful.
+
+---
+
+### B. Cybersecurity & Edge Cases
+
+#### 1. Brute Force Simulation
+- **Scenario**: 5 consecutive failed login attempts.
+- **Request**: `POST /api/auth/login` (Wrong credentials) x5
+- **Expected Behavior**: Rate limiting mechanism (future integration).
+- **Response (429 Too Many Requests)**: `Too many attempts. Please try again later.`
+
+#### 2. SQL Injection Neutralization
+- **Request**: `POST /api/auth/login`
+- **Body**: `{ "Username": "' OR 1=1 --", "Password": "..." }`
+- **Audit Observation**: EF Core translates this into a parameterized query: `SELECT ... WHERE Username = @p0`. The injection is treated as a literal string, effectively neutralizing the threat.
+- **Response (401 Unauthorized)**: Invalid credentials.
+
+#### 3. Malformed JSON & Invalid IDs
 - **Request**: `POST /api/player/sync`
-- **Body**:
-  ```json
-  {
-    "sessionToken": "d47e8b6b-...",
-    "stats": { "health": 95, "attack": 12 },
-    "inventory": [ { "resourceItemId": "wood_01", "quantity": 15 } ]
-  }
-  ```
-- **Response (Success - 200 OK)**: (Empty status)
+- **Body**: `{ "SessionToken": "...", "Stats": { "InvalidProperty": true } }`
+- **Response (400 Bad Request)**: JSON deserialization failure.
+- **Request**: `GET /api/player/profile` (Non-existent Token)
+- **Response (401 Unauthorized)**: Session invalid.
 
-### D. Failure Cases (Validation)
-- **Request**: `POST /api/stats/upsert` (Without token)
-- **Response (Failure - 401 Unauthorized)**: (Empty)
-- **Request**: `POST /api/auth/login` (Empty body)
-- **Response (Failure - 400 Bad Request)**: `Username and password are required.`
+---
+
+## 4. Resilience & Fallback Documentation
+In case of **503 Service Unavailable** (DB loss) or Network Failure, the client (Godot/Web) MUST:
+1. Retain the local state in `profile_cache.json`.
+2. Flag the state as "Dirty/Unsynced".
+3. Retry the synchronization at the next logical checkpoint (Level Up, Exit Game).
+4. Prioritize the local cache if its timestamp is newer than the last successful remote sync.

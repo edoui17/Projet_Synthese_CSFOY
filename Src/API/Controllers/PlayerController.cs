@@ -53,23 +53,31 @@ public class PlayerController : ControllerBase
     [HttpPost("sync")]
     public async Task<IActionResult> Sync([FromBody] SyncRequest p_request)
     {
-        if (string.IsNullOrEmpty(p_request.SessionToken)) return Unauthorized();
-
-        Player? player = await m_authRepository.GetBySessionTokenAsync(p_request.SessionToken);
-        if (player == null) return Unauthorized();
-
-        if (p_request.Stats != null)
+        try
         {
-            p_request.Stats.PlayerId = player.Id;
-            await m_statsRepository.UpdateStatsAsync(p_request.Stats);
-        }
+            if (string.IsNullOrEmpty(p_request.SessionToken)) return Unauthorized();
 
-        if (p_request.Inventory != null)
+            Player? player = await m_authRepository.GetBySessionTokenAsync(p_request.SessionToken);
+            if (player == null) return Unauthorized();
+
+            if (p_request.Stats != null)
+            {
+                p_request.Stats.PlayerId = player.Id;
+                await m_statsRepository.UpdateStatsAsync(p_request.Stats);
+            }
+
+            if (p_request.Inventory != null)
+            {
+                await m_inventoryRepository.UpdateInventoryAsync(player.Id, p_request.Inventory);
+            }
+
+            return Ok();
+        }
+        catch (Exception ex) when (ex is Microsoft.Data.SqlClient.SqlException || ex is InvalidOperationException)
         {
-            await m_inventoryRepository.UpdateInventoryAsync(player.Id, p_request.Inventory);
+            // Log exception here in a real scenario
+            return StatusCode(503, "Service Unavailable: Database connection lost.");
         }
-
-        return Ok();
     }
 /*
     [HttpGet("leaderboard")]
