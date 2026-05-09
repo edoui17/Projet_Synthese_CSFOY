@@ -347,6 +347,7 @@ shape = SubResource("CircleShape2D_jmcll")
 Stats = NodePath("../StatManager")
 
 [node name="StatManager" parent="." unique_id=772458511 instance=ExtResource("7_stat")]
+m_isGlobal = true
 EntityType = 0
 BaseSpeed = 400.0
 
