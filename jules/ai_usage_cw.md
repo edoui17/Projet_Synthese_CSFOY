@@ -66,3 +66,9 @@
 | **Request** | **AI Contribution** | **Decision Reasoning** |
 | :--- | :--- | :--- |
 | **Audit Technique, Sécurité et Résilience.**<br>- Suppression de doublons.<br>- Mise à jour des dates (09/05/2026).<br>- Simplification Auth.<br>- Résilience Sync (503).<br>- Simulation CRUD & Cybersécurité. | **1. Maintenance**: Deleted `jules/forge.md` and updated all log dates to May 9, 2026.<br>**2. Resilience**: Implemented try-catch in `Sync` endpoint to handle DB failures with 503 status. Documented client fallback strategy.<br>**3. Security Audit**: Documented SQL Injection protection by EF Core and simulated Brute Force handling.<br>**4. CRUD Validation**: Documented full CRUD flows for Player, Stats, and Inventory using POCOs. | **Resilience First**: In a Rogue-like, losing progress due to a DB glitch is unacceptable. The 503/Fallback strategy ensures the client remains the secondary source of truth. Moving to POCO terminology aligns with pure C# data structures used for transport. |
+
+### 2026-05-09 - [Infrastructure] | Optimisation de la Résilience et Sécurisation
+
+| **Request** | **AI Contribution** | **Decision Reasoning** |
+| :--- | :--- | :--- |
+| **Optimisation de la Résilience et Sécurisation.**<br>- EnableRetryOnFailure.<br>- TrustServerCertificate=True.<br>- Middleware X-API-KEY. | **1. DB Resilience**: Configured EF Core with `EnableRetryOnFailure` and updated connection string with `TrustServerCertificate=True` to handle transient connection issues.<br>**2. API Security**: Implemented `ApiKeyMiddleware` to enforce `X-API-KEY` validation on all endpoints.<br>**3. Documentation**: Updated `Manual_Testing_Guide.md` with API key requirements for Postman. | **Defense in Depth**: API Key provides an immediate security layer while full JWT auth is being developed. `EnableRetryOnFailure` is standard practice for cloud-ready SQL connections to improve robustness against network blips. |

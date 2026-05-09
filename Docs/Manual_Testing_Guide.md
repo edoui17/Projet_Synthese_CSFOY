@@ -7,16 +7,20 @@ Use these instructions to manually verify CRUD operations for the backend.
 
 ### A. Authentication
 - **Endpoint**: `POST /api/auth/login`
+- **Headers**: `X-API-KEY: IslandSurvivor-Dev-2026`
 - **Body (JSON)**: `{ "Username": "Forge", "Password": "password123" }`
 - **Goal**: Retrieve the `sessionToken` for subsequent requests.
 
 ### B. Player Profile (Read)
 - **Endpoint**: `GET /api/player/profile`
-- **Headers**: `X-Session-Token: [TOKEN]`
+- **Headers**:
+    - `X-API-KEY: IslandSurvivor-Dev-2026`
+    - `X-Session-Token: [TOKEN]`
 - **Goal**: Verify that all linked data (Stats, Inventory, Config) is returned as a single POCO.
 
 ### C. Stats Update (Upsert)
 - **Endpoint**: `POST /api/stats/upsert`
+- **Headers**: `X-API-KEY: IslandSurvivor-Dev-2026`
 - **Body (JSON)**:
   ```json
   {
@@ -28,6 +32,7 @@ Use these instructions to manually verify CRUD operations for the backend.
 
 ### D. Inventory Update (Upsert)
 - **Endpoint**: `POST /api/inventory/upsert`
+- **Headers**: `X-API-KEY: IslandSurvivor-Dev-2026`
 - **Body (JSON)**:
   ```json
   {
