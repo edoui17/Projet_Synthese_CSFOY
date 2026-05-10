@@ -25,9 +25,7 @@ public class InventoryController : ControllerBase
     {
         try
         {
-            if (string.IsNullOrEmpty(p_request.SessionToken)) return Unauthorized();
-
-            Player? player = await m_authRepository.GetBySessionTokenAsync(p_request.SessionToken);
+            Player? player = HttpContext.Items["Player"] as Player;
             if (player == null) return Unauthorized();
 
             if (p_request.Inventory == null) return BadRequest("Inventory data is required.");

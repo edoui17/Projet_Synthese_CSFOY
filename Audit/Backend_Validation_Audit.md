@@ -37,12 +37,14 @@
 
 #### 2. Stats (Upsert)
 - **Request**: `POST /api/stats/upsert`
-- **Body**: `{ "SessionToken": "...", "Stats": { "Health": 120, ... } }`
+- **Headers**: `X-Session-Token: ...`
+- **Body**: `{ "Stats": { "Health": 120, ... } }`
 - **Response (200 OK)**: Persistence successful.
 
 #### 3. Inventory (Upsert)
 - **Request**: `POST /api/inventory/upsert`
-- **Body**: `{ "SessionToken": "...", "Inventory": [ { "ResourceItemId": "wood_01", "Quantity": 20 } ] }`
+- **Headers**: `X-Session-Token: ...`
+- **Body**: `{ "Inventory": [ { "ResourceItemId": "wood_01", "Quantity": 20 } ] }`
 - **Response (200 OK)**: Persistence successful.
 
 ---
@@ -63,7 +65,8 @@
 
 #### 3. Malformed JSON & Invalid IDs
 - **Request**: `POST /api/player/sync`
-- **Body**: `{ "SessionToken": "...", "Stats": { "InvalidProperty": true } }`
+- **Headers**: `X-Session-Token: ...`
+- **Body**: `{ "Stats": { "InvalidProperty": true } }`
 - **Response (400 Bad Request)**: JSON deserialization failure.
 - **Request**: `GET /api/player/profile` (Non-existent Token)
 - **Response (401 Unauthorized)**: Session invalid.

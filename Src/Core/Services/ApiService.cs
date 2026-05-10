@@ -14,6 +14,7 @@ public class ApiService : IApiService
     private readonly ISaveService m_saveService;
     private string? m_sessionToken;
     private const string CACHE_FILE = "profile_cache.json";
+    private const string API_KEY = "IslandSurvivor-Dev-2026";
 
     // We are going to use default options to handle circular ref just in case
     private readonly JsonSerializerOptions m_jsonOptions;
@@ -24,6 +25,7 @@ public class ApiService : IApiService
         {
             BaseAddress = new Uri("http://localhost:5271")
         };
+        m_httpClient.DefaultRequestHeaders.Add("X-API-KEY", API_KEY);
         m_saveService = p_saveService;
         m_jsonOptions = new JsonSerializerOptions
         {
@@ -86,13 +88,10 @@ public class ApiService : IApiService
 
     public async Task<bool> SyncAsync(SyncRequest p_request)
     {
-        // Add session token if we have one, otherwise it's just local save
-        p_request.SessionToken = m_sessionToken ?? string.Empty;
-
         // Update local cache to reflect current state
         UpdateLocalCache(p_request);
 
-        if (string.IsNullOrEmpty(p_request.SessionToken))
+        if (string.IsNullOrEmpty(m_sessionToken))
         {
             // We are offline and don't have a token, we just rely on local cache updated above
             return false;
@@ -100,7 +99,11 @@ public class ApiService : IApiService
 
         try
         {
-            HttpResponseMessage response = await m_httpClient.PostAsJsonAsync("/api/player/sync", p_request, m_jsonOptions);
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, "/api/player/sync");
+            request.Headers.Add("X-Session-Token", m_sessionToken);
+            request.Content = JsonContent.Create(p_request, options: m_jsonOptions);
+
+            HttpResponseMessage response = await m_httpClient.SendAsync(request);
             return response.IsSuccessStatusCode;
         }
         catch (HttpRequestException)

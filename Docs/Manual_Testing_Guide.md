@@ -25,11 +25,12 @@ Before testing, each developer must configure their own connection string in `Sr
 
 ### C. Stats Update (Upsert)
 - **Endpoint**: `POST /api/stats/upsert`
-- **Headers**: `X-API-KEY: IslandSurvivor-Dev-2026`
+- **Headers**:
+    - `X-API-KEY: IslandSurvivor-Dev-2026`
+    - `X-Session-Token: [TOKEN]`
 - **Body (JSON)**:
   ```json
   {
-    "SessionToken": "[TOKEN]",
     "Stats": { "Health": 200, "Attack": 25, "Speed": 2, "Luck": 5 }
   }
   ```
@@ -37,11 +38,12 @@ Before testing, each developer must configure their own connection string in `Sr
 
 ### D. Inventory Update (Upsert)
 - **Endpoint**: `POST /api/inventory/upsert`
-- **Headers**: `X-API-KEY: IslandSurvivor-Dev-2026`
+- **Headers**:
+    - `X-API-KEY: IslandSurvivor-Dev-2026`
+    - `X-Session-Token: [TOKEN]`
 - **Body (JSON)**:
   ```json
   {
-    "SessionToken": "[TOKEN]",
     "Inventory": [ { "ResourceItemId": "gold_01", "Quantity": 50 } ]
   }
   ```

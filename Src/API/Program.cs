@@ -28,6 +28,7 @@ builder.Services.AddScoped<Core.Interfaces.IConfigRepository, Infrastructure.Rep
 WebApplication app = builder.Build();
 
 app.UseMiddleware<API.Middleware.ApiKeyMiddleware>();
+app.UseMiddleware<API.Middleware.SessionAuthMiddleware>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

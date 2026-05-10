@@ -30,11 +30,9 @@ public class PlayerController : ControllerBase
     }
 
     [HttpGet("profile")]
-    public async Task<IActionResult> GetProfile([FromHeader(Name = "X-Session-Token")] string p_token)
+    public async Task<IActionResult> GetProfile()
     {
-        if (string.IsNullOrEmpty(p_token)) return Unauthorized();
-
-        Player? player = await m_authRepository.GetBySessionTokenAsync(p_token);
+        Player? player = HttpContext.Items["Player"] as Player;
         if (player == null) return Unauthorized();
 
         IEnumerable<InventoryEntry> inventory = await m_inventoryRepository.GetByPlayerIdAsync(player.Id);
@@ -55,9 +53,7 @@ public class PlayerController : ControllerBase
     {
         try
         {
-            if (string.IsNullOrEmpty(p_request.SessionToken)) return Unauthorized();
-
-            Player? player = await m_authRepository.GetBySessionTokenAsync(p_request.SessionToken);
+            Player? player = HttpContext.Items["Player"] as Player;
             if (player == null) return Unauthorized();
 
             if (p_request.Stats != null)

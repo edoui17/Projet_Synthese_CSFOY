@@ -24,9 +24,7 @@ public class StatsController : ControllerBase
     {
         try
         {
-            if (string.IsNullOrEmpty(p_request.SessionToken)) return Unauthorized();
-
-            Player? player = await m_authRepository.GetBySessionTokenAsync(p_request.SessionToken);
+            Player? player = HttpContext.Items["Player"] as Player;
             if (player == null) return Unauthorized();
 
             if (p_request.Stats == null) return BadRequest("Stats data is required.");
