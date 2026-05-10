@@ -3,7 +3,6 @@
 [ext_resource type="Script" uid="uid://tvjivvqe0caf" path="res://Scenes/Ressources/Tree/ConiferTree.cs" id="1_dkrse"]
 [ext_resource type="Texture2D" uid="uid://pr42it55tc3f" path="res://Assets/TinySwords/Decorations/Trees/Tree.png" id="2_ttmo2"]
 [ext_resource type="PackedScene" uid="uid://biqhbrp7fjfyj" path="res://Nodes/StatsManager/StatsManager.tscn" id="3_5a382"]
-[ext_resource type="Resource" uid="uid://bgduawnxd4hah" path="res://Resources/Stats/Entity/ConiferStats.tres" id="4_moeyj"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ybac0"]
 size = Vector2(45, 40)
@@ -81,4 +80,5 @@ frame_progress = 0.5379155
 [node name="Timer" type="Timer" parent="." unique_id=3877963]
 
 [node name="StatManager" parent="." unique_id=1475410971 instance=ExtResource("3_5a382")]
-BaseStatsResource = ExtResource("4_moeyj")
+EntityType = 2
+MaxHealth = 30.0

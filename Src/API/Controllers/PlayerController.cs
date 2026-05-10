@@ -67,7 +67,7 @@ public class PlayerController : ControllerBase
 
         return Ok();
     }
-/*
+
     [HttpGet("leaderboard")]
     public async Task<IActionResult> GetLeaderboard()
     {

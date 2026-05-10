@@ -79,3 +79,50 @@ When adjusting a `RayCast2D`'s `TargetPosition` via code attached to a parent no
 - **Deployment Reliability**: To ensure "zero friction" deployment, each developer is instructed to customize the `Server=` parameter in their local `appsettings.json` to match their SSMS instance (e.g., `Server=MSI`).
 - **Schema Robustness**: `schema.sql` now includes `IF OBJECT_ID(...) DROP TABLE ...` clauses for all project tables. This prevents re-initialization failures due to existing foreign key constraints or lingering metadata.
 - **SQL Server Instance**: Re-confirmed SQL Server Developer Edition (MSI) as the project's baseline standard.
+### 2026-05-08 - Dynamic Property Hiding in Godot C#
+
+To dynamically hide exported properties in the Godot Inspector using C#, the Node must be marked with the `[Tool]` attribute, and it must override the `_ValidateProperty(Godot.Collections.Dictionary property)` method. Inside `_ValidateProperty`, clear the `PropertyUsageFlags.Editor` flag on the property `usage` when conditions are met.
+
+```csharp
+[Tool]
+public partial class MyNode : Node
+{
+    private int m_type;
+    [Export]
+    public int Type
+    {
+        get => m_type;
+        set
+        {
+            m_type = value;
+            NotifyPropertyListChanged();
+        }
+    }
+
+    [Export] public int HiddenProperty { get; set; }
+
+    public override void _ValidateProperty(Godot.Collections.Dictionary property)
+    {
+        if (!Engine.IsEditorHint()) return;
+
+        string name = property["name"].AsString();
+        if (name == "HiddenProperty" && m_type == 0)
+        {
+            var usage = property["usage"].As<PropertyUsageFlags>();
+            property["usage"] = (int)(usage & ~PropertyUsageFlags.Editor);
+        }
+    }
+
+    public override void _Ready()
+    {
+        base._Ready();
+        if (Engine.IsEditorHint()) return;
+        // Game logic
+    }
+}
+```
+
+*Note:* Wrapping the conditional properties triggering a hide/show check within an explicit property allows calling `NotifyPropertyListChanged()` upon modification, instantaneously updating the Inspector. Ensure all runtime logic within `_Ready`, `_Process`, etc., starts with `if (Engine.IsEditorHint()) return;` to prevent execution in the editor.
+
+### 2026-05-09 - Testing EventBus Event Side-Effects
+When triggering updates (e.g., UI upgrades emitting events to a decoupled component via `EventBus`), reading back the updated values immediately within the same method frame might fail. The global `EventBus` processes its subscription queue inside its `_Process` loop, meaning any data change side-effects will be deferred. To accurately log or verify the "after" state in Godot C# test scenes, execution must be yielded by `await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);` to allow the EventBus to iterate and subscribers to update their state.
