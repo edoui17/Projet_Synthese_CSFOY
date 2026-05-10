@@ -22,21 +22,14 @@ public class StatsController : ControllerBase
     [HttpPost("upsert")]
     public async Task<IActionResult> Upsert([FromBody] StatsUpsertRequest p_request)
     {
-        try
-        {
-            Player? player = HttpContext.Items["Player"] as Player;
-            if (player == null) return Unauthorized();
+        Player? player = HttpContext.Items["Player"] as Player;
+        if (player == null) return Unauthorized();
 
-            if (p_request.Stats == null) return BadRequest("Stats data is required.");
+        if (p_request.Stats == null) return BadRequest("Stats data is required.");
 
-            p_request.Stats.PlayerId = player.Id;
-            await m_statsRepository.UpdateStatsAsync(p_request.Stats);
+        p_request.Stats.PlayerId = player.Id;
+        await m_statsRepository.UpdateStatsAsync(p_request.Stats);
 
-            return Ok();
-        }
-        catch (Exception ex) when (ex is Microsoft.Data.SqlClient.SqlException || ex is InvalidOperationException)
-        {
-            return StatusCode(503, "Service Unavailable: Database connection lost.");
-        }
+        return Ok();
     }
 }

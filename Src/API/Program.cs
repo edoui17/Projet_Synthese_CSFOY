@@ -27,6 +27,7 @@ builder.Services.AddScoped<Core.Interfaces.IConfigRepository, Infrastructure.Rep
 
 WebApplication app = builder.Build();
 
+app.UseMiddleware<API.Middleware.ExceptionHandlingMiddleware>();
 app.UseMiddleware<API.Middleware.ApiKeyMiddleware>();
 app.UseMiddleware<API.Middleware.SessionAuthMiddleware>();
 

@@ -22,21 +22,14 @@ public class PlayerConfigController : ControllerBase
     [HttpPost("upsert")]
     public async Task<IActionResult> Upsert([FromBody] ConfigUpsertRequest p_request)
     {
-        try
-        {
-            Player? player = HttpContext.Items["Player"] as Player;
-            if (player == null) return Unauthorized();
+        Player? player = HttpContext.Items["Player"] as Player;
+        if (player == null) return Unauthorized();
 
-            if (p_request.Config == null) return BadRequest("Config data is required.");
+        if (p_request.Config == null) return BadRequest("Config data is required.");
 
-            p_request.Config.PlayerId = player.Id;
-            await m_configRepository.UpdateConfigAsync(p_request.Config);
+        p_request.Config.PlayerId = player.Id;
+        await m_configRepository.UpdateConfigAsync(p_request.Config);
 
-            return Ok();
-        }
-        catch (Exception ex) when (ex is Microsoft.Data.SqlClient.SqlException || ex is InvalidOperationException)
-        {
-            return StatusCode(503, "Service Unavailable: Database connection lost.");
-        }
+        return Ok();
     }
 }

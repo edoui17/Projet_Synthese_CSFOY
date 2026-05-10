@@ -71,6 +71,11 @@
 - **Request**: `GET /api/player/profile` (Non-existent Token)
 - **Response (401 Unauthorized)**: Session invalid.
 
+#### 4. Database Offline (Resilience)
+- **Scenario**: SQL Server is stopped or unreachable.
+- **Request**: Any modifying endpoint (POST/PUT/DELETE).
+- **Response (503 Service Unavailable)**: `{ "error": "Database is temporarily offline" }`
+
 ---
 
 ## 4. Resilience & Fallback Documentation

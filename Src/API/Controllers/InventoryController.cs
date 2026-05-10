@@ -23,20 +23,13 @@ public class InventoryController : ControllerBase
     [HttpPost("upsert")]
     public async Task<IActionResult> Upsert([FromBody] InventoryUpsertRequest p_request)
     {
-        try
-        {
-            Player? player = HttpContext.Items["Player"] as Player;
-            if (player == null) return Unauthorized();
+        Player? player = HttpContext.Items["Player"] as Player;
+        if (player == null) return Unauthorized();
 
-            if (p_request.Inventory == null) return BadRequest("Inventory data is required.");
+        if (p_request.Inventory == null) return BadRequest("Inventory data is required.");
 
-            await m_inventoryRepository.UpdateInventoryAsync(player.Id, p_request.Inventory);
+        await m_inventoryRepository.UpdateInventoryAsync(player.Id, p_request.Inventory);
 
-            return Ok();
-        }
-        catch (Exception ex) when (ex is Microsoft.Data.SqlClient.SqlException || ex is InvalidOperationException)
-        {
-            return StatusCode(503, "Service Unavailable: Database connection lost.");
-        }
+        return Ok();
     }
 }

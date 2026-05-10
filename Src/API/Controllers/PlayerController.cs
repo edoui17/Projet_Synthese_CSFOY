@@ -51,29 +51,21 @@ public class PlayerController : ControllerBase
     [HttpPost("sync")]
     public async Task<IActionResult> Sync([FromBody] SyncRequest p_request)
     {
-        try
+        Player? player = HttpContext.Items["Player"] as Player;
+        if (player == null) return Unauthorized();
+
+        if (p_request.Stats != null)
         {
-            Player? player = HttpContext.Items["Player"] as Player;
-            if (player == null) return Unauthorized();
-
-            if (p_request.Stats != null)
-            {
-                p_request.Stats.PlayerId = player.Id;
-                await m_statsRepository.UpdateStatsAsync(p_request.Stats);
-            }
-
-            if (p_request.Inventory != null)
-            {
-                await m_inventoryRepository.UpdateInventoryAsync(player.Id, p_request.Inventory);
-            }
-
-            return Ok();
+            p_request.Stats.PlayerId = player.Id;
+            await m_statsRepository.UpdateStatsAsync(p_request.Stats);
         }
-        catch (Exception ex) when (ex is Microsoft.Data.SqlClient.SqlException || ex is InvalidOperationException)
+
+        if (p_request.Inventory != null)
         {
-            // Log exception here in a real scenario
-            return StatusCode(503, "Service Unavailable: Database connection lost.");
+            await m_inventoryRepository.UpdateInventoryAsync(player.Id, p_request.Inventory);
         }
+
+        return Ok();
     }
 /*
     [HttpGet("leaderboard")]
