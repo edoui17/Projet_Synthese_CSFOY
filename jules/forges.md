@@ -126,3 +126,12 @@ public partial class MyNode : Node
 
 ### 2026-05-09 - Testing EventBus Event Side-Effects
 When triggering updates (e.g., UI upgrades emitting events to a decoupled component via `EventBus`), reading back the updated values immediately within the same method frame might fail. The global `EventBus` processes its subscription queue inside its `_Process` loop, meaning any data change side-effects will be deferred. To accurately log or verify the "after" state in Godot C# test scenes, execution must be yielded by `await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);` to allow the EventBus to iterate and subscribers to update their state.
+
+## 2026-05-09 - Configuration Consolidation & API Security
+- **Discovery**: Maintaining hardcoded API keys in the source code (`ApiService.cs`) creates security risks and deployment friction.
+- **Refactoring**:
+  - **Core**: `ApiService` constructor was updated to receive the API Key as a dependency, decoupling it from a hardcoded constant.
+  - **Godot (IslandSurvivor)**: The API Key is now stored in `project.godot` under `network/api/api_key` and retrieved via `ProjectSettings`.
+  - **Web**: The API Key is stored in `appsettings.json` and injected into the `HttpClient` instance at registration time in `Program.cs`.
+  - **Cleanup**: Redundant/commented-out code in `PlayerController.cs` was removed to maintain API cleanliness.
+- **Technical Detail**: In Godot C#, using `ProjectSettings.GetSetting("path").AsString()` is the standard way to access custom configuration defined in the `project.godot` file, allowing for environment-specific overrides during export.

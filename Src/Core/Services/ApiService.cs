@@ -14,18 +14,17 @@ public class ApiService : IApiService
     private readonly ISaveService m_saveService;
     private string? m_sessionToken;
     private const string CACHE_FILE = "profile_cache.json";
-    private const string API_KEY = "IslandSurvivor-Dev-2026";
 
     // We are going to use default options to handle circular ref just in case
     private readonly JsonSerializerOptions m_jsonOptions;
 
-    public ApiService(ISaveService p_saveService)
+    public ApiService(ISaveService p_saveService, string p_apiKey)
     {
         m_httpClient = new HttpClient
         {
             BaseAddress = new Uri("http://localhost:5271")
         };
-        m_httpClient.DefaultRequestHeaders.Add("X-API-KEY", API_KEY);
+        m_httpClient.DefaultRequestHeaders.Add("X-API-KEY", p_apiKey);
         m_saveService = p_saveService;
         m_jsonOptions = new JsonSerializerOptions
         {

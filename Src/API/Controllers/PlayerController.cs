@@ -71,25 +71,6 @@ public class PlayerController : ControllerBase
     [HttpGet("leaderboard")]
     public async Task<IActionResult> GetLeaderboard()
     {
-        var players = await m_playerRepository.GetAllAsync();
-
-        var leaderboard = players.Select(p => new PlayerLeaderboardEntry
-        {
-            Id = p.Id,
-            Username = p.Username,
-            Health = p.Stats?.Health ?? 0,
-            Attack = p.Stats?.Attack ?? 0,
-            Speed = p.Stats?.Speed ?? 0,
-            Luck = p.Stats?.Luck ?? 0,
-            Level = CalculateLevel(p.Stats)
-        });
-
-        return Ok(leaderboard);
-    }*/
-
-    [HttpGet("leaderboard")]
-    public async Task<IActionResult> GetLeaderboard()
-    {
         IEnumerable<Player> players = await m_playerRepository.GetAllAsync();
 
         IEnumerable<PlayerLeaderboardEntry> leaderboard = players.Select(p => new PlayerLeaderboardEntry
