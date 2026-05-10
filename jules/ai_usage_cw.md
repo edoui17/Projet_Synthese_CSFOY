@@ -78,3 +78,9 @@
 | **Request** | **AI Contribution** | **Decision Reasoning** |
 | :--- | :--- | :--- |
 | **Infrastructure, schéma SQL et corrections.**<br>- Schema DB (Reset).<br>- Mapping SQL REAL.<br>- SQL Developer Instance.<br>- Visual Studio Env. | **1. Schema Strategy**: Updated `schema.sql` with a full DB reset header (master/drop/create) for environment purity.<br>**2. Type Safety**: Replaced `FLOAT` with `REAL` in the schema to match C# 32-bit floats and eliminate casting errors.<br>**3. Connection String**: Updated `appsettings.json` for SQL Developer instance and SSL trust.<br>**4. Memory**: Recorded the new environment standards (VS Full, REAL types). | **Operational Stability**: Standardizing the DB reset and the exact type mapping (REAL/float) eliminates common "InvalidCastException" and environment drift issues during manual testing. |
+
+### 2026-05-09 - [Infrastructure] | Standards de déploiement et cycle de vie de la base de données
+
+| **Request** | **AI Contribution** | **Decision Reasoning** |
+| :--- | :--- | :--- |
+| **Mise à jour des standards de déploiement.**<br>- Schema.sql (Robustesse DROP TABLE).<br>- Guide configuration (Server=). | **1. Schema Lifecycle**: Added `IF OBJECT_ID DROP TABLE` to `schema.sql` to ensure error-free re-initialization despite constraints.<br>**2. Developer UX**: Updated `Manual_Testing_Guide.md` to instruct manual `Server=` configuration in `appsettings.json` per local environment requirements. | **Zero Friction**: Automating the cleanup of existing objects in the SQL script prevents metadata conflicts, while explicitly documenting local connection requirements avoids environment-specific connectivity blockers for the team. |

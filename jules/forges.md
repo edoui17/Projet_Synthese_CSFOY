@@ -74,3 +74,8 @@ When adjusting a `RayCast2D`'s `TargetPosition` via code attached to a parent no
 - **Database Reset Procedure**: Modified `schema.sql` to include a database recreation header (USE master -> DROP -> CREATE) to ensure a clean slate for every deployment.
 - **Type Mapping Fix**: All floating-point columns (Health, Attack, Speed, Luck, etc.) are converted from `FLOAT` to `REAL` in the database schema. This prevents `InvalidCastException` when mapping 64-bit SQL floats to 32-bit C# floats.
 - **Environment**: Formalized Visual Studio (Full) as the primary development IDE.
+
+## 2026-05-09 - Deployment & Schema Lifecycle Standard
+- **Deployment Reliability**: To ensure "zero friction" deployment, each developer is instructed to customize the `Server=` parameter in their local `appsettings.json` to match their SSMS instance (e.g., `Server=MSI`).
+- **Schema Robustness**: `schema.sql` now includes `IF OBJECT_ID(...) DROP TABLE ...` clauses for all project tables. This prevents re-initialization failures due to existing foreign key constraints or lingering metadata.
+- **SQL Server Instance**: Re-confirmed SQL Server Developer Edition (MSI) as the project's baseline standard.

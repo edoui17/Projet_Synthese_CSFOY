@@ -5,6 +5,11 @@
 ## 1. API & Database Testing (Postman)
 Use these instructions to manually verify CRUD operations for the backend.
 
+### Prerequisites (Configuration)
+Before testing, each developer must configure their own connection string in `Src/API/appsettings.json`.
+- **Server Instance**: Ensure the `Server=` parameter matches your local SQL Server instance (e.g., `Server=MSI`, `Server=.`, or `Server=(localdb)\mssqllocaldb`).
+- **Connection Example**: `"DefaultConnection": "Server=MSI;Database=DBIslandSurvivor;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True"`
+
 ### A. Authentication
 - **Endpoint**: `POST /api/auth/login`
 - **Headers**: `X-API-KEY: IslandSurvivor-Dev-2026`

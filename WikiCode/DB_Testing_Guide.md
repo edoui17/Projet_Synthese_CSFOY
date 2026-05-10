@@ -47,7 +47,7 @@ JOIN PlayerConfig c ON p.Id = c.PlayerId;
 
 ## 3. Manual Reset Procedure
 1. Open SSMS.
-2. Connect to your LocalDB or SQL Server instance.
+2. Connect to your SQL Server instance (Note: The project uses SQL Server Developer Edition by default).
 3. Open a new query window.
 4. Copy-paste the content of `schema.sql` and execute (F5).
 5. Copy-paste the content of `data.sql` and execute (F5).
