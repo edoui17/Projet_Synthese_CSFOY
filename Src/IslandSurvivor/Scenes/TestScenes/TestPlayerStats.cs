@@ -24,12 +24,23 @@ public partial class TestPlayerStats : Node2D
         btnLuck.Pressed += () => UpgradeStat(StatType.Luck);
     }
 
-    private void UpgradeStat(StatType p_type)
+    private async void UpgradeStat(StatType p_type)
     {
         if (SignalManager.Instance != null)
         {
+            float beforeVal = m_player?.Stats?.GetCurrentValue(p_type) ?? 0f;
+            float beforeMaxVal = m_player?.Stats?.GetEffectiveMaxValue(p_type) ?? 0f;
+            GD.Print($"[TestPlayerStats] BEFORE - {p_type}: Current={beforeVal}, Max={beforeMaxVal}");
+
             GD.Print($"[TestPlayerStats] Requesting upgrade for {p_type}");
             SignalManager.Instance.EmitStatUpgradePurchased(this, p_type);
+
+            // Wait a frame so EventBus can process the queue and apply the upgrade
+            await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
+
+            float afterVal = m_player?.Stats?.GetCurrentValue(p_type) ?? 0f;
+            float afterMaxVal = m_player?.Stats?.GetEffectiveMaxValue(p_type) ?? 0f;
+            GD.Print($"[TestPlayerStats] AFTER  - {p_type}: Current={afterVal}, Max={afterMaxVal}");
         }
     }
 }

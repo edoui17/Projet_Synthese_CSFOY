@@ -21,6 +21,7 @@ public partial class ServiceRegistry : Node
   public INavigationService NavigationService { get; private set; }
   public IEventBus EventBus { get; private set; }
   public IApiService ApiService { get; private set; }
+  public IStatTracker StatTracker { get; private set; }
 
   public override void _EnterTree()
   {
@@ -35,6 +36,7 @@ public partial class ServiceRegistry : Node
     // Initialize Core Managers
     EventBus = new EventBus();
 
+    StatTracker = new StatTracker(EventBus);
     InventoryManager = new InventoryManager(EventBus);
     ShopManager = new ShopManager(EventBus);
 
