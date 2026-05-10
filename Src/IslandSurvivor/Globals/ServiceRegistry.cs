@@ -45,7 +45,8 @@ public partial class ServiceRegistry : Node
     ScoreTracker = new ScoreTracker(saveService, EventBus);
     NavigationService = new NavigationService(EventBus, ShopManager, InventoryManager);
 
-    ApiService = new ApiService(saveService);
+    string apiKey = ProjectSettings.GetSetting("network/api/api_key").AsString();
+    ApiService = new ApiService(saveService, apiKey);
   }
 
   public override void _Ready()

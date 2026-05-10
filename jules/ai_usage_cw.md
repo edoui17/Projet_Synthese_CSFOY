@@ -12,7 +12,7 @@
 | :--- | :--- | :--- |
 | **Task 2.2.5: Implémenter Attaque du Joueur.**<br>- Implement attack triggering (Space key), movement blocking, and hit detection. | **1. Interfaces**: Defined `IAttackable` interface in `Src/IslandSurvivor/Interfaces/`.<br>**2. Attackable Node**: Created `AttackableNode` in `Src/IslandSurvivor/Nodes/` as a base for enemies/objects that can be hit.<br>**3. Player Refactoring**: Updated `Player.cs` to handle the `Attacking` state, play `ATTACK` animation, and block movement. Integrated `m_weaponArea` for hit detection.<br>**4. Tscn Update**: Linked `WeaponInteractionArea` in `Player.tscn`.<br>**5. Verification**: Added unit test for `IAttackable` interface. | **Separation of Concerns**: Kept combat separate from the general interaction system. Used the existing `PlayerState.Attacking` and `AnimationPlayer` frames to enable/disable the weapon hitbox, ensuring precise hit registration. |
 
-### 2025-04-19 - [Persistence] N-Tier Database Schema & EF Core
+### 2026-04-19 - [Persistence] N-Tier Database Schema & EF Core
 
 **Request**: Create database tables and relationships for Inventory, Stats, and PlayerConfig meta-progression. Provide SQL DDL and EF Core implementation.
 **AI Contribution**:
@@ -54,3 +54,34 @@
 | **Request** | **AI Contribution** | **Decision Reasoning** |
 | :--- | :--- | :--- |
 | **US 8.1: Synchronisation des données.**<br>- Implement API endpoints for profile loading and data sync.<br>- Implement authentication with username/password and session tokens.<br>- Handle stats, inventory, and configuration. | **1. Database Evolution**: Added `PasswordHash` and `SessionToken` to `PlayerEntity` and migrated the database.<br>**2. Core Domain**: Created `PlayerProfile`, `LoginRequest`, and `SyncRequest` POCOs for optimized data transfer.<br>**3. Repositories**: Implemented `AuthRepository` and updated `PlayerRepository` to handle the new security fields and manual mapping.<br>**4. API Layer**: Developed `AuthController` for session management and `PlayerController` for consolidated profile/sync operations. Added `StatsController` and `InventoryController` for granular updates. | **Security & UX**: The session token system balances security with ease of use for the game client. The consolidated profile endpoint minimizes startup latency, while individual UPSERTs allow for frequent, low-overhead saving during gameplay. |
+
+### 2026-05-08 - [Audit] | Audit Technique et Validation (API & DB)
+
+| **Request** | **AI Contribution** | **Decision Reasoning** |
+| :--- | :--- | :--- |
+| **Audit Technique et Validation.**<br>- Revue du schéma DB et intégrité.<br>- Audit des contrôleurs API et DTOs.<br>- Simulation Postman. | **1. DB Integrity**: Added `UNIQUE` constraint to `Username` and synchronized `schema.sql` with authentication fields.<br>**2. N-Tier Isolation**: Created `AuthResponse` and `ProfileResponse` DTOs to replace direct entity/domain model exposure in API.<br>**3. Controller Refactoring**: Updated `AuthController` and `PlayerController` to use DTOs and fixed the leaderboard endpoint.<br>**4. Documentation**: Generated a full Technical Audit Dashboard with Postman simulations. | **Strict N-Tier Compliance**: Ensuring DTOs are used for all API outputs prevents leaking sensitive infrastructure details (like password hashes) and maintains decoupling. Unique constraints at both SQL and EF level provide defense-in-depth for data integrity. |
+
+### 2026-05-09 - [Audit] | Audit Technique, Sécurité et Résilience (POCO & CRUD)
+
+| **Request** | **AI Contribution** | **Decision Reasoning** |
+| :--- | :--- | :--- |
+| **Audit Technique, Sécurité et Résilience.**<br>- Suppression de doublons.<br>- Mise à jour des dates (09/05/2026).<br>- Simplification Auth.<br>- Résilience Sync (503).<br>- Simulation CRUD & Cybersécurité. | **1. Maintenance**: Deleted `jules/forge.md` and updated all log dates to May 9, 2026.<br>**2. Resilience**: Implemented try-catch in `Sync` endpoint to handle DB failures with 503 status. Documented client fallback strategy.<br>**3. Security Audit**: Documented SQL Injection protection by EF Core and simulated Brute Force handling.<br>**4. CRUD Validation**: Documented full CRUD flows for Player, Stats, and Inventory using POCOs. | **Resilience First**: In a Rogue-like, losing progress due to a DB glitch is unacceptable. The 503/Fallback strategy ensures the client remains the secondary source of truth. Moving to POCO terminology aligns with pure C# data structures used for transport. |
+
+### 2026-05-09 - [Infrastructure] | Optimisation de la Résilience et Sécurisation
+
+| **Request** | **AI Contribution** | **Decision Reasoning** |
+| :--- | :--- | :--- |
+| **Optimisation de la Résilience et Sécurisation.**<br>- EnableRetryOnFailure.<br>- TrustServerCertificate=True.<br>- Middleware X-API-KEY. | **1. DB Resilience**: Configured EF Core with `EnableRetryOnFailure` and updated connection string with `TrustServerCertificate=True` to handle transient connection issues.<br>**2. API Security**: Implemented `ApiKeyMiddleware` to enforce `X-API-KEY` validation on all endpoints.<br>**3. Documentation**: Updated `Manual_Testing_Guide.md` with API key requirements for Postman. | **Defense in Depth**: API Key provides an immediate security layer while full JWT auth is being developed. `EnableRetryOnFailure` is standard practice for cloud-ready SQL connections to improve robustness against network blips. |
+
+### 2026-05-09 - [Infrastructure] | Infrastructure, schéma SQL et corrections d'environnement
+
+| **Request** | **AI Contribution** | **Decision Reasoning** |
+| :--- | :--- | :--- |
+| **Infrastructure, schéma SQL et corrections.**<br>- Schema DB (Reset).<br>- Mapping SQL REAL.<br>- SQL Developer Instance.<br>- Visual Studio Env. | **1. Schema Strategy**: Updated `schema.sql` with a full DB reset header (master/drop/create) for environment purity.<br>**2. Type Safety**: Replaced `FLOAT` with `REAL` in the schema to match C# 32-bit floats and eliminate casting errors.<br>**3. Connection String**: Updated `appsettings.json` for SQL Developer instance and SSL trust.<br>**4. Memory**: Recorded the new environment standards (VS Full, REAL types). | **Operational Stability**: Standardizing the DB reset and the exact type mapping (REAL/float) eliminates common "InvalidCastException" and environment drift issues during manual testing. |
+
+### 2026-05-09 - [Infrastructure] | Standards de déploiement et cycle de vie de la base de données
+
+| **Request** | **AI Contribution** | **Decision Reasoning** |
+| :--- | :--- | :--- |
+| **Mise à jour des standards de déploiement.**<br>- Schema.sql (Robustesse DROP TABLE).<br>- Guide configuration (Server=). | **1. Schema Lifecycle**: Added `IF OBJECT_ID DROP TABLE` to `schema.sql` to ensure error-free re-initialization despite constraints.<br>**2. Developer UX**: Updated `Manual_Testing_Guide.md` to instruct manual `Server=` configuration in `appsettings.json` per local environment requirements. | **Zero Friction**: Automating the cleanup of existing objects in the SQL script prevents metadata conflicts, while explicitly documenting local connection requirements avoids environment-specific connectivity blockers for the team. |
+| 2026-05-09 | **Refactorisation de la Configuration et Nettoyage.**<br>- Consolidation API Key.<br>- Suppression code mort PlayerController. | **1. API Security**: Removed hardcoded `API_KEY` from `ApiService.cs`. Updated constructor to inject the key from configuration.<br>**2. Client Config**: Moved the API Key to `project.godot` (Godot) and `appsettings.json` (Web).<br>**3. Code Cleanup**: Deleted duplicate/commented-out leaderboard endpoint in `PlayerController.cs`. | **Architectural Purity**: Moving secrets to configuration files adheres to "Separation of Concerns" and "Security by Design". Removing dead code reduces cognitive load and prevents maintenance errors. |
