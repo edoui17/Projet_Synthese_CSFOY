@@ -22,9 +22,7 @@ public class StatsController : ControllerBase
     [HttpPost("upsert")]
     public async Task<IActionResult> Upsert([FromBody] StatsUpsertRequest p_request)
     {
-        if (string.IsNullOrEmpty(p_request.SessionToken)) return Unauthorized();
-
-        Player? player = await m_authRepository.GetBySessionTokenAsync(p_request.SessionToken);
+        Player? player = HttpContext.Items["Player"] as Player;
         if (player == null) return Unauthorized();
 
         if (p_request.Stats == null) return BadRequest("Stats data is required.");
@@ -34,10 +32,4 @@ public class StatsController : ControllerBase
 
         return Ok();
     }
-}
-
-public class StatsUpsertRequest
-{
-    public string SessionToken { get; set; } = string.Empty;
-    public PlayerStats Stats { get; set; } = null!;
 }
