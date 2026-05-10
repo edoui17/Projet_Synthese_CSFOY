@@ -68,3 +68,9 @@ When adjusting a `RayCast2D`'s `TargetPosition` via code attached to a parent no
 - **Security Discovery:** Plain text password storage is temporarily accepted for development validation, but the architecture is ready for BCrypt integration via `IAuthRepository`.
 - **Architectural Shift:** Introduced `AuthResponse` and `ProfileResponse` DTOs in the Core layer. This ensures that Database Entities (Infrastructure) never leak into the API responses, maintaining a strict N-Tier separation and preventing accidental exposure of sensitive fields like `PasswordHash`.
 - **Database Quirk:** EF Core `HasIndex(e => e.Username).IsUnique()` is essential even if the database has a `UNIQUE` constraint, as it allows EF to optimize queries and handle validation at the tracking level.
+
+## 2026-05-09 - Infrastructure & Mapping Update
+- **SQL Server Instance**: Migrated from LocalDB to SQL Server Developer (MSI). Connection strings are updated to target `Server=.` with `TrustServerCertificate=True`.
+- **Database Reset Procedure**: Modified `schema.sql` to include a database recreation header (USE master -> DROP -> CREATE) to ensure a clean slate for every deployment.
+- **Type Mapping Fix**: All floating-point columns (Health, Attack, Speed, Luck, etc.) are converted from `FLOAT` to `REAL` in the database schema. This prevents `InvalidCastException` when mapping 64-bit SQL floats to 32-bit C# floats.
+- **Environment**: Formalized Visual Studio (Full) as the primary development IDE.

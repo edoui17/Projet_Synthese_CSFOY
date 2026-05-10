@@ -72,3 +72,9 @@
 | **Request** | **AI Contribution** | **Decision Reasoning** |
 | :--- | :--- | :--- |
 | **Optimisation de la Résilience et Sécurisation.**<br>- EnableRetryOnFailure.<br>- TrustServerCertificate=True.<br>- Middleware X-API-KEY. | **1. DB Resilience**: Configured EF Core with `EnableRetryOnFailure` and updated connection string with `TrustServerCertificate=True` to handle transient connection issues.<br>**2. API Security**: Implemented `ApiKeyMiddleware` to enforce `X-API-KEY` validation on all endpoints.<br>**3. Documentation**: Updated `Manual_Testing_Guide.md` with API key requirements for Postman. | **Defense in Depth**: API Key provides an immediate security layer while full JWT auth is being developed. `EnableRetryOnFailure` is standard practice for cloud-ready SQL connections to improve robustness against network blips. |
+
+### 2026-05-09 - [Infrastructure] | Infrastructure, schéma SQL et corrections d'environnement
+
+| **Request** | **AI Contribution** | **Decision Reasoning** |
+| :--- | :--- | :--- |
+| **Infrastructure, schéma SQL et corrections.**<br>- Schema DB (Reset).<br>- Mapping SQL REAL.<br>- SQL Developer Instance.<br>- Visual Studio Env. | **1. Schema Strategy**: Updated `schema.sql` with a full DB reset header (master/drop/create) for environment purity.<br>**2. Type Safety**: Replaced `FLOAT` with `REAL` in the schema to match C# 32-bit floats and eliminate casting errors.<br>**3. Connection String**: Updated `appsettings.json` for SQL Developer instance and SSL trust.<br>**4. Memory**: Recorded the new environment standards (VS Full, REAL types). | **Operational Stability**: Standardizing the DB reset and the exact type mapping (REAL/float) eliminates common "InvalidCastException" and environment drift issues during manual testing. |

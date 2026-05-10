@@ -1,6 +1,15 @@
 -- Create Tables for IslandSurvivor Meta-Progression
 -- Target Database: DBIslandSurvivor
+
+USE master;
+GO
+IF EXISTS (SELECT * FROM sys.databases WHERE name = 'DBIslandSurvivor')
+    DROP DATABASE DBIslandSurvivor;
+GO
+CREATE DATABASE DBIslandSurvivor;
+GO
 USE DBIslandSurvivor;
+GO
 
 CREATE TABLE Players (
     Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
@@ -28,18 +37,18 @@ CREATE TABLE Inventory (
 
 CREATE TABLE Stats (
     PlayerId UNIQUEIDENTIFIER PRIMARY KEY,
-    Health FLOAT NOT NULL DEFAULT 0,
-    Attack FLOAT NOT NULL DEFAULT 0,
-    Speed FLOAT NOT NULL DEFAULT 0,
-    Luck FLOAT NOT NULL DEFAULT 0,
+    Health REAL NOT NULL DEFAULT 0,
+    Attack REAL NOT NULL DEFAULT 0,
+    Speed REAL NOT NULL DEFAULT 0,
+    Luck REAL NOT NULL DEFAULT 0,
     ExtraStats NVARCHAR(MAX) NULL, -- JSON column for future flexibility
     CONSTRAINT FK_Stats_Players FOREIGN KEY (PlayerId) REFERENCES Players(Id) ON DELETE CASCADE
 );
 
 CREATE TABLE PlayerConfig (
     PlayerId UNIQUEIDENTIFIER PRIMARY KEY,
-    MasterVolume FLOAT NOT NULL DEFAULT 1.0,
-    MusicVolume FLOAT NOT NULL DEFAULT 1.0,
-    SfxVolume FLOAT NOT NULL DEFAULT 1.0,
+    MasterVolume REAL NOT NULL DEFAULT 1.0,
+    MusicVolume REAL NOT NULL DEFAULT 1.0,
+    SfxVolume REAL NOT NULL DEFAULT 1.0,
     CONSTRAINT FK_PlayerConfig_Players FOREIGN KEY (PlayerId) REFERENCES Players(Id) ON DELETE CASCADE
 );
