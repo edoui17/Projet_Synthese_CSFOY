@@ -3,7 +3,6 @@
 [ext_resource type="Script" uid="uid://dapenko10scyf" path="res://Scenes/Ressources/Gold/Gold.cs" id="1_hgyh0"]
 [ext_resource type="Texture2D" uid="uid://8u7skqirdnak" path="res://Assets/TinySwords/Terrain/Gold Stones/Gold Stone 6.png" id="2_av1go"]
 [ext_resource type="PackedScene" uid="uid://biqhbrp7fjfyj" path="res://Nodes/StatsManager/StatsManager.tscn" id="3_g4wyb"]
-[ext_resource type="Resource" uid="uid://dokxws5co3xt0" path="res://Resources/Stats/Entity/GoldStats.tres" id="4_dl6ph"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_hgyh0"]
 size = Vector2(69, 33)
@@ -38,4 +37,5 @@ texture = ExtResource("2_av1go")
 [node name="Timer" type="Timer" parent="." unique_id=1140467375]
 
 [node name="StatManager" parent="." unique_id=1475410971 instance=ExtResource("3_g4wyb")]
-BaseStatsResource = ExtResource("4_dl6ph")
+EntityType = 2
+MaxHealth = 30.0
