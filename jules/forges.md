@@ -45,3 +45,93 @@
 ### 2026-04-30 - Decentralized Stat Tracking and Godot Signals
 - **Discovery**: Relying on a global `ServiceRegistry.Instance.StatTracker` caused all entities to share exactly the same health, making independent combat interactions impossible.
 - **Technical Detail**: The solution leverages pure C# composition combined with Godot Signals. The Godot `StatManager` node was refactored to spawn its own *local* `EventBus` and `StatTracker` upon `_Ready()`, creating true instances per entity. To communicate updates up to Godot components (like floating HP bars) without polluting the global `SignalManager`, `StatManager` listens to the C# `StatChangedEvent` on its isolated bus and re-emits a `[Signal] LocalStatChanged`. This keeps Godot UI components completely agnostic of Core interfaces while preserving N-Tier boundaries per entity.
+
+# Forge Technical Log
+
+## 2026-04-24 - Line of Sight Implementation
+- **Quirk/Discovery:** When implementing `RayCast2D` checks in the `_PhysicsProcess`, it is important to call `ForceRaycastUpdate()` after modifying `TargetPosition` to ensure the collision check is accurate for the current frame before evaluating `.IsColliding()`. This prevents off-by-one frame lag in detection.
+- **Quirk/Discovery:** Godot will throw `can_instantiate: Cannot instantiate C# script because the associated class could not be found` if a pure C# class (like `AgressorController` that does not inherit from `Node`) is attached directly to a node in the `.tscn` file. Pure logic scripts must be instantiated manually in the C# script of the node they belong to (e.g., `_logic = new AgressorController()`).
+- **Quirk/Discovery:** When using `RayCast2D` for obstacle detection, if `IsColliding()` is checked, it will hit *anything* on its Collision Mask. Therefore, if the RayCast is meant to detect walls *between* the enemy and the player, it needs to explicitly check if the hit `GodotObject` is the player. If it hits something else, it's an obstacle. If the `TargetPosition` is set to the player's position, and the ray hits *nothing*, it could mean the player is out of range, or the ray doesn't interact with the player's layer but reached the target without hitting a wall.
+
+### RayCast2D TargetPosition Quirk
+When adjusting a `RayCast2D`'s `TargetPosition` via code attached to a parent node to point toward a global target (like the Player), you must convert the target's global position into local coordinates. `TargetPosition` uses the local coordinate space of the RayCast itself.
+**Incorrect:** `Vector2 targetDirection = target.GlobalPosition - GlobalPosition;` (This breaks when parent nodes rotate or move).
+**Correct:** `Vector2 targetLocalPosition = ToLocal(target.GlobalPosition);` (Assuming the RayCast2D is at 0,0 relative to the script's parent).
+
+## 2026-05-07 - Signal-Based Attack Logic vs Area Polling
+- **Quirk/Discovery:** In Godot, when activating a `CollisionShape2D` hitbox mid-animation via `AnimationPlayer` (e.g., turning `disabled` off at 0.2s), polling for overlapping areas manually in the same C# function call using `GetOverlappingAreas()` will fail if called instantly.
+  - Using `await ToSignal(GetTree().CreateTimer(0.25f), SceneTreeTimer.SignalName.Timeout)` and then `GetOverlappingAreas()` works but can feel brittle.
+  - The more idiomatic Godot solution is relying on the signals `AreaEntered` and `BodyEntered` emitted natively by the `Area2D` when the `disabled` flag flips to `false` during the animation frame.
+- **Architectural Shift:** Moving from a procedural execution list to an event-driven `HashSet<IDamageable>` tracking mechanism ensures single-hits per target per attack frame while leveraging Godot's built-in physics event queue.
+
+## 2026-05-08 - API & DB Audit
+- **Security Discovery:** Plain text password storage is temporarily accepted for development validation, but the architecture is ready for BCrypt integration via `IAuthRepository`.
+- **Architectural Shift:** Introduced `AuthResponse` and `ProfileResponse` DTOs in the Core layer. This ensures that Database Entities (Infrastructure) never leak into the API responses, maintaining a strict N-Tier separation and preventing accidental exposure of sensitive fields like `PasswordHash`.
+- **Database Quirk:** EF Core `HasIndex(e => e.Username).IsUnique()` is essential even if the database has a `UNIQUE` constraint, as it allows EF to optimize queries and handle validation at the tracking level.
+
+## 2026-05-09 - Infrastructure & Mapping Update
+- **SQL Server Instance**: Migrated from LocalDB to SQL Server Developer (MSI). Connection strings are updated to target `Server=.` with `TrustServerCertificate=True`.
+- **Database Reset Procedure**: Modified `schema.sql` to include a database recreation header (USE master -> DROP -> CREATE) to ensure a clean slate for every deployment.
+- **Type Mapping Fix**: All floating-point columns (Health, Attack, Speed, Luck, etc.) are converted from `FLOAT` to `REAL` in the database schema. This prevents `InvalidCastException` when mapping 64-bit SQL floats to 32-bit C# floats.
+- **Environment**: Formalized Visual Studio (Full) as the primary development IDE.
+
+## 2026-05-09 - Deployment & Schema Lifecycle Standard
+- **Deployment Reliability**: To ensure "zero friction" deployment, each developer is instructed to customize the `Server=` parameter in their local `appsettings.json` to match their SSMS instance (e.g., `Server=MSI`).
+- **Schema Robustness**: `schema.sql` now includes `IF OBJECT_ID(...) DROP TABLE ...` clauses for all project tables. This prevents re-initialization failures due to existing foreign key constraints or lingering metadata.
+- **SQL Server Instance**: Re-confirmed SQL Server Developer Edition (MSI) as the project's baseline standard.
+### 2026-05-08 - Dynamic Property Hiding in Godot C#
+
+To dynamically hide exported properties in the Godot Inspector using C#, the Node must be marked with the `[Tool]` attribute, and it must override the `_ValidateProperty(Godot.Collections.Dictionary property)` method. Inside `_ValidateProperty`, clear the `PropertyUsageFlags.Editor` flag on the property `usage` when conditions are met.
+
+```csharp
+[Tool]
+public partial class MyNode : Node
+{
+    private int m_type;
+    [Export]
+    public int Type
+    {
+        get => m_type;
+        set
+        {
+            m_type = value;
+            NotifyPropertyListChanged();
+        }
+    }
+
+    [Export] public int HiddenProperty { get; set; }
+
+    public override void _ValidateProperty(Godot.Collections.Dictionary property)
+    {
+        if (!Engine.IsEditorHint()) return;
+
+        string name = property["name"].AsString();
+        if (name == "HiddenProperty" && m_type == 0)
+        {
+            var usage = property["usage"].As<PropertyUsageFlags>();
+            property["usage"] = (int)(usage & ~PropertyUsageFlags.Editor);
+        }
+    }
+
+    public override void _Ready()
+    {
+        base._Ready();
+        if (Engine.IsEditorHint()) return;
+        // Game logic
+    }
+}
+```
+
+*Note:* Wrapping the conditional properties triggering a hide/show check within an explicit property allows calling `NotifyPropertyListChanged()` upon modification, instantaneously updating the Inspector. Ensure all runtime logic within `_Ready`, `_Process`, etc., starts with `if (Engine.IsEditorHint()) return;` to prevent execution in the editor.
+
+### 2026-05-09 - Testing EventBus Event Side-Effects
+When triggering updates (e.g., UI upgrades emitting events to a decoupled component via `EventBus`), reading back the updated values immediately within the same method frame might fail. The global `EventBus` processes its subscription queue inside its `_Process` loop, meaning any data change side-effects will be deferred. To accurately log or verify the "after" state in Godot C# test scenes, execution must be yielded by `await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);` to allow the EventBus to iterate and subscribers to update their state.
+
+## 2026-05-09 - Configuration Consolidation & API Security
+- **Discovery**: Maintaining hardcoded API keys in the source code (`ApiService.cs`) creates security risks and deployment friction.
+- **Refactoring**:
+  - **Core**: `ApiService` constructor was updated to receive the API Key as a dependency, decoupling it from a hardcoded constant.
+  - **Godot (IslandSurvivor)**: The API Key is now stored in `project.godot` under `network/api/api_key` and retrieved via `ProjectSettings`.
+  - **Web**: The API Key is stored in `appsettings.json` and injected into the `HttpClient` instance at registration time in `Program.cs`.
+  - **Cleanup**: Redundant/commented-out code in `PlayerController.cs` was removed to maintain API cleanliness.
+- **Technical Detail**: In Godot C#, using `ProjectSettings.GetSetting("path").AsString()` is the standard way to access custom configuration defined in the `project.godot` file, allowing for environment-specific overrides during export.

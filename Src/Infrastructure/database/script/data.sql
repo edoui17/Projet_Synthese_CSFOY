@@ -23,10 +23,10 @@ DECLARE @JulesId UNIQUEIDENTIFIER = NEWID();
 DECLARE @TestPlayerId UNIQUEIDENTIFIER = NEWID();
 
 -- 3. Populate Players
-INSERT INTO Players (Id, Username) VALUES
-(@ForgeId, 'Forge'),
-(@JulesId, 'Jules'),
-(@TestPlayerId, 'TestPlayer');
+INSERT INTO Players (Id, Username, PasswordHash) VALUES
+(@ForgeId, 'Forge', 'password123'),
+(@JulesId, 'Jules', 'agent_secret'),
+(@TestPlayerId, 'TestPlayer', 'test');
 
 -- 4. Populate Stats
 -- Initial values: Speed (vitesse de base) is set to 1 as per requirements.

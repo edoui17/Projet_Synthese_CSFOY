@@ -34,7 +34,10 @@ public class PlayerRepository : IPlayerRepository
 
     public async Task<IEnumerable<Player>> GetAllAsync()
     {
-        var entities = await m_context.Players.ToListAsync();
+        var entities = await m_context.Players
+            .Include(p => p.Stats)
+            .Include(p => p.Config)
+            .ToListAsync();
         return entities.Select(MapToDomain).Where(p => p != null)!;
     }
 

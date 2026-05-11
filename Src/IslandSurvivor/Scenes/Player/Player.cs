@@ -13,7 +13,6 @@ using System.Collections.Generic;
 public partial class Player : CharacterBody2D, IDamageable
 {
     [Export] public StatManager? Stats { get; set; }
-    [Export] public float BaseDamage { get; set; } = 10f;
 
     private PlayerState m_currentState = PlayerState.Idle;
 
@@ -120,7 +119,7 @@ public partial class Player : CharacterBody2D, IDamageable
         else
         {
             // Fallback
-            float baseSpeed = 300f;
+            float baseSpeed = Stats?.BaseSpeed ?? 300f;
             float speedStat = Stats?.GetCurrentValue(StatType.Speed) ?? 0f;
             float finalSpeed = baseSpeed * (1f + (speedStat * 0.05f));
             Velocity = direction * finalSpeed;
@@ -233,7 +232,8 @@ public partial class Player : CharacterBody2D, IDamageable
         m_hitTargetsThisAttack.Add(p_target);
 
         float attackStat = Stats?.GetCurrentValue(StatType.Attack) ?? 0f;
-        float finalDamageFloat = BaseDamage * (1f + (attackStat * 0.05f));
+        float baseDamage = Stats?.BaseDamage ?? 10f;
+        float finalDamageFloat = baseDamage * (1f + (attackStat * 0.05f));
         int finalDamage = Mathf.RoundToInt(finalDamageFloat);
 
         GD.Print($"[COMBAT] Hit target! Dealing {finalDamage} damage.");

@@ -73,6 +73,7 @@ public partial class ScoreManager : Node
 
     private void OnCoreScoreChanged(ScoreChangedEvent p_event)
     {
+        GD.Print($"[ScoreManager] Score updated visually (console): {p_event.PreviousScore} -> {p_event.NewScore}");
         EmitSignal(SignalName.ScoreChanged, p_event.PreviousScore, p_event.NewScore);
     }
 

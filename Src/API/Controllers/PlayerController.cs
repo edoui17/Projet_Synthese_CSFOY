@@ -30,32 +30,28 @@ public class PlayerController : ControllerBase
     }
 
     [HttpGet("profile")]
-    public async Task<IActionResult> GetProfile([FromHeader(Name = "X-Session-Token")] string p_token)
+    public async Task<IActionResult> GetProfile()
     {
-        if (string.IsNullOrEmpty(p_token)) return Unauthorized();
-
-        Player? player = await m_authRepository.GetBySessionTokenAsync(p_token);
+        Player? player = HttpContext.Items["Player"] as Player;
         if (player == null) return Unauthorized();
 
         IEnumerable<InventoryEntry> inventory = await m_inventoryRepository.GetByPlayerIdAsync(player.Id);
 
-        PlayerProfile profile = new PlayerProfile
+        ProfileResponse response = new ProfileResponse
         {
-            Player = player,
-            Inventory = inventory,
+            Username = player.Username,
             Stats = player.Stats,
-            Config = player.Config
+            Config = player.Config,
+            Inventory = inventory
         };
 
-        return Ok(profile);
+        return Ok(response);
     }
 
     [HttpPost("sync")]
     public async Task<IActionResult> Sync([FromBody] SyncRequest p_request)
     {
-        if (string.IsNullOrEmpty(p_request.SessionToken)) return Unauthorized();
-
-        Player? player = await m_authRepository.GetBySessionTokenAsync(p_request.SessionToken);
+        Player? player = HttpContext.Items["Player"] as Player;
         if (player == null) return Unauthorized();
 
         if (p_request.Stats != null)
@@ -70,5 +66,32 @@ public class PlayerController : ControllerBase
         }
 
         return Ok();
+    }
+
+    [HttpGet("leaderboard")]
+    public async Task<IActionResult> GetLeaderboard()
+    {
+        IEnumerable<Player> players = await m_playerRepository.GetAllAsync();
+
+        IEnumerable<PlayerLeaderboardEntry> leaderboard = players.Select(p => new PlayerLeaderboardEntry
+        {
+            Id = p.Id,
+            Username = p.Username,
+            Health = p.Stats?.Health ?? 0,
+            Attack = p.Stats?.Attack ?? 0,
+            Speed = p.Stats?.Speed ?? 0,
+            Luck = p.Stats?.Luck ?? 0,
+            Level = CalculateLevel(p.Stats)
+        });
+
+        return Ok(leaderboard);
+    }
+
+    private int CalculateLevel(PlayerStats? p_stats)
+    {
+        if (p_stats == null) return 1;
+        // Basic calculation based on total stats. Adjust as needed for specific game logic.
+        float totalStats = p_stats.Health + p_stats.Attack + p_stats.Speed + p_stats.Luck;
+        return Math.Max(1, (int)(totalStats / 10)); // Example: 1 level per 10 stat points
     }
 }

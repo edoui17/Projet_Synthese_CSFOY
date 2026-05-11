@@ -6,6 +6,20 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
+// Register HttpClient for API requests
+string apiBaseUrl = builder.Configuration.GetValue<string>("ApiBaseUrl") ?? "http://localhost:5271";
+string apiKey = builder.Configuration.GetValue<string>("ApiKey") ?? string.Empty;
+
+builder.Services.AddScoped(sp =>
+{
+    HttpClient httpClient = new HttpClient { BaseAddress = new Uri(apiBaseUrl) };
+    if (!string.IsNullOrEmpty(apiKey))
+    {
+        httpClient.DefaultRequestHeaders.Add("X-API-KEY", apiKey);
+    }
+    return httpClient;
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

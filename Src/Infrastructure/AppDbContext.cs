@@ -24,8 +24,11 @@ public class AppDbContext : DbContext
         {
             entity.ToTable("Players");
             entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.Username).IsUnique();
             entity.Property(e => e.Id).HasDefaultValueSql("NEWID()");
             entity.Property(e => e.Username).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.PasswordHash).IsRequired().HasMaxLength(255).HasDefaultValue("");
+            entity.Property(e => e.SessionToken).HasMaxLength(255);
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETDATE()");
         });
 
