@@ -1,13 +1,41 @@
-[gd_scene load_steps=4 format=3 uid="uid://c3x2l3wvemtmp"]
+[gd_scene format=3 uid="uid://c3x2l3wvemtmp"]
 
 [ext_resource type="PackedScene" uid="uid://cax2j3b2g36d" path="res://Scenes/Level/LevelBase.tscn" id="1_base"]
 [ext_resource type="PackedScene" uid="uid://dvkgi8wqmci1c" path="res://Scenes/Map/Map2/Map2.tscn" id="2_map"]
+[ext_resource type="PackedScene" uid="uid://mqagd60eodos" path="res://Scenes/NPC/Passive/Sheep.tscn" id="3_3e544"]
+[ext_resource type="Script" uid="uid://6dd3lksu804t" path="res://Nodes/Zones/ResourceZone.cs" id="3_jjjh0"]
 [ext_resource type="PackedScene" uid="uid://dq4dear1g8mq2" path="res://Scenes/Portal/Portal.tscn" id="3_portal"]
+[ext_resource type="PackedScene" uid="uid://c5wdnoymw6mrq" path="res://Scenes/Ressources/Tree/AutomnTree.tscn" id="4_ilso0"]
+[ext_resource type="PackedScene" uid="uid://rtx0k5qfaymn" path="res://Scenes/Ressources/Tree/ConiferTree.tscn" id="5_5q2co"]
+[ext_resource type="PackedScene" uid="uid://dyxx1q578y7t0" path="res://Scenes/NPC/Agressive/Soldier.tscn" id="5_abuu6"]
+[ext_resource type="PackedScene" uid="uid://cs7lisiu7vc7y" path="res://Scenes/Ressources/Rock/Rock.tscn" id="6_1j366"]
+[ext_resource type="PackedScene" uid="uid://cxftj0qybs1cs" path="res://Scenes/Ressources/Gold/Gold.tscn" id="7_mtdb6"]
 
-[node name="Main" instance=ExtResource("1_base")]
+[node name="Main" unique_id=1230220837 instance=ExtResource("1_base")]
 
-[node name="Map2" parent="MapContainer" index="0" instance=ExtResource("2_map")]
+[node name="Map2" parent="." index="1" unique_id=1333386273 instance=ExtResource("2_map")]
 position = Vector2(-1, 0)
 
-[node name="Portal" parent="." index="2" instance=ExtResource("3_portal")]
+[node name="ResourceZone" type="Node2D" parent="." index="3" unique_id=2045029762 node_paths=PackedStringArray("SpawningArea")]
+position = Vector2(0, 1)
+script = ExtResource("3_jjjh0")
+ResourceCount = 50
+SpawningArea = NodePath("SpawningArea")
+ResourceScenes = Array[PackedScene]([ExtResource("4_ilso0"), ExtResource("5_5q2co"), ExtResource("6_1j366"), ExtResource("7_mtdb6")])
+
+[node name="SpawningArea" type="Polygon2D" parent="ResourceZone" index="0" unique_id=737445901]
+light_mask = 0
+visibility_layer = 0
+position = Vector2(-36.5, 0)
+scale = Vector2(1.045625, 1)
+polygon = PackedVector2Array(1450.3287, -1175, 1346.0848, -1098, 1338.434, 1150, 108.547516, 1154, 131.5003, 483, 638.3742, 483, 646.0251, 163, 843.0365, 99, 843.0365, 673, 255.82785, 689, 259.65332, 919, 1117.5134, 932, 1128.9899, -928, 259.65332, -941, 252.0024, -702, 843.0365, -674, 846.86194, 86, 646.0251, 155, 638.3742, -403, 97.07114, -395, 108.547516, -1082, 27.256426, -1078, 27.256426, -411, -468.14108, -415, -448.0574, 147, -676.62885, 95, -649.8506, -710, -177.40587, -718, -181.23132, -912, -835.38556, -928, -839.211, 903, -173.5804, 932, -154.45308, 693, -668.9779, 681, -672.80334, 107, -444.23193, 151, -471.96655, 495, 15.780037, 499, 19.6055, 1146, -1047.6987, 1154, -1024.746, -1098, 1330.7831, -1098, 1442.6779, -1171, -1171.07, -1183, -1159.5935, 1247, 1431.2014, 1235)
+uv = PackedVector2Array(-277.30957, 36.86975)
+
+[node name="Sheep" parent="." index="4" unique_id=1690845376 instance=ExtResource("3_3e544")]
+position = Vector2(-369, -247)
+
+[node name="Portal" parent="." index="5" unique_id=504895432 instance=ExtResource("3_portal")]
 position = Vector2(0, 50)
+
+[node name="Soldier" parent="." index="8" unique_id=666187867 instance=ExtResource("5_abuu6")]
+position = Vector2(70, -424)

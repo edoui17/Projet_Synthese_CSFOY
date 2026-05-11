@@ -3,51 +3,137 @@ using Godot;
 using Core.Interfaces.Stats;
 using Core.Interfaces;
 using Core.Managers.Stats;
+using Core.Services;
+using Core.Events;
 using IslandSurvivor.Resources;
+using IslandSurvivor.Enums;
 
 namespace IslandSurvivor.Nodes;
 
-public partial class StatManager : Node
+[Tool]
+public partial class StatManager : Node2D
 {
-    private EntityStats? m_baseStatsResource;
     private IStatTracker m_statTracker;
+    private IEventBus m_eventBus;
 
     [Export]
-    public EntityStats? BaseStatsResource
+    private bool m_isGlobal;
+
+    private EntityType m_entityType = EntityType.NPC;
+
+    [Export]
+    public EntityType EntityType
     {
-        get => m_baseStatsResource;
-        set => m_baseStatsResource = value;
+        get => m_entityType;
+        set
+        {
+            m_entityType = value;
+            NotifyPropertyListChanged();
+        }
     }
 
+    [ExportGroup("Base Stats")]
+    [Export] public float MaxHealth { get; set; } = 100f;
+    [Export] public float BaseDamage { get; set; } = 10f;
+    [Export] public float BaseSpeed { get; set; } = 300f;
+    [Export] public float Luck { get; set; } = 0f;
+
     [Signal]
-    public delegate void StatChangedEventHandler(int p_statType, float p_currentValue, float p_effectiveMaxValue);
+    public delegate void LocalStatChangedEventHandler(int p_statType, float p_currentValue, float p_effectiveMaxValue);
+
+    public override void _ValidateProperty(Godot.Collections.Dictionary property)
+    {
+        if (!Engine.IsEditorHint()) return;
+
+        string name = property["name"].AsString();
+
+        if (m_entityType == EntityType.Resource)
+        {
+            if (name == "BaseDamage" || name == "BaseSpeed" || name == "Luck")
+            {
+                var usage = property["usage"].As<PropertyUsageFlags>();
+                property["usage"] = (int)(usage & ~PropertyUsageFlags.Editor);
+            }
+        }
+        else if (m_entityType == EntityType.NPC)
+        {
+            if (name == "Luck")
+            {
+                var usage = property["usage"].As<PropertyUsageFlags>();
+                property["usage"] = (int)(usage & ~PropertyUsageFlags.Editor);
+            }
+        }
+    }
 
     public override void _Ready()
     {
         base._Ready();
+        if (Engine.IsEditorHint()) return;
 
-        m_statTracker = IslandSurvivor.Globals.ServiceRegistry.Instance.StatTracker;
-
-        SignalManager.Instance.StatUpgradePurchased += OnStatUpgradePurchased;
-
-        if (m_baseStatsResource != null)
+        if (m_isGlobal)
         {
-            Dictionary<StatType, float> initialStats = new Dictionary<StatType, float>
-            {
-                { StatType.Health, m_baseStatsResource.MaxHealth },
-                { StatType.Attack, m_baseStatsResource.Attack },
-                { StatType.Speed, m_baseStatsResource.Speed },
-                { StatType.Luck, m_baseStatsResource.Luck }
-            };
-
-            m_statTracker.InitializeStats(initialStats);
+            m_eventBus = Globals.ServiceRegistry.Instance.EventBus;
+            m_statTracker = Globals.ServiceRegistry.Instance.StatTracker;
+            m_eventBus.Subscribe<ProfileLoadedEvent>(OnProfileLoaded);
         }
         else
         {
-            GD.PushWarning("StatManager: BaseStatsResource is not assigned.");
+            m_eventBus = new EventBus();
+            m_statTracker = new StatTracker(m_eventBus);
         }
 
-        m_statTracker.OnAnyStatChanged.AddListener(OnCoreStatChanged);
+        m_eventBus.Subscribe<StatChangedEvent>(OnStatChangedEvent);
+
+        if (m_isGlobal)
+        {
+            SignalManager.Instance.StatUpgradePurchased += OnStatUpgradePurchased;
+        }
+
+        Dictionary<StatType, float> initialStats = new Dictionary<StatType, float>
+        {
+            { StatType.Health, MaxHealth }
+        };
+
+        if (m_entityType == EntityType.NPC || m_entityType == EntityType.Player)
+        {
+            initialStats.Add(StatType.Attack, 0f);
+            initialStats.Add(StatType.Speed, 0f);
+        }
+
+        if (m_entityType == EntityType.Player)
+        {
+            initialStats.Add(StatType.Luck, Luck);
+        }
+
+        m_statTracker.InitializeStats(initialStats);
+    }
+
+    public override void _Process(double delta)
+    {
+        base._Process(delta);
+        if (Engine.IsEditorHint()) return;
+
+        if (!m_isGlobal)
+        {
+            m_eventBus?.ProcessEvents();
+        }
+    }
+
+    private void OnProfileLoaded(ProfileLoadedEvent e)
+    {
+        if (e.Profile?.Stats != null)
+        {
+            GD.Print("[StatManager] Profile Loaded. Syncing global stats.");
+            SetCurrentValue(StatType.Health, e.Profile.Stats.Health);
+            SetCurrentValue(StatType.Attack, e.Profile.Stats.Attack);
+            SetCurrentValue(StatType.Speed, e.Profile.Stats.Speed);
+            SetCurrentValue(StatType.Luck, e.Profile.Stats.Luck);
+        }
+    }
+
+    private void OnStatChangedEvent(StatChangedEvent e)
+    {
+        EmitSignal(SignalName.LocalStatChanged, (int)e.StatType, e.CurrentValue, e.EffectiveMaxValue);
     }
 
     public float GetCurrentValue(StatType p_statType)
@@ -75,24 +161,28 @@ public partial class StatManager : Node
         m_statTracker.AddPermanentBonus(p_statType, p_amount);
     }
 
-    private void OnCoreStatChanged(object? p_sender, StatChangedEventArgs p_args)
-    {
-        EmitSignal(SignalName.StatChanged, (int)p_args.StatType, p_args.CurrentValue, p_args.EffectiveMaxValue);
-    }
-
     private void OnStatUpgradePurchased(int p_statType)
     {
-        // Each upgrade adds +1 permanent bonus to the stat
-        AddPermanentBonus((StatType)p_statType, 1f);
-        GD.Print($"[StatManager] Received StatUpgradePurchased for {(StatType)p_statType}. Adding +1 permanent bonus.");
+        StatType type = (StatType)p_statType;
+        float amount = type == StatType.Health ? 10f : 1f;
+
+        AddPermanentBonus(type, amount);
+        GD.Print($"[StatManager] Received StatUpgradePurchased for {type}. Adding +{amount} permanent bonus.");
     }
 
     protected override void Dispose(bool p_disposing)
     {
-        if (p_disposing && m_statTracker != null)
+        if (p_disposing)
         {
-            m_statTracker.OnAnyStatChanged.RemoveListener(OnCoreStatChanged);
-            if (SignalManager.Instance != null)
+            if (m_eventBus != null && !Engine.IsEditorHint())
+            {
+                m_eventBus.Unsubscribe<StatChangedEvent>(OnStatChangedEvent);
+                if (m_isGlobal)
+                {
+                    m_eventBus.Unsubscribe<ProfileLoadedEvent>(OnProfileLoaded);
+                }
+            }
+            if (SignalManager.Instance != null && !Engine.IsEditorHint())
             {
                 SignalManager.Instance.StatUpgradePurchased -= OnStatUpgradePurchased;
             }

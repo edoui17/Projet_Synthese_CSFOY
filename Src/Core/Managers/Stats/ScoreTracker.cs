@@ -2,6 +2,7 @@ namespace Core.Managers.Stats;
 
 using System.Text.Json;
 using Core.Domain;
+using Core.Events;
 using Core.Interfaces;
 using Core.Interfaces.Stats;
 using Core.Utils;
@@ -9,12 +10,10 @@ using Core.Utils;
 public class ScoreTracker : IScoreTracker
 {
     private readonly ISaveService m_saveService;
+    private readonly IEventBus m_eventBus;
     private SessionState m_sessionState;
     private int m_highScore;
     private const string HIGH_SCORE_FILE = "highscore.json";
-
-    private readonly WeakEvent<ScoreChangedEventArgs> m_onScoreChanged = new WeakEvent<ScoreChangedEventArgs>();
-    public WeakEvent<ScoreChangedEventArgs> OnScoreChanged => m_onScoreChanged;
 
     public int CurrentScore => m_sessionState.Score;
     public int HighScore => m_highScore;
@@ -29,9 +28,10 @@ public class ScoreTracker : IScoreTracker
         m_sessionState.CurrentIslandId = p_islandId;
     }
 
-    public ScoreTracker(ISaveService p_saveService)
+    public ScoreTracker(ISaveService p_saveService, IEventBus p_eventBus)
     {
         m_saveService = p_saveService;
+        m_eventBus = p_eventBus;
         m_sessionState = new SessionState();
         LoadHighScore();
     }
@@ -51,7 +51,7 @@ public class ScoreTracker : IScoreTracker
         int previousScore = m_sessionState.Score;
         m_sessionState.Score += p_amount;
 
-        m_onScoreChanged.Invoke(this, new ScoreChangedEventArgs(previousScore, m_sessionState.Score));
+        m_eventBus.Publish(new ScoreChangedEvent(previousScore, m_sessionState.Score));
     }
 
     public void UpdateHighScore()

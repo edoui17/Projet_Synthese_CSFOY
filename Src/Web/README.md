@@ -1,11 +1,15 @@
 # Web (Tableau de bord)
 
-Application **Blazor Web App** permettant de visualiser les statistiques récoltées.
+Application **Blazor Web App** permettant de visualiser les statistiques rï¿½coltï¿½es.
 
-### Fonctionnalités :
+### Fonctionnalitï¿½s :
 * Affichage des classements (Leaderboards).
 * Graphiques de progression des joueurs.
-* Interface d'administration des données.
+* Interface d'administration des donnï¿½es.
 
-### Dépendances :
-* `Core` : Pour l'affichage des modèles.
+### Dï¿½pendances :
+* `Core` : Pour l'affichage des modï¿½les.
+
+### Commande pour lancer le projet
+dotnet watch run --project Src/Web
+(watch permet de voir le code directement s'afficher sur le site, run n'a pas cette fonctionnalitÃ© sinon)

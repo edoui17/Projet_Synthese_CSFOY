@@ -34,8 +34,8 @@ public partial class PortalInteraction : Area2D, IInteractable
     {
         if (m_destination != null)
         {
-            GD.Print($"[PortalInteraction] Emitting NavigationRequested for destination: {m_destination.Biome}");
-            SignalManager.Instance.EmitNavigationRequested(this, m_destination);
+            GD.Print($"[PortalInteraction] Emitting TeleportRequested for destination: {m_destination.Biome}");
+            SignalManager.Instance.EmitTeleportRequested(this, m_destination);
         }
     }
 

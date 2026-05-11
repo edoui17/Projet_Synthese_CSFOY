@@ -1,71 +1,137 @@
-# Forge's Journal - IslandSurvivor Technical Learnings
+[Output truncated for brevity]
 
-Ce document centralise les décisions architecturales, les particularités de Godot 4.6.1 et les patrons de synchronisation N-Tier pour le projet IslandSurvivor.
+  - `GET /api/player/profile` : Récupère l'intégralité du profil (Joueur, Stats, Inventaire, Config) en un seul appel au lancement.
+  - `POST /api/player/sync` : Envoie l'état complet du jeu pour une sauvegarde atomique.
+- **Granularité :** Des endpoints individuels (Stats, Inventory) permettent des mises à jour incrémentales durant le gameplay sans surcharger le réseau.
+- **Mapping :** Mapping manuel systématique entre les `Entities` (Infrastructure) et les `Domain Models` (Core) pour garantir l'indépendance des couches.
 
----
+### 2026-04-26 - Database Persistence & API Integration
+- **Feature**: Implemented API persistence to sync the game state to the remote database using the existing ASP.NET Core API infrastructure.
+- **Architecture**: Created `IApiService` and `ApiService` in `Src/Core` to maintain N-Tier strictness. The service uses `HttpClient` to communicate with the `http://localhost:5271` endpoints.
+- **Offline Mode**: If the API is unreachable (e.g. `HttpRequestException`), `ApiService` falls back to `ISaveService` (Godot client's local cache via `profile_cache.json`) to persist progression gracefully.
+- **Save Event Flow**: Scene transitions via `NavigationManager` now automatically serialize the current `InventoryNode` and `ScoreTracker` state into a `SyncRequest` payload sent to the `/api/player/sync` endpoint, completing the DB roundtrip.
 
-## Contexte & Architecture
-- **Moteur :** Godot 4.6.1 (.NET 8 / C#)
-- **Architecture :** N-Tier (Core, API, Client, Infrastructure, Web)
-- **Genre :** Roguelike
-- **Principe Fondamental :** Séparation stricte Core/Client. Le projet Core est indépendant de Godot. Les domaines purs ne traitent pas d'assets (ex: Texture2D). Les items utilisent des chemins (string IconPath) que le client Godot résout en images.
+## 2026-04-23: Pub-Sub Bridge Refactor
+- Eliminated hybrid `WeakEvent` bridging logic in Core managers in favor of pure `IEvent` payloads published to the `EventBus`.
+- `SignalManager` is now exclusively a Godot-side Autoload translator. It listens to Godot Signals and publishes `IEvent`s, and subscribes to `IEvent`s to emit Godot Signals for UI synchronization.
+- **Godot Quirk**: Godot signals don't handle C# custom objects well, so complex Core events (`IEvent`) are decomposed into primitive types (int, string) before being emitted as native signals by the `SignalManager`.
 
----
+### 2026-04-27 - [Architecture - Statistiques Core et Intégration Client]
+**Sujet** : Refonte de la classe de statistiques et intégration mathématique dans le client Godot.
+**Observation** : L'utilisation d'une classe unique `Stat` pour gérer à la fois les pools (Santé, avec un système Max/Current) et les attributs statiques (Vitesse, Attaque) entraînait une complexité inutile pour ces derniers (qui n'ont pas besoin de limitation ni de régénération). De plus, l'impact de la statistique sur les systèmes du jeu devait être décorrélé de sa valeur absolue en base de données.
+**Décision** :
+1. **Core N-Tier (Interfaces First)** : Introduction de `IStat`. `Stat` devient `PoolStat` (pour la santé), et ajout de `AttributeStat` (pour les variables statiques). Cette séparation par interface garantit une meilleure évolutivité (ex: on ne pourra pas "soigner" de la vitesse).
+2. **Client Godot** : La traduction d'un "point" de statistique en effet réel dans le jeu appartient au client. Le `MovementController` extrait la statistique brute (ex: 1 en Vitesse) et applique la formule mathématique d'impact de gameplay (1 point = +5% de vitesse de base). Cela permet un équilibrage simple côté jeu sans perturber le stockage des valeurs en DB.
 
-## Conventions de Codage (Strict Enforcements)
-Pour maintenir une cohérence absolue à travers les projets .NET 8, les règles suivantes sont appliquées :
+### 2026-04-27 - [Architecture - Statistiques Core et Intégration Client - Santé]
+**Sujet** : Mise à jour en temps réel de l'UI Godot (Barre de Santé) en réaction à des événements Core via le Bridge Pattern.
+**Observation** : L'utilisation de `WeakEvent` pour notifier les composants UI (comme le HUD) depuis le Core violait le modèle d'EventBus établi. L'UI (comme `HealthBarStatic.cs`) contenait en outre de la logique métier (calcul `BaseHealth + Level * HealthPerLevel`) de manière isolée et non synchronisée.
+**Décision** :
+1. **Core N-Tier** : L'abonnement natif à `OnAnyStatChanged` de `StatTracker` a été remplacé par une émission structurée `m_eventBus.Publish(new StatChangedEvent(...))`.
+2. **Client Godot (Bridge)** : Le `SignalManager` (Autoload) s'abonne à `StatChangedEvent` du Core, la décompose en primitives (int, float, float), et émet le `[Signal] StatChanged`.
+3. **UI** : L'interface visuelle `HealthBarStatic.cs` obtient ses valeurs d'initialisation via l'injection `ServiceRegistry.Instance.StatTracker`, puis s'abonne uniquement au `SignalManager`. Cette approche permet à l'UI de rester "stupide" et de se contenter d'afficher les valeurs réelles calculées par la couche métier.
 
-1. **Typage :** Le mot-clé var est strictement interdit. Tous les types doivent être explicites (ex: List<string> items = new List<string>()).
-2. **Isolation des Classes :** Chaque classe (même les variantes génériques comme WeakEvent vs WeakEvent<T>) doit résider dans son propre fichier.
-3. **Ordre des Membres :**
-   - **1. Variables membres :** Champs privés commençant par m_ tout en haut.
-   - **2. Constructeurs :** Immédiatement après les variables membres.
-   - **3. Propriétés :** Immédiatement après les constructeurs.
-   - **4. Méthodes :** À la fin de la classe.
+### 2026-04-28 - Intégration des Statistiques : AttributeStat vs PoolStat
+- **Découverte/Observation :** L'architecture du `StatTracker` sépare explicitement les types de statistiques en deux implémentations : `PoolStat` (ex: Santé) et `AttributeStat` (ex: Vitesse, Attaque, Chance).
+- **Détails Techniques :**
+  - `PoolStat` possède une notion de valeur courante et valeur maximale effective, idéale pour les jauges. L'ajout d'un bonus augmente la limite maximale et restaure proportionnellement la valeur courante.
+  - `AttributeStat` s'incrémente linéairement. Elle n'impose pas de "plafond", l'ajout d'un bonus incrémente la stat actuelle sans se soucier du calcul des pourcentages par rapport à un maximum.
+  - La logique s'intègre parfaitement aux tests xUnit (`AddPermanentBonus_UpdatesMaxAndCurrentSimultaneously` vs `AttributeStat_IncrementsCorrectly_WithoutMaxLogic`), où `StatType.Luck` suit exactement le comportement d'`AttributeStat`.
+  - Lors de l'influence de la "Chance" (Luck) sur le butin dans Godot, les valeurs de statistiques sont lues depuis la logique `Core` (`ServiceRegistry.Instance.StatTracker.GetCurrentValue(StatType.Luck)`) afin de préserver l'architecture propre, plutôt que de dépendre de Godot.
 
----
+### 2026-04-28 - Decentralized Stat Tracking and Godot Signals
+- **Discovery**: Relying on a global `ServiceRegistry.Instance.StatTracker` caused all entities to share exactly the same health, making independent combat interactions impossible.
+- **Technical Detail**: The solution leverages pure C# composition combined with Godot Signals. The Godot `StatManager` node was refactored to spawn its own *local* `EventBus` and `StatTracker` upon `_Ready()`, creating true instances per entity. To communicate updates up to Godot components (like floating HP bars) without polluting the global `SignalManager`, `StatManager` listens to the C# `StatChangedEvent` on its isolated bus and re-emits a `[Signal] LocalStatChanged`. This keeps Godot UI components completely agnostic of Core interfaces while preserving N-Tier boundaries per entity.
+### 2026-04-30 - Decentralized Stat Tracking and Godot Signals
+- **Discovery**: Relying on a global `ServiceRegistry.Instance.StatTracker` caused all entities to share exactly the same health, making independent combat interactions impossible.
+- **Technical Detail**: The solution leverages pure C# composition combined with Godot Signals. The Godot `StatManager` node was refactored to spawn its own *local* `EventBus` and `StatTracker` upon `_Ready()`, creating true instances per entity. To communicate updates up to Godot components (like floating HP bars) without polluting the global `SignalManager`, `StatManager` listens to the C# `StatChangedEvent` on its isolated bus and re-emits a `[Signal] LocalStatChanged`. This keeps Godot UI components completely agnostic of Core interfaces while preserving N-Tier boundaries per entity.
 
-## Gestion des Événements & Interopérabilité (Bridge Pattern)
-**Problématique :** Coupler la logique métier aux signaux Godot lie le Core au moteur et complique les tests unitaires.
+# Forge Technical Log
 
-**Résolution (Le Bridge Pattern) :**
-- **Core :** Implémentation d'un pattern WeakEvent (utilisant WeakReference). Cela permet des tests via xUnit et évite les fuites de mémoire sans nécessiter de désabonnement explicite strict lors de la suppression d'objets.
-- **Godot (Proxy) :** Le SignalManager de Godot (Autoload) sert de "colle". Il écoute les WeakEvents du Core et les relaie via des [Signal] natifs.
-- **Avantage :** L'inspecteur Godot peut réagir aux événements (VFX, sons, UI) via les signaux, tandis que la logique reste testable et pure.
+## 2026-04-24 - Line of Sight Implementation
+- **Quirk/Discovery:** When implementing `RayCast2D` checks in the `_PhysicsProcess`, it is important to call `ForceRaycastUpdate()` after modifying `TargetPosition` to ensure the collision check is accurate for the current frame before evaluating `.IsColliding()`. This prevents off-by-one frame lag in detection.
+- **Quirk/Discovery:** Godot will throw `can_instantiate: Cannot instantiate C# script because the associated class could not be found` if a pure C# class (like `AgressorController` that does not inherit from `Node`) is attached directly to a node in the `.tscn` file. Pure logic scripts must be instantiated manually in the C# script of the node they belong to (e.g., `_logic = new AgressorController()`).
+- **Quirk/Discovery:** When using `RayCast2D` for obstacle detection, if `IsColliding()` is checked, it will hit *anything* on its Collision Mask. Therefore, if the RayCast is meant to detect walls *between* the enemy and the player, it needs to explicitly check if the hit `GodotObject` is the player. If it hits something else, it's an obstacle. If the `TargetPosition` is set to the player's position, and the ray hits *nothing*, it could mean the player is out of range, or the ray doesn't interact with the player's layer but reached the target without hitting a wall.
 
----
+### RayCast2D TargetPosition Quirk
+When adjusting a `RayCast2D`'s `TargetPosition` via code attached to a parent node to point toward a global target (like the Player), you must convert the target's global position into local coordinates. `TargetPosition` uses the local coordinate space of the RayCast itself.
+**Incorrect:** `Vector2 targetDirection = target.GlobalPosition - GlobalPosition;` (This breaks when parent nodes rotate or move).
+**Correct:** `Vector2 targetLocalPosition = ToLocal(target.GlobalPosition);` (Assuming the RayCast2D is at 0,0 relative to the script's parent).
 
-## Systèmes de Jeu
+## 2026-05-07 - Signal-Based Attack Logic vs Area Polling
+- **Quirk/Discovery:** In Godot, when activating a `CollisionShape2D` hitbox mid-animation via `AnimationPlayer` (e.g., turning `disabled` off at 0.2s), polling for overlapping areas manually in the same C# function call using `GetOverlappingAreas()` will fail if called instantly.
+  - Using `await ToSignal(GetTree().CreateTimer(0.25f), SceneTreeTimer.SignalName.Timeout)` and then `GetOverlappingAreas()` works but can feel brittle.
+  - The more idiomatic Godot solution is relying on the signals `AreaEntered` and `BodyEntered` emitted natively by the `Area2D` when the `disabled` flag flips to `false` during the animation frame.
+- **Architectural Shift:** Moving from a procedural execution list to an event-driven `HashSet<IDamageable>` tracking mechanism ensures single-hits per target per attack frame while leveraging Godot's built-in physics event queue.
 
-### 1. Gestion des Statistiques (Entity Stat System)
-- **StatTracker (Core) :** Gère les calculs complexes (scaling, caps) et déclenche les WeakEvents.
-- **EntityStats (Godot Resource) :** Utilisé comme un [GlobalClass] immuable. C'est un simple template de configuration injecté au StatTracker lors du _Ready().
-- **Découplage :** Les améliorations de stats émettent StatUpgradePurchased pour éviter de coupler les scripts d'interaction directement au StatManager.
+## 2026-05-08 - API & DB Audit
+- **Security Discovery:** Plain text password storage is temporarily accepted for development validation, but the architecture is ready for BCrypt integration via `IAuthRepository`.
+- **Architectural Shift:** Introduced `AuthResponse` and `ProfileResponse` DTOs in the Core layer. This ensures that Database Entities (Infrastructure) never leak into the API responses, maintaining a strict N-Tier separation and preventing accidental exposure of sensitive fields like `PasswordHash`.
+- **Database Quirk:** EF Core `HasIndex(e => e.Username).IsUnique()` is essential even if the database has a `UNIQUE` constraint, as it allows EF to optimize queries and handle validation at the tracking level.
 
-### 2. Génération Procédurale de Map (Approche Hybride)
-- **Logique :** L'interface IMapGenerator est dans le Core, mais l'implémentation GodotIslandGenerator est dans le projet Godot pour utiliser FastNoiseLite.
-- **Élévation & Navigation :**
-  - Utilisation de constantes string ("Water", "Ground") converties en coordonnées Atlas Vector2I.
-  - Algorithme BFS pour détecter les bordures de plateaux (falaises) et garantir l'accès via des tuiles "Escaliers".
-- **Rendu :** MapRenderer utilise SetCellsTerrainConnect() en batch. Les effets de mousse (Foam) sont gérés par un TileMapLayer superposé avec un tri de profondeur (Z-index) sous le sol.
+## 2026-05-09 - Infrastructure & Mapping Update
+- **SQL Server Instance**: Migrated from LocalDB to SQL Server Developer (MSI). Connection strings are updated to target `Server=.` with `TrustServerCertificate=True`.
+- **Database Reset Procedure**: Modified `schema.sql` to include a database recreation header (USE master -> DROP -> CREATE) to ensure a clean slate for every deployment.
+- **Type Mapping Fix**: All floating-point columns (Health, Attack, Speed, Luck, etc.) are converted from `FLOAT` to `REAL` in the database schema. This prevents `InvalidCastException` when mapping 64-bit SQL floats to 32-bit C# floats.
+- **Environment**: Formalized Visual Studio (Full) as the primary development IDE.
 
-### 3. IA Passive (Le Mouton - US 4.4)
-- **Découplage :** La logique de fuite (Flee) et les timers tournent dans le SheepController (C# pur). Le nœud Godot (CharacterBody2D) transmet uniquement le delta.
-- **Loot :** À la mort, le script appelle SignalManager.Instance.EmitMaterialDestroyed(...) pour notifier l'inventaire.
+## 2026-05-09 - Deployment & Schema Lifecycle Standard
+- **Deployment Reliability**: To ensure "zero friction" deployment, each developer is instructed to customize the `Server=` parameter in their local `appsettings.json` to match their SSMS instance (e.g., `Server=MSI`).
+- **Schema Robustness**: `schema.sql` now includes `IF OBJECT_ID(...) DROP TABLE ...` clauses for all project tables. This prevents re-initialization failures due to existing foreign key constraints or lingering metadata.
+- **SQL Server Instance**: Re-confirmed SQL Server Developer Edition (MSI) as the project's baseline standard.
+### 2026-05-08 - Dynamic Property Hiding in Godot C#
 
----
+To dynamically hide exported properties in the Godot Inspector using C#, the Node must be marked with the `[Tool]` attribute, and it must override the `_ValidateProperty(Godot.Collections.Dictionary property)` method. Inside `_ValidateProperty`, clear the `PropertyUsageFlags.Editor` flag on the property `usage` when conditions are met.
 
-## Persistance & Navigation
-- **Transition Différée :** Le changement de scène est découplé de l'UI. Le bouton UI active un "Portail" après paiement, et la transition se fait lors de l'interaction physique du joueur avec celui-ci.
-- **Sauvegarde N-Tier :** Le NavigationManager (Autoload) intercepte le changement de scène pour appeler GodotSaveService, sérialisant l'état de l'IInventoryManager et du SessionState avant le ChangeSceneToFile.
-- **Chemins :** Éviter les chemins relatifs (../../). Utiliser GetTree().Root.GetNodeOrNull(...) pour garantir la stabilité face aux changements de hiérarchie.
+```csharp
+[Tool]
+public partial class MyNode : Node
+{
+    private int m_type;
+    [Export]
+    public int Type
+    {
+        get => m_type;
+        set
+        {
+            m_type = value;
+            NotifyPropertyListChanged();
+        }
+    }
 
----
+    [Export] public int HiddenProperty { get; set; }
 
-## Godot Quirks & Physique
-- **Collision Layers vs Masks :**
-  - **Layer :** Ce que je suis.
-  - **Mask :** Ce que je détecte.
-- **Configuration IslandSurvivor :** Le Player (Layer 3) ne collisionne pas physiquement avec les objets interactifs (Layer 2), mais son Area2D de détection possède un Mask 2.
-- **Signaux Area2D :** Pour émettre body_exited, la propriété monitoring doit être à true.
-- **Singletons :** Pour maintenir l'état entre les scènes, InventoryNode utilise l'Autoload Godot combiné à des instances statiques pour son implémentation .NET.
+    public override void _ValidateProperty(Godot.Collections.Dictionary property)
+    {
+        if (!Engine.IsEditorHint()) return;
+
+        string name = property["name"].AsString();
+        if (name == "HiddenProperty" && m_type == 0)
+        {
+            var usage = property["usage"].As<PropertyUsageFlags>();
+            property["usage"] = (int)(usage & ~PropertyUsageFlags.Editor);
+        }
+    }
+
+    public override void _Ready()
+    {
+        base._Ready();
+        if (Engine.IsEditorHint()) return;
+        // Game logic
+    }
+}
+```
+
+*Note:* Wrapping the conditional properties triggering a hide/show check within an explicit property allows calling `NotifyPropertyListChanged()` upon modification, instantaneously updating the Inspector. Ensure all runtime logic within `_Ready`, `_Process`, etc., starts with `if (Engine.IsEditorHint()) return;` to prevent execution in the editor.
+
+### 2026-05-09 - Testing EventBus Event Side-Effects
+When triggering updates (e.g., UI upgrades emitting events to a decoupled component via `EventBus`), reading back the updated values immediately within the same method frame might fail. The global `EventBus` processes its subscription queue inside its `_Process` loop, meaning any data change side-effects will be deferred. To accurately log or verify the "after" state in Godot C# test scenes, execution must be yielded by `await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);` to allow the EventBus to iterate and subscribers to update their state.
+
+## 2026-05-09 - Configuration Consolidation & API Security
+- **Discovery**: Maintaining hardcoded API keys in the source code (`ApiService.cs`) creates security risks and deployment friction.
+- **Refactoring**:
+  - **Core**: `ApiService` constructor was updated to receive the API Key as a dependency, decoupling it from a hardcoded constant.
+  - **Godot (IslandSurvivor)**: The API Key is now stored in `project.godot` under `network/api/api_key` and retrieved via `ProjectSettings`.
+  - **Web**: The API Key is stored in `appsettings.json` and injected into the `HttpClient` instance at registration time in `Program.cs`.
+  - **Cleanup**: Redundant/commented-out code in `PlayerController.cs` was removed to maintain API cleanliness.
+- **Technical Detail**: In Godot C#, using `ProjectSettings.GetSetting("path").AsString()` is the standard way to access custom configuration defined in the `project.godot` file, allowing for environment-specific overrides during export.

@@ -1,58 +1,19 @@
-# IslandSurvivor - Journal d'Utilisation de l'IA (KH)
+[Output truncated for brevity]
 
-Ce document retrace l'interaction entre Kevin Houle et les assistants IA (Forge/Atlas) pour documenter le processus de conception et le rôle de l'IA dans le projet.
+e via the attacker's stats directly preserves the localized loot multiplier feature.
 
----
+### 2026-05-04 - [Navigation Bugfix] | Fix Instant Teleportation on Menu Selection | Created TeleportRequestedEvent to separate resource deduction (NavigationRequested) from actual scene transition (TeleportRequested). Updated NavigationManager to listen to the new event triggered by PortalInteraction. | Ensuring resources are deducted immediately upon menu selection, but teleportation only happens when the player interacts with the portal, keeping UI and gameplay logic decoupled.
 
-## Historique d'Utilisation
+### 2026-05-08 - [Stat Configuration UI] | Allow editing default entity stats in Godot IDE & implement server override for player stats | Updated EntityStats, CombatEntityStats, and PlayerStats to use Export on private fields with public getters to satisfy Godot Editor constraints. Added an IsGlobal flag to StatManager to conditionally use the global ServiceRegistry EventBus/StatTracker for the player, and implemented a subscription to ProfileLoadedEvent to override player base stats with server data. | Godot 4 requires [Export] on private backing fields if the property has a restricted setter. Separating IsGlobal logic ensures NPCs/Rocks retain local isolation while allowing the player to sync globally with the database via N-Tier architecture.### 2026-05-08 - [User Story] Stats Refactoring
+| **Request** | Move all base stat values (Health, Attack, Speed, Luck) directly into StatManager.cs as [Export] fields, removing the use of `.tres` files for base stat configuration. Ensure StatManager correctly displays in the Godot inspector. |
+| **AI Contribution** | Changed `StatManager` to inherit from `Node2D` to ensure correct rendering/inspector placement. Replaced the `BaseStatsResource` property with an `[ExportGroup]` containing the individual base stats. Updated `Player.cs` and `MovementController.cs` to reference the new fields instead of hardcoding their own defaults. Systematically cleaned up unused `EntityStats` resources (`.tres` and `.cs`). Ensured Godot `.tscn` references to `.tres` resources were appropriately removed via `sed` to avoid missing dependency errors. Updated `Stats.md` wiki with the new usage patterns. |
+| **Decision Reasoning** | Centralizing base stats entirely in `StatManager.cs` consolidates the single source of truth, removing the need for external C# scripts and cumbersome Resource `.tres` files, and fixes the issue where properties like BaseSpeed were scattered across multiple components. The `is PlayerStats` check was replaced with the existing `m_isGlobal` export boolean to maintain the logic for applying global permanent upgrades without referencing the old script classes. |
 
-### 2026-03-29 - Configuration de l'Assistant "Forge"
-- **Requête :** Créer un prompt système complet pour un assistant IA (Forge) afin d'aider au développement du projet Roguelike "IslandSurvivor".
-- **Contribution de l'IA :** Définition des frontières architecturales (N-Tier), des conventions de codage (préfixe `m_` pour les champs et `p_` pour les paramètres) et établissement d'un processus de journalisation rigoureux.
-- **Raisonnement :** Choix d'une approche basée sur une Persona (Forge) pour garantir la cohérence du style de code et l'intégrité architecturale, en séparant la logique partagée (Core) de la présentation (Godot/Blazor).
+### 2026-05-08 - [Stat Configuration Bugfix] | Restrict stats based on EntityType (Player/NPC/Resource) | The user requested that non-NPC/Player entities should only have Health. NPCs should have Health, Speed, and Attack. Players should have Health, Speed, Attack, and Luck. | Created an `EntityType` enum in `IslandSurvivor/Enums`, exposed it as an `[Export]` on `StatManager.cs`, and updated `_Ready()` to conditionally initialize stats. Updated existing `.tscn` files to match their correct type via python script. | Conditionally initializing stats in the `StatManager` prevents stats that are irrelevant to an entity (like Luck on a Rock or Attack on a Tree) from being created in memory, which resolves the bug and optimizes the `StatTracker` dictionary size for different entity types.
 
-### 2026-03-29 - [User Story 5.3] Gestionnaire de signaux global (SignalManager)
-- **Requête :** Implémenter un SignalManager global (Autoload) pour assurer une communication fluide entre les systèmes de jeu sans fuites de mémoire.
-- **Contribution de l'IA :** Conception et implémentation d'un pattern `WeakEvent` en C# (Core) utilisant `WeakReference` pour permettre au Garbage Collector de nettoyer automatiquement les nœuds Godot détruits. Création de `ISignalManager` et de ses implémentations. Écriture de tests xUnit. Refactorisation pour séparation stricte des fichiers et ordre des membres.
-- **Raisonnement :** Choix d'événements C# purs avec `WeakReference` pour découpler la logique `Core` du moteur Godot et permettre des tests unitaires complets sans environnement Godot.
+### 2026-05-08 - [StatManager] Dynamic Inspector Visibility | Request: "Hide stats other than Health if EntityType is Resource in Godot Inspector" | AI Contribution: Refactored StatManager to use [Tool] and `_ValidateProperty` to dynamically show/hide BaseDamage, BaseSpeed, and Luck based on EntityType. | Decision Reasoning: Leaving irrelevant stat fields exposed on Resources could cause confusion and errors; utilizing `_ValidateProperty` ensures a clean editor experience while keeping a unified `StatManager` class. `NotifyPropertyListChanged()` ensures immediate feedback.
 
-### 2026-03-30 - [User Story 5.1] Implémenter le gestionnaire de statistiques
-- **Requête :** Implémenter le gestionnaire de statistiques d'entité (Santé, Attaque, Chance, Vitesse) en suivant l'architecture N-Tier.
-- **Contribution de l'IA :** Construction d'un tracker de stats basé sur des Enum dans `/Src/Core`. Implémentation des classes `StatTracker` et `Stat`. Dans Godot, exposition d'une config `[GlobalClass]` via `EntityStats` (Resource), chargée par un nœud `StatManager` via le pattern Bridge, réémettant les signaux `WeakEvent` vers des `[Signal]` natifs de Godot.
-- **Raisonnement :** L'approche par "Pont" (Bridge) permet au Core de rester ignorant de Godot tout en restaurant les fonctionnalités de l'éditeur Godot.
-
-### 2026-04-09 - [US 3.2 : Implémenter la navigation entre les îles]
-- **Requête :** Ajouter un système de navigation, suivre l'île actuelle, gérer les coûts de transition et la persistance.
-- **Contribution de l'IA :** 1. **Core :** Ajout de `IslandDestination`, extension de `SessionState`. Logique de déduction de ressources dans `NavigationService`.
-    2. **Godot Bridge :** Extension de `SignalManager`. 
-    3. **UI/Interaction :** Création de `NavigationMenu.tscn` et `PortalInteraction.cs`.
-    4. **Intégration :** `NavigationManager` (autoload) gère le changement de scène et la sérialisation via `ISaveService` avant la transition.
-- **Raisonnement :** Le joueur interagit avec un portail physique pour déclencher la transition, gardant le gameplay immersif. L'interception de la transition dans le `NavigationManager` assure que l'inventaire et l'état de la session sont sauvegardés sur le disque.
-
-### 2026-04-11 - [Feature: Gestion des Layers de Collision]
-- **Requête :** Configurer les layers de collision pour corriger l'absence d'interaction entre le Player et le building_node.
-- **Contribution de l'IA :** - Configuration des layers 2D : Environnement, Interaction, Player, Combat, Ressource.
-    - Correction des masques de collision dans `Player.tscn` et `building_node.tscn`.
-    - Mise à jour des ressources (Gold, Rock, Portal, etc.).
-    - Documentation dans `WikiCode/CollisionLayers.md`.
-- **Raisonnement :** La séparation des layers (ex: Interaction vs Corps physique) optimise la détection physique et évite les faux positifs ou les conflits entre la logique de combat et de terrain.
-
-### [User Story 5.2 : Implémenter le système de point]
-- **Requête :** Accumulation du score, validation des valeurs positives, signal de mise à jour UI et persistance du High Score.
-- **Contribution de l'IA :** 1. **Core :** `SessionState` pour les données mutables de runtime. Création de `ISaveService` (Inversion de dépendance). 
-    2. **Managers :** `ScoreTracker` gérant la logique de validation et de persistance.
-    3. **Godot :** `ScoreManager` agissant comme pont entre le Core et l'UI Godot. Tests unitaires avec Moq.
-- **Raisonnement :** Isolation de l'état "Live" pour éviter de muter les ressources Godot (templates) au runtime, simplifiant ainsi la sérialisation JSON.
-
-### [US 3.1 : Génération Procédurale (Map, Elévation, Splash)]
-- **Requête :** Implémenter la génération d'îles (Plateaux, Falaises, Escaliers) et les transitions visuelles (écume).
-- **Contribution de l'IA :** - Création de `IMapGenerator` dans le Core. Implémentation de `GodotIslandGenerator` avec `FastNoiseLite` et algorithme BFS.
-    - Logique de "multi-pass" pour l'élévation (bordures de falaises).
-    - Ajout automatique de tuiles d'écume (`FoamWaterTileMap`) par vérification de voisinage dans Godot.
-    - Création du `MapRenderer.cs` pour traduire les données du Core en `SetCellsTerrainConnect`.
-- **Raisonnement :** La logique visuelle (écume) reste dans Godot, tandis que la structure de la map est générée par le Core sous forme de données neutres (strings), respectant la séparation N-Tier.
-
-### [Bugfix: NavigationMenu non visible]
-- **Requête :** Le menu de navigation n'apparaît pas lors de l'interaction.
-- **Contribution de l'IA :** Modification de `MaterialsMenuPlanner.cs` pour utiliser un chemin de nœud robuste (`GetTree().Root...`) et appel de `OpenMenu()` au lieu de simplement changer la visibilité.
-- **Raisonnement :** Forcer uniquement `Visible = true` ne déclenchait pas la génération dynamique des boutons. L'appel explicite à la méthode dédiée garantit l'initialisation de l'UI.
+### 2026-05-09 - [Stat Configuration Bugfix]
+| **Request** | Fix TestPlayerStats upgrade persistence by printing stats before/after upgrade and ensuring the changes are correctly applied to the local Player without server validation logic. |
+| **AI Contribution** | Added before/after `GD.Print` statements in `TestPlayerStats.cs` wrapped with a one-frame `await` to verify event processing in the event bus queue. Found that `StatManager` within `Player.tscn` lacked the `m_isGlobal = true` assignment required to subscribe to UI-triggered global stat upgrades. Updated the `.tscn` to set this boolean. |
+| **Decision Reasoning** | Since the architecture is 100% client-sided during gameplay and only persists on save, the issue was simply that the `StatManager` instance on the Player wasn't configured to act globally and thus didn't listen to `StatUpgradePurchased` signals emitted from the UI. The frame await ensures accurate readback from the deferred `EventBus` processing queue. |

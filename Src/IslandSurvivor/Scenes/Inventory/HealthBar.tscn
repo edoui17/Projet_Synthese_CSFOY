@@ -1,9 +1,11 @@
 [gd_scene format=3 uid="uid://derr2icro3xvq"]
 
-[ext_resource type="Texture2D" uid="uid://cnrtxv4a0g87x" path="res://Assets/TinySwords/Misc/Bars/BigBar_Base.png" id="1_jfwkp"]
-[ext_resource type="Texture2D" uid="uid://cmkra4yvf7oyv" path="res://Assets/TinySwords/Misc/Bars/SmallBar_Base.png" id="2_xi2dn"]
-[ext_resource type="Texture2D" uid="uid://cado6x11tkpt3" path="res://Assets/TinySwords/Misc/Bars/BigBar_Fill.png" id="3_pl14k"]
-[ext_resource type="Texture2D" uid="uid://cjarnmqtbybkq" path="res://Assets/TinySwords/Misc/Bars/SmallBar_Fill.png" id="4_0s7lx"]
+[ext_resource type="Script" uid="uid://oh1fgiffatdn" path="res://Scenes/Inventory/HealthBarStatic.cs" id="1_pl14k"]
+[ext_resource type="Texture2D" uid="uid://cado6x11tkpt3" path="res://Assets/TinySwords/Misc/Bars/BigBar_Fill.png" id="2_4tbrl"]
+[ext_resource type="Script" uid="uid://dsgdt8o3o3wmu" path="res://Scenes/Inventory/HealthBarLvl.cs" id="3_pl14k"]
+[ext_resource type="Texture2D" uid="uid://dvyk53jjvtp8g" path="res://Assets/TinySwords/Misc/Bars/HealthBar2/BigBar_Base 3.png" id="3_xi2dn"]
+[ext_resource type="Texture2D" uid="uid://yxi555y1xov" path="res://Assets/TinySwords/Misc/Bars/HealthBar2/BigBar_Base 2.png" id="4_pl14k"]
+[ext_resource type="Texture2D" uid="uid://bj2hgbxcjjjtl" path="res://Assets/TinySwords/Misc/Bars/HealthBar2/BigBar_Base 1.png" id="5_0s7lx"]
 
 [node name="HealthBar" type="Control" unique_id=1024287040]
 layout_mode = 3
@@ -13,80 +15,102 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="BigBarBase" type="Sprite2D" parent="." unique_id=156926897]
-position = Vector2(10, 603)
-texture = ExtResource("1_jfwkp")
-region_enabled = true
-region_rect = Rect2(1.6043701, 0, 62.555717, 64)
+[node name="Control" type="Control" parent="." unique_id=760880383 node_paths=PackedStringArray("ProgressBar", "HealthLabel")]
+anchors_preset = 0
+offset_left = -25.0
+offset_top = 568.0
+offset_right = 325.0
+offset_bottom = 632.0
+script = ExtResource("1_pl14k")
+Level = 2
+ProgressBar = NodePath("TextureProgressBar")
+HealthLabel = NodePath("TextureProgressBar/Label")
 
-[node name="BigBarBase2" type="Sprite2D" parent="." unique_id=2069193976]
-position = Vector2(72, 603)
-texture = ExtResource("1_jfwkp")
-region_enabled = true
-region_rect = Rect2(127.89073, 0, 64.39668, 64)
+[node name="HBoxContainer" type="HBoxContainer" parent="Control" unique_id=1545106425]
+layout_mode = 0
+offset_right = 186.0
+offset_bottom = 64.0
+theme_override_constants/separation = -3
 
-[node name="BigBarBase3" type="Sprite2D" parent="." unique_id=455126692]
-position = Vector2(135, 603)
-texture = ExtResource("1_jfwkp")
-region_enabled = true
-region_rect = Rect2(127.89073, 0, 64.39668, 64)
+[node name="TextureRect" type="TextureRect" parent="Control/HBoxContainer" unique_id=380272093]
+layout_mode = 2
+texture = ExtResource("3_xi2dn")
 
-[node name="BigBarBase4" type="Sprite2D" parent="." unique_id=2107455311]
-position = Vector2(198, 603)
-texture = ExtResource("1_jfwkp")
-region_enabled = true
-region_rect = Rect2(127.89073, 0, 64.39668, 64)
+[node name="TextureRect2" type="TextureRect" parent="Control/HBoxContainer" unique_id=1540241721]
+custom_minimum_size = Vector2(240, 64)
+layout_mode = 2
+texture = ExtResource("4_pl14k")
 
-[node name="BigBarBase5" type="Sprite2D" parent="." unique_id=681983921]
-position = Vector2(261, 603)
-texture = ExtResource("1_jfwkp")
-region_enabled = true
-region_rect = Rect2(127.89073, 0, 64.39668, 64)
+[node name="TextureRect3" type="TextureRect" parent="Control/HBoxContainer" unique_id=712045155]
+custom_minimum_size = Vector2(0, 64)
+layout_mode = 2
+texture = ExtResource("5_0s7lx")
 
-[node name="BigBarBase6" type="Sprite2D" parent="." unique_id=1547018751]
-position = Vector2(324, 603)
-texture = ExtResource("1_jfwkp")
-region_enabled = true
-region_rect = Rect2(255.54147, 0, 64.45853, 64)
+[node name="TextureProgressBar" type="TextureProgressBar" parent="Control" unique_id=1423935691]
+layout_mode = 0
+offset_left = 50.0
+offset_right = 312.0
+offset_bottom = 64.0
+max_value = 150.0
+value = 150.0
+nine_patch_stretch = true
+texture_progress = ExtResource("2_4tbrl")
 
-[node name="SmallBarBase" type="Sprite2D" parent="." unique_id=1795791659]
-position = Vector2(0, 566)
-texture = ExtResource("2_xi2dn")
-region_enabled = true
-region_rect = Rect2(0, 0, 65.95243, 64)
+[node name="Label" type="Label" parent="Control/TextureProgressBar" unique_id=811147340]
+layout_mode = 0
+offset_left = 186.0
+offset_top = 20.0
+offset_right = 256.0
+offset_bottom = 43.0
+text = "150 / 150"
 
-[node name="SmallBarBase2" type="Sprite2D" parent="." unique_id=961305890]
-position = Vector2(62, 566)
-texture = ExtResource("2_xi2dn")
-region_enabled = true
-region_rect = Rect2(127.79899, 0, 64.26006, 64)
+[node name="Control2" type="Control" parent="." unique_id=1030817356 node_paths=PackedStringArray("CenterBar", "ProgressBar")]
+visible = false
+anchors_preset = 0
+offset_left = -25.0
+offset_top = 568.0
+offset_right = 139.0
+offset_bottom = 632.0
+script = ExtResource("3_pl14k")
+Level = 6
+CenterBar = NodePath("HBoxContainer/TextureRect2")
+ProgressBar = NodePath("MarginContainer/TextureProgressBar")
 
-[node name="SmallBarBase3" type="Sprite2D" parent="." unique_id=34049032]
-position = Vector2(239, 566)
-texture = ExtResource("2_xi2dn")
-region_enabled = true
-region_rect = Rect2(244.88583, 0, 75.11417, 64)
+[node name="HBoxContainer" type="HBoxContainer" parent="Control2" unique_id=840482446]
+layout_mode = 0
+offset_right = 186.0
+offset_bottom = 64.0
+theme_override_constants/separation = -3
 
-[node name="SmallBarBase4" type="Sprite2D" parent="." unique_id=1367388711]
-position = Vector2(125, 566)
-texture = ExtResource("2_xi2dn")
-region_enabled = true
-region_rect = Rect2(127.79899, 0, 64.26006, 64)
+[node name="TextureRect" type="TextureRect" parent="Control2/HBoxContainer" unique_id=1410306821]
+layout_mode = 2
+texture = ExtResource("3_xi2dn")
 
-[node name="SmallBarBase5" type="Sprite2D" parent="." unique_id=619732904]
-position = Vector2(181, 566)
-texture = ExtResource("2_xi2dn")
-region_enabled = true
-region_rect = Rect2(127.79899, 0, 64.26006, 64)
+[node name="TextureRect2" type="TextureRect" parent="Control2/HBoxContainer" unique_id=1955482803]
+custom_minimum_size = Vector2(160, 64)
+layout_mode = 2
+texture = ExtResource("4_pl14k")
 
-[node name="BigBarFill" type="Sprite2D" parent="." unique_id=178989705]
-position = Vector2(60, 603)
-texture = ExtResource("3_pl14k")
+[node name="TextureRect3" type="TextureRect" parent="Control2/HBoxContainer" unique_id=1070912204]
+custom_minimum_size = Vector2(0, 64)
+layout_mode = 2
+texture = ExtResource("5_0s7lx")
 
-[node name="BigBarFill2" type="Sprite2D" parent="." unique_id=1238562808]
-position = Vector2(123, 603)
-texture = ExtResource("3_pl14k")
+[node name="MarginContainer" type="MarginContainer" parent="Control2" unique_id=1296517466]
+custom_minimum_size = Vector2(140, 0)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 72.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 50
+theme_override_constants/margin_right = 99
 
-[node name="SmallBarFill" type="Sprite2D" parent="." unique_id=2019554085]
-position = Vector2(57, 566)
-texture = ExtResource("4_0s7lx")
+[node name="TextureProgressBar" type="TextureProgressBar" parent="Control2/MarginContainer" unique_id=1918330248]
+layout_mode = 2
+max_value = 250.0
+value = 250.0
+nine_patch_stretch = true
+texture_progress = ExtResource("2_4tbrl")

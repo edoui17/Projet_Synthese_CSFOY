@@ -1,29 +1,24 @@
 using Godot;
 using System;
 using Core.Interfaces;
+using Core.Events;
 using IslandSurvivor.Globals;
 
-public partial class SignalManager : Node, ISignalManager
+public partial class SignalManager : Node
 {
     private static SignalManager m_instance;
-
     public static SignalManager Instance => m_instance;
 
-    // --- Native Godot Signals ---
+    private IEventBus m_eventBus;
+
+    // --- Native Godot Signals (for Godot UI and scene communication) ---
     [Signal] public delegate void MaterialDestroyedEventHandler(string p_itemId, string p_itemName, string p_itemType, string p_itemIcon, int p_quantity);
     [Signal] public delegate void ResourceSpentEventHandler(string p_resourceId, int p_amount);
     [Signal] public delegate void StatUpgradePurchasedEventHandler(int p_statType);
     [Signal] public delegate void NavigationRequestedEventHandler(string p_islandId, string p_scenePath, string p_biome, int p_difficulty, int p_resourceCost, int p_dangerLevel);
+    [Signal] public delegate void TeleportRequestedEventHandler(string p_islandId, string p_scenePath, string p_biome, int p_difficulty, int p_resourceCost, int p_dangerLevel);
     [Signal] public delegate void BuildingShopToggledEventHandler(bool p_isOpen, string p_buildingId);
-
-    // Explicit implementation for Core Interface WeakEvents
-    Core.Utils.WeakEvent<ISignalManager.MaterialDestroyedEventArgs> ISignalManager.OnMaterialDestroyed => ServiceRegistry.Instance.SignalManagerCore.OnMaterialDestroyed;
-    Core.Utils.WeakEvent<ISignalManager.ResourceSpentEventArgs> ISignalManager.OnResourceSpent => ServiceRegistry.Instance.SignalManagerCore.OnResourceSpent;
-    Core.Utils.WeakEvent<ISignalManager.StatUpgradePurchasedEventArgs> ISignalManager.OnStatUpgradePurchased => ServiceRegistry.Instance.SignalManagerCore.OnStatUpgradePurchased;
-    Core.Utils.WeakEvent<ISignalManager.NavigationRequestedEventArgs> ISignalManager.OnNavigationRequested => ServiceRegistry.Instance.SignalManagerCore.OnNavigationRequested;
-    Core.Utils.WeakEvent<ISignalManager.BuildingShopToggledEventArgs> ISignalManager.OnBuildingShopToggled => ServiceRegistry.Instance.SignalManagerCore.OnBuildingShopToggled;
-
-    // Backward compatibility for refactoring (we will update callers in the next step to use Godot native signals `+=` instead)
+    [Signal] public delegate void InventoryChangedEventHandler(string p_resourceId, int p_totalAmount);
 
     public override void _EnterTree()
     {
@@ -38,54 +33,104 @@ public partial class SignalManager : Node, ISignalManager
 
     public override void _Ready()
     {
-        // Subscribe to Core WeakEvents and re-emit as Godot Signals
-        var coreManager = ServiceRegistry.Instance.SignalManagerCore;
-        if (coreManager != null)
+        m_eventBus = ServiceRegistry.Instance.EventBus;
+
+        if (m_eventBus != null)
         {
-            coreManager.OnMaterialDestroyed.AddListener((s, e) =>
-                EmitSignal(SignalName.MaterialDestroyed, e.Item.Id, e.Item.Name, e.Item.Type, e.Item.IconPath, e.MaterialQuantity));
-
-            coreManager.OnResourceSpent.AddListener((s, e) =>
-                EmitSignal(SignalName.ResourceSpent, e.ResourceId, e.Amount));
-
-            coreManager.OnStatUpgradePurchased.AddListener((s, e) =>
-                EmitSignal(SignalName.StatUpgradePurchased, (int)e.StatType));
-
-            coreManager.OnNavigationRequested.AddListener((s, e) =>
-                EmitSignal(SignalName.NavigationRequested, e.Destination.Id, e.Destination.ScenePath, e.Destination.Biome, e.Destination.Difficulty, e.Destination.ResourceCost, e.Destination.DangerLevel));
-
-            coreManager.OnBuildingShopToggled.AddListener((s, e) =>
-                EmitSignal(SignalName.BuildingShopToggled, e.IsOpen, e.BuildingId));
+            // Subscribe to Core Events and re-emit as Godot Signals for Godot-only components
+            m_eventBus.Subscribe<MaterialDestroyedEvent>(OnMaterialDestroyedEvent);
+            m_eventBus.Subscribe<ResourceSpentEvent>(OnResourceSpentEvent);
+            m_eventBus.Subscribe<StatUpgradePurchasedEvent>(OnStatUpgradePurchasedEvent);
+            m_eventBus.Subscribe<NavigationRequestedEvent>(OnNavigationRequestedEvent);
+            m_eventBus.Subscribe<TeleportRequestedEvent>(OnTeleportRequestedEvent);
+            m_eventBus.Subscribe<BuildingShopToggledEvent>(OnBuildingShopToggledEvent);
+            m_eventBus.Subscribe<InventoryChangedEvent>(OnInventoryChangedEvent);
         }
         else
         {
-            GD.PrintErr("SignalManager: SignalManagerCore not found in ServiceRegistry!");
+            GD.PrintErr("SignalManager: EventBus not found in ServiceRegistry!");
         }
     }
 
-    // Proxy methods to emit into Core
+    // --- Core -> Godot Bridge ---
+    private void OnMaterialDestroyedEvent(MaterialDestroyedEvent e)
+    {
+        EmitSignal(SignalName.MaterialDestroyed, e.Item.Id, e.Item.Name, e.Item.Type, e.Item.IconPath, e.MaterialQuantity);
+    }
+
+    private void OnResourceSpentEvent(ResourceSpentEvent e)
+    {
+        EmitSignal(SignalName.ResourceSpent, e.ResourceId, e.Amount);
+    }
+
+    private void OnStatUpgradePurchasedEvent(StatUpgradePurchasedEvent e)
+    {
+        EmitSignal(SignalName.StatUpgradePurchased, (int)e.StatType);
+    }
+
+    private void OnNavigationRequestedEvent(NavigationRequestedEvent e)
+    {
+        EmitSignal(SignalName.NavigationRequested, e.Destination.Id, e.Destination.ScenePath, e.Destination.Biome, e.Destination.Difficulty, e.Destination.ResourceCost, e.Destination.DangerLevel);
+    }
+
+    private void OnTeleportRequestedEvent(TeleportRequestedEvent e)
+    {
+        EmitSignal(SignalName.TeleportRequested, e.Destination.Id, e.Destination.ScenePath, e.Destination.Biome, e.Destination.Difficulty, e.Destination.ResourceCost, e.Destination.DangerLevel);
+    }
+
+    private void OnBuildingShopToggledEvent(BuildingShopToggledEvent e)
+    {
+        EmitSignal(SignalName.BuildingShopToggled, e.IsOpen, e.BuildingId);
+    }
+
+    private void OnInventoryChangedEvent(InventoryChangedEvent e)
+    {
+        EmitSignal(SignalName.InventoryChanged, e.ResourceId, e.TotalAmount);
+    }
+
+    // --- Godot -> Core Bridge (Proxy methods to emit into Core EventBus) ---
     public void EmitMaterialDestroyed(object p_sender, Core.Domain.ResourceItem p_item, int p_quantity)
     {
-        ServiceRegistry.Instance.SignalManagerCore?.EmitMaterialDestroyed(p_sender, p_item, p_quantity);
+        m_eventBus?.Publish(new MaterialDestroyedEvent(p_item, p_quantity));
     }
 
     public void EmitResourceSpent(object p_sender, string p_resourceId, int p_amount)
     {
-        ServiceRegistry.Instance.SignalManagerCore?.EmitResourceSpent(p_sender, p_resourceId, p_amount);
+        m_eventBus?.Publish(new ResourceSpentEvent(p_resourceId, p_amount));
     }
 
     public void EmitStatUpgradePurchased(object p_sender, Core.Managers.Stats.StatType p_statType)
     {
-        ServiceRegistry.Instance.SignalManagerCore?.EmitStatUpgradePurchased(p_sender, p_statType);
+        m_eventBus?.Publish(new StatUpgradePurchasedEvent(p_statType));
     }
 
     public void EmitNavigationRequested(object p_sender, Core.Domain.Models.IslandDestination p_destination)
     {
-        ServiceRegistry.Instance.SignalManagerCore?.EmitNavigationRequested(p_sender, p_destination);
+        m_eventBus?.Publish(new NavigationRequestedEvent(p_destination));
+    }
+
+    public void EmitTeleportRequested(object p_sender, Core.Domain.Models.IslandDestination p_destination)
+    {
+        m_eventBus?.Publish(new TeleportRequestedEvent(p_destination));
     }
 
     public void EmitBuildingShopToggled(object p_sender, bool p_isOpen, string p_buildingId)
     {
-        ServiceRegistry.Instance.SignalManagerCore?.EmitBuildingShopToggled(p_sender, p_isOpen, p_buildingId);
+        m_eventBus?.Publish(new BuildingShopToggledEvent(p_isOpen, p_buildingId));
+    }
+
+    protected override void Dispose(bool p_disposing)
+    {
+        if (p_disposing && m_eventBus != null)
+        {
+            m_eventBus.Unsubscribe<MaterialDestroyedEvent>(OnMaterialDestroyedEvent);
+            m_eventBus.Unsubscribe<ResourceSpentEvent>(OnResourceSpentEvent);
+            m_eventBus.Unsubscribe<StatUpgradePurchasedEvent>(OnStatUpgradePurchasedEvent);
+            m_eventBus.Unsubscribe<NavigationRequestedEvent>(OnNavigationRequestedEvent);
+            m_eventBus.Unsubscribe<TeleportRequestedEvent>(OnTeleportRequestedEvent);
+            m_eventBus.Unsubscribe<BuildingShopToggledEvent>(OnBuildingShopToggledEvent);
+            m_eventBus.Unsubscribe<InventoryChangedEvent>(OnInventoryChangedEvent);
+        }
+        base.Dispose(p_disposing);
     }
 }

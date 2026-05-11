@@ -1,0 +1,36 @@
+[gd_scene load_steps=8 format=3 uid="uid://testcombatinteractionsuid"]
+
+[ext_resource type="PackedScene" uid="uid://cqo7rlgy61vfa" path="res://Scenes/Player/Player.tscn" id="1_player"]
+[ext_resource type="PackedScene" uid="uid://djv45romp3vxj" path="res://Scenes/HomeMap/PlayerHUD.tscn" id="2_hud"]
+[ext_resource type="PackedScene" uid="uid://bd3kkh1njr4b2" path="res://Scenes/NPC/Agressive/Soldier.tscn" id="3_soldier"]
+[ext_resource type="PackedScene" uid="uid://cbkxqf87s8b8" path="res://Scenes/NPC/Passive/Sheep.tscn" id="4_sheep"]
+[ext_resource type="PackedScene" uid="uid://dngm2b0bvw53o" path="res://Scenes/Ressources/Gold/Gold.tscn" id="5_gold"]
+[ext_resource type="PackedScene" uid="uid://dqg8j2n8w8830" path="res://Scenes/Ressources/Rock/Rock.tscn" id="6_rock"]
+[ext_resource type="PackedScene" uid="uid://rtx0k5qfaymn" path="res://Scenes/Ressources/Tree/ConiferTree.tscn" id="7_tree"]
+
+[node name="TestCombatInteractions" type="Node2D"]
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="PlayerHUD" parent="CanvasLayer" instance=ExtResource("2_hud")]
+
+[node name="Entities" type="Node2D" parent="."]
+y_sort_enabled = true
+
+[node name="Player" parent="Entities" instance=ExtResource("1_player")]
+position = Vector2(500, 300)
+
+[node name="Soldier" parent="Entities" instance=ExtResource("3_soldier")]
+position = Vector2(300, 300)
+
+[node name="Sheep" parent="Entities" instance=ExtResource("4_sheep")]
+position = Vector2(700, 300)
+
+[node name="Gold" parent="Entities" instance=ExtResource("5_gold")]
+position = Vector2(500, 150)
+
+[node name="Rock" parent="Entities" instance=ExtResource("6_rock")]
+position = Vector2(350, 450)
+
+[node name="ConiferTree" parent="Entities" instance=ExtResource("7_tree")]
+position = Vector2(650, 450)

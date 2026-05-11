@@ -2,6 +2,7 @@ using Xunit;
 using Core.Managers.Stats;
 using Core.Interfaces;
 using Core.Interfaces.Stats;
+using Core.Events;
 using Moq;
 
 namespace Tests.UnitTests.Core.Stats;
@@ -9,14 +10,16 @@ namespace Tests.UnitTests.Core.Stats;
 public class ScoreTrackerTests
 {
     private Mock<ISaveService> m_mockSaveService;
+    private Mock<IEventBus> m_mockEventBus;
     private ScoreTracker m_scoreTracker;
 
     public ScoreTrackerTests()
     {
         m_mockSaveService = new Mock<ISaveService>();
+        m_mockEventBus = new Mock<IEventBus>();
         // Return empty string by default to simulate no high score saved yet
         m_mockSaveService.Setup(s => s.LoadData(It.IsAny<string>())).Returns("");
-        m_scoreTracker = new ScoreTracker(m_mockSaveService.Object);
+        m_scoreTracker = new ScoreTracker(m_mockSaveService.Object, m_mockEventBus.Object);
         m_scoreTracker.Initialize(0, 0, "test_char");
     }
 
@@ -44,27 +47,13 @@ public class ScoreTrackerTests
     }
 
     [Fact]
-    public void AddScore_WithPositiveAmount_TriggersEvent()
+    public void AddScore_WithPositiveAmount_PublishesEvent()
     {
-        // Arrange
-        bool eventFired = false;
-        int previousScore = -1;
-        int newScore = -1;
-
-        m_scoreTracker.OnScoreChanged.AddListener((sender, args) =>
-        {
-            eventFired = true;
-            previousScore = args.PreviousScore;
-            newScore = args.NewScore;
-        });
-
         // Act
         m_scoreTracker.AddScore(100);
 
         // Assert
-        Assert.True(eventFired);
-        Assert.Equal(0, previousScore);
-        Assert.Equal(100, newScore);
+        m_mockEventBus.Verify(eb => eb.Publish(It.Is<ScoreChangedEvent>(e => e.PreviousScore == 0 && e.NewScore == 100)), Times.Once);
     }
 
     [Fact]
@@ -87,7 +76,7 @@ public class ScoreTrackerTests
         // Arrange
         // Simulate an existing high score
         m_mockSaveService.Setup(s => s.LoadData("highscore.json")).Returns("{\"HighScore\":200}");
-        var scoreTrackerWithHighScore = new ScoreTracker(m_mockSaveService.Object);
+        var scoreTrackerWithHighScore = new ScoreTracker(m_mockSaveService.Object, m_mockEventBus.Object);
         scoreTrackerWithHighScore.Initialize(0, 0, "test_char");
 
         scoreTrackerWithHighScore.AddScore(50);

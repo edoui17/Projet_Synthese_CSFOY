@@ -1,5 +1,8 @@
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background-image: url(images/bgd.png);
+    background-repeat: no-repeat;
+    background-size: cover;
 }
 
 a, .btn-link {
@@ -57,4 +60,238 @@ h1:focus {
 
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
     text-align: start;
+}
+
+#navbar {
+    width: 100%;
+    height: 80px;
+    background-image: url("images/navbar.png");
+    background-repeat: repeat-x;
+    background-size: auto 100%;
+    display: flex;
+    justify-content:space-between;
+    align-items: center;
+    position: relative;
+    padding: 0px 50px 9px 50px;
+    margin-bottom: 75px;
+}
+
+nav > div {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+#logo {
+    position: absolute;
+    height: 90px;
+    z-index: 10;
+    left: 50%;
+    bottom: 0;
+    transform: translate(-50%, 40%); 
+
+}
+
+div.profile {
+    background-image: url(images/profileContour.png);
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+
+    width: 70px;
+    height: 70px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+div.profile img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+}
+
+a {
+    color: white;
+    text-decoration: none;
+    font-family: "Jersey 20", sans-serif;
+    font-weight: 400;
+    font-size: 40px;
+}
+
+a:hover {
+    color: #FEECD1;
+}
+
+h2.headerNiv {
+    font-family: "Jersey 20", sans-serif;
+    font-weight: 400;
+    font-size: 40px;
+    color: white;
+    margin: 0;
+}
+
+section {
+    display: flex;
+    flex-direction:column;
+    justify-content: center;
+    width: 700px;
+    margin: 0 auto;
+}
+
+section > div:first-child {
+    display: flex;
+    justify-content: center;
+    margin: 0px 10px;
+    align-items: center;
+    gap: 3%;
+}
+
+.sortAndRefresh {
+    display: flex;
+}
+
+div#searchBar {
+    background-image: url(images/searchbar.png);
+    background-repeat: no-repeat;
+    background-size: 100% 100%; 
+    padding: 12px 15px 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 320px;
+}
+
+input[type="search"] {
+  background: transparent;
+  border: none;
+  outline: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  color: white;
+  padding-top: 0px;
+  height: 100%;
+  font-family: "Jersey 20", sans-serif;
+  font-weight: 400;
+  font-size: 35px;
+}
+
+#refreshButton {
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+#refreshButton img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+#sortRank select {
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    color: #FDEBD0; 
+    border: none;
+    outline: none;
+    text-align: center;
+    appearance: none;
+}
+
+#sortRank select option {
+    background: #525B66;
+}
+
+div#sortRank {
+    background-image: url(images/Group45.png);
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    width: 150px;
+}
+
+#searchBar,
+#refreshButton,
+#sortRank {
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+div.rank {
+    margin-top: 15px;
+    overflow-y: auto;
+    scrollbar-width: auto;
+    overflow: hidden;
+}
+
+.rank img {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.rank {
+    overflow-y: scroll;
+    overflow-x: hidden;
+
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.rank::-webkit-scrollbar {
+    display: none;
+}
+
+.rank > div {
+    position: relative;
+}
+
+.rank > div.top    { height: 148px; }
+.rank > div.middle { height: 109px; }
+.rank > div.bottom { height: 179px; }
+
+.rank > div img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: fill;
+}
+
+.rank > div h3,
+.rank > div h2 {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    margin: 0;
+    color: white;
+    font-family: "Jersey 20", sans-serif;
+    font-weight: 400;
+    font-size: 40px;
+    z-index: 1;
+}
+
+.rank > div h3 { left: 10%; }
+.rank > div h2 { right: 10%; }
+
+.rank > div.top h3,
+.rank > div.top h2 {
+    top: 65%;
+}
+
+.rank > div.bottom h3,
+.rank > div.bottom h2 {
+    top: 32%; 
+}
+
+.rank > div.solo { height: 229px; }
+
+.rank > div.solo h3,
+.rank > div.solo h2 {
+    top: 42%;
 }
