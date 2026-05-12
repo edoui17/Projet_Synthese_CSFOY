@@ -1,4 +1,4 @@
-using Core.Utils;
+using Core.Interfaces;
 
 namespace Core.Managers.Stats;
 
@@ -9,7 +9,6 @@ public interface IStat
     float AdditionalValue { get; }
     float EffectiveMaxValue { get; }
     float CurrentValue { get; }
-    WeakEvent<StatChangedEventArgs> OnStatChanged { get; }
 
     void AddBonus(float p_amount);
     void ModifyCurrentValue(float p_amount);

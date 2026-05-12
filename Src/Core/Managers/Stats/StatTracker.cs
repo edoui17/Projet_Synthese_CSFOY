@@ -1,9 +1,7 @@
-using System;
 using System.Collections.Generic;
 using Core.Events;
 using Core.Interfaces;
 using Core.Interfaces.Stats;
-using Core.Utils;
 
 namespace Core.Managers.Stats;
 
@@ -42,14 +40,13 @@ public class StatTracker : IStatTracker
             IStat newStat;
             if (kvp.Key == StatType.Health)
             {
-                newStat = new PoolStat(kvp.Key, kvp.Value);
+                newStat = new PoolStat(kvp.Key, kvp.Value, m_eventBus);
             }
             else
             {
-                newStat = new AttributeStat(kvp.Key, kvp.Value);
+                newStat = new AttributeStat(kvp.Key, kvp.Value, m_eventBus);
             }
 
-            newStat.OnStatChanged.AddListener(OnSingleStatChanged);
             m_stats.Add(kvp.Key, newStat);
         }
     }
@@ -94,10 +91,5 @@ public class StatTracker : IStatTracker
         {
             stat.AddBonus(p_amount);
         }
-    }
-
-    private void OnSingleStatChanged(object? p_sender, StatChangedEventArgs p_args)
-    {
-        m_eventBus.Publish(new StatChangedEvent(p_args.StatType, p_args.CurrentValue, p_args.EffectiveMaxValue));
     }
 }
