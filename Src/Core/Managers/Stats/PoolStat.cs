@@ -1,5 +1,5 @@
-using System;
-using Core.Utils;
+using Core.Interfaces;
+using Core.Events;
 
 namespace Core.Managers.Stats;
 
@@ -9,15 +9,15 @@ public class PoolStat : IStat
     private float m_baseValue;
     private float m_additionalValue;
     private float m_currentValue;
-    private readonly WeakEvent<StatChangedEventArgs> m_onStatChanged;
+    private readonly IEventBus m_eventBus;
 
-    public PoolStat(StatType p_statType, float p_baseValue)
+    public PoolStat(StatType p_statType, float p_baseValue, IEventBus p_eventBus)
     {
         m_statType = p_statType;
         m_baseValue = p_baseValue;
         m_additionalValue = 0f;
+        m_eventBus = p_eventBus;
         m_currentValue = EffectiveMaxValue;
-        m_onStatChanged = new WeakEvent<StatChangedEventArgs>();
     }
 
     public StatType StatType => m_statType;
@@ -25,7 +25,6 @@ public class PoolStat : IStat
     public float AdditionalValue => m_additionalValue;
     public float EffectiveMaxValue => m_baseValue + m_additionalValue;
     public float CurrentValue => m_currentValue;
-    public WeakEvent<StatChangedEventArgs> OnStatChanged => m_onStatChanged;
 
     public void AddBonus(float p_amount)
     {
@@ -68,6 +67,6 @@ public class PoolStat : IStat
 
     private void NotifyStatChanged()
     {
-        m_onStatChanged.Invoke(this, new StatChangedEventArgs(m_statType, m_currentValue, EffectiveMaxValue));
+        m_eventBus.Publish(new StatChangedEvent(m_statType, m_currentValue, EffectiveMaxValue));
     }
 }
