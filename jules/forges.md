@@ -135,3 +135,8 @@ When triggering updates (e.g., UI upgrades emitting events to a decoupled compon
   - **Web**: The API Key is stored in `appsettings.json` and injected into the `HttpClient` instance at registration time in `Program.cs`.
   - **Cleanup**: Redundant/commented-out code in `PlayerController.cs` was removed to maintain API cleanliness.
 - **Technical Detail**: In Godot C#, using `ProjectSettings.GetSetting("path").AsString()` is the standard way to access custom configuration defined in the `project.godot` file, allowing for environment-specific overrides during export.
+
+## 2024-05-24 - Architecture Changes
+- **Spawning Logic:** Clarified that the procedural spawning algorithms (e.g., `ResourceZone`) must reside within the Godot client (`IslandSurvivor`) as they are tightly coupled to the engine's 2D math (`Vector2`, `Geometry2D`, `TileMapLayer`) and do not impact Core backends. Refactored `ResourceZone` to adhere to DRY principles by extracting validation logic into discrete methods.
+- **Dead Code Elimination:** Removed all orphaned procedural generation files (`MapManager`, `GodotIslandGenerator`, `SpawnLocator`, `MapRenderer`, etc.) as the project transitioned entirely to hand-crafted maps.
+- **Event Architecture Enforcement:** Completely removed `WeakEvent` implementations from the Core layer. Classes like `AttributeStat` and `PoolStat` now strictly communicate via the global `IEventBus` using POCO `IEvent`s (`StatChangedEvent`).
