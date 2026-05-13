@@ -14,7 +14,11 @@
 - [X] Mise en place d’un systeme de collection de resosurces **- Complété**
 - [X] Mise en place d’un systeme de d'enemie NPC **- Complété**
 - [ ] Mise en place d’un systeme de gestion du temps de jeu (effet en jeu) **- À faire**
+<<<<<<< HEAD
+- [ ] Mise en place d’un systeme d'utilisation de ressources **- À faire**
+=======
 - [ ] Mise en place d’un systeme d'un système d'utilisation de ressources **- En cours**
+>>>>>>> 70b8fe7d2906492a553c1c5871b0636a19b2a24a
 - [ ] Mise en place d’un systeme d'une fin de partie (victoire / mort) **- À faire**
 - [ ] Mise en place d’un système de calcul de score en jeu **- En cours**
 - [ ] Transmission des scores vers un service web **- En cours**
@@ -86,11 +90,11 @@ Total 28,61$ CAD
 L'équipe applique des règles de révision strictes pour garantir la qualité du code :
 
 1. **Création de branche par récit :**
-    * Chaque récitt nécessite une branch individuel basé sur `dev`
+    * Chaque récit nécessite une branch individuel basé sur `dev`
 
-    * Effectuer un commit par tache complèter
+    * Effectuer un commit par tâche complétée
 
-    * Fournir une description brève du contenu modifier
+    * Fournir une description brève du contenu modifié
 
 2.  **Vers la branche `dev` :**
 

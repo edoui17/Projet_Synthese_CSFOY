@@ -1,5 +1,5 @@
-using System;
-using Core.Utils;
+using Core.Interfaces;
+using Core.Events;
 
 namespace Core.Managers.Stats;
 
@@ -8,14 +8,14 @@ public class AttributeStat : IStat
     private readonly StatType m_statType;
     private float m_baseValue;
     private float m_additionalValue;
-    private readonly WeakEvent<StatChangedEventArgs> m_onStatChanged;
+    private readonly IEventBus m_eventBus;
 
-    public AttributeStat(StatType p_statType, float p_baseValue)
+    public AttributeStat(StatType p_statType, float p_baseValue, IEventBus p_eventBus)
     {
         m_statType = p_statType;
         m_baseValue = p_baseValue;
         m_additionalValue = 0f;
-        m_onStatChanged = new WeakEvent<StatChangedEventArgs>();
+        m_eventBus = p_eventBus;
     }
 
     public StatType StatType => m_statType;
@@ -23,7 +23,6 @@ public class AttributeStat : IStat
     public float AdditionalValue => m_additionalValue;
     public float EffectiveMaxValue => m_baseValue + m_additionalValue;
     public float CurrentValue => EffectiveMaxValue; // Attributes do not have a separate current value
-    public WeakEvent<StatChangedEventArgs> OnStatChanged => m_onStatChanged;
 
     public void AddBonus(float p_amount)
     {
@@ -46,6 +45,6 @@ public class AttributeStat : IStat
 
     private void NotifyStatChanged()
     {
-        m_onStatChanged.Invoke(this, new StatChangedEventArgs(m_statType, CurrentValue, EffectiveMaxValue));
+        m_eventBus.Publish(new StatChangedEvent(m_statType, CurrentValue, EffectiveMaxValue));
     }
 }
