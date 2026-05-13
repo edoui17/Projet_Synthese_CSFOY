@@ -40,8 +40,7 @@ position = Vector2(0, 50)
 
 [node name="Soldier" parent="." index="8" unique_id=666187867 instance=ExtResource("5_abuu6")]
 position = Vector2(70, -424)
-LevelIndex = 8
 
 [node name="Archer" parent="." index="9" unique_id=1613262305 instance=ExtResource("11_ilso0")]
 position = Vector2(-255, -21)
-LevelIndex = 10
+LevelIndex = 12
