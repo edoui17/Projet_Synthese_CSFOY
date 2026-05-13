@@ -19,6 +19,7 @@ public class AgressorController : IAgressorController
 
     public string CurrentState => m_currentState;
     public System.Numerics.Vector2 CurrentDirection => m_currentDirection;
+    public bool IsOnCooldown => m_attackCooldownTimer > 0;
 
     public const float IDLE_DIRECTION_CHANGE_INTERVAL = 2.0f;
     public const float DISENGAGE_TIME = 3.0f;

@@ -27,11 +27,9 @@ public abstract partial class EnemyBase : CharacterBody2D, INpc, IEnemy, IDamage
 
     protected AnimatedSprite2D m_animatedSprite;
     protected Area2D m_detectionArea;
-    protected Area2D m_hitboxArea;
-    protected RayCast2D m_lineOfSightRay;
+        protected RayCast2D m_lineOfSightRay;
 
     protected Node2D m_targetPlayer;
-    protected HashSet<IDamageable> m_playersInHitbox = new HashSet<IDamageable>();
 
     protected bool m_wasKilledByPlayer = false;
     protected object m_lastAttacker = null;
@@ -68,12 +66,7 @@ public abstract partial class EnemyBase : CharacterBody2D, INpc, IEnemy, IDamage
             m_detectionArea.BodyExited += OnDetectionAreaBodyExited;
         }
 
-        m_hitboxArea = GetNodeOrNull<Area2D>("HitboxArea");
-        if (m_hitboxArea != null)
-        {
-            m_hitboxArea.BodyEntered += OnHitboxAreaBodyEntered;
-            m_hitboxArea.BodyExited += OnHitboxAreaBodyExited;
-        }
+
 
         m_lineOfSightRay = GetNodeOrNull<RayCast2D>("LineOfSightRay");
         if (m_lineOfSightRay == null)
@@ -123,7 +116,7 @@ public abstract partial class EnemyBase : CharacterBody2D, INpc, IEnemy, IDamage
             }
             else if (LevelIndex > 10)
             {
-                modulateColor = Colors.Black; // Big Threat
+                modulateColor = Colors.DarkGray; // Big Threat
             }
 
             m_animatedSprite.SelfModulate = modulateColor;
@@ -151,15 +144,15 @@ public abstract partial class EnemyBase : CharacterBody2D, INpc, IEnemy, IDamage
     {
         if (m_agressorController.CurrentState == NpcStates.DEAD) return;
 
+        UpdateAnimation(new Vector2(m_agressorController.CurrentDirection.X, m_agressorController.CurrentDirection.Y));
+
         bool hasLineOfSight = CheckLineOfSight();
         string previousState = m_agressorController.CurrentState;
 
-        HandleAttackState();
-
-        if (m_agressorController.CurrentState == NpcStates.ATTACK)
+        if (m_agressorController.CurrentState == NpcStates.ATTACK || m_agressorController.IsOnCooldown)
         {
+            HandleAttackState();
             m_agressorController.Update((float)p_delta, m_targetPlayer != null, hasLineOfSight);
-            UpdateAnimation(Vector2.Zero);
             return; // Stop moving while attacking
         }
 
@@ -202,22 +195,11 @@ public abstract partial class EnemyBase : CharacterBody2D, INpc, IEnemy, IDamage
         {
             m_agressorController.ForceNewDirection();
         }
-
-        UpdateAnimation(direction);
     }
 
     protected virtual void HandleAttackState()
     {
         // Override in child classes for specific attack behavior
-        if (m_playersInHitbox.Count > 0 && m_agressorController is IAgressorController controller && controller.CanAttack())
-        {
-            controller.StartAttack();
-            int damageAmount = (int)(Stats?.BaseDamage ?? 5);
-            foreach (var player in m_playersInHitbox)
-            {
-                player.TakeDamage(damageAmount, this);
-            }
-        }
     }
 
     protected virtual void UpdateAnimation(Vector2 p_direction)
@@ -282,23 +264,7 @@ public abstract partial class EnemyBase : CharacterBody2D, INpc, IEnemy, IDamage
         }
     }
 
-    protected virtual void OnHitboxAreaBodyEntered(Node2D p_body)
-    {
-        if (CurrentState == NpcStates.DEAD) return;
 
-        if (p_body.IsInGroup("Player") && p_body is IDamageable playerDamageable)
-        {
-            m_playersInHitbox.Add(playerDamageable);
-        }
-    }
-
-    protected virtual void OnHitboxAreaBodyExited(Node2D p_body)
-    {
-        if (p_body.IsInGroup("Player") && p_body is IDamageable playerDamageable)
-        {
-            m_playersInHitbox.Remove(playerDamageable);
-        }
-    }
 
     public virtual void TakeDamage(int p_amount, object p_attacker)
     {

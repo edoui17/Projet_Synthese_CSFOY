@@ -140,3 +140,13 @@ When triggering updates (e.g., UI upgrades emitting events to a decoupled compon
 - **Spawning Logic:** Clarified that the procedural spawning algorithms (e.g., `ResourceZone`) must reside within the Godot client (`IslandSurvivor`) as they are tightly coupled to the engine's 2D math (`Vector2`, `Geometry2D`, `TileMapLayer`) and do not impact Core backends. Refactored `ResourceZone` to adhere to DRY principles by extracting validation logic into discrete methods.
 - **Dead Code Elimination:** Removed all orphaned procedural generation files (`MapManager`, `GodotIslandGenerator`, `SpawnLocator`, `MapRenderer`, etc.) as the project transitioned entirely to hand-crafted maps.
 - **Event Architecture Enforcement:** Completely removed `WeakEvent` implementations from the Core layer. Classes like `AttributeStat` and `PoolStat` now strictly communicate via the global `IEventBus` using POCO `IEvent`s (`StatChangedEvent`).
+
+### Architect Log - Implementing Enemy Hitboxes and Delays
+- **Hitbox Implementation**: In `EnemyBase.cs`, replacing a single static `HitboxArea` with `HitboxAreaRight` and `HitboxAreaLeft` allows directional attacking based on the enemy sprite's `FlipH` property.
+- **Asynchronous Attacks**: Introduced an asynchronous `HandleAttackState()` using `await ToSignal(GetTree().CreateTimer(0.4f), SceneTreeTimer.SignalName.Timeout)` to simulate attack wind-up. Caution: Always check if the entity died (`CurrentState == NpcStates.DEAD`) during the await period before applying damage to prevent null reference exceptions or ghost attacks.
+
+### Architect Log - N-Tier Inheritance Refactoring
+- **EnemyBase Refactoring**: To follow best architecture practices, `EnemyBase` was abstracted. It now only contains common entity behavior (movement, scaling, stats, line of sight).
+- **Subclasses (`MeleeEnemyBase` & `RangedEnemyBase`)**:
+  - Melee behaviors (like multiple `HitboxArea` monitoring and `m_playersInHitbox` tracking) are now exclusively inside `MeleeEnemyBase` (inherited by `Soldier`).
+  - Ranged behaviors (projectile instantiating, distance checking) are exclusively inside `RangedEnemyBase` (inherited by `Archer`).
