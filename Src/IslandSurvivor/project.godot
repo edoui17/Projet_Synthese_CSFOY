@@ -91,6 +91,10 @@ attack={
 2d_physics/layer_4="Combat"
 2d_physics/layer_5="Ressource"
 
+[network]
+
+api/api_key="IslandSurvivor-Dev-2026"
+
 [physics]
 
 3d/physics_engine="Jolt Physics"
@@ -100,7 +104,3 @@ attack={
 textures/canvas_textures/default_texture_filter=0
 rendering_device/driver.windows="d3d12"
 renderer/rendering_method="mobile"
-
-[network]
-
-api/api_key="IslandSurvivor-Dev-2026"
