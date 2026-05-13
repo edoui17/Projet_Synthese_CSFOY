@@ -123,6 +123,11 @@ public partial class Sheep : CharacterBody2D, INpc, IDamageable
     {
         m_passiveController.SetDead();
 
+        if (IslandSurvivor.Globals.ServiceRegistry.Instance != null)
+        {
+            IslandSurvivor.Globals.ServiceRegistry.Instance.EventBus.Publish(new Core.Events.EnemyKilledEvent(Name, NpcType));
+        }
+
         if (m_wasKilledByPlayer)
         {
             int meatAmount = 1;

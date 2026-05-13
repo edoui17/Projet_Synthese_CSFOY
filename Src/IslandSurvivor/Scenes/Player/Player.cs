@@ -20,6 +20,9 @@ public partial class Player : CharacterBody2D, IDamageable
     [Export] private Sprite2D? m_sprite;
     [Export] private Label? m_interactionLabel;
     [Export] private Label? m_debugLabel;
+    [Export] private Label? m_levelLabel;
+    [Export] private Label? m_xpGainLabel;
+    private Timer? m_xpGainTimer;
     [Export] private Area2D? m_interactionArea;
     [Export] private Area2D? m_weaponAreaRight;
     [Export] private Area2D? m_weaponAreaLeft;
@@ -30,10 +33,40 @@ public partial class Player : CharacterBody2D, IDamageable
     private MovementController? m_movementController;
     private readonly HashSet<IDamageable> m_hitTargetsThisAttack = new();
 
+    public override void _ExitTree()
+    {
+        base._ExitTree();
+        if (IslandSurvivor.Globals.ServiceRegistry.Instance != null && IslandSurvivor.Globals.ServiceRegistry.Instance.EventBus != null)
+        {
+            IslandSurvivor.Globals.ServiceRegistry.Instance.EventBus.Unsubscribe<Core.Events.LevelChangedEvent>(OnLevelChanged);
+            IslandSurvivor.Globals.ServiceRegistry.Instance.EventBus.Unsubscribe<Core.Events.ExperienceGainedEvent>(OnExperienceGained);
+        }
+    }
+
     public override void _Ready()
     {
         GD.Print("Attaque du joueur : " + Stats?.GetCurrentValue(StatType.Attack));
         if (m_interactionLabel != null) m_interactionLabel.Visible = false;
+
+        if (m_levelLabel != null)
+        {
+            float level = IslandSurvivor.Globals.ServiceRegistry.Instance.StatTracker.GetCurrentValue(StatType.Level);
+            m_levelLabel.Text = $"Lvl {level}";
+        }
+
+        if (m_xpGainLabel != null)
+        {
+            m_xpGainLabel.Visible = false;
+        }
+
+        m_xpGainTimer = new Timer();
+        m_xpGainTimer.OneShot = true;
+        m_xpGainTimer.WaitTime = 1.0f;
+        m_xpGainTimer.Timeout += OnXpTimerTimeout;
+        AddChild(m_xpGainTimer);
+
+        IslandSurvivor.Globals.ServiceRegistry.Instance.EventBus.Subscribe<Core.Events.LevelChangedEvent>(OnLevelChanged);
+        IslandSurvivor.Globals.ServiceRegistry.Instance.EventBus.Subscribe<Core.Events.ExperienceGainedEvent>(OnExperienceGained);
 
         m_movementController = GetNodeOrNull<MovementController>("MovementController");
 
@@ -213,6 +246,39 @@ public partial class Player : CharacterBody2D, IDamageable
     public void SetState(PlayerState p_newState)
     {
         m_currentState = p_newState;
+    }
+
+    private void OnLevelChanged(Core.Events.LevelChangedEvent p_event)
+    {
+        if (m_levelLabel != null)
+        {
+            m_levelLabel.Text = $"Lvl {p_event.NewLevel}";
+        }
+
+        if (m_xpGainLabel != null)
+        {
+            m_xpGainLabel.Text = "LEVEL UP!";
+            m_xpGainLabel.Visible = true;
+            m_xpGainTimer.Start();
+        }
+    }
+
+    private void OnExperienceGained(Core.Events.ExperienceGainedEvent p_event)
+    {
+        if (m_xpGainLabel != null)
+        {
+            m_xpGainLabel.Text = $"+{p_event.Amount} XP";
+            m_xpGainLabel.Visible = true;
+            m_xpGainTimer.Start();
+        }
+    }
+
+    private void OnXpTimerTimeout()
+    {
+        if (m_xpGainLabel != null)
+        {
+            m_xpGainLabel.Visible = false;
+        }
     }
 
     public void TakeDamage(int p_amount, object p_attacker)
