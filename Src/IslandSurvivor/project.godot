@@ -15,10 +15,6 @@ run/main_scene="res://Scenes/MainMenu/MainMenu/MainMenu.tscn"
 config/features=PackedStringArray("4.6", "C#", "Mobile")
 config/icon="res://icon.svg"
 
-[audio]
-
-buses/default_bus_layout="res://default_bus_layout.tres"
-
 [autoload]
 
 ServiceRegistry="*res://Globals/ServiceRegistry.cs"
