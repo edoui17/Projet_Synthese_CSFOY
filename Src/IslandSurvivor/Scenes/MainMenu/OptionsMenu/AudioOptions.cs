@@ -3,9 +3,9 @@ using System;
 
 public partial class AudioOptions : Control
 {
-    [Export] HSlider masterSlider;
-    [Export] HSlider musicSlider;
-    [Export] HSlider sfxSlider;
+    [Export] HSlider masterSlider = null!;
+    [Export] HSlider musicSlider = null!;
+    [Export] HSlider sfxSlider = null!;
 
     private int masterBusIndex = AudioServer.GetBusIndex("Master");
     private int musicBusIndex = AudioServer.GetBusIndex("Music");

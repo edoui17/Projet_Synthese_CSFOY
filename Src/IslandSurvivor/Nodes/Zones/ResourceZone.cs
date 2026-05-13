@@ -8,7 +8,7 @@ namespace IslandSurvivor.Nodes.Zones;
 public partial class ResourceZone : Node2D, IResourcePopulator
 {
     [Export] public int ResourceCount { get; set; } = 10;
-    [Export] public Polygon2D SpawningArea { get; set; }
+    [Export] public Polygon2D SpawningArea { get; set; } = null!;
 
     [Export] public Godot.Collections.Array<PackedScene> ResourceScenes { get; set; } = new();
 
@@ -19,7 +19,7 @@ public partial class ResourceZone : Node2D, IResourcePopulator
 
     [Export] public float RespawnInterval { get; set; } = 30f;
 
-    [Export] public TileMapLayer WaterTileMap { get; set; }
+    [Export] public TileMapLayer WaterTileMap { get; set; } = null!;
 
     private readonly List<Node2D> m_activeResources = new();
     private float m_respawnTimer = 0f;

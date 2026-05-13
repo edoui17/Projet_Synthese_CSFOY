@@ -11,8 +11,8 @@ public class HealthComponent : IHealthComponent
     public int MaxHealth { get; private set; }
     public bool IsDead => m_currentHealth <= 0;
 
-    public event EventHandler<int> OnDamageTaken;
-    public event EventHandler OnDeath;
+    public event EventHandler<int>? OnDamageTaken;
+    public event EventHandler? OnDeath;
 
     public HealthComponent(int p_maxHealth)
     {

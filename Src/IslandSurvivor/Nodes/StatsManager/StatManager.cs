@@ -13,8 +13,8 @@ namespace IslandSurvivor.Nodes;
 [Tool]
 public partial class StatManager : Node2D
 {
-    private IStatTracker m_statTracker;
-    private IEventBus m_eventBus;
+    private IStatTracker m_statTracker = null!;
+    private IEventBus m_eventBus = null!;
 
     [Export]
     private bool m_isGlobal;

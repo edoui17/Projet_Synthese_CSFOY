@@ -5,7 +5,7 @@ namespace IslandSurvivor.Nodes.StatsManager;
 public partial class ScoreUI : Label
 {
   [Export]
-  private ScoreManager m_scoreManager;
+  private ScoreManager m_scoreManager = null!;
 
   public override void _Ready()
   {

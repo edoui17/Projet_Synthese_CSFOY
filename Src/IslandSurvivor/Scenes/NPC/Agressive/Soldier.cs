@@ -13,7 +13,7 @@ using Core.Interfaces.Entities;
 
 public partial class Soldier : CharacterBody2D, INpc, IEnemy, IDamageable
 {
-    [Export] public StatManager Stats { get; set; }
+    [Export] public StatManager Stats { get; set; } = null!;
 
     [Export] public string NpcType { get; set; } = "Agressive";
     [Export] public string EnemyType { get; set; } = "Soldier";
@@ -23,14 +23,14 @@ public partial class Soldier : CharacterBody2D, INpc, IEnemy, IDamageable
     [Export] public float DetectionRadius { get; set; } = 250.0f;
     [Export] public float StoppingDistance { get; set; } = 82.0f;
 
-    private AgressorController m_agressorController;
-    private MovementController m_movementController;
-    private AnimatedSprite2D m_animatedSprite;
-    private Node2D m_targetPlayer;
+    private AgressorController m_agressorController = null!;
+    private MovementController m_movementController = null!;
+    private AnimatedSprite2D m_animatedSprite = null!;
+    private Node2D? m_targetPlayer;
     private bool m_wasKilledByPlayer = false;
-    private Area2D m_detectionArea;
-    private Area2D m_hitboxArea;
-    private RayCast2D m_lineOfSightRay;
+    private Area2D m_detectionArea = null!;
+    private Area2D m_hitboxArea = null!;
+    private RayCast2D m_lineOfSightRay = null!;
 
     private HashSet<IDamageable> m_playersInHitbox = new HashSet<IDamageable>();
     public string CurrentState => m_agressorController?.CurrentState ?? NpcStates.IDLE;
@@ -308,7 +308,7 @@ public partial class Soldier : CharacterBody2D, INpc, IEnemy, IDamageable
         }
     }
 
-    private void HandleDeath(object p_attacker = null)
+    private void HandleDeath(object? p_attacker = null)
     {
         m_agressorController.SetDead();
 

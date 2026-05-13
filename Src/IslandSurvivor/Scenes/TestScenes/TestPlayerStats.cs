@@ -4,7 +4,7 @@ using Core.Managers.Stats;
 
 public partial class TestPlayerStats : Node2D
 {
-    private Player m_player;
+    private Player m_player = null!;
 
     public override void _Ready()
     {
@@ -16,7 +16,7 @@ public partial class TestPlayerStats : Node2D
         Button btnSpeed = GetNode<Button>("CanvasLayer/UIControls/VBoxContainer/BtnUpgradeSpeed");
         Button btnLuck = GetNode<Button>("CanvasLayer/UIControls/VBoxContainer/BtnUpgradeLuck");
 
-        btnDamage.Pressed += () => m_player?.TakeDamage(10, null);
+        btnDamage.Pressed += () => m_player?.TakeDamage(10, this);
 
         btnHealth.Pressed += () => UpgradeStat(StatType.Health);
         btnAttack.Pressed += () => UpgradeStat(StatType.Attack);

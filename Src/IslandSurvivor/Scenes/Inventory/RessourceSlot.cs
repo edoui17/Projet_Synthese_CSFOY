@@ -3,8 +3,8 @@ using System;
 
 public partial class RessourceSlot : Control
 {
-    [Export] public TextureRect IconTextureRect;
-    [Export] public Label AmountLabel;
+    [Export] public TextureRect IconTextureRect = null!;
+    [Export] public Label AmountLabel = null!;
 
     public void SetIcon(Texture2D texture)
     {
