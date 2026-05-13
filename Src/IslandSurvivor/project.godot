@@ -11,21 +11,21 @@ config_version=5
 [application]
 
 config/name="IslandSurvivor"
-run/main_scene="uid://cqj0slyvkda77"
+run/main_scene="res://Scenes/MainMenu/MainMenu/MainMenu.tscn"
 config/features=PackedStringArray("4.6", "C#", "Mobile")
 config/icon="res://icon.svg"
 
 [audio]
 
-buses/default_bus_layout="uid://dr80y288fhe65"
+buses/default_bus_layout="res://default_bus_layout.tres"
 
 [autoload]
 
 ServiceRegistry="*res://Globals/ServiceRegistry.cs"
-MusicPlayer="*uid://cmbtn736rnfhu"
+MusicPlayer="*res://Scenes/Sounds/music_player.tscn"
 SignalManager="*res://Globals/SignalManager.cs"
 NavigationManager="*res://Globals/Navigation/NavigationManager.cs"
-InventoryNode="*uid://dr3trnrux3qtu"
+InventoryNode="*res://Globals/InventoryNode.cs"
 
 [display]
 
