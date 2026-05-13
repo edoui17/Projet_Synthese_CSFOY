@@ -10,6 +10,7 @@
 [ext_resource type="PackedScene" uid="uid://dyxx1q578y7t0" path="res://Scenes/NPC/Agressive/Soldier.tscn" id="5_abuu6"]
 [ext_resource type="PackedScene" uid="uid://cs7lisiu7vc7y" path="res://Scenes/Ressources/Rock/Rock.tscn" id="6_1j366"]
 [ext_resource type="PackedScene" uid="uid://cxftj0qybs1cs" path="res://Scenes/Ressources/Gold/Gold.tscn" id="7_mtdb6"]
+[ext_resource type="PackedScene" uid="uid://ms5y206nvi0v" path="res://Scenes/NPC/Agressive/Archer.tscn" id="11_ilso0"]
 
 [node name="Main" unique_id=1230220837 instance=ExtResource("1_base")]
 
@@ -39,3 +40,8 @@ position = Vector2(0, 50)
 
 [node name="Soldier" parent="." index="8" unique_id=666187867 instance=ExtResource("5_abuu6")]
 position = Vector2(70, -424)
+LevelIndex = 8
+
+[node name="Archer" parent="." index="9" unique_id=1613262305 instance=ExtResource("11_ilso0")]
+position = Vector2(-255, -21)
+LevelIndex = 10
