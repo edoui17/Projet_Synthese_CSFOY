@@ -5,8 +5,8 @@ using IslandSurvivor.Interfaces;
 
 public partial class Portal : Node2D
 {
-	private AnimationPlayer m_animationPlayer;
-	private PortalInteraction m_interactionArea;
+	private AnimationPlayer m_animationPlayer = null!;
+	private PortalInteraction m_interactionArea = null!;
 
 	public override void _Ready()
 	{

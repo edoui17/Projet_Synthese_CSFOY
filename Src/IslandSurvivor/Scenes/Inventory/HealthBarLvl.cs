@@ -17,19 +17,19 @@ public partial class HealthBarLvl : Control
         }
     }
 
-    [Export] public TextureRect CenterBar;
+    [Export] public TextureRect CenterBar = null!;
 
     [Export] public float BaseWidth = 40f;
     [Export] public float WidthPerLevel = 20f;
 
-    [Export] public TextureProgressBar ProgressBar;
+    [Export] public TextureProgressBar ProgressBar = null!;
 
     [Export] public float BaseHealth = 100f;
     [Export] public float HealthPerLevel = 25f;
 
     private float _currentHealth;
 
-    private Control _container;
+    private Control _container = null!;
 
     public override void _Ready()
     {

@@ -1,0 +1,108 @@
+trigger:
+- master
+- dev
+
+pool:
+  vmImage: 'windows-latest'
+
+variables:
+  godot_version: '4.6.1'
+  godot_release: 'stable'
+  godot_url: "https://github.com/godotengine/godot/releases/download/4.6.1-stable/Godot_v4.6.1-stable_mono_win64.zip"
+  templates_url: "https://github.com/godotengine/godot/releases/download/4.6.1-stable/Godot_v4.6.1-stable_export_templates.tpz"
+
+steps:
+# 1. Installation .NET 8
+- task: UseDotNet@2
+  displayName: 'Installation .NET 8'
+  inputs:
+    version: '8.x'
+
+# 2. Gestion du Cache
+- task: Cache@2
+  displayName: 'Cache Godot & Templates'
+  inputs:
+    key: 'godot | "$(godot_version)" | "$(godot_release)"'
+    path: '$(Pipeline.Workspace)/godot_tools'
+    cacheHitVar: 'GODOT_CACHE_HIT'
+
+# 3. Téléchargement de l'éditeur (si pas en cache)
+- powershell: |
+    $ErrorActionPreference = "Stop"
+    $destFolder = "$(Pipeline.Workspace)/godot_tools"
+    if (!(Test-Path $destFolder)) { New-Item -ItemType Directory -Path $destFolder }
+
+    Write-Host "##[group]Téléchargement des outils Godot"
+    Invoke-WebRequest -Uri "$(godot_url)" -OutFile "$destFolder/godot.zip" -UseBasicParsing
+    Expand-Archive -Path "$destFolder/godot.zip" -DestinationPath "$destFolder/Editor" -Force
+
+    Invoke-WebRequest -Uri "$(templates_url)" -OutFile "$destFolder/templates.zip" -UseBasicParsing
+    Expand-Archive -Path "$destFolder/templates.zip" -DestinationPath "$destFolder/templates_temp" -Force
+    Write-Host "##[endgroup]"
+  displayName: 'Téléchargement Godot'
+  condition: ne(variables.GODOT_CACHE_HIT, 'true')
+
+# 4. Installation des Templates
+- powershell: |
+    $godotTools = "$(Pipeline.Workspace)/godot_tools"
+    $appDataTemplates = "$env:APPDATA/Godot/export_templates/$(godot_version).$(godot_release)"
+    if (!(Test-Path $appDataTemplates)) { New-Item -ItemType Directory -Path $appDataTemplates -Force }
+    Copy-Item -Path "$godotTools/templates_temp/templates/*" -Destination $appDataTemplates -Recurse -Force
+  displayName: 'Configuration des Templates'
+
+# 5. Compilation .NET Solution
+- powershell: |
+    dotnet build ProjetJeu.sln -c Release
+  displayName: 'Compilation .NET Solution'
+
+# 6. Exportation Godot
+- powershell: |
+    $godotExe = Get-ChildItem -Path "$(Pipeline.Workspace)/godot_tools/Editor" -Filter "Godot*.exe" -Recurse | Select-Object -First 1 -ExpandProperty FullName
+    $exportDir = "$(Build.BinariesDirectory)/IslandSurvivor"
+    if (!(Test-Path $exportDir)) { New-Item -ItemType Directory -Path $exportDir }
+
+    cd Src/IslandSurvivor
+
+    function Stop-Godot {
+        Start-Sleep -Seconds 5
+        Get-Process -Name "Godot*" -ErrorAction SilentlyContinue | Stop-Process -Force
+        Start-Sleep -Seconds 2
+    }
+
+    Write-Host "##[group]1. Initialisation du projet (Import)"
+    if (Test-Path ".godot") { Remove-Item -Path ".godot" -Recurse -Force }
+    # Importation forcée (on génère la structure .godot/ et on résout les UIDs)
+    & $godotExe --headless --editor --quit --path .
+    Stop-Godot
+    Write-Host "##[endgroup]"
+
+    Write-Host "##[command]2. Tentative d'exportation finale"
+    # Note: embed_build_outputs=true dans export_presets.cfg permet à Godot d'inclure les DLLs directement dans le PCK
+    & $godotExe --headless --path . --export-release "Windows Desktop" "$exportDir/IslandSurvivor.exe" --verbose
+    Stop-Godot
+
+    Write-Host "##[group]3. Diagnostic de sortie"
+    if (Test-Path "$exportDir/IslandSurvivor.exe") {
+        Write-Host "##[section]Exportation réussie !"
+    } else {
+        Write-Host "##[error]Échec de l'exportation."
+        exit 1
+    }
+    Write-Host "##[endgroup]"
+  displayName: 'Exportation Godot'
+
+# 7. Archivage
+- task: ArchiveFiles@2
+  displayName: 'Création du ZIP'
+  inputs:
+    rootFolderOrFile: '$(Build.BinariesDirectory)/IslandSurvivor'
+    includeRootFolder: false
+    archiveType: 'zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/IslandSurvivor_Windows_Build.zip'
+
+# 8. Publication
+- task: PublishPipelineArtifact@1
+  displayName: 'Publication de l''Artifact'
+  inputs:
+    targetPath: '$(Build.ArtifactStagingDirectory)/IslandSurvivor_Windows_Build.zip'
+    artifact: 'IslandSurvivor_Windows_Build'

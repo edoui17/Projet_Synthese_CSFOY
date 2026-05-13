@@ -6,13 +6,13 @@ using Core.Interfaces;
 public partial class MaterialsMenuPlanner : Control
 {
   [ExportGroup("Boutons d'Amélioration")]
-  [Export] private Button _buyHealthBtn;
-  [Export] private Button _buySpeedBtn;
-  [Export] private Button _buyAttackBtn;
-  [Export] private Button _buyLuckBtn;
+  [Export] private Button _buyHealthBtn = null!;
+  [Export] private Button _buySpeedBtn = null!;
+  [Export] private Button _buyAttackBtn = null!;
+  [Export] private Button _buyLuckBtn = null!;
 
   [ExportGroup("Boutons Spéciaux")]
-  [Export] private Button _buyIslandBtn;
+  [Export] private Button _buyIslandBtn = null!;
 
   // --- State ---
   private Dictionary<StatType, int> _upgradeCounts = new Dictionary<StatType, int>()
@@ -23,7 +23,7 @@ public partial class MaterialsMenuPlanner : Control
         { StatType.Luck, 0 }
     };
 
-  private IShopManager _shopManager;
+  private IShopManager _shopManager = null!;
 
   public override void _Ready()
   {
