@@ -1,7 +1,8 @@
 namespace IslandSurvivor.Logic.Entities;
 
 using System;
-using Godot;
+using System.Numerics;
+using Godot; // Vector2
 using Core.Interfaces.Entities;
 
 public class AgressorController : IAgressorController
@@ -9,7 +10,7 @@ public class AgressorController : IAgressorController
     private string m_currentState;
     private float m_idleTimer;
     private float m_disengageTimer;
-    private Vector2 m_currentDirection;
+    private System.Numerics.Vector2 m_currentDirection;
 
     private float m_attackCooldownTimer;
     private float m_attackDurationTimer;
@@ -17,7 +18,7 @@ public class AgressorController : IAgressorController
     private readonly Random m_random = new Random();
 
     public string CurrentState => m_currentState;
-    public Vector2 CurrentDirection => m_currentDirection;
+    public System.Numerics.Vector2 CurrentDirection => m_currentDirection;
 
     public const float IDLE_DIRECTION_CHANGE_INTERVAL = 2.0f;
     public const float DISENGAGE_TIME = 3.0f;
@@ -92,21 +93,22 @@ public class AgressorController : IAgressorController
         }
     }
 
-    public void UpdateChaseDirection(Vector2 p_agressorPosition, Vector2 p_targetPosition)
+    public void UpdateChaseDirection(System.Numerics.Vector2 p_agressorPosition, System.Numerics.Vector2 p_targetPosition)
     {
         if (m_currentState != NpcStates.CHASE) return;
 
-        Vector2 direction = p_targetPosition - p_agressorPosition;
+        System.Numerics.Vector2 direction = p_targetPosition - p_agressorPosition;
         if (direction.LengthSquared() > 0)
         {
-            m_currentDirection = direction.Normalized();
+            float length = (float)Math.Sqrt(direction.X * direction.X + direction.Y * direction.Y);
+            m_currentDirection = new System.Numerics.Vector2(direction.X / length, direction.Y / length);
         }
     }
 
     public void SetDead()
     {
         m_currentState = NpcStates.DEAD;
-        m_currentDirection = Vector2.Zero;
+        m_currentDirection = System.Numerics.Vector2.Zero;
     }
 
     private void PickNewRandomDirection()
@@ -114,7 +116,7 @@ public class AgressorController : IAgressorController
         m_idleTimer = IDLE_DIRECTION_CHANGE_INTERVAL + (float)(m_random.NextDouble() * 2.0 - 1.0); // 1 to 3 seconds
 
         float angle = (float)(m_random.NextDouble() * Math.PI * 2);
-        m_currentDirection = new Vector2((float)Math.Cos(angle), (float)Math.Sin(angle));
+        m_currentDirection = new System.Numerics.Vector2((float)Math.Cos(angle), (float)Math.Sin(angle));
     }
 
     public void ResetDirectionChangeTimer()
@@ -140,7 +142,7 @@ public class AgressorController : IAgressorController
         if (CanAttack())
         {
             m_currentState = NpcStates.ATTACK;
-            m_currentDirection = Vector2.Zero;
+            m_currentDirection = System.Numerics.Vector2.Zero;
             m_attackDurationTimer = ATTACK_DURATION_TIME;
             m_attackCooldownTimer = ATTACK_COOLDOWN_TIME;
         }
