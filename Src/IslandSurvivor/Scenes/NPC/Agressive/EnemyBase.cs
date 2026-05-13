@@ -144,24 +144,26 @@ public abstract partial class EnemyBase : CharacterBody2D, INpc, IEnemy, IDamage
     {
         if (m_agressorController.CurrentState == NpcStates.DEAD) return;
 
-        UpdateAnimation(new Vector2(m_agressorController.CurrentDirection.X, m_agressorController.CurrentDirection.Y));
-
         bool hasLineOfSight = CheckLineOfSight();
-        string previousState = m_agressorController.CurrentState;
 
-        if (m_agressorController.CurrentState == NpcStates.ATTACK || m_agressorController.IsOnCooldown)
-        {
-            HandleAttackState();
-            m_agressorController.Update((float)p_delta, m_targetPlayer != null, hasLineOfSight);
-            return; // Stop moving while attacking
-        }
-
+        // Let the controller update its state
         m_agressorController.Update((float)p_delta, m_targetPlayer != null, hasLineOfSight);
+
+        // Always check if we can attack (this allows entering the ATTACK state)
+        HandleAttackState();
+
+        UpdateAnimation(new Vector2(m_agressorController.CurrentDirection.X, m_agressorController.CurrentDirection.Y));
 
         Vector2 direction = new Vector2(m_agressorController.CurrentDirection.X, m_agressorController.CurrentDirection.Y);
         float targetSpeed = IdleSpeed;
 
-        if (m_agressorController.CurrentState == NpcStates.CHASE && m_targetPlayer != null)
+        if (m_agressorController.CurrentState == NpcStates.ATTACK)
+        {
+            // Do not move while attacking
+            targetSpeed = 0f;
+            direction = Vector2.Zero;
+        }
+        else if (m_agressorController.CurrentState == NpcStates.CHASE && m_targetPlayer != null)
         {
             float distanceToPlayer = GlobalPosition.DistanceTo(m_targetPlayer.GlobalPosition);
             if (distanceToPlayer <= StoppingDistance)
@@ -171,7 +173,7 @@ public abstract partial class EnemyBase : CharacterBody2D, INpc, IEnemy, IDamage
             }
             else
             {
-                targetSpeed = ChaseSpeed;
+                targetSpeed = m_agressorController.IsOnCooldown ? ChaseSpeed * 0.5f : ChaseSpeed;
                 System.Numerics.Vector2 globalPositionNumerics = new System.Numerics.Vector2(GlobalPosition.X, GlobalPosition.Y);
                 System.Numerics.Vector2 targetPositionNumerics = new System.Numerics.Vector2(m_targetPlayer.GlobalPosition.X, m_targetPlayer.GlobalPosition.Y);
                 m_agressorController.UpdateChaseDirection(globalPositionNumerics, targetPositionNumerics);
