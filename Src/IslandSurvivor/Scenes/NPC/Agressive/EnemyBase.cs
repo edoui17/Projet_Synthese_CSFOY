@@ -27,12 +27,9 @@ public abstract partial class EnemyBase : CharacterBody2D, INpc, IEnemy, IDamage
 
     protected AnimatedSprite2D m_animatedSprite;
     protected Area2D m_detectionArea;
-    protected Area2D m_hitboxAreaRight;
-    protected Area2D m_hitboxAreaLeft;
-    protected RayCast2D m_lineOfSightRay;
+        protected RayCast2D m_lineOfSightRay;
 
     protected Node2D m_targetPlayer;
-    protected HashSet<IDamageable> m_playersInHitbox = new HashSet<IDamageable>();
 
     protected bool m_wasKilledByPlayer = false;
     protected object m_lastAttacker = null;
@@ -69,19 +66,7 @@ public abstract partial class EnemyBase : CharacterBody2D, INpc, IEnemy, IDamage
             m_detectionArea.BodyExited += OnDetectionAreaBodyExited;
         }
 
-        m_hitboxAreaRight = GetNodeOrNull<Area2D>("HitboxAreaRight");
-        if (m_hitboxAreaRight != null)
-        {
-            m_hitboxAreaRight.BodyEntered += OnHitboxAreaBodyEntered;
-            m_hitboxAreaRight.BodyExited += OnHitboxAreaBodyExited;
-        }
 
-        m_hitboxAreaLeft = GetNodeOrNull<Area2D>("HitboxAreaLeft");
-        if (m_hitboxAreaLeft != null)
-        {
-            m_hitboxAreaLeft.BodyEntered += OnHitboxAreaBodyEntered;
-            m_hitboxAreaLeft.BodyExited += OnHitboxAreaBodyExited;
-        }
 
         m_lineOfSightRay = GetNodeOrNull<RayCast2D>("LineOfSightRay");
         if (m_lineOfSightRay == null)
@@ -160,7 +145,6 @@ public abstract partial class EnemyBase : CharacterBody2D, INpc, IEnemy, IDamage
         if (m_agressorController.CurrentState == NpcStates.DEAD) return;
 
         UpdateAnimation(new Vector2(m_agressorController.CurrentDirection.X, m_agressorController.CurrentDirection.Y));
-        UpdateHitboxDirection();
 
         bool hasLineOfSight = CheckLineOfSight();
         string previousState = m_agressorController.CurrentState;
@@ -213,33 +197,9 @@ public abstract partial class EnemyBase : CharacterBody2D, INpc, IEnemy, IDamage
         }
     }
 
-    protected virtual void UpdateHitboxDirection()
-    {
-        if (m_animatedSprite != null)
-        {
-            if (m_hitboxAreaRight != null) m_hitboxAreaRight.Monitoring = !m_animatedSprite.FlipH;
-            if (m_hitboxAreaLeft != null) m_hitboxAreaLeft.Monitoring = m_animatedSprite.FlipH;
-        }
-    }
-
-    protected virtual async void HandleAttackState()
+    protected virtual void HandleAttackState()
     {
         // Override in child classes for specific attack behavior
-        if (m_playersInHitbox.Count > 0 && m_agressorController is IAgressorController controller && controller.CanAttack())
-        {
-            controller.StartAttack();
-
-            // Wind-up delay
-            await ToSignal(GetTree().CreateTimer(0.4f), SceneTreeTimer.SignalName.Timeout);
-            if (m_agressorController.CurrentState == NpcStates.DEAD) return;
-
-            int damageAmount = (int)(Stats?.BaseDamage ?? 5);
-            var playersToDamage = new System.Collections.Generic.List<IDamageable>(m_playersInHitbox);
-            foreach (var player in playersToDamage)
-            {
-                player.TakeDamage(damageAmount, this);
-            }
-        }
     }
 
     protected virtual void UpdateAnimation(Vector2 p_direction)
@@ -304,23 +264,7 @@ public abstract partial class EnemyBase : CharacterBody2D, INpc, IEnemy, IDamage
         }
     }
 
-    protected virtual void OnHitboxAreaBodyEntered(Node2D p_body)
-    {
-        if (CurrentState == NpcStates.DEAD) return;
 
-        if (p_body.IsInGroup("Player") && p_body is IDamageable playerDamageable)
-        {
-            m_playersInHitbox.Add(playerDamageable);
-        }
-    }
-
-    protected virtual void OnHitboxAreaBodyExited(Node2D p_body)
-    {
-        if (p_body.IsInGroup("Player") && p_body is IDamageable playerDamageable)
-        {
-            m_playersInHitbox.Remove(playerDamageable);
-        }
-    }
 
     public virtual void TakeDamage(int p_amount, object p_attacker)
     {

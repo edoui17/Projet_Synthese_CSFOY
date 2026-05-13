@@ -144,3 +144,9 @@ When triggering updates (e.g., UI upgrades emitting events to a decoupled compon
 ### Architect Log - Implementing Enemy Hitboxes and Delays
 - **Hitbox Implementation**: In `EnemyBase.cs`, replacing a single static `HitboxArea` with `HitboxAreaRight` and `HitboxAreaLeft` allows directional attacking based on the enemy sprite's `FlipH` property.
 - **Asynchronous Attacks**: Introduced an asynchronous `HandleAttackState()` using `await ToSignal(GetTree().CreateTimer(0.4f), SceneTreeTimer.SignalName.Timeout)` to simulate attack wind-up. Caution: Always check if the entity died (`CurrentState == NpcStates.DEAD`) during the await period before applying damage to prevent null reference exceptions or ghost attacks.
+
+### Architect Log - N-Tier Inheritance Refactoring
+- **EnemyBase Refactoring**: To follow best architecture practices, `EnemyBase` was abstracted. It now only contains common entity behavior (movement, scaling, stats, line of sight).
+- **Subclasses (`MeleeEnemyBase` & `RangedEnemyBase`)**:
+  - Melee behaviors (like multiple `HitboxArea` monitoring and `m_playersInHitbox` tracking) are now exclusively inside `MeleeEnemyBase` (inherited by `Soldier`).
+  - Ranged behaviors (projectile instantiating, distance checking) are exclusively inside `RangedEnemyBase` (inherited by `Archer`).
