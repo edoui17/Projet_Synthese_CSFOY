@@ -22,6 +22,7 @@ buses/default_bus_layout="uid://dr80y288fhe65"
 [autoload]
 
 ServiceRegistry="*res://Globals/ServiceRegistry.cs"
+ProgressionManager="*res://Managers/ProgressionManager.cs"
 MusicPlayer="*uid://cmbtn736rnfhu"
 SignalManager="*res://Globals/SignalManager.cs"
 NavigationManager="*res://Globals/Navigation/NavigationManager.cs"

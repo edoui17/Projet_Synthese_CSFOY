@@ -315,6 +315,7 @@ public partial class Soldier : CharacterBody2D, INpc, IEnemy, IDamageable
         // Notify ScoreManager to add score points
         if (IslandSurvivor.Globals.ServiceRegistry.Instance != null)
         {
+            IslandSurvivor.Globals.ServiceRegistry.Instance.EventBus.Publish(new Core.Events.EnemyKilledEvent(Name, EnemyType));
             int goldAmount = 2;
 
             float luck = 0f;
