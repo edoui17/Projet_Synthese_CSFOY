@@ -1,0 +1,115 @@
+--- ./Src/IslandSurvivor/Scenes/NPC/Agressive/EnemyBase.cs
++++ ./Src/IslandSurvivor/Scenes/NPC/Agressive/EnemyBase.cs
+@@ -21,7 +21,8 @@
+     protected Area2D? m_detectionArea;
+     protected RayCast2D? m_lineOfSightRay;
+     protected AnimatedSprite2D? m_animatedSprite;
+-    protected Area2D? m_hitboxArea;
++    protected Area2D? m_hitboxAreaRight;
++    protected Area2D? m_hitboxAreaLeft;
+
+     // Navigation and State
+     protected IAgressorController m_agressorController;
+@@ -62,11 +63,18 @@
+             m_detectionArea.BodyExited += OnDetectionAreaBodyExited;
+         }
+
+-        m_hitboxArea = GetNodeOrNull<Area2D>("HitboxArea");
+-        if (m_hitboxArea != null)
+-        {
+-            m_hitboxArea.BodyEntered += OnHitboxAreaBodyEntered;
+-            m_hitboxArea.BodyExited += OnHitboxAreaBodyExited;
++        m_hitboxAreaRight = GetNodeOrNull<Area2D>("HitboxAreaRight");
++        if (m_hitboxAreaRight != null)
++        {
++            m_hitboxAreaRight.BodyEntered += OnHitboxAreaBodyEntered;
++            m_hitboxAreaRight.BodyExited += OnHitboxAreaBodyExited;
++        }
++
++        m_hitboxAreaLeft = GetNodeOrNull<Area2D>("HitboxAreaLeft");
++        if (m_hitboxAreaLeft != null)
++        {
++            m_hitboxAreaLeft.BodyEntered += OnHitboxAreaBodyEntered;
++            m_hitboxAreaLeft.BodyExited += OnHitboxAreaBodyExited;
+         }
+
+         m_lineOfSightRay = GetNodeOrNull<RayCast2D>("LineOfSightRay");
+@@ -108,7 +116,7 @@
+             }
+             else if (LevelIndex > 10)
+             {
+-                modulateColor = Colors.Black; // Big Threat
++                modulateColor = Colors.DarkGray; // Big Threat
+             }
+
+             m_animatedSprite.SelfModulate = modulateColor;
+@@ -137,14 +145,15 @@
+     public override void _PhysicsProcess(double p_delta)
+     {
+         if (m_agressorController.CurrentState == NpcStates.DEAD) return;
++
++        UpdateAnimation(new Vector2(m_agressorController.CurrentDirection.X, m_agressorController.CurrentDirection.Y));
++        UpdateHitboxDirection();
+
+         bool hasLineOfSight = CheckLineOfSight();
+         string previousState = m_agressorController.CurrentState;
+
+-        HandleAttackState();
+-
+-        if (m_agressorController.CurrentState == NpcStates.ATTACK)
+-        {
++        if (m_agressorController.CurrentState == NpcStates.ATTACK || m_agressorController.IsOnCooldown)
++        {
++            HandleAttackState();
+             m_agressorController.Update((float)p_delta, m_targetPlayer != null, hasLineOfSight);
+-            UpdateAnimation(Vector2.Zero);
+             return; // Stop moving while attacking
+         }
++
++        HandleAttackState();
+
+         m_agressorController.Update((float)p_delta, m_targetPlayer != null, hasLineOfSight);
+
+@@ -183,18 +192,39 @@
+             m_agressorController.ForceNewDirection();
+         }
+-
+-        UpdateAnimation(direction);
+-    }
+-
+-    protected virtual void HandleAttackState()
++    }
++
++    protected virtual void UpdateHitboxDirection()
++    {
++        if (m_animatedSprite != null)
++        {
++            if (m_hitboxAreaRight != null) m_hitboxAreaRight.Monitoring = !m_animatedSprite.FlipH;
++            if (m_hitboxAreaLeft != null) m_hitboxAreaLeft.Monitoring = m_animatedSprite.FlipH;
++        }
++    }
++
++    protected virtual async void HandleAttackState()
+     {
+         // Override in child classes for specific attack behavior
+         if (m_playersInHitbox.Count > 0 && m_agressorController is IAgressorController controller && controller.CanAttack())
+         {
+             controller.StartAttack();
++
++            // Wind-up delay before damage applies
++            await ToSignal(GetTree().CreateTimer(0.4f), SceneTreeTimer.SignalName.Timeout);
++
++            if (m_agressorController.CurrentState == NpcStates.DEAD) return;
++
+             int damageAmount = (int)(Stats?.BaseDamage ?? 5);
+-            foreach (var player in m_playersInHitbox)
++
++            // Create a temporary list to avoid modifying the collection while iterating
++            var playersToDamage = new System.Collections.Generic.List<IDamageable>(m_playersInHitbox);
++
++            foreach (var player in playersToDamage)
+             {
+                 player.TakeDamage(damageAmount, this);
+             }
+         }
+     }

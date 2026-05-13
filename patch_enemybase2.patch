@@ -1,0 +1,12 @@
+--- ./Src/IslandSurvivor/Scenes/NPC/Agressive/EnemyBase.cs
++++ ./Src/IslandSurvivor/Scenes/NPC/Agressive/EnemyBase.cs
+@@ -26,7 +26,8 @@
+
+     protected AnimatedSprite2D m_animatedSprite;
+     protected Area2D m_detectionArea;
+-    protected Area2D m_hitboxArea;
++    protected Area2D m_hitboxAreaRight;
++    protected Area2D m_hitboxAreaLeft;
+     protected RayCast2D m_lineOfSightRay;
+
+     protected Node2D m_targetPlayer;

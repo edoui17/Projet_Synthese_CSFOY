@@ -7,7 +7,7 @@ using IslandSurvivor.Extensions;
 
 public partial class Arrow : Area2D, IProjectile
 {
-    [Export] public float DefaultSpeed { get; set; } = 400.0f;
+    [Export] public float DefaultSpeed { get; set; } = 300.0f;
     [Export] public float DefaultDamage { get; set; } = 10.0f;
 
     public float Speed { get; private set; }

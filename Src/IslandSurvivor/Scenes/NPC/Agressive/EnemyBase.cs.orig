@@ -27,8 +27,7 @@ public abstract partial class EnemyBase : CharacterBody2D, INpc, IEnemy, IDamage
 
     protected AnimatedSprite2D m_animatedSprite;
     protected Area2D m_detectionArea;
-    protected Area2D m_hitboxAreaRight;
-    protected Area2D m_hitboxAreaLeft;
+    protected Area2D m_hitboxArea;
     protected RayCast2D m_lineOfSightRay;
 
     protected Node2D m_targetPlayer;
@@ -211,31 +210,18 @@ public abstract partial class EnemyBase : CharacterBody2D, INpc, IEnemy, IDamage
         {
             m_agressorController.ForceNewDirection();
         }
+
+        UpdateAnimation(direction);
     }
 
-    protected virtual void UpdateHitboxDirection()
-    {
-        if (m_animatedSprite != null)
-        {
-            if (m_hitboxAreaRight != null) m_hitboxAreaRight.Monitoring = !m_animatedSprite.FlipH;
-            if (m_hitboxAreaLeft != null) m_hitboxAreaLeft.Monitoring = m_animatedSprite.FlipH;
-        }
-    }
-
-    protected virtual async void HandleAttackState()
+    protected virtual void HandleAttackState()
     {
         // Override in child classes for specific attack behavior
         if (m_playersInHitbox.Count > 0 && m_agressorController is IAgressorController controller && controller.CanAttack())
         {
             controller.StartAttack();
-
-            // Wind-up delay
-            await ToSignal(GetTree().CreateTimer(0.4f), SceneTreeTimer.SignalName.Timeout);
-            if (m_agressorController.CurrentState == NpcStates.DEAD) return;
-
             int damageAmount = (int)(Stats?.BaseDamage ?? 5);
-            var playersToDamage = new System.Collections.Generic.List<IDamageable>(m_playersInHitbox);
-            foreach (var player in playersToDamage)
+            foreach (var player in m_playersInHitbox)
             {
                 player.TakeDamage(damageAmount, this);
             }

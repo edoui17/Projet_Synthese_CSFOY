@@ -29,26 +29,25 @@ public partial class Archer : EnemyBase
 
     protected override void InitializeController()
     {
-        // Use RangedController for the archer. We read the Exported StoppingDistance here.
+        StoppingDistance = 250.0f;
         m_agressorController = new RangedController(StoppingDistance);
     }
 
-    protected override void HandleAttackState()
+    protected override async void HandleAttackState()
     {
-        // Archer attacks from a distance, not reliant on m_playersInHitbox like melee
-        // We attack if we have line of sight and target is within shooting distance
         if (m_targetPlayer != null && m_agressorController is IRangedController controller)
         {
             float distanceToPlayer = GlobalPosition.DistanceTo(m_targetPlayer.GlobalPosition);
 
-            // Allow shooting if player is close enough (e.g. up to vision radius)
-            // Assuming line of sight is true if target is not null and controller state says CHASE/ATTACK
-            if (distanceToPlayer <= 250.0f && controller.CanAttack())
+            if (distanceToPlayer <= 250.0f)
             {
-                // Check direct line of sight again before shooting
-                if (CheckLineOfSight())
+                if (controller.CanAttack() && CheckLineOfSight())
                 {
                     controller.StartAttack();
+
+                    await ToSignal(GetTree().CreateTimer(0.4f), SceneTreeTimer.SignalName.Timeout);
+                    if (m_agressorController.CurrentState == NpcStates.DEAD) return;
+
                     ShootProjectile();
                 }
             }
