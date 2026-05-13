@@ -9,3 +9,19 @@
 ### 2024-05-18 - [User Story 6.3] | Request: Combat System (Melee) - Enemy Attacking Player | AI Contribution: Implemented melee damage logic in `Soldier.cs` using an `Area2D` (`HitboxArea`) and `BodyEntered` signal. Verified the existing death logic handles `StatManager`, `ScoreManager`, and `EmitMaterialDestroyed` correctly. Wrote explicit setup instructions in `jules/forges_instructions_am.md` for configuring nodes and layers. Updated `combat_system.md` in the wiki to detail both Player and Enemy damage flows. | Decision Reasoning: Leveraging the native `BodyEntered` signal is the cleanest approach for instant collision detection without polling. Documenting the separation of Player and Enemy flows improves architectural clarity.
 
 ### $(date +%Y-%m-%d) - US 6.3 | Implémenter le système de combat (Corps-à-corps) | AI drafted execution plan to decouple attack logic via IAgressorController, fixed Soldier HP in .tres resource to decouple from hardcoded test values, and added Hashset tracking for continuous damage application. | The decision to use a HashSet for hitboxes prevents Godot physics update race conditions when querying overlaps manually.
+
+### 2024-05-12 - [User Story 16.0]
+- **Request**: Add enemy diversity, specifically refactor common enemy logic and implement a new Archer enemy with ranged attacks, plus stat scaling based on level.
+- **AI Contribution**:
+  - Refactored `Soldier.cs` by extracting common functionalities into `EnemyBase.cs`.
+  - Implemented `IRangedController` in Core and `RangedController` in Logic to handle ranged behavior and stopping distances.
+  - Implemented `IProjectile` in Core and `Arrow.cs` in Client to serve as the projectile.
+  - Created `Archer.cs` leveraging the refactored base and ranged controller.
+  - Added Level Index scaling and visual modulation (colors) for difficulty indication.
+  - Adjusted math so score multipliers are awarded based on LevelIndex instead of static.
+  - Removed Gold Drops from enemies (aggressive NPC only drop points now).
+  - Wrote Wiki Documentation `WikiArcher.md` explaining the scaling.
+- **Decision Reasoning**:
+  - Placed the projectile implementation at a higher directory level (`Scenes/Projectiles/`) to allow reusability by players or other entities, as suggested by the user.
+  - Used N-Tier architecture principles to keep `IRangedController` in `Core` and its implementation separate from the Godot Node scripts.
+  - Documented specific Godot Editor setup steps in `Godot_instructions_am.md` to keep the main `forges_instructions_am.md` clear for system prompt usage.

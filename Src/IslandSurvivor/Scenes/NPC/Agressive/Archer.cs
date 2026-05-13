@@ -63,13 +63,13 @@ public partial class Archer : EnemyBase
         if (projectileNode is IProjectile projectile)
         {
             // Calculate direction to player
-            Godot.Vector2 dir = (m_targetPlayer.GlobalPosition - GlobalPosition).Normalized();
-            System.Numerics.Vector2 numDir = new System.Numerics.Vector2(dir.X, dir.Y);
-            System.Numerics.Vector2 startPos = new System.Numerics.Vector2(GlobalPosition.X, GlobalPosition.Y);
+            Godot.Vector2 directionGodot = (m_targetPlayer.GlobalPosition - GlobalPosition).Normalized();
+            System.Numerics.Vector2 directionNumerics = new System.Numerics.Vector2(directionGodot.X, directionGodot.Y);
+            System.Numerics.Vector2 startPositionNumerics = new System.Numerics.Vector2(GlobalPosition.X, GlobalPosition.Y);
 
             float damageAmount = Stats?.BaseDamage ?? 10.0f;
 
-            projectile.Initialize(startPos, numDir, damageAmount, this);
+            projectile.Initialize(startPositionNumerics, directionNumerics, damageAmount, this);
 
             // Add projectile to the main scene (GetTree().CurrentScene) so it moves independently
             GetTree().CurrentScene.AddChild(projectileNode);

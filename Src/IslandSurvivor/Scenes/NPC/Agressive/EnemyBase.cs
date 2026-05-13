@@ -9,8 +9,9 @@ using Core.Managers.Stats;
 using IslandSurvivor.Logic.Entities;
 using IslandSurvivor.Nodes;
 using IslandSurvivor.Nodes.Movement;
-using Core.Domain; // For ResourceItem
 using IslandSurvivor.Globals; // For SignalManager, ServiceRegistry
+using IslandSurvivor.Interfaces; // INpc
+using Core.Interfaces; // IEnemy
 
 public abstract partial class EnemyBase : CharacterBody2D, INpc, IEnemy, IDamageable
 {
@@ -36,6 +37,10 @@ public abstract partial class EnemyBase : CharacterBody2D, INpc, IEnemy, IDamage
     protected object m_lastAttacker = null;
 
     public string CurrentState => m_agressorController?.CurrentState ?? NpcStates.IDLE;
+
+    // Implement INpc and IEnemy properties
+    public string NpcType => "NPC";
+    public string EnemyType => "GenericEnemy";
 
     public override void _Ready()
     {
@@ -96,19 +101,27 @@ public abstract partial class EnemyBase : CharacterBody2D, INpc, IEnemy, IDamage
         float maxHealth = Stats.MaxHealth * scalingFactor;
         float baseDamage = Stats.BaseDamage * scalingFactor;
 
+        // Apply scaling factor to speeds
+        IdleSpeed *= scalingFactor;
+        ChaseSpeed *= scalingFactor;
+
         // Apply visual modulation based on level
         if (m_animatedSprite != null)
         {
-            Color modulateColor = Colors.Yellow; // Normal (Level 1-2)
+            Color modulateColor = Colors.White; // Default/Blue (Level 1-2)
             if (LevelIndex >= 3 && LevelIndex <= 5)
             {
-                modulateColor = Colors.Red; // Hard
+                modulateColor = Colors.Yellow; // Normal
             }
             else if (LevelIndex >= 6 && LevelIndex <= 8)
             {
+                modulateColor = Colors.Red; // Hard
+            }
+            else if (LevelIndex > 8 && LevelIndex <= 10)
+            {
                 modulateColor = Colors.Purple; // Very Difficult
             }
-            else if (LevelIndex > 8)
+            else if (LevelIndex > 10)
             {
                 modulateColor = Colors.Black; // Big Threat
             }
@@ -166,9 +179,9 @@ public abstract partial class EnemyBase : CharacterBody2D, INpc, IEnemy, IDamage
             else
             {
                 targetSpeed = ChaseSpeed;
-                System.Numerics.Vector2 gPos = new System.Numerics.Vector2(GlobalPosition.X, GlobalPosition.Y);
-                System.Numerics.Vector2 tPos = new System.Numerics.Vector2(m_targetPlayer.GlobalPosition.X, m_targetPlayer.GlobalPosition.Y);
-                m_agressorController.UpdateChaseDirection(gPos, tPos);
+                System.Numerics.Vector2 globalPositionNumerics = new System.Numerics.Vector2(GlobalPosition.X, GlobalPosition.Y);
+                System.Numerics.Vector2 targetPositionNumerics = new System.Numerics.Vector2(m_targetPlayer.GlobalPosition.X, m_targetPlayer.GlobalPosition.Y);
+                m_agressorController.UpdateChaseDirection(globalPositionNumerics, targetPositionNumerics);
                 direction = new Vector2(m_agressorController.CurrentDirection.X, m_agressorController.CurrentDirection.Y);
             }
         }
@@ -320,37 +333,17 @@ public abstract partial class EnemyBase : CharacterBody2D, INpc, IEnemy, IDamage
     {
         m_agressorController.SetDead();
 
+        // Ennemies (Soldiers, Archers) only give score, no gold.
         if (ServiceRegistry.Instance != null)
         {
-            int goldAmount = 2;
-            float luck = 0f;
-            if (p_attacker is Node GodotAttacker)
-            {
-                StatManager attackerStats = GodotAttacker.GetNodeOrNull<StatManager>("StatManager");
-                if (attackerStats != null)
-                {
-                    luck = attackerStats.GetCurrentValue(StatType.Luck);
-                }
-            }
+            // Base score is 10. For every 3 levels, it multiplies.
+            // Level 1-2 = 10, Level 3-5 = 20, Level 6-8 = 40, Level 9-10 = 80, Level 11+ = 160.
+            int multiplier = (LevelIndex - 1) / 3;
+            int baseScore = 10;
+            int scoreToAward = baseScore * (int)Math.Pow(2, multiplier);
 
-            float bonusChance = luck * 0.05f;
-            int bonusQuantity = (int)bonusChance;
-            float fractionalChance = bonusChance - bonusQuantity;
-
-            Random random = new();
-            if (random.NextDouble() < fractionalChance)
-            {
-                bonusQuantity++;
-            }
-
-            goldAmount += bonusQuantity;
-            ResourceItem goldResource = new ResourceItem("gold_coin", "Piece d'Or", "Gold Coin", "res://Assets/TinySwords/TinySwords(Update010)/Resources/Gold_Coin.png");
-
-            if (SignalManager.Instance != null)
-            {
-                SignalManager.Instance.EmitMaterialDestroyed(this, goldResource, goldAmount);
-            }
-            ServiceRegistry.Instance.ScoreTracker.AddScore(10);
+            ServiceRegistry.Instance.ScoreTracker.AddScore(scoreToAward);
+            GD.Print($"[EnemyBase] Enemy died. Sent {scoreToAward} points to ScoreManager.");
         }
 
         QueueFree();
