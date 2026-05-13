@@ -150,3 +150,8 @@ When triggering updates (e.g., UI upgrades emitting events to a decoupled compon
 - **Subclasses (`MeleeEnemyBase` & `RangedEnemyBase`)**:
   - Melee behaviors (like multiple `HitboxArea` monitoring and `m_playersInHitbox` tracking) are now exclusively inside `MeleeEnemyBase` (inherited by `Soldier`).
   - Ranged behaviors (projectile instantiating, distance checking) are exclusively inside `RangedEnemyBase` (inherited by `Archer`).
+## Technical Log - Enemy State Machine & Movement Quirks
+
+- **Catch-22 in State Evaluation**: When using custom logic controllers (like `IAgressorController`), avoid wrapping state transition triggers (like checking if the player is in the hitbox to start an attack) inside an `if` statement that checks if the enemy is *already* in the target state. In `EnemyBase.cs`, `HandleAttackState()` was locked behind `if (CurrentState == ATTACK)`, making it impossible to enter the attack state from the CHASE state.
+
+- **Physics Frame Continuity**: When interrupting movement to perform an action (like attacking), it's generally better to set the target speed and direction vector to zero and let the script flow down to `MoveAndSlide()` rather than using an early `return;`. This ensures that Godot's physics engine still processes the frame and resolves external collisions (e.g., being pushed by another entity) even while the character is seemingly standing still.
