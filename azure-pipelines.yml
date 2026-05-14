@@ -1,0 +1,104 @@
+trigger:
+  branches:
+    include:
+      - master
+      - dev
+
+pool:
+  vmImage: 'windows-latest'
+
+variables:
+  # Remplacer par la version exacte de Godot si 4.6.1 n'est pas encore disponible officiellement
+  GODOT_VERSION: '4.6.1'
+  GODOT_BIN_DIR: '$(Agent.ToolsDirectory)\godot'
+  GODOT_EXECUTABLE: '$(GODOT_BIN_DIR)\Godot_v$(GODOT_VERSION)-stable_mono_win64\Godot_v$(GODOT_VERSION)-stable_mono_win64.exe'
+  PROJECT_DIR: '$(System.DefaultWorkingDirectory)\Src\IslandSurvivor'
+  EXPORT_DIR: '$(System.DefaultWorkingDirectory)\Export'
+  EXPORT_NAME: 'IslandSurvivor'
+  PRESET_NAME: 'Windows Desktop'
+
+steps:
+- checkout: self
+  clean: true
+  displayName: 'Cloner le dépôt et nettoyer (Clean)'
+
+- task: UseDotNet@2
+  displayName: 'Installer .NET 8 SDK'
+  inputs:
+    packageType: 'sdk'
+    version: '8.x'
+
+- powershell: |
+    Write-Host "Téléchargement de Godot Mono $($env:GODOT_VERSION)..."
+    New-Item -ItemType Directory -Force -Path $env:GODOT_BIN_DIR
+    $godotUrl = "https://github.com/godotengine/godot/releases/download/$env:GODOT_VERSION-stable/Godot_v$env:GODOT_VERSION-stable_mono_win64.zip"
+    Invoke-WebRequest -Uri $godotUrl -OutFile "godot.zip"
+    Expand-Archive -Path "godot.zip" -DestinationPath $env:GODOT_BIN_DIR -Force
+
+    Write-Host "Téléchargement des Export Templates..."
+    $templatesUrl = "https://github.com/godotengine/godot/releases/download/$env:GODOT_VERSION-stable/Godot_v$env:GODOT_VERSION-stable_mono_export_templates.tpz"
+    Invoke-WebRequest -Uri $templatesUrl -OutFile "templates.zip"
+
+    $templateDir = "$env:APPDATA\Godot\export_templates\$env:GODOT_VERSION.stable.mono"
+    New-Item -ItemType Directory -Force -Path $templateDir
+    Expand-Archive -Path "templates.zip" -DestinationPath "templates_temp" -Force
+    Copy-Item -Path "templates_temp\templates\*" -Destination $templateDir -Recurse -Force
+  displayName: 'Installer Godot et les Export Templates'
+
+- powershell: |
+    Write-Host "Pré-importation des assets avec Godot..."
+    $exe = $env:GODOT_EXECUTABLE
+    $path = $env:PROJECT_DIR
+
+    # Exécution de Godot en mode headless pour générer les imports (et le dossier .godot)
+    & $exe --headless --editor --quit --path "$path"
+
+    # Vérification du code de sortie pour stopper le pipeline en cas d'erreur
+    if ($LASTEXITCODE -ne 0) {
+        Write-Error "L'importation des assets a échoué avec le code de sortie: $LASTEXITCODE"
+        exit 1
+    }
+    Write-Host "Importation terminée avec succès."
+  displayName: 'Pré-importation des assets'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Compiler le projet .NET (IslandSurvivor)'
+  inputs:
+    command: 'build'
+    projects: '$(PROJECT_DIR)\IslandSurvivor.csproj'
+    arguments: '-c Release'
+
+- powershell: |
+    Write-Host "Création du dossier d'exportation..."
+    New-Item -ItemType Directory -Force -Path $env:EXPORT_DIR
+
+    Write-Host "Exportation du projet en mode Release..."
+    $exe = $env:GODOT_EXECUTABLE
+    $path = $env:PROJECT_DIR
+    $preset = $env:PRESET_NAME
+    $exportPath = "$env:EXPORT_DIR\$env:EXPORT_NAME.exe"
+
+    & $exe --headless --export-release "$preset" "$exportPath" --path "$path"
+
+    if ($LASTEXITCODE -ne 0) {
+        Write-Error "L'exportation a échoué avec le code de sortie: $LASTEXITCODE"
+        exit 1
+    }
+    Write-Host "Exportation terminée avec succès."
+  displayName: 'Exporter le projet (Windows Desktop)'
+
+- task: ArchiveFiles@2
+  displayName: 'Compresser les artéfacts (ZIP)'
+  inputs:
+    rootFolderOrFile: '$(EXPORT_DIR)'
+    includeRootFolder: false
+    archiveType: 'zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/IslandSurvivor-Windows.zip'
+    replaceExistingArchive: true
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publier les artéfacts ZIP'
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)/IslandSurvivor-Windows.zip'
+    ArtifactName: 'IslandSurvivor-Release'
+    publishLocation: 'Container'
