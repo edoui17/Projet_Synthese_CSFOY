@@ -11,86 +11,11 @@ namespace Infrastructure.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            // 1. Rename existing Stats table to GameStats (instead of dropping it)
-            migrationBuilder.RenameTable(
-                name: "Stats",
-                newName: "GameStats");
+            // Drop existing Stats table
+            migrationBuilder.DropTable(
+                name: "Stats");
 
-            // 2. Add new columns to GameStats
-            migrationBuilder.AddColumn<Guid>(
-                name: "Id",
-                table: "GameStats",
-                type: "uniqueidentifier",
-                nullable: false,
-                defaultValueSql: "NEWID()");
-
-            migrationBuilder.AddColumn<DateTime>(
-                name: "PlayedAt",
-                table: "GameStats",
-                type: "datetime2",
-                nullable: false,
-                defaultValueSql: "GETDATE()");
-
-            migrationBuilder.AddColumn<TimeSpan>(
-                name: "Duration",
-                table: "GameStats",
-                type: "time",
-                nullable: false,
-                defaultValue: TimeSpan.Zero);
-
-            migrationBuilder.AddColumn<int>(
-                name: "LevelReached",
-                table: "GameStats",
-                type: "int",
-                nullable: false,
-                defaultValue: 1);
-
-            migrationBuilder.AddColumn<int>(
-                name: "Score",
-                table: "GameStats",
-                type: "int",
-                nullable: false,
-                defaultValue: 0);
-
-            migrationBuilder.AddColumn<float>(
-                name: "BonusHealth",
-                table: "GameStats",
-                type: "real",
-                nullable: false,
-                defaultValue: 0f);
-
-            migrationBuilder.AddColumn<float>(
-                name: "BonusAttack",
-                table: "GameStats",
-                type: "real",
-                nullable: false,
-                defaultValue: 0f);
-
-            migrationBuilder.AddColumn<float>(
-                name: "BonusSpeed",
-                table: "GameStats",
-                type: "real",
-                nullable: false,
-                defaultValue: 0f);
-
-            migrationBuilder.AddColumn<float>(
-                name: "BonusLuck",
-                table: "GameStats",
-                type: "real",
-                nullable: false,
-                defaultValue: 0f);
-
-            // 3. Change Primary Key of GameStats (from PlayerId to Id)
-            migrationBuilder.DropPrimaryKey(
-                name: "PK_Stats",
-                table: "GameStats");
-
-            migrationBuilder.AddPrimaryKey(
-                name: "PK_GameStats",
-                table: "GameStats",
-                column: "Id");
-
-            // 4. Add columns to Players
+            // Add new columns to Players
             migrationBuilder.AddColumn<int>(
                 name: "HighScore",
                 table: "Players",
@@ -105,13 +30,44 @@ namespace Infrastructure.Migrations
                 nullable: false,
                 defaultValueSql: "GETDATE()");
 
-            // 5. Add Index on PlayerId for GameStats
+            // Create new GameStats table
+            migrationBuilder.CreateTable(
+                name: "GameStats",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
+                    PlayerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    PlayedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
+                    Duration = table.Column<TimeSpan>(type: "time", nullable: false),
+                    LevelReached = table.Column<int>(type: "int", nullable: false, defaultValue: 1),
+                    Score = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                    Health = table.Column<float>(type: "real", nullable: false),
+                    Attack = table.Column<float>(type: "real", nullable: false),
+                    Speed = table.Column<float>(type: "real", nullable: false),
+                    Luck = table.Column<float>(type: "real", nullable: false),
+                    BonusHealth = table.Column<float>(type: "real", nullable: false),
+                    BonusAttack = table.Column<float>(type: "real", nullable: false),
+                    BonusSpeed = table.Column<float>(type: "real", nullable: false),
+                    BonusLuck = table.Column<float>(type: "real", nullable: false),
+                    ExtraStats = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_GameStats", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_GameStats_Players_PlayerId",
+                        column: x => x.PlayerId,
+                        principalTable: "Players",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_GameStats_PlayerId",
                 table: "GameStats",
                 column: "PlayerId");
 
-            // 6. Add Trigger TR_GameStats_AfterInsert
+            // Add Trigger TR_GameStats_AfterInsert
             migrationBuilder.Sql(@"
 CREATE TRIGGER TR_GameStats_AfterInsert
 ON GameStats
@@ -163,6 +119,28 @@ END;
             migrationBuilder.DropColumn(
                 name: "UpdatedAt",
                 table: "Players");
+
+            migrationBuilder.CreateTable(
+                name: "Stats",
+                columns: table => new
+                {
+                    PlayerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Attack = table.Column<float>(type: "real", nullable: false),
+                    ExtraStats = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Health = table.Column<float>(type: "real", nullable: false),
+                    Luck = table.Column<float>(type: "real", nullable: false),
+                    Speed = table.Column<float>(type: "real", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Stats", x => x.PlayerId);
+                    table.ForeignKey(
+                        name: "FK_Stats_Players_PlayerId",
+                        column: x => x.PlayerId,
+                        principalTable: "Players",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
         }
     }
 }

@@ -74,17 +74,20 @@ public class PlayerController : ControllerBase
 
         IEnumerable<PlayerLeaderboardEntry> leaderboard = players
             .OrderByDescending(p => p.HighScore)
-            .Select(p => new PlayerLeaderboardEntry
+            .Select(p =>
             {
-                Id = p.Id,
-                Username = p.Username,
-                // These stats are now historic in GameStats, we take the best session's stats for leaderboard context
-                Health = p.GameStats.OrderByDescending(s => s.Score).FirstOrDefault()?.Health ?? 0,
-                Attack = p.GameStats.OrderByDescending(s => s.Score).FirstOrDefault()?.Attack ?? 0,
-                Speed = p.GameStats.OrderByDescending(s => s.Score).FirstOrDefault()?.Speed ?? 0,
-                Luck = p.GameStats.OrderByDescending(s => s.Score).FirstOrDefault()?.Luck ?? 0,
-                Level = p.GameStats.OrderByDescending(s => s.Score).FirstOrDefault()?.LevelReached ?? 1,
-                Score = p.HighScore
+                var bestSession = p.GameStats.OrderByDescending(s => s.Score).FirstOrDefault();
+                return new PlayerLeaderboardEntry
+                {
+                    Id = p.Id,
+                    Username = p.Username,
+                    Health = bestSession?.Health ?? 0,
+                    Attack = bestSession?.Attack ?? 0,
+                    Speed = bestSession?.Speed ?? 0,
+                    Luck = bestSession?.Luck ?? 0,
+                    Level = bestSession?.LevelReached ?? 1,
+                    Score = p.HighScore
+                };
             });
 
         return Ok(leaderboard);
