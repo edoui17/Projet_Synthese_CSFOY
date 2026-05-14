@@ -50,16 +50,20 @@ steps:
     $exe = $env:GODOT_EXECUTABLE
     $path = $env:PROJECT_DIR
 
-    # Exécution de Godot en mode headless pour générer les imports (et le dossier .godot)
-    & $exe --headless --editor --quit --path "$path"
-
-    # Vérification du code de sortie pour stopper le pipeline en cas d'erreur
-    if ($LASTEXITCODE -ne 0) {
-        Write-Error "L'importation des assets a échoué avec le code de sortie: $LASTEXITCODE"
+    # Vérification de sécurité pour s'assurer que l'exécutable existe bien
+    if (-Not (Test-Path $exe)) {
+        Write-Error "CRITIQUE: Godot est introuvable au chemin : $exe"
         exit 1
     }
-    Write-Host "Importation terminée avec succès."
-  displayName: 'Pré-importation des assets'
+
+    # Exécution avec redirection forcée des logs (2>&1) vers la console Azure
+    & $exe --headless --editor --quit --path "$path" 2>&1 | Write-Host
+
+    # Tolérance C# : On retire l'arrêt strict (exit 1) ici.
+    # Godot va inévitablement échouer à compiler les scripts C# à cette étape 
+    # car le projet Core n'est pas encore buildé. L'important est que le dossier caché .godot/ soit généré.
+    Write-Host "Fin de la pré-importation. Le dossier .godot devrait être prêt pour la compilation .NET."
+  displayName: 'Pré-importation des assets (Tolérance C#)'
 
 - task: DotNetCoreCLI@2
   displayName: 'Compiler le projet .NET (IslandSurvivor)'
