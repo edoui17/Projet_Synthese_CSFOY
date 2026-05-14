@@ -1,6 +1,8 @@
 using Core.Interfaces.Stats;
 using Core.Managers.Stats;
 using Godot;
+using IslandSurvivor.Extensions;
+using IslandSurvivor.Globals;
 using IslandSurvivor.Interfaces;
 using IslandSurvivor.Nodes;
 using IslandSurvivor.Nodes.StatsManager;
@@ -94,6 +96,6 @@ public partial class ConiferTree : Area2D, ITree, IDamageable
     m_lastAttacker = p_attacker;
     Stats.ModifyCurrentValue(StatType.Health, -p_amount);
 
-    IslandSurvivor.Extensions.NodeExtensions.PlayHitFlash(this);
+    this.PlayHitFlash();
   }
 }
