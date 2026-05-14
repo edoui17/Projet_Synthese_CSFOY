@@ -42,9 +42,9 @@ public partial class ProgressionManager : Node
         m_eventBus = Globals.ServiceRegistry.Instance.EventBus;
 
         // Subscribe to relevant events
-        m_eventBus.Subscribe<ResourceHarvestedEvent>(OnResourceHarvested);
+        m_eventBus.Subscribe<MaterialDestroyedEvent>(OnMaterialDestroyedEvent);
         m_eventBus.Subscribe<EnemyKilledEvent>(OnEnemyKilled);
-        m_eventBus.Subscribe<NavigationRequestedEvent>(OnNavigationRequested);
+        m_eventBus.Subscribe<TeleportRequestedEvent>(OnTeleportRequestedEvent);
 
         if (Requirement == null)
         {
@@ -52,7 +52,7 @@ public partial class ProgressionManager : Node
         }
     }
 
-    private void OnResourceHarvested(ResourceHarvestedEvent p_event)
+    private void OnMaterialDestroyedEvent(MaterialDestroyedEvent p_event)
     {
         // Reward XP for harvesting
         Globals.ServiceRegistry.Instance.StatTracker.AddExperience(XpFromHarvesting);
@@ -64,7 +64,7 @@ public partial class ProgressionManager : Node
         Globals.ServiceRegistry.Instance.StatTracker.AddExperience(XpFromEnemyKill);
     }
 
-    private void OnNavigationRequested(NavigationRequestedEvent p_event)
+    private void OnTeleportRequestedEvent(TeleportRequestedEvent p_event)
     {
         // Don't reward XP for returning home, only for exploring
         if (p_event.Destination.Id != Core.Domain.Models.IslandDestination.HomeIsland.Id)
