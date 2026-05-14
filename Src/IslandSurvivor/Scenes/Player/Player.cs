@@ -48,12 +48,6 @@ public partial class Player : CharacterBody2D, IDamageable
         GD.Print("Attaque du joueur : " + Stats?.GetCurrentValue(StatType.Attack));
         if (m_interactionLabel != null) m_interactionLabel.Visible = false;
 
-        if (m_levelLabel != null)
-        {
-            float level = IslandSurvivor.Globals.ServiceRegistry.Instance.StatTracker.GetCurrentValue(StatType.Level);
-            m_levelLabel.Text = $"Lvl {level}";
-        }
-
         if (m_xpGainLabel != null)
         {
             m_xpGainLabel.Visible = false;
@@ -67,6 +61,8 @@ public partial class Player : CharacterBody2D, IDamageable
 
         IslandSurvivor.Globals.ServiceRegistry.Instance.EventBus.Subscribe<Core.Events.LevelChangedEvent>(OnLevelChanged);
         IslandSurvivor.Globals.ServiceRegistry.Instance.EventBus.Subscribe<Core.Events.ExperienceGainedEvent>(OnExperienceGained);
+
+        UpdateLevelLabel();
 
         m_movementController = GetNodeOrNull<MovementController>("MovementController");
 
@@ -248,12 +244,22 @@ public partial class Player : CharacterBody2D, IDamageable
         m_currentState = p_newState;
     }
 
-    private void OnLevelChanged(Core.Events.LevelChangedEvent p_event)
+    private void UpdateLevelLabel()
     {
         if (m_levelLabel != null)
         {
-            m_levelLabel.Text = $"Lvl {p_event.NewLevel}";
+            var statTracker = IslandSurvivor.Globals.ServiceRegistry.Instance.StatTracker;
+            float level = statTracker.GetCurrentValue(StatType.Level);
+            float currentXp = statTracker.GetCurrentValue(StatType.Experience);
+            float requiredXp = statTracker.CalculateRequiredXp((int)level);
+
+            m_levelLabel.Text = $"Niveau {level} ({currentXp} / {requiredXp})";
         }
+    }
+
+    private void OnLevelChanged(Core.Events.LevelChangedEvent p_event)
+    {
+        UpdateLevelLabel();
 
         if (m_xpGainLabel != null)
         {
@@ -265,6 +271,8 @@ public partial class Player : CharacterBody2D, IDamageable
 
     private void OnExperienceGained(Core.Events.ExperienceGainedEvent p_event)
     {
+        UpdateLevelLabel();
+
         if (m_xpGainLabel != null)
         {
             m_xpGainLabel.Text = $"+{p_event.Amount} XP";

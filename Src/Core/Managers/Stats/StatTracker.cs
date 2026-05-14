@@ -10,6 +10,8 @@ public class StatTracker : IStatTracker
     private readonly Dictionary<StatType, IStat> m_stats;
     private readonly IEventBus m_eventBus;
 
+    public bool IsInitialized => m_stats.Count > 0;
+
     public StatTracker(IEventBus p_eventBus)
     {
         m_stats = new Dictionary<StatType, IStat>();
