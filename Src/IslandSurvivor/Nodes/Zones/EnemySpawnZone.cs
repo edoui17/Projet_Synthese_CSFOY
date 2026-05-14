@@ -1,21 +1,23 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Core.Interfaces.Spawning;
+using Core.Interfaces.Utils;
+using Core.Utils;
 using IslandSurvivor.Scenes.NPC.Agressive;
 
 namespace IslandSurvivor.Nodes.Zones;
 
 /// <summary>
 /// [Gameplay][Spawning][Algorithme]
-/// Zone responsible for spawning and managing a specific number of enemies.
+/// Zone responsible for spawning and managing a specific number of enemies using weighted probabilities.
 /// </summary>
 public partial class EnemySpawnZone : Node2D, IEnemySpawnZone
 {
     [Export] public Godot.Collections.Array<EnemySpawnConfig> EnemyConfigs { get; set; } = new();
 
-    [Export(PropertyHint.Range, "0,1,0.01")]
-    public float LevelModifier { get; set; } = 0.0f;
+    [Export] public int MaxEnemies { get; set; } = 5;
 
     [Export] public Polygon2D SpawningArea { get; set; } = null!;
     [Export] public TileMapLayer WaterTileMap { get; set; } = null!;
@@ -25,8 +27,9 @@ public partial class EnemySpawnZone : Node2D, IEnemySpawnZone
 
     private readonly List<EnemyBase> m_activeEnemies = new();
     private float m_respawnTimer = 0f;
-    private Random m_random = new();
+    private readonly Random m_random = new();
     private Rect2 m_cachedBounds;
+    private readonly IWeightedRandomSelector<EnemySpawnConfig> m_weightedSelector = new WeightedRandomSelector<EnemySpawnConfig>();
 
     public override void _Ready()
     {
@@ -73,17 +76,11 @@ public partial class EnemySpawnZone : Node2D, IEnemySpawnZone
 
         CleanupDestroyedEnemies();
 
-        foreach (var config in EnemyConfigs)
+        int toSpawn = MaxEnemies - m_activeEnemies.Count;
+
+        for (int i = 0; i < toSpawn; i++)
         {
-            if (config == null || config.EnemyScene == null) continue;
-
-            int currentTypeCount = GetCurrentCountForType(config.EnemyScene);
-            int toSpawn = config.Count - currentTypeCount;
-
-            for (int i = 0; i < toSpawn; i++)
-            {
-                TrySpawnOne(config.EnemyScene);
-            }
+            TrySpawnWeightedEnemy();
         }
 
         GD.Print($"[EnemySpawnZone][Gameplay] {Name} spawned enemies. Total active: {m_activeEnemies.Count}");
@@ -91,33 +88,18 @@ public partial class EnemySpawnZone : Node2D, IEnemySpawnZone
 
     private void CheckAndRespawn()
     {
-        foreach (var config in EnemyConfigs)
+        int toSpawn = MaxEnemies - m_activeEnemies.Count;
+        for (int i = 0; i < toSpawn; i++)
         {
-            if (config == null || config.EnemyScene == null) continue;
-
-            int currentTypeCount = GetCurrentCountForType(config.EnemyScene);
-            if (currentTypeCount < config.Count)
-            {
-                TrySpawnOne(config.EnemyScene);
-            }
+            if (!TrySpawnWeightedEnemy()) break;
         }
     }
 
-    private int GetCurrentCountForType(PackedScene p_scene)
+    private bool TrySpawnWeightedEnemy()
     {
-        int count = 0;
-        foreach (var enemy in m_activeEnemies)
-        {
-            if (IsInstanceValid(enemy) && enemy.SceneFilePath == p_scene.ResourcePath)
-            {
-                count++;
-            }
-        }
-        return count;
-    }
+        var config = m_weightedSelector.SelectRandom(EnemyConfigs);
+        if (config == null || config.EnemyScene == null) return false;
 
-    private bool TrySpawnOne(PackedScene p_scene)
-    {
         int maxAttempts = 20;
         for (int i = 0; i < maxAttempts; i++)
         {
@@ -130,7 +112,7 @@ public partial class EnemySpawnZone : Node2D, IEnemySpawnZone
             if (IsOnWater(localPos)) continue;
             if (IsTooCloseToOtherEnemies(localPos)) continue;
 
-            SpawnEnemy(p_scene, localPos);
+            SpawnEnemy(config.EnemyScene, localPos);
             return true;
         }
         return false;
@@ -177,9 +159,6 @@ public partial class EnemySpawnZone : Node2D, IEnemySpawnZone
         Node instance = p_scene.Instantiate();
         if (instance is EnemyBase enemyInstance)
         {
-            // Set properties BEFORE adding to tree to ensure _Ready uses them
-            enemyInstance.LevelIndex = (int)(LevelModifier * 10) + 1;
-
             AddChild(enemyInstance);
             enemyInstance.Position = p_localPos;
             enemyInstance.Visible = true;
