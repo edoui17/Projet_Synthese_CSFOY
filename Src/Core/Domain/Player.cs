@@ -10,8 +10,10 @@ public class Player
     public string PasswordHash { get; set; } = string.Empty;
     public string? SessionToken { get; set; }
     public DateTime CreatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
+    public int HighScore { get; set; }
 
     public virtual ICollection<InventoryEntry> Inventory { get; set; } = new List<InventoryEntry>();
-    public virtual PlayerStats? Stats { get; set; }
+    public virtual ICollection<GameStats> GameStats { get; set; } = new List<GameStats>();
     public virtual PlayerConfig? Config { get; set; }
 }
