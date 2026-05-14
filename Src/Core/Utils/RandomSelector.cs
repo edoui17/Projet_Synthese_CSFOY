@@ -19,7 +19,7 @@ public class RandomSelector<T> : IRandomSelector<T>
     }
 
     /// <inheritdoc />
-    public T SelectRandom(IEnumerable<T> p_items)
+    public T? SelectRandom(IEnumerable<T> p_items)
     {
         if (p_items == null || !p_items.Any())
         {

@@ -4,7 +4,7 @@ using IslandSurvivor.Interfaces;
 
 public partial class BuildingNode : Node2D, IInteractable
 {
-  [Export] private Area2D _interactionArea;
+  [Export] private Area2D _interactionArea = null!;
 
   public bool IsInteractable => true;
   public string InteractionPrompt => "Appuyez sur [E] pour ouvrir la boutique";

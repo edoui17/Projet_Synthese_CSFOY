@@ -4,7 +4,7 @@
 USE DBIslandSurvivor;
 
 DELETE FROM Inventory;
-DELETE FROM Stats;
+DELETE FROM GameStats;
 DELETE FROM PlayerConfig;
 DELETE FROM Players;
 DELETE FROM ResourceItems;
@@ -23,18 +23,17 @@ DECLARE @JulesId UNIQUEIDENTIFIER = NEWID();
 DECLARE @TestPlayerId UNIQUEIDENTIFIER = NEWID();
 
 -- 3. Populate Players
-INSERT INTO Players (Id, Username, PasswordHash) VALUES
-(@ForgeId, 'Forge', 'password123'),
-(@JulesId, 'Jules', 'agent_secret'),
-(@TestPlayerId, 'TestPlayer', 'test');
+INSERT INTO Players (Id, Username, PasswordHash, HighScore) VALUES
+(@ForgeId, 'Forge', 'password123', 500),
+(@JulesId, 'Jules', 'agent_secret', 750),
+(@TestPlayerId, 'TestPlayer', 'test', 0);
 
--- 4. Populate Stats
--- Initial values: Speed (vitesse de base) is set to 1 as per requirements.
--- Although columns are FLOAT, values are provided as integers where requested.
-INSERT INTO Stats (PlayerId, Health, Attack, Speed, Luck, ExtraStats) VALUES
-(@ForgeId, 100, 10, 1, 1, '{"Seeded": true, "Role": "Lead Architect"}'),
-(@JulesId, 150, 15, 1, 2, '{"Seeded": true, "Role": "AI Agent"}'),
-(@TestPlayerId, 80, 5, 1, 1, '{"Seeded": true}');
+-- 4. Populate GameStats (Session History)
+-- Using TIME format for Duration 'HH:MM:SS'
+INSERT INTO GameStats (Id, PlayerId, PlayedAt, Duration, LevelReached, Score, Health, Attack, Speed, Luck, ExtraStats) VALUES
+(NEWID(), @ForgeId, DATEADD(hour, -2, GETDATE()), '00:15:30', 5, 500, 100, 10, 1, 1, '{"Seeded": true}'),
+(NEWID(), @JulesId, DATEADD(hour, -1, GETDATE()), '00:20:45', 7, 750, 150, 15, 1, 2, '{"Seeded": true}'),
+(NEWID(), @TestPlayerId, GETDATE(), '00:05:00', 2, 150, 80, 5, 1, 1, '{"Seeded": true}');
 
 -- 5. Populate PlayerConfig (Audio settings)
 INSERT INTO PlayerConfig (PlayerId, MasterVolume, MusicVolume, SfxVolume) VALUES

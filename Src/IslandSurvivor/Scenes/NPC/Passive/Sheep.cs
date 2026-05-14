@@ -11,15 +11,15 @@ using Core.Managers.Stats;
 
 public partial class Sheep : CharacterBody2D, INpc, IDamageable
 {
-    [Export] public StatManager Stats { get; set; }
+    [Export] public StatManager Stats { get; set; } = null!;
 
     [Export] public string NpcType { get; set; } = "Passive";
     [Export] public float IdleSpeed { get; set; } = 30.0f;
     [Export] public float FleeSpeed { get; set; } = 120.0f;
 
-    private PassiveController m_passiveController;
-    [Export] private MovementController m_movementController;
-    [Export] private Sprite2D m_sprite;
+    private PassiveController m_passiveController = null!;
+    [Export] private MovementController m_movementController = null!;
+    [Export] private Sprite2D m_sprite = null!;
     private bool m_wasKilledByPlayer = false;
 
     public string CurrentState => m_passiveController?.CurrentState ?? NpcStates.IDLE;
@@ -119,7 +119,7 @@ public partial class Sheep : CharacterBody2D, INpc, IDamageable
         }
     }
 
-    private void HandleDeath(object p_attacker = null)
+    private void HandleDeath(object? p_attacker = null)
     {
         m_passiveController.SetDead();
 

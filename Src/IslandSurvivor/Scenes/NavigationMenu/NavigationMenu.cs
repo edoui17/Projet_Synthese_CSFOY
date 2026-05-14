@@ -9,11 +9,11 @@ namespace IslandSurvivor.Scenes.NavigationMenu;
 
 public partial class NavigationMenu : Control
 {
-    private VBoxContainer m_destinationsContainer;
-    private INavigationService m_navigationService;
-    private IReadOnlyList<IslandDestination> m_currentOptions;
+    private VBoxContainer m_destinationsContainer = null!;
+    private INavigationService m_navigationService = null!;
+    private IReadOnlyList<IslandDestination> m_currentOptions = null!;
 
-    private Node2D FindPlayer(Node parent)
+    private Node2D? FindPlayer(Node? parent)
     {
         if (parent == null) return null;
         if (parent is Node2D node && node.Name == "Player") return node;

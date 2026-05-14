@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://rtx0k5qfaymn" path="res://Scenes/Ressources/Tree/ConiferTree.tscn" id="6_raikn"]
 [ext_resource type="PackedScene" uid="uid://cs7lisiu7vc7y" path="res://Scenes/Ressources/Rock/Rock.tscn" id="7_lmf3a"]
 [ext_resource type="PackedScene" uid="uid://cxftj0qybs1cs" path="res://Scenes/Ressources/Gold/Gold.tscn" id="8_krscx"]
+[ext_resource type="PackedScene" uid="uid://mqagd60eodos" path="res://Scenes/NPC/Passive/Sheep.tscn" id="8_me4ow"]
 
 [node name="Main" unique_id=956225192 instance=ExtResource("1_base")]
 
@@ -22,7 +23,7 @@ position = Vector2(0, 1)
 script = ExtResource("4_ntub1")
 ResourceCount = 100
 SpawningArea = NodePath("SpawningArea")
-ResourceScenes = Array[PackedScene]([ExtResource("5_me4ow"), ExtResource("6_raikn"), ExtResource("7_lmf3a"), ExtResource("8_krscx")])
+ResourceScenes = Array[PackedScene]([ExtResource("5_me4ow"), ExtResource("6_raikn"), ExtResource("7_lmf3a"), ExtResource("8_krscx"), ExtResource("8_me4ow")])
 
 [node name="SpawningArea" type="Polygon2D" parent="ResourceZone" index="0" unique_id=797527424]
 light_mask = 0

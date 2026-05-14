@@ -5,9 +5,9 @@ using Core.Managers;
 
 public partial class InventoryNode : Node
 {
-    public static InventoryNode Instance { get; private set; }
+    public static InventoryNode Instance { get; private set; } = null!;
 
-    private IInventoryManager m_inventoryManager;
+    private IInventoryManager m_inventoryManager = null!;
     public IInventoryManager Manager => m_inventoryManager;
 
     public override void _EnterTree()
