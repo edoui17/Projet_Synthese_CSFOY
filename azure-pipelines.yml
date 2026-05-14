@@ -50,12 +50,41 @@ steps:
     Copy-Item -Path "$godotTools/templates_temp/templates/*" -Destination $appDataTemplates -Recurse -Force
   displayName: 'Configuration des Templates'
 
-# 5. Compilation .NET Solution
+# 5. Initialisation du projet Godot (Import)
+- powershell: |
+    $godotExe = Get-ChildItem -Path "$(Pipeline.Workspace)/godot_tools/Editor" -Filter "Godot*.exe" -Recurse | Select-Object -First 1 -ExpandProperty FullName
+    cd Src/IslandSurvivor
+
+    function Stop-Godot {
+        Start-Sleep -Seconds 5
+        Get-Process -Name "Godot*" -ErrorAction SilentlyContinue | Stop-Process -Force
+        Start-Sleep -Seconds 2
+    }
+
+    Write-Host "##[group]Initialisation du projet (Import)"
+    # On génère la structure .godot/ et on résout les UIDs
+    & $godotExe --headless --editor --quit --path .
+    Stop-Godot
+    Write-Host "##[endgroup]"
+  displayName: 'Initialisation Godot'
+
+# 6. Compilation .NET Solution
 - powershell: |
     dotnet build ProjetJeu.sln -c Release
   displayName: 'Compilation .NET Solution'
 
-# 6. Exportation Godot
+# 7. Préparation des assemblies pour l'export
+- powershell: |
+    $sourceDir = "Src/IslandSurvivor/.godot/mono/temp/bin/Release"
+    $targetDir = "Src/IslandSurvivor/.godot/mono/temp/bin/ExportRelease"
+
+    if (!(Test-Path $targetDir)) { New-Item -ItemType Directory -Path $targetDir -Force }
+
+    Write-Host "Copie des assemblies de $sourceDir vers $targetDir"
+    Copy-Item -Path "$sourceDir/*" -Destination $targetDir -Recurse -Force
+  displayName: 'Préparation Assemblies'
+
+# 8. Exportation Godot
 - powershell: |
     $godotExe = Get-ChildItem -Path "$(Pipeline.Workspace)/godot_tools/Editor" -Filter "Godot*.exe" -Recurse | Select-Object -First 1 -ExpandProperty FullName
     $exportDir = "$(Build.BinariesDirectory)/IslandSurvivor"
@@ -69,14 +98,7 @@ steps:
         Start-Sleep -Seconds 2
     }
 
-    Write-Host "##[group]1. Initialisation du projet (Import)"
-    if (Test-Path ".godot") { Remove-Item -Path ".godot" -Recurse -Force }
-    # Importation forcée (on génère la structure .godot/ et on résout les UIDs)
-    & $godotExe --headless --editor --quit --path .
-    Stop-Godot
-    Write-Host "##[endgroup]"
-
-    Write-Host "##[command]2. Tentative d'exportation finale"
+    Write-Host "##[command]Tentative d'exportation finale"
     # Note: embed_build_outputs=true dans export_presets.cfg permet à Godot d'inclure les DLLs directement dans le PCK
     & $godotExe --headless --path . --export-release "Windows Desktop" "$exportDir/IslandSurvivor.exe" --verbose
     Stop-Godot
@@ -91,7 +113,7 @@ steps:
     Write-Host "##[endgroup]"
   displayName: 'Exportation Godot'
 
-# 7. Archivage
+# 9. Archivage
 - task: ArchiveFiles@2
   displayName: 'Création du ZIP'
   inputs:
@@ -100,7 +122,7 @@ steps:
     archiveType: 'zip'
     archiveFile: '$(Build.ArtifactStagingDirectory)/IslandSurvivor_Windows_Build.zip'
 
-# 8. Publication
+# 10. Publication
 - task: PublishPipelineArtifact@1
   displayName: 'Publication de l''Artifact'
   inputs:
