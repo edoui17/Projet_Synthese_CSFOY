@@ -21,7 +21,7 @@ position = Vector2(0, 1)
 script = ExtResource("3_jjjh0")
 ResourceCount = 50
 SpawningArea = NodePath("SpawningArea")
-ResourceScenes = Array[PackedScene]([ExtResource("4_ilso0"), ExtResource("5_5q2co"), ExtResource("6_1j366"), ExtResource("7_mtdb6")])
+ResourceScenes = Array[PackedScene]([ExtResource("4_ilso0"), ExtResource("5_5q2co"), ExtResource("6_1j366"), ExtResource("7_mtdb6"), ExtResource("3_3e544")])
 
 [node name="SpawningArea" type="Polygon2D" parent="ResourceZone" index="0" unique_id=737445901]
 light_mask = 0
