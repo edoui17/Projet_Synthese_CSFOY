@@ -84,10 +84,10 @@ steps:
     $preset = $env:PRESET_NAME
     $exportPath = "$env:EXPORT_DIR\$env:EXPORT_NAME.exe"
 
-    & $exe --headless --export-release "$preset" "$exportPath" --path "$path"
+    $process = Start-Process -FilePath $exe -ArgumentList "--headless", "--export-release", "`"$preset`"", "`"$exportPath`"", "--path", "`"$path`"" -NoNewWindow -Wait -PassThru
 
-    if ($LASTEXITCODE -ne 0) {
-        Write-Error "L'exportation a échoué avec le code de sortie: $LASTEXITCODE"
+    if ($process.ExitCode -ne 0) {
+        Write-Error "L'exportation a échoué avec le code de sortie: $($process.ExitCode)"
         exit 1
     }
     Write-Host "Exportation terminée avec succès."
