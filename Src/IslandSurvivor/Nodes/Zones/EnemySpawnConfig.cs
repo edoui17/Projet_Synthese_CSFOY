@@ -1,4 +1,5 @@
 using Godot;
+using Core.Interfaces.Utils;
 
 namespace IslandSurvivor.Nodes.Zones;
 
@@ -6,8 +7,9 @@ namespace IslandSurvivor.Nodes.Zones;
 /// Configuration for a specific enemy type in an EnemySpawnZone.
 /// </summary>
 [GlobalClass]
-public partial class EnemySpawnConfig : Resource
+public partial class EnemySpawnConfig : Resource, IWeightedItem
 {
     [Export] public PackedScene EnemyScene { get; set; } = null!;
-    [Export] public int Count { get; set; } = 1;
+
+    [Export] public float Weight { get; set; } = 1.0f;
 }
