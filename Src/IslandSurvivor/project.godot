@@ -18,7 +18,8 @@ config/icon="res://icon.svg"
 [autoload]
 
 ServiceRegistry="*res://Globals/ServiceRegistry.cs"
-MusicPlayer="*res://Scenes/Sounds/music_player.tscn"
+ProgressionManager="*res://Managers/ProgressionManager.cs"
+MusicPlayer="*uid://cmbtn736rnfhu"
 SignalManager="*res://Globals/SignalManager.cs"
 NavigationManager="*res://Globals/Navigation/NavigationManager.cs"
 InventoryNode="*res://Globals/InventoryNode.cs"

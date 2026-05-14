@@ -105,7 +105,14 @@ public partial class StatManager : Node2D
             initialStats.Add(StatType.Luck, Luck);
         }
 
-        m_statTracker.InitializeStats(initialStats);
+        if (m_isGlobal && m_statTracker.IsInitialized)
+        {
+            GD.Print("[StatManager] Global stats already initialized, skipping reset.");
+        }
+        else
+        {
+            m_statTracker.InitializeStats(initialStats);
+        }
     }
 
     public override void _Process(double delta)
