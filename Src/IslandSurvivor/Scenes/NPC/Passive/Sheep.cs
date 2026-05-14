@@ -125,7 +125,7 @@ public partial class Sheep : CharacterBody2D, INpc, IDamageable
 
         if (IslandSurvivor.Globals.ServiceRegistry.Instance != null)
         {
-            IslandSurvivor.Globals.ServiceRegistry.Instance.EventBus.Publish(new Core.Events.EnemyKilledEvent(Name, NpcType));
+            IslandSurvivor.Globals.ServiceRegistry.Instance.EventBus.Publish(new Core.Events.EnemyKilledEvent(Name, NpcType, 0f));
         }
 
         if (m_wasKilledByPlayer)
