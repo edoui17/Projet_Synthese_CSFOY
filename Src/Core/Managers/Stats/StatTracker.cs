@@ -10,6 +10,8 @@ public class StatTracker : IStatTracker
     private readonly Dictionary<StatType, IStat> m_stats;
     private readonly IEventBus m_eventBus;
 
+    public bool IsInitialized => m_stats.Count > 0;
+
     public StatTracker(IEventBus p_eventBus)
     {
         m_stats = new Dictionary<StatType, IStat>();
@@ -49,6 +51,56 @@ public class StatTracker : IStatTracker
 
             m_stats.Add(kvp.Key, newStat);
         }
+
+        // Initialize Level and XP if not provided in base stats
+        if (!m_stats.ContainsKey(StatType.Level))
+        {
+            m_stats.Add(StatType.Level, new AttributeStat(StatType.Level, 1f, m_eventBus));
+        }
+        if (!m_stats.ContainsKey(StatType.Experience))
+        {
+            m_stats.Add(StatType.Experience, new AttributeStat(StatType.Experience, 0f, m_eventBus));
+        }
+    }
+
+    public void AddExperience(float p_amount)
+    {
+        if (p_amount <= 0) return;
+
+        float currentXp = GetCurrentValue(StatType.Experience);
+        float currentLevel = GetCurrentValue(StatType.Level);
+
+        currentXp += p_amount;
+        SetCurrentValue(StatType.Experience, currentXp);
+        m_eventBus.Publish(new ExperienceGainedEvent(p_amount));
+
+        CheckLevelUp();
+    }
+
+    private void CheckLevelUp()
+    {
+        float currentXp = GetCurrentValue(StatType.Experience);
+        float currentLevel = GetCurrentValue(StatType.Level);
+
+        float requiredXp = CalculateRequiredXp((int)currentLevel);
+
+        while (currentXp >= requiredXp)
+        {
+            currentXp -= requiredXp;
+            currentLevel += 1;
+
+            SetCurrentValue(StatType.Experience, currentXp);
+            SetCurrentValue(StatType.Level, currentLevel);
+
+            m_eventBus.Publish(new LevelChangedEvent((int)currentLevel));
+
+            requiredXp = CalculateRequiredXp((int)currentLevel);
+        }
+    }
+
+    public float CalculateRequiredXp(int p_level)
+    {
+        return 50f + (p_level * 50f);
     }
 
     public float GetCurrentValue(StatType p_statType)

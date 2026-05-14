@@ -20,6 +20,10 @@ public abstract partial class EnemyBase : CharacterBody2D, INpc, IEnemy, IDamage
     [Export] public float StoppingDistance { get; set; } = 40.0f;
     [Export] public int LevelIndex { get; set; } = 1;
 
+    [ExportGroup("XP Settings")]
+    [Export] public float BaseXp { get; set; } = 30.0f;
+    [Export] public float XpMultiplier { get; set; } = 0.2f;
+
     [Export] protected StatManager Stats;
 
     protected IAgressorController m_agressorController;
@@ -301,9 +305,10 @@ public abstract partial class EnemyBase : CharacterBody2D, INpc, IEnemy, IDamage
     {
         m_agressorController.SetDead();
 
-        // Ennemies (Soldiers, Archers) only give score, no gold.
         if (ServiceRegistry.Instance != null)
         {
+            float xpEarned = BaseXp + (BaseXp * (LevelIndex - 1) * XpMultiplier);
+            ServiceRegistry.Instance.EventBus.Publish(new Core.Events.EnemyKilledEvent(Name, EnemyType, xpEarned));
             // Base score is 10. For every 3 levels, it multiplies.
             // Level 1-2 = 10, Level 3-5 = 20, Level 6-8 = 40, Level 9-10 = 80, Level 11+ = 160.
             int multiplier = (LevelIndex - 1) / 3;
@@ -311,7 +316,7 @@ public abstract partial class EnemyBase : CharacterBody2D, INpc, IEnemy, IDamage
             int scoreToAward = baseScore * (int)Math.Pow(2, multiplier);
 
             ServiceRegistry.Instance.ScoreTracker.AddScore(scoreToAward);
-            GD.Print($"[EnemyBase] Enemy died. Sent {scoreToAward} points to ScoreManager.");
+            GD.Print($"[EnemyBase] Enemy died. Sent {scoreToAward} points to ScoreManager and published {xpEarned} XP.");
         }
 
         QueueFree();

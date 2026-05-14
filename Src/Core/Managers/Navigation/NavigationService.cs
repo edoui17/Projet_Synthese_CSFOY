@@ -52,7 +52,10 @@ public class NavigationService : INavigationService
                 resourceCost = 0;
             }
 
-            int randomLevel = m_random.Next(1, 6);
+            int[] validLevels = { 1, 2, 3, 5 };
+            int randomLevelIndex = m_random.Next(0, validLevels.Length);
+            int randomLevel = validLevels[randomLevelIndex];
+
             string scenePath = $"res://Scenes/Level/Level{randomLevel}/Level{randomLevel}.tscn";
 
             destinations.Add(new IslandDestination(
