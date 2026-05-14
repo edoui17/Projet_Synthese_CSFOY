@@ -2,5 +2,5 @@ namespace Core.Domain;
 
 public class StatsUpsertRequest
 {
-    public PlayerStats Stats { get; set; } = null!;
+    public GameStats Stats { get; set; } = null!;
 }

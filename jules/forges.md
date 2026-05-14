@@ -155,3 +155,11 @@ When triggering updates (e.g., UI upgrades emitting events to a decoupled compon
 - **Catch-22 in State Evaluation**: When using custom logic controllers (like `IAgressorController`), avoid wrapping state transition triggers (like checking if the player is in the hitbox to start an attack) inside an `if` statement that checks if the enemy is *already* in the target state. In `EnemyBase.cs`, `HandleAttackState()` was locked behind `if (CurrentState == ATTACK)`, making it impossible to enter the attack state from the CHASE state.
 
 - **Physics Frame Continuity**: When interrupting movement to perform an action (like attacking), it's generally better to set the target speed and direction vector to zero and let the script flow down to `MoveAndSlide()` rather than using an early `return;`. This ensures that Godot's physics engine still processes the frame and resolves external collisions (e.g., being pushed by another entity) even while the character is seemingly standing still.
+
+## 2026-05-14 - Meta-Progression & HighScore Refactoring (US 18.0)
+- **Database Evolution**: Migrated the `Stats` table from a 1-to-1 relationship with `Players` to a 1-to-many relationship under the new name `GameStats`.
+- **Relationship Quirk**: Moving from 1-to-1 to 1-to-many required updating the `PlayerEntity` navigation property to `ICollection<GameStatsEntity>`. This allows tracking full session history.
+- **SQL Trigger Logic**: Implemented `TR_GameStats_AfterInsert` directly in the EF Core migration. The trigger automatically updates the `HighScore` in the `Players` table and prunes the `GameStats` history to keep only the top 10 sessions per player.
+- **Mapping Duration**: Mapped the SQL `TIME` type to C# `TimeSpan`. Note: EF Core handles this natively, but Ensure the column is defined as `TimeSpan` in the Entity for proper mapping to the `TIME` SQL type.
+- **Data Strategy**: Opted for a 'Clean Slate' approach for the database deployment. The migration was simplified to directly create the new structure, and SQL scripts (`schema.sql`, `data.sql`) were updated accordingly.
+- **API Strategy**: Updated `Sync` endpoint to append new sessions to `GameStats` rather than overwriting a single record. The `Profile` endpoint now returns the `HighScore` and the list of best sessions.

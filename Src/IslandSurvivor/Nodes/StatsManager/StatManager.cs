@@ -7,6 +7,7 @@ using Core.Services;
 using Core.Events;
 using IslandSurvivor.Resources;
 using IslandSurvivor.Enums;
+using System.Linq;
 
 namespace IslandSurvivor.Nodes;
 
@@ -121,13 +122,14 @@ public partial class StatManager : Node2D
 
     private void OnProfileLoaded(ProfileLoadedEvent e)
     {
-        if (e.Profile?.Stats != null)
+        var bestStats = e.Profile?.GameStats?.OrderByDescending(s => s.Score).FirstOrDefault();
+        if (bestStats != null)
         {
-            GD.Print("[StatManager] Profile Loaded. Syncing global stats.");
-            SetCurrentValue(StatType.Health, e.Profile.Stats.Health);
-            SetCurrentValue(StatType.Attack, e.Profile.Stats.Attack);
-            SetCurrentValue(StatType.Speed, e.Profile.Stats.Speed);
-            SetCurrentValue(StatType.Luck, e.Profile.Stats.Luck);
+            GD.Print("[StatManager] Profile Loaded. Syncing global stats from best session.");
+            SetCurrentValue(StatType.Health, bestStats.Health);
+            SetCurrentValue(StatType.Attack, bestStats.Attack);
+            SetCurrentValue(StatType.Speed, bestStats.Speed);
+            SetCurrentValue(StatType.Luck, bestStats.Luck);
         }
     }
 
