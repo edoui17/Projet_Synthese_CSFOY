@@ -9,3 +9,24 @@
 ### 2024-05-18 - [User Story 6.3] | Request: Combat System (Melee) - Enemy Attacking Player | AI Contribution: Implemented melee damage logic in `Soldier.cs` using an `Area2D` (`HitboxArea`) and `BodyEntered` signal. Verified the existing death logic handles `StatManager`, `ScoreManager`, and `EmitMaterialDestroyed` correctly. Wrote explicit setup instructions in `jules/forges_instructions_am.md` for configuring nodes and layers. Updated `combat_system.md` in the wiki to detail both Player and Enemy damage flows. | Decision Reasoning: Leveraging the native `BodyEntered` signal is the cleanest approach for instant collision detection without polling. Documenting the separation of Player and Enemy flows improves architectural clarity.
 
 ### $(date +%Y-%m-%d) - US 6.3 | Implémenter le système de combat (Corps-à-corps) | AI drafted execution plan to decouple attack logic via IAgressorController, fixed Soldier HP in .tres resource to decouple from hardcoded test values, and added Hashset tracking for continuous damage application. | The decision to use a HashSet for hitboxes prevents Godot physics update race conditions when querying overlaps manually.
+
+### 2024-05-12 - [User Story 16.0]
+- **Request**: Add enemy diversity, specifically refactor common enemy logic and implement a new Archer enemy with ranged attacks, plus stat scaling based on level.
+- **AI Contribution**:
+  - Refactored `Soldier.cs` by extracting common functionalities into `EnemyBase.cs`.
+  - Implemented `IRangedController` in Core and `RangedController` in Logic to handle ranged behavior and stopping distances.
+  - Implemented `IProjectile` in Core and `Arrow.cs` in Client to serve as the projectile.
+  - Created `Archer.cs` leveraging the refactored base and ranged controller.
+  - Added Level Index scaling and visual modulation (colors) for difficulty indication.
+  - Adjusted math so score multipliers are awarded based on LevelIndex instead of static.
+  - Removed Gold Drops from enemies (aggressive NPC only drop points now).
+  - Wrote Wiki Documentation `WikiArcher.md` explaining the scaling.
+- **Decision Reasoning**:
+  - Placed the projectile implementation at a higher directory level (`Scenes/Projectiles/`) to allow reusability by players or other entities, as suggested by the user.
+  - Used N-Tier architecture principles to keep `IRangedController` in `Core` and its implementation separate from the Godot Node scripts.
+  - Documented specific Godot Editor setup steps in `Godot_instructions_am.md` to keep the main `forges_instructions_am.md` clear for system prompt usage.
+
+### 2024-05-24 - [16.0 Ajouter de la diversité d'ennemi] | Request to fix Archer interaction distance, speed, add windup delays to enemies, and fix hitboxes direction | AI Contribution: Refactored EnemyBase, Archer, IAgressorController, Arrow | Decision Reasoning: Used async/await with SceneTreeTimer to implement a 0.4s attack wind-up delay. Updated IAgressorController to expose IsOnCooldown so that enemies pause movement while their attack is on cooldown. Split the static hitbox into HitboxAreaRight and HitboxAreaLeft, dynamically monitored based on sprite flipping. Adjusted archer distance to 250 and arrow speed to 300 to match user request. Dark gray color chosen for >10 level enemies as black was too dark.
+
+### 2024-05-24 - [16.0 Ajouter de la diversité d'ennemi] (Refactoring Addendum) | Request to restructure EnemyBase into melee and ranged subclasses and clean up temporary files | AI Contribution: Created MeleeEnemyBase.cs and RangedEnemyBase.cs. Refactored Soldier and Archer to inherit from these respectively. Removed temporary patch files. | Decision Reasoning: Adhering to the user's architectural recommendation to separate melee and ranged concerns into specialized abstract base classes, ensuring EnemyBase remains clean and solely responsible for common entity traits.
+### 2026-05-13 - [Fix] Enemy Attack & Movement Bug | Request: Fix enemies not attacking and walking onto player. | AI Contribution: Refactored `EnemyBase.cs` to evaluate attack state transitions unconditionally in the physics process loop, preventing a Catch-22 deadlock. Added explicit logic to zero velocity during the ATTACK state and reduce chase speed by 50% during the cooldown phase. | Decision Reasoning: Removing `HandleAttackState()` from the `if (CurrentState == ATTACK)` block allows the script to properly transition from CHASE to ATTACK. Setting velocity to zero while attacking prevents physical overlapping, and reducing speed during cooldown creates a more dynamic combat rhythm without freezing the enemy entirely.
