@@ -6,15 +6,15 @@ using Core.Interfaces;
 
 public partial class InventoryUi : Godot.Control
 {
-    [Export] public RessourceSlot WoodSlot;
-    [Export] public RessourceSlot StoneSlot;
-    [Export] public RessourceSlot FoodSlot;
-    [Export] public RessourceSlot GoldSlot;
+    [Export] public RessourceSlot WoodSlot = null!;
+    [Export] public RessourceSlot StoneSlot = null!;
+    [Export] public RessourceSlot FoodSlot = null!;
+    [Export] public RessourceSlot GoldSlot = null!;
 
-    [Export] public Texture2D WoodTexture;
-    [Export] public Texture2D StoneTexture;
-    [Export] public Texture2D FoodTexture;
-    [Export] public Texture2D GoldTexture;
+    [Export] public Texture2D WoodTexture = null!;
+    [Export] public Texture2D StoneTexture = null!;
+    [Export] public Texture2D FoodTexture = null!;
+    [Export] public Texture2D GoldTexture = null!;
 
     public override void _Ready()
     {

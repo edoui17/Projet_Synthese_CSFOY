@@ -9,10 +9,10 @@ using System;
 
 public partial class Rock : Area2D, IOre, IDamageable
 {
-    [Export] public StatManager Stats { get; set; }
+    [Export] public StatManager Stats { get; set; } = null!;
 
     [Export] public string EntityId { get; set; } = "rock_01";
-    [Export] public Timer Timer { get; set; }
+    [Export] public Timer Timer { get; set; } = null!;
 
     [Export] public string MaterialName { get; set; } = "Roche";
     [Export] public string MaterialType { get; set; } = "Rock";
@@ -55,7 +55,7 @@ public partial class Rock : Area2D, IOre, IDamageable
         }
     }
 
-    public void DestroyResource(object p_attacker = null)
+    public void DestroyResource(object? p_attacker = null)
     {
         Random random = new();
         int quantity = random.Next(1, 5);
