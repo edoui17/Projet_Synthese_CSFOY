@@ -15,7 +15,6 @@ public partial class ProgressionManager : Node
     // Configuration for XP rewards
     [ExportGroup("XP Rewards")]
     [Export] public float XpFromHarvesting = 10f;
-    [Export] public float XpFromEnemyKill = 30f;
     [Export] public float XpFromNewIsland = 50f;
 
     private IEventBus m_eventBus;
@@ -61,7 +60,7 @@ public partial class ProgressionManager : Node
     private void OnEnemyKilled(EnemyKilledEvent p_event)
     {
         // Reward more XP for killing enemies
-        Globals.ServiceRegistry.Instance.StatTracker.AddExperience(XpFromEnemyKill);
+        Globals.ServiceRegistry.Instance.StatTracker.AddExperience(p_event.XpEarned);
     }
 
     private void OnTeleportRequestedEvent(TeleportRequestedEvent p_event)
