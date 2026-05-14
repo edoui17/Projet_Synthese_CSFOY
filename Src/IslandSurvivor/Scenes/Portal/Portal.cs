@@ -1,3 +1,38 @@
+//using Godot;
+//using System;
+//using Core.Domain.Models;
+//using IslandSurvivor.Interfaces;
+
+//public partial class Portal : Node2D
+//{
+//	private AnimationPlayer m_animationPlayer;
+//	private PortalInteraction m_interactionArea;
+
+//	public override void _Ready()
+//	{
+//		m_animationPlayer = GetNode<AnimationPlayer>("AnimationPlayer");
+
+//		// The InteractionArea child has the script attached now
+//		m_interactionArea = GetNode<PortalInteraction>("InteractionArea");
+
+//		// Auto-activate the portal and point it to the Home Island if we are NOT in the PlayerHub.
+//		var currentScenePath = GetTree()?.CurrentScene?.SceneFilePath;
+//		if (currentScenePath != null && !currentScenePath.Contains("PlayerHub"))
+//		{
+//			ActivatePortal(IslandDestination.HomeIsland);
+//		}
+//	}
+
+//	public void ActivatePortal(IslandDestination p_destination)
+//	{
+//		m_animationPlayer.Play("ACTIVE");
+
+//		if (m_interactionArea != null)
+//		{
+//			m_interactionArea.SetDestination(p_destination);
+//		}
+//	}
+//}
 using Godot;
 using System;
 using Core.Domain.Models;
@@ -5,31 +40,54 @@ using IslandSurvivor.Interfaces;
 
 public partial class Portal : Node2D
 {
-	private AnimationPlayer m_animationPlayer;
-	private PortalInteraction m_interactionArea;
+    private AnimationPlayer m_animationPlayer;
+    private PortalInteraction m_interactionArea;
+    // On ajoute une référence pour le nœud audio
+    private AudioStreamPlayer2D m_ambientAudio;
 
-	public override void _Ready()
-	{
-		m_animationPlayer = GetNode<AnimationPlayer>("AnimationPlayer");
+    public override void _Ready()
+    {
+        m_animationPlayer = GetNode<AnimationPlayer>("AnimationPlayer");
+        m_interactionArea = GetNode<PortalInteraction>("InteractionArea");
 
-		// The InteractionArea child has the script attached now
-		m_interactionArea = GetNode<PortalInteraction>("InteractionArea");
+        // Initialisation de la référence audio
+        m_ambientAudio = GetNode<AudioStreamPlayer2D>("AmbientAudio");
 
-		// Auto-activate the portal and point it to the Home Island if we are NOT in the PlayerHub.
-		var currentScenePath = GetTree()?.CurrentScene?.SceneFilePath;
-		if (currentScenePath != null && !currentScenePath.Contains("PlayerHub"))
-		{
-			ActivatePortal(IslandDestination.HomeIsland);
-		}
-	}
+        var currentScenePath = GetTree()?.CurrentScene?.SceneFilePath;
+        if (currentScenePath != null && !currentScenePath.Contains("PlayerHub"))
+        {
+            ActivatePortal(IslandDestination.HomeIsland);
+        }
+    }
 
-	public void ActivatePortal(IslandDestination p_destination)
-	{
-		m_animationPlayer.Play("ACTIVE");
+    public void ActivatePortal(IslandDestination p_destination)
+    {
+        // 1. Déclenche l'animation visuelle
+        m_animationPlayer.Play("ACTIVE");
 
-		if (m_interactionArea != null)
-		{
-			m_interactionArea.SetDestination(p_destination);
-		}
-	}
+        // 2. Déclenche le son seulement si le portail devient vraiment actif
+        if (m_ambientAudio != null && !m_ambientAudio.Playing)
+        {
+            m_ambientAudio.Play();
+            GD.Print("[Portal] Activation du son d'ambiance.");
+        }
+
+        // 3. Configure la destination de l'interaction
+        if (m_interactionArea != null)
+        {
+            m_interactionArea.SetDestination(p_destination);
+        }
+    }
+
+    // Optionnel : Arrêter le son si le portail se désactive
+    public void DeactivatePortal()
+    {
+        m_animationPlayer.Play("IDLE"); // Remplace par ton animation de repos
+
+        if (m_ambientAudio != null && m_ambientAudio.Playing)
+        {
+            m_ambientAudio.Stop();
+            GD.Print("[Portal] Son d'ambiance arrêté.");
+        }
+    }
 }
