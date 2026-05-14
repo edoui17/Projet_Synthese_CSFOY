@@ -40,7 +40,8 @@ public class AttributeStat : IStat
 
     public void SetCurrentValue(float p_value)
     {
-        // Similar to ModifyCurrentValue, attributes don't have a separate current value.
+        m_baseValue = p_value;
+        NotifyStatChanged();
     }
 
     private void NotifyStatChanged()
