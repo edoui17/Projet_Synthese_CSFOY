@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="EnemySpawnConfig" load_steps=3 format=3 uid="uid://d1e2f3g4h5i6j"]
+[gd_resource type="Resource" script_class="EnemySpawnConfig" format=3 uid="uid://d1e2f3g4h5i6j"]
 
 [ext_resource type="PackedScene" uid="uid://dyxx1q578y7t0" path="res://Scenes/NPC/Agressive/Soldier.tscn" id="1_scene"]
 [ext_resource type="Script" path="res://Nodes/Zones/EnemySpawnConfig.cs" id="2_script"]
