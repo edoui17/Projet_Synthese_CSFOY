@@ -93,8 +93,8 @@ public abstract partial class EnemyBase : CharacterBody2D, INpc, IEnemy, IDamage
 
     protected virtual void ApplyLevelScaling()
     {
-        // Calculate scaling factor: BaseStat * (1 + 0.2 * LevelIndex)
-        float scalingFactor = 1.0f + 0.2f * LevelIndex;
+        // Calculate scaling factor: BaseStat * (1 + 0.2 * (LevelIndex - 1))
+        float scalingFactor = 1.0f + 0.2f * (LevelIndex - 1);
 
         float maxHealth = Stats.MaxHealth * scalingFactor;
         float baseDamage = Stats.BaseDamage * scalingFactor;

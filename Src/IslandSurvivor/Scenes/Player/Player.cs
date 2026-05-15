@@ -103,11 +103,13 @@ public partial class Player : CharacterBody2D, IDamageable
         {
             Velocity = Vector2.Zero;
             MoveAndSlide();
+            UpdateInteractionLabelPosition();
             return;
         }
 
         ApplyMovement();
         UpdateBestTarget();
+        UpdateInteractionLabelPosition();
         UpdateAnimation();
     }
 
@@ -155,6 +157,19 @@ public partial class Player : CharacterBody2D, IDamageable
             float finalSpeed = baseSpeed * (1f + (speedStat * 0.05f));
             Velocity = direction * finalSpeed;
             MoveAndSlide();
+        }
+    }
+
+    private void UpdateInteractionLabelPosition()
+    {
+        if (m_interactionLabel != null && m_interactionLabel.Visible)
+        {
+            var viewport = GetViewport();
+            if (viewport != null && m_interactionLabel.GetParent() is CanvasLayer)
+            {
+                var screenPos = GetGlobalTransformWithCanvas().Origin;
+                m_interactionLabel.SetGlobalPosition(new Godot.Vector2(screenPos.X - m_interactionLabel.Size.X / 2, screenPos.Y - 80));
+            }
         }
     }
 
