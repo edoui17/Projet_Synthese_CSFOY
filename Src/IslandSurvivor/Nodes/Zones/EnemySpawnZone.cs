@@ -164,8 +164,6 @@ public partial class EnemySpawnZone : Node2D, IEnemySpawnZone
             enemyInstance.Visible = true;
             enemyInstance.YSortEnabled = true;
 
-            // Set Collision Layer 4 (Combat) - Bit 3 (value 8)
-           // enemyInstance.CollisionLayer = 8;
 
             m_activeEnemies.Add(enemyInstance);
         }
