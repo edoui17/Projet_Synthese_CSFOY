@@ -1,6 +1,8 @@
 using Core.Interfaces.Stats;
 using Core.Managers.Stats;
 using Godot;
+using IslandSurvivor.Extensions;
+using IslandSurvivor.Globals;
 using IslandSurvivor.Enums;
 using IslandSurvivor.Interfaces;
 using IslandSurvivor.Managers;
@@ -207,6 +209,13 @@ public partial class Player : CharacterBody2D, IDamageable
             m_weaponAreaRight.Monitoring = !m_sprite.FlipH;
         }
 
+        // Play attack swing sound
+        AudioStream swingStream = GD.Load<AudioStream>("res://Assets/Sounds/Combat/weapon_swing.wav");
+        if (swingStream != null)
+        {
+            AudioManager.Instance?.PlaySound2D(swingStream, GlobalPosition);
+        }
+
         if (m_animationPlayer != null && m_animationPlayer.HasAnimation("ATTACK"))
         {
             m_animationPlayer.Play("ATTACK");
@@ -297,6 +306,23 @@ public partial class Player : CharacterBody2D, IDamageable
         if (currentHealth <= 0) return;
 
         Stats.ModifyCurrentValue(StatType.Health, -p_amount);
+
+        this.PlayHitFlash();
+        this.PlayShake();
+
+        // Play hurt sound
+        AudioStream hurtStream = GD.Load<AudioStream>("res://Assets/Sounds/Combat/player_hurt.wav");
+        if (hurtStream != null)
+        {
+            AudioManager.Instance?.PlaySound(hurtStream);
+        }
+
+        // Lightweight camera shake
+        Camera2D camera = GetNodeOrNull<Camera2D>("Camera2D");
+        if (camera != null)
+        {
+            camera.PlayShake(0.2f, 8.0f);
+        }
     }
 
     private void ApplyDamage(IDamageable p_target)

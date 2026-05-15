@@ -1,6 +1,8 @@
 using Core.Interfaces.Stats;
 using Core.Managers.Stats;
 using Godot;
+using IslandSurvivor.Extensions;
+using IslandSurvivor.Globals;
 using IslandSurvivor.Interfaces;
 using IslandSurvivor.Nodes;
 using IslandSurvivor.Resources;
@@ -81,6 +83,29 @@ public partial class AutomnTree : Area2D, ITree, IDamageable
 
         var item = new Core.Domain.ResourceItem(EntityId, MaterialName, MaterialType, IconPath);
         SignalManager.Instance.EmitMaterialDestroyed(this, item, quantity);
+        // Detach and play particles if they exist
+        GpuParticles2D particles = GetNodeOrNull<GpuParticles2D>("DestructionParticles");
+        if (particles != null)
+        {
+            RemoveChild(particles);
+            GetParent().AddChild(particles);
+            particles.GlobalPosition = GlobalPosition;
+            particles.Emitting = true;
+            // Free particles after they finish (assume 2 seconds is enough)
+            GetTree().CreateTimer(2.0f).Timeout += () =>
+            {
+                if (GodotObject.IsInstanceValid(particles))
+                    particles.QueueFree();
+            };
+        }
+
+        // Try to play destroy sound
+        AudioStream destroyStream = GD.Load<AudioStream>("res://Assets/Sounds/Combat/wood_destroy.wav");
+        if (destroyStream != null)
+        {
+            AudioManager.Instance?.PlaySound2D(destroyStream, GlobalPosition);
+        }
+
         QueueFree();
     }
 
@@ -91,6 +116,14 @@ public partial class AutomnTree : Area2D, ITree, IDamageable
         m_lastAttacker = p_attacker;
         Stats.ModifyCurrentValue(StatType.Health, -p_amount);
 
-        IslandSurvivor.Extensions.NodeExtensions.PlayHitFlash(this);
+        this.PlayHitFlash();
+        this.PlayShake();
+
+        // Try to play impact sound
+        AudioStream impactStream = GD.Load<AudioStream>("res://Assets/Sounds/Combat/wood_impact.wav");
+        if (impactStream != null)
+        {
+            AudioManager.Instance?.PlaySound2D(impactStream, GlobalPosition);
+        }
     }
 }

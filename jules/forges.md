@@ -156,6 +156,9 @@ When triggering updates (e.g., UI upgrades emitting events to a decoupled compon
 
 - **Physics Frame Continuity**: When interrupting movement to perform an action (like attacking), it's generally better to set the target speed and direction vector to zero and let the script flow down to `MoveAndSlide()` rather than using an early `return;`. This ensures that Godot's physics engine still processes the frame and resolves external collisions (e.g., being pushed by another entity) even while the character is seemingly standing still.
 
+## Audio and Visual Feedback Architecture
+- **Audio Global/Spatial Handling**: Created `AudioManager` singleton attached to the root, pooling `AudioStreamPlayer` (Global/UI) and `AudioStreamPlayer2D` (Spatial) to decouple sounds from node lifetimes. Prevents sounds cutting off prematurely when entities (like resources or enemies) queue free upon death.
+- **Node Tweening Extensions**: Added `PlayShake` extending `Node2D` using Godot's `Tween` API to systematically implement camera shakes and entity impact hits without polluting entity logic.
 ## 2026-05-14 - Meta-Progression & HighScore Refactoring (US 18.0)
 - **Database Evolution**: Migrated the `Stats` table from a 1-to-1 relationship with `Players` to a 1-to-many relationship under the new name `GameStats`.
 - **Relationship Quirk**: Moving from 1-to-1 to 1-to-many required updating the `PlayerEntity` navigation property to `ICollection<GameStatsEntity>`. This allows tracking full session history.

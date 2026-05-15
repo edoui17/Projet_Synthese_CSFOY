@@ -3,6 +3,7 @@ namespace IslandSurvivor.Scenes.NPC.Agressive;
 using System;
 using System.Collections.Generic;
 using Godot;
+using IslandSurvivor.Extensions;
 using Core.Interfaces.Entities;
 using Core.Interfaces.Stats;
 using Core.Managers.Stats;
@@ -31,7 +32,7 @@ public abstract partial class EnemyBase : CharacterBody2D, INpc, IEnemy, IDamage
 
     protected AnimatedSprite2D m_animatedSprite;
     protected Area2D m_detectionArea;
-        protected RayCast2D m_lineOfSightRay;
+    protected RayCast2D m_lineOfSightRay;
 
     protected Node2D m_targetPlayer;
 
@@ -296,7 +297,15 @@ public abstract partial class EnemyBase : CharacterBody2D, INpc, IEnemy, IDamage
             if (!isDead)
             {
                 m_targetPlayer = attackerNode;
-                IslandSurvivor.Extensions.NodeExtensions.PlayHitFlash(this);
+                this.PlayHitFlash();
+                this.PlayShake();
+
+                // Try to play enemy hurt sound
+                AudioStream hurtStream = GD.Load<AudioStream>("res://Assets/Sounds/Combat/enemy_hurt.wav");
+                if (hurtStream != null)
+                {
+                    AudioManager.Instance?.PlaySound2D(hurtStream, GlobalPosition);
+                }
             }
         }
     }
@@ -304,6 +313,15 @@ public abstract partial class EnemyBase : CharacterBody2D, INpc, IEnemy, IDamage
     protected virtual void HandleDeath(object p_attacker = null)
     {
         m_agressorController.SetDead();
+
+        // Try to play enemy death sound
+        AudioStream deathStream = GD.Load<AudioStream>("res://Src/IslandSurvivor/Assets/Sounds/Combat/enemy_death.wav");
+        if (deathStream != null)
+        {
+            AudioManager.Instance?.PlaySound2D(deathStream, GlobalPosition);
+        }
+
+        // Ennemies (Soldiers, Archers) only give score, no gold.
 
         if (ServiceRegistry.Instance != null)
         {

@@ -66,6 +66,13 @@ public partial class SignalManager : Node
     private void OnStatUpgradePurchasedEvent(StatUpgradePurchasedEvent e)
     {
         EmitSignal(SignalName.StatUpgradePurchased, (int)e.StatType);
+
+        // Play level up sound globally
+        AudioStream upgradeStream = GD.Load<AudioStream>("res://Assets/Sounds/UI/stat_upgrade.wav");
+        if (upgradeStream != null)
+        {
+            AudioManager.Instance?.PlaySound(upgradeStream);
+        }
     }
 
     private void OnNavigationRequestedEvent(NavigationRequestedEvent e)
