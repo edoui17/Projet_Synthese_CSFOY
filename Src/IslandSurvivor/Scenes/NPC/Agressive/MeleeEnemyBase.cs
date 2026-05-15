@@ -54,6 +54,13 @@ public abstract partial class MeleeEnemyBase : EnemyBase
         {
             controller.StartAttack();
 
+            // Attack sound effect
+            AudioStream attackStream = GD.Load<AudioStream>("res://Assets/Sounds/Combat/enemy_attack.wav");
+            if (attackStream != null)
+            {
+                IslandSurvivor.Globals.AudioManager.Instance?.PlaySound2D(attackStream, GlobalPosition);
+            }
+
             // Wind-up delay
             await ToSignal(GetTree().CreateTimer(0.4f), SceneTreeTimer.SignalName.Timeout);
             if (m_agressorController.CurrentState == NpcStates.DEAD) return;

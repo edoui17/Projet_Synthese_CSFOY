@@ -84,7 +84,30 @@ public partial class Rock : Area2D, IOre, IDamageable
         quantity += bonusQuantity;
 
         var item = new Core.Domain.ResourceItem(EntityId, MaterialName, MaterialType, IconPath);
-        SignalManager.Instance.EmitMaterialDestroyed(this, item, quantity);
+
+        // Target is the player who mined it
+        Vector2 targetPosition = GlobalPosition;
+        if (p_attacker is Node2D attackerNode)
+        {
+            targetPosition = attackerNode.GlobalPosition;
+        }
+
+        // Spawn Resource Drop for tweening
+        PackedScene dropScene = GD.Load<PackedScene>("res://Scenes/Ressources/ResourceDrop.tscn");
+        if (dropScene != null)
+        {
+            if (dropScene.Instantiate() is IslandSurvivor.Scenes.Ressources.ResourceDrop drop)
+            {
+                drop.Initialize(item, quantity, GlobalPosition, targetPosition);
+                GetParent().AddChild(drop);
+            }
+        }
+        else
+        {
+            // Fallback if scene is not yet setup
+            SignalManager.Instance.EmitMaterialDestroyed(this, item, quantity);
+        }
+
         // Detach and play particles if they exist
         GpuParticles2D particles = GetNodeOrNull<GpuParticles2D>("DestructionParticles");
         if (particles != null)

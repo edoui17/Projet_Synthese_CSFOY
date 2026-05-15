@@ -85,7 +85,53 @@ public partial class ConiferTree : Area2D, ITree, IDamageable
     quantity += bonusQuantity;
 
     var item = new Core.Domain.ResourceItem(EntityId, MaterialName, MaterialType, IconPath);
-    SignalManager.Instance.EmitMaterialDestroyed(this, item, quantity);
+
+    // Target is the player who mined it
+    Vector2 targetPosition = GlobalPosition;
+    if (p_attacker is Node2D attackerNode)
+    {
+        targetPosition = attackerNode.GlobalPosition;
+    }
+
+    // Spawn Resource Drop for tweening
+    PackedScene dropScene = GD.Load<PackedScene>("res://Scenes/Ressources/ResourceDrop.tscn");
+    if (dropScene != null)
+    {
+        if (dropScene.Instantiate() is IslandSurvivor.Scenes.Ressources.ResourceDrop drop)
+        {
+            drop.Initialize(item, quantity, GlobalPosition, targetPosition);
+            GetParent().AddChild(drop);
+        }
+    }
+    else
+    {
+        // Fallback if scene is not yet setup
+        SignalManager.Instance.EmitMaterialDestroyed(this, item, quantity);
+    }
+
+    // Detach and play particles if they exist
+    GpuParticles2D particles = GetNodeOrNull<GpuParticles2D>("DestructionParticles");
+    if (particles != null)
+    {
+        RemoveChild(particles);
+        GetParent().AddChild(particles);
+        particles.GlobalPosition = GlobalPosition;
+        particles.Emitting = true;
+        // Free particles after they finish (assume 2 seconds is enough)
+        GetTree().CreateTimer(2.0f).Timeout += () =>
+        {
+            if (GodotObject.IsInstanceValid(particles))
+                particles.QueueFree();
+        };
+    }
+
+    // Try to play destroy sound
+    AudioStream destroyStream = GD.Load<AudioStream>("res://Assets/Sounds/Combat/wood_destroy.wav");
+    if (destroyStream != null)
+    {
+        AudioManager.Instance?.PlaySound2D(destroyStream, GlobalPosition);
+    }
+
     QueueFree();
   }
 
@@ -97,5 +143,13 @@ public partial class ConiferTree : Area2D, ITree, IDamageable
     Stats.ModifyCurrentValue(StatType.Health, -p_amount);
 
     this.PlayHitFlash();
+    this.PlayShake();
+
+    // Try to play impact sound
+    AudioStream impactStream = GD.Load<AudioStream>("res://Assets/Sounds/Combat/wood_impact.wav");
+    if (impactStream != null)
+    {
+        AudioManager.Instance?.PlaySound2D(impactStream, GlobalPosition);
+    }
   }
 }
