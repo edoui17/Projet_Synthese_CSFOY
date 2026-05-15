@@ -49,10 +49,12 @@ public partial class SceneLoadingManager : CanvasLayer
         if (m_loadingUI != null) m_loadingUI.Visible = false;
     }
 
-    public void LoadScene(string p_scenePath)
+    public async void LoadScene(string p_scenePath)
     {
         ShowLoading();
-        CallDeferred(nameof(ChangeScene), p_scenePath);
+        await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
+        await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
+        ChangeScene(p_scenePath);
     }
 
     private void ChangeScene(string p_scenePath)
