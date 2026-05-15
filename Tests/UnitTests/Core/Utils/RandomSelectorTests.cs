@@ -41,7 +41,7 @@ public class RandomSelectorTests
         var selector = new RandomSelector<string>();
 
         // Act
-        var result = selector.SelectRandom(null);
+        var result = selector.SelectRandom(null!);
 
         // Assert
         Assert.Null(result);

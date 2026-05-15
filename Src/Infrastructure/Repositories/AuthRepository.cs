@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Core.Domain;
 using Core.Interfaces;
@@ -19,7 +20,7 @@ public class AuthRepository : IAuthRepository
     public async Task<Player?> GetBySessionTokenAsync(string p_token)
     {
         var entity = await m_context.Players
-            .Include(p => p.Stats)
+            .Include(p => p.GameStats)
             .Include(p => p.Config)
             .FirstOrDefaultAsync(p => p.SessionToken == p_token);
 
@@ -55,15 +56,26 @@ public class AuthRepository : IAuthRepository
             PasswordHash = p_entity.PasswordHash,
             SessionToken = p_entity.SessionToken,
             CreatedAt = p_entity.CreatedAt,
-            Stats = p_entity.Stats == null ? null : new PlayerStats
+            UpdatedAt = p_entity.UpdatedAt,
+            HighScore = p_entity.HighScore,
+            GameStats = p_entity.GameStats.Select(s => new GameStats
             {
-                PlayerId = p_entity.Stats.PlayerId,
-                Health = p_entity.Stats.Health,
-                Attack = p_entity.Stats.Attack,
-                Speed = p_entity.Stats.Speed,
-                Luck = p_entity.Stats.Luck,
-                ExtraStats = p_entity.Stats.ExtraStats
-            },
+                Id = s.Id,
+                PlayerId = s.PlayerId,
+                PlayedAt = s.PlayedAt,
+                Duration = s.Duration,
+                LevelReached = s.LevelReached,
+                Score = s.Score,
+                Health = s.Health,
+                Attack = s.Attack,
+                Speed = s.Speed,
+                Luck = s.Luck,
+                BonusHealth = s.BonusHealth,
+                BonusAttack = s.BonusAttack,
+                BonusSpeed = s.BonusSpeed,
+                BonusLuck = s.BonusLuck,
+                ExtraStats = s.ExtraStats
+            }).ToList(),
             Config = p_entity.Config == null ? null : new PlayerConfig
             {
                 PlayerId = p_entity.Config.PlayerId,

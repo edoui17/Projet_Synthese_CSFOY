@@ -6,10 +6,10 @@ using IslandSurvivor.Globals;
 
 public partial class SignalManager : Node
 {
-    private static SignalManager m_instance;
+    private static SignalManager m_instance = null!;
     public static SignalManager Instance => m_instance;
 
-    private IEventBus m_eventBus;
+    private IEventBus m_eventBus = null!;
 
     // --- Native Godot Signals (for Godot UI and scene communication) ---
     [Signal] public delegate void MaterialDestroyedEventHandler(string p_itemId, string p_itemName, string p_itemType, string p_itemIcon, int p_quantity);
@@ -55,7 +55,7 @@ public partial class SignalManager : Node
     // --- Core -> Godot Bridge ---
     private void OnMaterialDestroyedEvent(MaterialDestroyedEvent e)
     {
-        EmitSignal(SignalName.MaterialDestroyed, e.Item.Id, e.Item.Name, e.Item.Type, e.Item.IconPath, e.MaterialQuantity);
+        EmitSignal(SignalName.MaterialDestroyed, e.Item.Id, e.Item.Name, e.Item.Type, e.Item.IconPath ?? string.Empty, e.MaterialQuantity);
     }
 
     private void OnResourceSpentEvent(ResourceSpentEvent e)

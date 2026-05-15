@@ -10,9 +10,9 @@ using System;
 
 public partial class AutomnTree : Area2D, ITree, IDamageable
 {
-    [Export] public StatManager Stats { get; set; }
+    [Export] public StatManager Stats { get; set; } = null!;
     [Export] public string EntityId { get; set; } = "tree_automn_01";
-    [Export] public Timer Timer { get; set; }
+    [Export] public Timer Timer { get; set; } = null!;
 
     [Export] public string MaterialName { get; set; } = "Bois d'automne";
     [Export] public string MaterialType { get; set; } = "Wood";
@@ -55,7 +55,7 @@ public partial class AutomnTree : Area2D, ITree, IDamageable
         }
     }
 
-    public void DestroyResource(object p_attacker = null)
+    public void DestroyResource(object? p_attacker = null)
     {
         Random random = new();
         int quantity = random.Next(1, 5);

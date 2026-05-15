@@ -9,7 +9,7 @@ namespace UnitTests.Core.Stats
     {
         public int Health { get; private set; }
         public bool IsDead => Health <= 0;
-        public object LastAttacker { get; private set; }
+        public object? LastAttacker { get; private set; }
 
         public FakeDamageableEntity(int initialHealth)
         {

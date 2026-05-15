@@ -7,7 +7,7 @@ namespace IslandSurvivor.Managers;
 
 public partial class SceneLoadingManager : Node
 {
-    public static SceneLoadingManager Instance { get; private set; }
+    public static SceneLoadingManager Instance { get; private set; } = null!;
 
     public override void _EnterTree()
     {

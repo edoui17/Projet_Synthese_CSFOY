@@ -13,15 +13,15 @@ namespace IslandSurvivor.Globals;
 
 public partial class ServiceRegistry : Node
 {
-  public static ServiceRegistry Instance { get; private set; }
+  public static ServiceRegistry Instance { get; private set; } = null!;
 
-  public IInventoryManager InventoryManager { get; private set; }
-  public IShopManager ShopManager { get; private set; }
-  public IScoreTracker ScoreTracker { get; private set; }
-  public INavigationService NavigationService { get; private set; }
-  public IEventBus EventBus { get; private set; }
-  public IApiService ApiService { get; private set; }
-  public IStatTracker StatTracker { get; private set; }
+  public IInventoryManager InventoryManager { get; private set; } = null!;
+  public IShopManager ShopManager { get; private set; } = null!;
+  public IScoreTracker ScoreTracker { get; private set; } = null!;
+  public INavigationService NavigationService { get; private set; } = null!;
+  public IEventBus EventBus { get; private set; } = null!;
+  public IApiService ApiService { get; private set; } = null!;
+  public IStatTracker StatTracker { get; private set; } = null!;
 
   public override void _EnterTree()
   {

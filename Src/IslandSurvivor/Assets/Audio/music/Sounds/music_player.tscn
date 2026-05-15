@@ -4,9 +4,7 @@
 [ext_resource type="Script" uid="uid://dwkovgfr7womx" path="res://Assets/Audio/music/Sounds/AudioStreamPlayer.cs" id="2_pa4pj"]
 
 
-[node name="Node" type="Node" unique_id=181840002]
-
-[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=157608922]
+[node name="MusicPlayer" type="AudioStreamPlayer" unique_id=181840002]
 stream = ExtResource("1_pa4pj")
 autoplay = true
 bus = &"Music"

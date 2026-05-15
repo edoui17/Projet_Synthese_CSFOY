@@ -15,18 +15,18 @@ public class PlayerController : ControllerBase
     private readonly IPlayerRepository m_playerRepository;
     private readonly IInventoryRepository m_inventoryRepository;
     private readonly IStatsRepository m_statsRepository;
-    private readonly IAuthRepository m_authRepository;
+    private readonly IProgressionService m_progressionService;
 
     public PlayerController(
         IPlayerRepository p_playerRepository,
         IInventoryRepository p_inventoryRepository,
         IStatsRepository p_statsRepository,
-        IAuthRepository p_authRepository)
+        IProgressionService p_progressionService)
     {
         m_playerRepository = p_playerRepository;
         m_inventoryRepository = p_inventoryRepository;
         m_statsRepository = p_statsRepository;
-        m_authRepository = p_authRepository;
+        m_progressionService = p_progressionService;
     }
 
     [HttpGet("profile")]
@@ -36,11 +36,13 @@ public class PlayerController : ControllerBase
         if (player == null) return Unauthorized();
 
         IEnumerable<InventoryEntry> inventory = await m_inventoryRepository.GetByPlayerIdAsync(player.Id);
+        IEnumerable<GameStats> gameStats = await m_statsRepository.GetTopStatsByPlayerIdAsync(player.Id);
 
         ProfileResponse response = new ProfileResponse
         {
             Username = player.Username,
-            Stats = player.Stats,
+            HighScore = player.HighScore,
+            LastSessions = gameStats,
             Config = player.Config,
             Inventory = inventory
         };
@@ -57,7 +59,11 @@ public class PlayerController : ControllerBase
         if (p_request.Stats != null)
         {
             p_request.Stats.PlayerId = player.Id;
-            await m_statsRepository.UpdateStatsAsync(p_request.Stats);
+            p_request.Stats.LevelReached = m_progressionService.CalculateLevel(p_request.Stats.Score);
+
+            m_progressionService.CheckAndUpdateHighScore(player, p_request.Stats.Score);
+
+            await m_statsRepository.AddGameStatsAsync(p_request.Stats);
         }
 
         if (p_request.Inventory != null)
@@ -73,25 +79,25 @@ public class PlayerController : ControllerBase
     {
         IEnumerable<Player> players = await m_playerRepository.GetAllAsync();
 
-        IEnumerable<PlayerLeaderboardEntry> leaderboard = players.Select(p => new PlayerLeaderboardEntry
-        {
-            Id = p.Id,
-            Username = p.Username,
-            Health = p.Stats?.Health ?? 0,
-            Attack = p.Stats?.Attack ?? 0,
-            Speed = p.Stats?.Speed ?? 0,
-            Luck = p.Stats?.Luck ?? 0,
-            Level = CalculateLevel(p.Stats)
-        });
+        IEnumerable<PlayerLeaderboardEntry> leaderboard = players
+            .OrderByDescending(p => p.HighScore)
+            .Take(50)
+            .Select(p =>
+            {
+                var bestSession = p.GameStats.OrderByDescending(s => s.Score).FirstOrDefault();
+                return new PlayerLeaderboardEntry
+                {
+                    Id = p.Id,
+                    Username = p.Username,
+                    Health = bestSession?.Health ?? 0,
+                    Attack = bestSession?.Attack ?? 0,
+                    Speed = bestSession?.Speed ?? 0,
+                    Luck = bestSession?.Luck ?? 0,
+                    Level = bestSession?.LevelReached ?? 1,
+                    Score = p.HighScore
+                };
+            });
 
         return Ok(leaderboard);
-    }
-
-    private int CalculateLevel(PlayerStats? p_stats)
-    {
-        if (p_stats == null) return 1;
-        // Basic calculation based on total stats. Adjust as needed for specific game logic.
-        float totalStats = p_stats.Health + p_stats.Attack + p_stats.Speed + p_stats.Luck;
-        return Math.Max(1, (int)(totalStats / 10)); // Example: 1 level per 10 stat points
     }
 }

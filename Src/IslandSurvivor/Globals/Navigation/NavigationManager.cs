@@ -11,7 +11,7 @@ namespace IslandSurvivor.Globals.Navigation;
 
 public partial class NavigationManager : Node
 {
-    public static NavigationManager Instance { get; private set; }
+    public static NavigationManager Instance { get; private set; } = null!;
 
     public override void _EnterTree()
     {

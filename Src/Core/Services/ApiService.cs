@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
@@ -139,7 +141,9 @@ public class ApiService : IApiService
 
         if (p_request.Stats != null)
         {
-            profile.Stats = p_request.Stats;
+            var statsList = profile.GameStats.ToList();
+            statsList.Add(p_request.Stats);
+            profile.GameStats = statsList;
         }
 
         if (p_request.Config != null)

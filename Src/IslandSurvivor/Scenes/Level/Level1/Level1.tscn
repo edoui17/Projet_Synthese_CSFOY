@@ -8,14 +8,18 @@
 [ext_resource type="PackedScene" uid="uid://rtx0k5qfaymn" path="res://Scenes/Ressources/Tree/ConiferTree.tscn" id="5_k34qd"]
 [ext_resource type="PackedScene" uid="uid://cs7lisiu7vc7y" path="res://Scenes/Ressources/Rock/Rock.tscn" id="6_35vrn"]
 [ext_resource type="PackedScene" uid="uid://cxftj0qybs1cs" path="res://Scenes/Ressources/Gold/Gold.tscn" id="7_42amy"]
+[ext_resource type="Script" uid="uid://b2pgcq5bf17ym" path="res://Nodes/Zones/EnemySpawnZone.cs" id="9_35vrn"]
 [ext_resource type="PackedScene" uid="uid://mqagd60eodos" path="res://Scenes/NPC/Passive/Sheep.tscn" id="9_k34qd"]
+[ext_resource type="Script" uid="uid://cbbphk4jiuhm5" path="res://Nodes/Zones/EnemySpawnConfig.cs" id="10_wyksf"]
+[ext_resource type="Resource" uid="uid://d1e2f3g4h5i6j" path="res://Scenes/NPC/Agressive/SoldierConfig.tres" id="11_pylbn"]
+[ext_resource type="Resource" uid="uid://dbscgytmkqyn7" path="res://Scenes/NPC/Agressive/ArcherConfig.tres" id="12_wyksf"]
 
 [node name="Main" unique_id=2090159461 instance=ExtResource("1_base")]
 
-[node name="Map1" parent="MapContainer" index="0" unique_id=1850480075 instance=ExtResource("2_map")]
+[node name="Map1" parent="MapContainer" parent_id_path=PackedInt32Array(179494246) index="0" unique_id=1850480075 instance=ExtResource("2_map")]
 position = Vector2(-1, 0)
 
-[node name="Player" parent="." index="1"]
+[node name="Player" parent="." index="1" unique_id=108008]
 position = Vector2(38, -25)
 
 [node name="ResourceZone" type="Node2D" parent="." index="2" unique_id=2099294014 node_paths=PackedStringArray("SpawningArea")]
@@ -23,7 +27,7 @@ position = Vector2(0, 1)
 script = ExtResource("4_tree")
 ResourceCount = 50
 SpawningArea = NodePath("SpawningArea")
-ResourceScenes = Array[PackedScene]([ExtResource("4_lx7e6"), ExtResource("5_k34qd"), ExtResource("6_35vrn"), ExtResource("7_42amy")])
+ResourceScenes = Array[PackedScene]([ExtResource("4_lx7e6"), ExtResource("5_k34qd"), ExtResource("6_35vrn"), ExtResource("7_42amy"), ExtResource("9_k34qd")])
 
 [node name="SpawningArea" type="Polygon2D" parent="ResourceZone" index="0" unique_id=687902949]
 light_mask = 0
@@ -33,8 +37,21 @@ scale = Vector2(1.045625, 1)
 polygon = PackedVector2Array(1237.0592, -1133, 994.1423, -902, 994.1423, 139, 594.38135, 124, 605.8577, 153, 362.94083, 80, 369.63538, -315, 204.1841, -146, 208.00957, 176, -202.27138, 158, -317.99164, 299, 389.71906, 322, 361.0281, 80, 607.77045, 158, 620.20325, 184, 994.1423, 210, 973.10223, 1055, -966.40765, 1038, -971.1895, 197, -609.6832, 206, -590.5559, 167, -302.6898, 96, -315.12253, 299, -200.35864, 153, -190.79498, -157, 201.315, -148, 365.80994, -319, -315.12253, -306, -304.6025, 92, -590.5559, 167, -571.4286, 130, -966.40765, 112, -975.01495, -888, 985.535, -880, 1228.4519, -1129, -1230.3646, -1142, -1251.4047, 1255, 1219.8446, 1264)
 uv = PackedVector2Array(-277.30957, 36.86975)
 
-[node name="Portal" parent="." index="3" unique_id=704496346 instance=ExtResource("3_portal")]
-position = Vector2(0, 50)
+[node name="EnemyZone" type="Node2D" parent="." index="3" unique_id=1824478110 node_paths=PackedStringArray("SpawningArea")]
+light_mask = 9
+visibility_layer = 17
+position = Vector2(0, 1)
+script = ExtResource("9_35vrn")
+EnemyConfigs = Array[ExtResource("10_wyksf")]([ExtResource("11_pylbn"), ExtResource("12_wyksf")])
+SpawningArea = NodePath("EnemySpawningArea")
 
-[node name="Sheep" parent="." index="6" unique_id=317789339 instance=ExtResource("9_k34qd")]
-position = Vector2(271, 251)
+[node name="EnemySpawningArea" type="Polygon2D" parent="EnemyZone" index="0" unique_id=214035602]
+light_mask = 0
+visibility_layer = 0
+position = Vector2(-36.5, 0)
+scale = Vector2(1.045625, 1)
+polygon = PackedVector2Array(1237.0592, -1133, 994.1423, -902, 994.1423, 139, 594.38135, 124, 605.8577, 153, 362.94083, 80, 369.63538, -315, 204.1841, -146, 208.00957, 176, -202.27138, 158, -317.99164, 299, 389.71906, 322, 361.0281, 80, 607.77045, 158, 620.20325, 184, 994.1423, 210, 973.10223, 1055, -966.40765, 1038, -971.1895, 197, -609.6832, 206, -590.5559, 167, -302.6898, 96, -315.12253, 299, -200.35864, 153, -190.79498, -157, 201.315, -148, 365.80994, -319, -315.12253, -306, -304.6025, 92, -590.5559, 167, -571.4286, 130, -966.40765, 112, -975.01495, -888, 985.535, -880, 1228.4519, -1129, -1230.3646, -1142, -1251.4047, 1255, 1219.8446, 1264)
+uv = PackedVector2Array(-277.30957, 36.86975)
+
+[node name="Portal" parent="." index="4" unique_id=704496346 instance=ExtResource("3_portal")]
+position = Vector2(0, 50)

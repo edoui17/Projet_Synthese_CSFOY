@@ -12,9 +12,9 @@ using System;
 
 public partial class Gold : Area2D, IOre, IDamageable
 {
-    [Export] public StatManager Stats { get; set; } 
+    [Export] public StatManager Stats { get; set; } = null!;
     [Export] public string EntityId { get; set; } = "gold_01";
-    [Export] public Timer Timer { get; set; }
+    [Export] public Timer Timer { get; set; } = null!;
 
     [Export] public string MaterialName { get; set; } = "Or";
     [Export] public string MaterialType { get; set; } = "Gold";
@@ -58,7 +58,7 @@ public partial class Gold : Area2D, IOre, IDamageable
         }
     }
 
-    public void DestroyResource(object p_attacker = null)
+    public void DestroyResource(object? p_attacker = null)
     {
         Random random = new();
         int quantity = random.Next(1, 5);
