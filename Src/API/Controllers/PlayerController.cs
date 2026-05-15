@@ -15,15 +15,18 @@ public class PlayerController : ControllerBase
     private readonly IPlayerRepository m_playerRepository;
     private readonly IInventoryRepository m_inventoryRepository;
     private readonly IStatsRepository m_statsRepository;
+    private readonly IProgressionService m_progressionService;
 
     public PlayerController(
         IPlayerRepository p_playerRepository,
         IInventoryRepository p_inventoryRepository,
-        IStatsRepository p_statsRepository)
+        IStatsRepository p_statsRepository,
+        IProgressionService p_progressionService)
     {
         m_playerRepository = p_playerRepository;
         m_inventoryRepository = p_inventoryRepository;
         m_statsRepository = p_statsRepository;
+        m_progressionService = p_progressionService;
     }
 
     [HttpGet("profile")]
@@ -39,7 +42,7 @@ public class PlayerController : ControllerBase
         {
             Username = player.Username,
             HighScore = player.HighScore,
-            GameStats = gameStats,
+            LastSessions = gameStats,
             Config = player.Config,
             Inventory = inventory
         };
@@ -56,6 +59,10 @@ public class PlayerController : ControllerBase
         if (p_request.Stats != null)
         {
             p_request.Stats.PlayerId = player.Id;
+            p_request.Stats.LevelReached = m_progressionService.CalculateLevel(p_request.Stats.Score);
+
+            m_progressionService.CheckAndUpdateHighScore(player, p_request.Stats.Score);
+
             await m_statsRepository.AddGameStatsAsync(p_request.Stats);
         }
 
@@ -74,6 +81,7 @@ public class PlayerController : ControllerBase
 
         IEnumerable<PlayerLeaderboardEntry> leaderboard = players
             .OrderByDescending(p => p.HighScore)
+            .Take(50)
             .Select(p =>
             {
                 var bestSession = p.GameStats.OrderByDescending(s => s.Score).FirstOrDefault();
