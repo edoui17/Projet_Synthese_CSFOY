@@ -39,6 +39,8 @@ public partial class NavigationManager : Node
         if (slm != null)
         {
             slm.ShowLoading();
+            await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
+            await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
         }
 
         // Sync Data using ApiService
