@@ -58,7 +58,7 @@ public abstract partial class MeleeEnemyBase : EnemyBase
             await ToSignal(GetTree().CreateTimer(0.4f), SceneTreeTimer.SignalName.Timeout);
             if (m_agressorController.CurrentState == NpcStates.DEAD) return;
 
-            int damageAmount = (int)(Stats?.BaseDamage ?? 5);
+            int damageAmount = (int)(Stats?.BaseAttackValue ?? 5);
             var playersToDamage = new List<IDamageable>(m_playersInHitbox);
             foreach (var player in playersToDamage)
             {
