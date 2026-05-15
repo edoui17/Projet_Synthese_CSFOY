@@ -47,7 +47,7 @@ public abstract partial class RangedEnemyBase : EnemyBase
             System.Numerics.Vector2 directionNumerics = new System.Numerics.Vector2(directionGodot.X, directionGodot.Y);
             System.Numerics.Vector2 startPositionNumerics = new System.Numerics.Vector2(GlobalPosition.X, GlobalPosition.Y);
 
-            float damageAmount = Stats?.BaseDamage ?? 10.0f;
+            float damageAmount = Stats?.BaseAttackValue ?? 10.0f;
 
             projectile.Initialize(startPositionNumerics, directionNumerics, damageAmount, this);
 

@@ -26,7 +26,7 @@ public partial class MovementController : Node
     {
         if (m_parentBody == null) return;
 
-        float baseSpeedToUse = p_customBaseSpeed ?? Stats?.BaseSpeed ?? 300f;
+        float baseSpeedToUse = p_customBaseSpeed ?? Stats?.BaseSpeedValue ?? 300f;
 
         // 1 stat point = +5% speed
         float speedStat = Stats?.GetCurrentValue(StatType.Speed) ?? 0f;

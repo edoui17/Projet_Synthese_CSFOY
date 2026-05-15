@@ -101,13 +101,13 @@ public partial class StatManager : Node2D
 
         if (m_entityType == EntityType.NPC || m_entityType == EntityType.Player)
         {
-            initialStats.Add(StatType.Attack, InitialAttackPoints);
-            initialStats.Add(StatType.Speed, InitialSpeedPoints);
+            initialStats.Add(StatType.Attack, BaseDamage);
+            initialStats.Add(StatType.Speed, BaseSpeed);
         }
 
         if (m_entityType == EntityType.Player)
         {
-            initialStats.Add(StatType.Luck, InitialLuckPoints);
+            initialStats.Add(StatType.Luck, Luck);
         }
 
         if (m_isGlobal && m_statTracker.IsInitialized)
