@@ -163,3 +163,9 @@ When triggering updates (e.g., UI upgrades emitting events to a decoupled compon
 - **Mapping Duration**: Mapped the SQL `TIME` type to C# `TimeSpan`. Note: EF Core handles this natively, but Ensure the column is defined as `TimeSpan` in the Entity for proper mapping to the `TIME` SQL type.
 - **Data Strategy**: Opted for a 'Clean Slate' approach for the database deployment. The migration was simplified to directly create the new structure, and SQL scripts (`schema.sql`, `data.sql`) were updated accordingly.
 - **API Strategy**: Updated `Sync` endpoint to append new sessions to `GameStats` rather than overwriting a single record. The `Profile` endpoint now returns the `HighScore` and the list of best sessions.
+
+## 2026-05-14 - Progression Intelligence & API Refactoring (Task 18.0.2)
+- **Architectural Shift**: Introduced `IProgressionService` in the `Core` layer to centralize game logic (level calculation, high score validation). This removes business logic from Controllers, adhering to strict N-Tier principles.
+- **Level Progression**: Implemented a threshold-based level system (Level 1: 0-999, Level 2: 1000-2499, Level 3: 2500-4999, Level 4+: +5000 per level). Centralizing this in a service allows for easy future balancing.
+- **Consistency Strategy**: While a SQL trigger handles DB-level HighScore integrity, the `ProgressionService` updates the `Player` object in memory during the request. This ensures the API response (e.g., during `Sync`) contains the most up-to-date HighScore immediately.
+- **Leaderboard Performance**: Refactored `GetLeaderboard` to sort by the `HighScore` column in the `Players` table. This is O(1) or O(log N) with indexes, compared to the previous O(N*M) approach of scanning all session history.
