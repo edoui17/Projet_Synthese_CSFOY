@@ -18,11 +18,12 @@ config/icon="res://icon.svg"
 [autoload]
 
 ServiceRegistry="*res://Globals/ServiceRegistry.cs"
-ProgressionManager="*res://Managers/ProgressionManager.cs"
 MusicPlayer="*uid://cmbtn736rnfhu"
 SignalManager="*res://Globals/SignalManager.cs"
 NavigationManager="*res://Globals/Navigation/NavigationManager.cs"
-InventoryNode="*res://Globals/InventoryNode.cs"
+InventoryNode="*uid://dr3trnrux3qtu"
+ProgressionManager="*res://Managers/ProgressionManager.cs"
+AudioManager="*uid://ccgt7urf64l7y"
 
 [display]
 
@@ -31,6 +32,17 @@ window/size/mode=1
 [dotnet]
 
 project/assembly_name="IslandSurvivor"
+
+[file_customization]
+
+folder_colors={
+"res://Scenes/NPC/Agressive/": "red",
+"res://Scenes/NPC/Passive/": "green",
+"res://Scenes/Player/": "blue",
+"res://Scenes/Ressources/Gold/": "green",
+"res://Scenes/Ressources/Rock/": "green",
+"res://Scenes/Ressources/Tree/": "green"
+}
 
 [global_group]
 
