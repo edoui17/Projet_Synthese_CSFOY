@@ -97,8 +97,8 @@ public partial class StatManager : Node2D
 
         if (m_entityType == EntityType.NPC || m_entityType == EntityType.Player)
         {
-            initialStats.Add(StatType.Attack, 0f);
-            initialStats.Add(StatType.Speed, 0f);
+            initialStats.Add(StatType.Attack, BaseDamage);
+            initialStats.Add(StatType.Speed, BaseSpeed);
         }
 
         if (m_entityType == EntityType.Player)

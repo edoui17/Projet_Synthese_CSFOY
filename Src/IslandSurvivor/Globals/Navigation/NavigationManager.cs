@@ -34,6 +34,13 @@ public partial class NavigationManager : Node
     {
         GD.Print($"[Navigation] Changing scene to {p_scenePath} (Island ID: {p_islandId})");
 
+        // Use SceneLoadingManager if available
+        Managers.SceneLoadingManager slm = GetNodeOrNull<Managers.SceneLoadingManager>("/root/SceneLoadingManager");
+        if (slm != null)
+        {
+            slm.ShowLoading();
+        }
+
         // Sync Data using ApiService
         if (ServiceRegistry.Instance?.ApiService != null)
         {
@@ -75,8 +82,6 @@ public partial class NavigationManager : Node
         }
 
         // Perform transition
-        // Use SceneLoadingManager if available
-        Managers.SceneLoadingManager slm = GetNodeOrNull<Managers.SceneLoadingManager>("/root/SceneLoadingManager");
         if (slm != null)
         {
             slm.LoadScene(p_scenePath);

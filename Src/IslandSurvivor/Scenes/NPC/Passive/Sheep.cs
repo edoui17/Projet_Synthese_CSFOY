@@ -32,7 +32,6 @@ public partial class Sheep : CharacterBody2D, INpc, IDamageable
 
         if (Stats != null)
         {
-            Stats.SetCurrentValue(StatType.Health, 3);
             Stats.Connect(StatManager.SignalName.LocalStatChanged, Callable.From<int, float, float>(OnStatChanged));
         }
     }
@@ -130,7 +129,8 @@ public partial class Sheep : CharacterBody2D, INpc, IDamageable
 
         if (m_wasKilledByPlayer)
         {
-            int meatAmount = 1;
+            Random random = new();
+            int meatAmount = random.Next(1, 4); // 1 to 3 meat
 
             float luck = 0f;
             if (p_attacker is Node GodotAttacker)
@@ -146,7 +146,6 @@ public partial class Sheep : CharacterBody2D, INpc, IDamageable
             int bonusQuantity = (int)bonusChance;
             float fractionalChance = bonusChance - bonusQuantity;
 
-            Random random = new();
             if (random.NextDouble() < fractionalChance)
             {
                 bonusQuantity++;
