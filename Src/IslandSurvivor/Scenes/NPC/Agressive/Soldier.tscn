@@ -187,6 +187,8 @@ shape = SubResource("CapsuleShape2D_v2bfp")
 Stats = NodePath("../StatManager")
 
 [node name="StatManager" parent="." unique_id=1475410971 instance=ExtResource("6_hx8j2")]
+MaxHealth = 50.0
+BaseDamage = 5.0
 
 [node name="LineOfSightRay" type="RayCast2D" parent="." unique_id=1704468108]
 collision_mask = 5
