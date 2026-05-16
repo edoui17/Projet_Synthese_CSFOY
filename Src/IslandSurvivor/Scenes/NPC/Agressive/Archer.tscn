@@ -217,4 +217,3 @@ script = ExtResource("attack_controller_script")
 Stats = NodePath("../StatManager")
 Faction = 2
 BaseAttackCooldown = 1.5
-BaseAttackDuration = 0.5

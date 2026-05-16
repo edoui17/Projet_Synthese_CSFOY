@@ -1,4 +1,4 @@
-[gd_resource type="SpriteFrames" load_steps=31 format=3 uid="uid://dd8xwmbmwbofx"]
+[gd_resource type="SpriteFrames" format=3 uid="uid://dd8xwmbmwbofx"]
 
 [ext_resource type="Texture2D" uid="uid://dvcwp5qwpmdo1" path="res://Assets/TinySwords/Sprites/Pawn/Blue/Pawn_Idle Axe.png" id="1_idle"]
 [ext_resource type="Texture2D" uid="uid://bnrdwqhy84a5e" path="res://Assets/TinySwords/Sprites/Pawn/Blue/Pawn_Run.png" id="2_run"]
@@ -64,22 +64,6 @@ region = Rect2(1344, 0, 192, 192)
 [sub_resource type="AtlasTexture" id="AtlasTexture_int0"]
 atlas = ExtResource("2_run")
 region = Rect2(0, 0, 192, 192)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_int1"]
-atlas = ExtResource("2_run")
-region = Rect2(192, 0, 192, 192)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_int2"]
-atlas = ExtResource("2_run")
-region = Rect2(384, 0, 192, 192)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_int3"]
-atlas = ExtResource("2_run")
-region = Rect2(576, 0, 192, 192)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_int4"]
-atlas = ExtResource("2_run")
-region = Rect2(768, 0, 192, 192)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_int5"]
 atlas = ExtResource("2_run")
