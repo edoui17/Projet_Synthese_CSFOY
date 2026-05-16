@@ -31,10 +31,6 @@ Implemented a triangular progression curve and a ProgressionManager to reward XP
 
 ### 2026-05-16 - [Documentation] | Mettre à jour WikiCode pour refléter les récents changements (Stats, Events, Navigation, Progression) | Mise à jour des fichiers `Stats.md`, `SystemeNavigation.md`, `Systeme_Recolte_Ressources.md`, `combat_system.md` et `MainMenu.md` pour intégrer les dernières modifications techniques. | Les changements majeurs incluent la refactorisation de l'affichage de chargement (`SceneLoadingManager`), la séparation détaillée des statistiques de base/points (`InitialAttackPoints`, `BaseDamageValue`), l'introduction du `DamageContext` pour transmettre les statistiques du joueur (ex: Chance) lors des récoltes/combats, et la normalisation des drops en `wood_01` avec une gestion aléatoire unifiée de l'apparition de butin sur les ressources (ex: le mouton de 30 HP). Ces modifications documentent avec précision le code tel qu'il a été adapté dans les commits précédents afin de maintenir le wiki aligné avec l'état réel du code.
 
-### 2026-05-16 - [Gameplay Refactor] Continuous Attack and Dash Mechanics
-| Request | AI Contribution | Decision Reasoning |
-| :--- | :--- | :--- |
-| Remplacer l'attaque par le clic gauche continu (réduit par la stat Speed), ajouter un dash avec la touche Espace (vitesse, durée, invincibilité, UI label) | Modified  input map, completely rebuilt  input polling  sequence to support  attack holding bounded by speed logic, expanded  to manage autonomous  burst speeds, and exposed parameter fields to the Godot Inspector. | Instead of just replacing inputs, the combat system was improved to support N-Tier isolation principles by moving independent mechanical movement logic (Dash velocity, frame duration) directly into `MovementController`. The attack speed cooldown algorithm utilizes asymptotic bounding (`Cooldown = Base / (1 + (Speed * 0.05))`) to prevent 0-value game breaking breaks. |
 
 ### 2026-05-16 - [Gameplay Refactor] Continuous Attack and Dash Mechanics
 | Request | AI Contribution | Decision Reasoning |
