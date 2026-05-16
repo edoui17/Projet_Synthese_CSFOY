@@ -215,7 +215,10 @@ public abstract partial class EnemyBase : CharacterBody2D, INpc, IEnemy, IDamage
     {
         if (m_animatedSprite == null) return;
 
-        if (m_agressorController.CurrentState == NpcStates.ATTACK)
+        var attackController = GetNodeOrNull<IslandSurvivor.Nodes.Combat.AttackController>("AttackController");
+        bool isAttacking = attackController != null && attackController.IsAttacking;
+
+        if (isAttacking)
         {
             m_animatedSprite.Play("Attack");
             return;
@@ -230,7 +233,7 @@ public abstract partial class EnemyBase : CharacterBody2D, INpc, IEnemy, IDamage
             m_animatedSprite.Play("Idle");
         }
 
-        if (p_direction.X != 0)
+        if (p_direction.X != 0 && !isAttacking)
         {
             m_animatedSprite.FlipH = p_direction.X < 0;
         }
