@@ -1,7 +1,7 @@
 # Combat System Architecture
 
 ## Overview
-The combat system for IslandSurvivor uses a unified Area of Effect (AoE) attack mechanic. A single action (attacking with the spacebar) allows the player to damage both enemies and gatherable resources simultaneously, provided they are within the player's weapon hitbox.
+The combat system for IslandSurvivor uses a unified Area of Effect (AoE) attack mechanic. A single action (attacking via Left Mouse Click) allows the player to damage both enemies and gatherable resources simultaneously, provided they are within the player's weapon hitbox. The attack input can be held down to trigger consecutive attacks as soon as their cooldown expires. The attack cooldown duration dynamically decreases based on the player's `Speed` stat formula: `Cooldown = BaseCooldown / (1 + Speed * 0.05)`.
 
 ## Key Interfaces
 *   **`IDamageable`** (`Src/Core/Interfaces/Stats/IDamageable.cs`): Defines the contract for any entity that can take damage.
@@ -9,7 +9,7 @@ The combat system for IslandSurvivor uses a unified Area of Effect (AoE) attack 
     *   This interface is implemented by aggressive NPCs (e.g., `Soldier.cs`), passive NPCs (e.g., `Sheep.cs`), and Resources (e.g., `Rock.cs`, `Gold.cs`, `ConiferTree.cs`, `AutomnTree.cs`). The `DamageContext` allows the system to pass the attacker reference along with calculated damage and specific stat snapshots (like Luck) without forcing the victim to read another entity's `StatManager`.
 
 ## Damage Resolution Flow (Player Attacking Enemy/Resource)
-1.  **Attack Trigger**: The player presses the attack input. `Player.cs` enters the `Attacking` state.
+1.  **Attack Trigger**: The player presses or holds the left mouse button. If the `m_canAttack` flag is true (cooldown completed), `Player.cs` enters the `Attacking` state and locks out movement.
 2.  **Target Acquisition**: The script relies on event-driven signals (`AreaEntered`, `BodyEntered`) from the player's `m_weaponAreaRight` / `m_weaponAreaLeft` (`Area2D`).
 3.  **Filtration and Deduplication**: The script checks if each overlapping object (or its parent node) implements `IDamageable`. It uses a `HashSet<IDamageable>` to guarantee that an entity with multiple overlapping colliders only receives damage once per attack execution.
 4.  **Damage Calculation**: The damage amount is calculated based on the base damage and retrieved from the player's `StatManager` (`StatType.Attack`).
