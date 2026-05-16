@@ -5,14 +5,12 @@ using IslandSurvivor.Extensions;
 using IslandSurvivor.Globals;
 using IslandSurvivor.Interfaces;
 using IslandSurvivor.Nodes;
-using IslandSurvivor.Nodes.StatsManager;
 using IslandSurvivor.Resources;
 using System;
 
 public partial class ConiferTree : Area2D, ITree, IDamageable
 {
   [Export] public StatManager Stats { get; set; } = null!;
-  [Export] public ScoreManager Scorer { get; set; } = null!;
   [Export] public string EntityId { get; set; } = "wood_01";
   [Export] public Timer Timer { get; set; } = null!;
 
@@ -51,8 +49,6 @@ public partial class ConiferTree : Area2D, ITree, IDamageable
       if (Timer == null || Timer.IsStopped())
       {
         Timer?.Start();
-        Scorer.AddScore(1);
-        Scorer.UpdateHighScore();
         DestroyResource(p_area.GetParent() ?? p_area);
       }
     }
