@@ -24,8 +24,15 @@ public partial class Player : CharacterBody2D, IDamageable
     [Export] private Label? m_debugLabel;
     [Export] private Label? m_levelLabel;
     [Export] private Label? m_xpGainLabel;
+    [Export] private Label? m_dashLabel;
     private Timer? m_xpGainTimer;
     [Export] private Area2D? m_interactionArea;
+
+    [ExportGroup("Attack")]
+    [Export] public float BaseAttackCooldown { get; set; } = 0.8f;
+    private float m_timeSinceLastAttack = 0f;
+    private bool m_canAttack = true;
+
     [Export] private Area2D? m_weaponAreaRight;
     [Export] private Area2D? m_weaponAreaLeft;
 
@@ -99,6 +106,19 @@ public partial class Player : CharacterBody2D, IDamageable
             m_debugLabel.Text = m_currentState.ToString();
         }
 
+        UpdateAttackCooldown((float)p_delta);
+        UpdateDashUI();
+
+        if (m_movementController != null && m_movementController.IsDashing)
+        {
+            SetState(PlayerState.Dashing);
+            return;
+        }
+        else if (m_currentState == PlayerState.Dashing)
+        {
+            SetState(PlayerState.Idle);
+        }
+
         if (m_currentState == PlayerState.Interacting || m_currentState == PlayerState.Attacking)
         {
             Velocity = Vector2.Zero;
@@ -108,6 +128,13 @@ public partial class Player : CharacterBody2D, IDamageable
         }
 
         ApplyMovement();
+
+        // Continue attack if button is held and we can attack
+        if (Input.IsActionPressed("attack") && m_canAttack)
+        {
+            ExecuteAttack();
+        }
+
         UpdateBestTarget();
         UpdateInteractionLabelPosition();
         UpdateAnimation();
@@ -115,15 +142,62 @@ public partial class Player : CharacterBody2D, IDamageable
 
     public override void _Input(InputEvent p_event)
     {
-        if (m_currentState == PlayerState.Interacting || m_currentState == PlayerState.Attacking) return;
+        if (m_currentState == PlayerState.Interacting || m_currentState == PlayerState.Attacking || m_currentState == PlayerState.Dashing) return;
 
         if (p_event.IsActionPressed("interact") && m_bestTarget != null)
         {
             ExecuteInteraction();
         }
-        else if (p_event.IsActionPressed("attack"))
+        else if (p_event.IsActionPressed("dash") && m_movementController != null && !m_movementController.IsDashing)
         {
-            ExecuteAttack();
+            ExecuteDash();
+        }
+    }
+
+    private void UpdateAttackCooldown(float delta)
+    {
+        if (m_canAttack) return;
+
+        m_timeSinceLastAttack += delta;
+        float speedStat = Stats?.GetCurrentValue(StatType.Speed) ?? 0f;
+        float cooldown = BaseAttackCooldown / (1f + (speedStat * 0.05f));
+
+        // Cooldown cannot be shorter than the animation time (assuming 0.6s max animation)
+        float minCooldown = 0.6f;
+        if (cooldown < minCooldown) cooldown = minCooldown;
+
+        if (m_timeSinceLastAttack >= cooldown)
+        {
+            m_canAttack = true;
+        }
+    }
+
+    private void UpdateDashUI()
+    {
+        if (m_dashLabel != null && m_movementController != null)
+        {
+            if (m_movementController.TimeSinceLastDash >= m_movementController.DashCooldown)
+            {
+                m_dashLabel.Text = "Dash: Prêt";
+            }
+            else
+            {
+                m_dashLabel.Text = $"Dash: {(m_movementController.DashCooldown - m_movementController.TimeSinceLastDash):F1}s";
+            }
+        }
+    }
+
+    private void ExecuteDash()
+    {
+        if (m_movementController == null) return;
+
+        Vector2 direction = Input.GetVector("move_left", "move_right", "move_up", "move_down");
+        Vector2 dashDirection = direction != Vector2.Zero ? direction.Normalized() : ((m_sprite != null && m_sprite.FlipH) ? Vector2.Left : Vector2.Right);
+
+        if (m_movementController.TryDash(dashDirection))
+        {
+            SetState(PlayerState.Dashing);
+            UpdateDashUI(); // Force update label immediately
         }
     }
 
@@ -216,6 +290,8 @@ public partial class Player : CharacterBody2D, IDamageable
         GD.Print("[COMBAT] Attack started!");
         SetState(PlayerState.Attacking);
         m_hitTargetsThisAttack.Clear();
+        m_canAttack = false;
+        m_timeSinceLastAttack = 0f;
 
         // Activation de la zone d'arme selon l'orientation
         if (m_sprite != null && m_weaponAreaLeft != null && m_weaponAreaRight != null)
@@ -315,6 +391,8 @@ public partial class Player : CharacterBody2D, IDamageable
 
     public void TakeDamage(int p_amount, object p_attacker)
     {
+        if (m_movementController != null && m_movementController.IsDashing) return; // Invincible during dash
+
         if (Stats == null) return;
 
         float currentHealth = Stats.GetCurrentValue(StatType.Health);
