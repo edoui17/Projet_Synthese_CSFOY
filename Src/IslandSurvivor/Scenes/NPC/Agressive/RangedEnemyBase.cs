@@ -42,14 +42,6 @@ public abstract partial class RangedEnemyBase : EnemyBase
             {
                 if (CheckLineOfSight())
                 {
-                    // For Ranged attacks, direction area isn't strictly needed if we just spawn a projectile,
-                    // but we can pass a dummy direction or register a dummy area if required by TryAttack.
-                    // Assuming we pass any string since TryAttack might check for it.
-                    // Wait, TryAttack requires a registered area. We can either override TryAttack for ranged,
-                    // or just manage a fake Area2D or simply bypass the area requirement.
-                    // Since AttackController requires a registered direction, let's create a dummy area or use a generic method.
-                    // Actually, let's just add a method to trigger attack without direction in AttackController, or just register a dummy one.
-                    // Let's call TryAttack with "Ranged" and ensure a dummy area is registered if needed, or update TryAttack.
                     string direction = (m_animatedSprite != null && m_animatedSprite.FlipH) ? "Left" : "Right";
                     m_attackController.TryAttack(direction);
                 }

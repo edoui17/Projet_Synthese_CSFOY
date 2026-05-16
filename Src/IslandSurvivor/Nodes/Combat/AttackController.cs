@@ -101,13 +101,10 @@ public partial class AttackController : Node
 
         float speedStat = Stats?.GetCurrentValue(StatType.Speed) ?? 0f;
 
-        // Attack duration is scaled by speed
         float duration = CombatMath.CalculateTime(BaseAttackDuration, speedStat, 0.1f);
         m_durationTimer = duration;
 
-        // Cooldown starts scaling by speed
         float cooldown = CombatMath.CalculateTime(BaseAttackCooldown, speedStat, 0.2f);
-        // Ensure cooldown is at least as long as duration
         m_cooldownTimer = Mathf.Max(cooldown, duration);
 
         m_currentActiveArea = area;
@@ -159,10 +156,8 @@ public partial class AttackController : Node
 
         bool isValidTarget = false;
 
-        // Faction check
         if (Faction == EntityFaction.Player)
         {
-            // Player damages enemies and resources
             if (p_node is IDamageable || p_node is IAttackable)
             {
                 isValidTarget = true;
@@ -170,9 +165,6 @@ public partial class AttackController : Node
         }
         else if (Faction == EntityFaction.Enemy)
         {
-            // Enemy damages only players. In our game, Player is the only other entity with IDamageable that isn't Enemy/Resource,
-            // but we can be more strict if we assume Player is in group "Player" or just by duck typing.
-            // For now, Player implements IDamageable and is not an IAttackable resource.
             if (p_node is IDamageable && p_node.IsInGroup("Player"))
             {
                 isValidTarget = true;
@@ -198,13 +190,8 @@ public partial class AttackController : Node
             damageable.TakeDamage(finalDamage, m_owner ?? this);
             EmitSignal(SignalName.TargetHit, p_target, finalDamage);
         }
-        else if (p_target is IAttackable attackable)
+        else if (p_target is IAttackable)
         {
-            // For resources
-            // Note: Currently resources handle their own specific interactions, but we might want them to take damage uniformly
-            // In existing logic, the player uses Interaction, not attacks, for resources.
-            // If we are extending Attack to resources, we might need a method on IAttackable.
-            // We'll leave it simple for now or call TakeDamage if they implement it.
             if (p_target is IDamageable resourceDamageable)
             {
                 resourceDamageable.TakeDamage(finalDamage, m_owner ?? this);

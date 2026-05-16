@@ -84,7 +84,7 @@ public partial class Arrow : Area2D, IProjectile
         // Don't hit the shooter
         if (p_body == m_shooter as Node2D) return;
 
-        bool isSolid = !(p_body is Area2D); // Assuming non-Area2D bodies are solid
+        bool isSolid = !(p_body is Area2D);
 
         bool shouldDamage = false;
 
@@ -92,7 +92,7 @@ public partial class Arrow : Area2D, IProjectile
         {
             if (m_faction == IslandSurvivor.Enums.EntityFaction.Player)
             {
-                shouldDamage = true; // Player can hit enemies and resources
+                shouldDamage = true;
             }
             else if (m_faction == IslandSurvivor.Enums.EntityFaction.Enemy)
             {
