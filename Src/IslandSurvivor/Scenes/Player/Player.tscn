@@ -285,7 +285,7 @@ height = 90.01888
 [sub_resource type="CircleShape2D" id="CircleShape2D_jmcll"]
 radius = 39.217342
 
-[node name="Player" type="CharacterBody2D" unique_id=661327324 node_paths=PackedStringArray("Stats", "m_animationPlayer", "m_sprite", "m_interactionLabel", "m_debugLabel", "m_levelLabel", "m_xpGainLabel", "m_interactionArea", "m_weaponAreaRight", "m_weaponAreaLeft") groups=["Player"]]
+[node name="Player" type="CharacterBody2D" unique_id=661327324 node_paths=PackedStringArray("Stats", "m_animationPlayer", "m_sprite", "m_interactionLabel", "m_debugLabel", "m_levelLabel", "m_xpGainLabel", "m_dashLabel", "m_interactionArea", "m_weaponAreaRight", "m_weaponAreaLeft") groups=["Player"]]
 collision_layer = 4
 collision_mask = 17
 motion_mode = 1
@@ -393,7 +393,7 @@ text = "+XP"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="DashLabel" type="Label" parent="."]
+[node name="DashLabel" type="Label" parent="." unique_id=577872649]
 offset_left = -30.0
 offset_top = 89.0
 offset_right = 28.0
