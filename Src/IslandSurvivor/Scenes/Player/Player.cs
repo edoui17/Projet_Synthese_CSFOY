@@ -33,13 +33,6 @@ public partial class Player : CharacterBody2D, IDamageable
     private float m_timeSinceLastAttack = 0f;
     private bool m_canAttack = true;
 
-    [ExportGroup("Dash")]
-    [Export] public float DashCooldown { get; set; } = 3.0f;
-    [Export] public float DashDuration { get; set; } = 0.2f;
-    [Export] public float DashSpeedMultiplier { get; set; } = 3.0f;
-    private float m_timeSinceLastDash = 3.0f;
-    private float m_dashTimer = 0f;
-    private Vector2 m_dashDirection;
     [Export] private Area2D? m_weaponAreaRight;
     [Export] private Area2D? m_weaponAreaLeft;
 
@@ -113,13 +106,17 @@ public partial class Player : CharacterBody2D, IDamageable
             m_debugLabel.Text = m_currentState.ToString();
         }
 
-        UpdateDashCooldown((float)p_delta);
         UpdateAttackCooldown((float)p_delta);
+        UpdateDashUI();
 
-        if (m_currentState == PlayerState.Dashing)
+        if (m_movementController != null && m_movementController.IsDashing)
         {
-            HandleDashState((float)p_delta);
+            SetState(PlayerState.Dashing);
             return;
+        }
+        else if (m_currentState == PlayerState.Dashing)
+        {
+            SetState(PlayerState.Idle);
         }
 
         if (m_currentState == PlayerState.Interacting || m_currentState == PlayerState.Attacking)
@@ -151,7 +148,7 @@ public partial class Player : CharacterBody2D, IDamageable
         {
             ExecuteInteraction();
         }
-        else if (p_event.IsActionPressed("dash") && m_timeSinceLastDash >= DashCooldown)
+        else if (p_event.IsActionPressed("dash") && m_movementController != null && !m_movementController.IsDashing)
         {
             ExecuteDash();
         }
@@ -175,72 +172,32 @@ public partial class Player : CharacterBody2D, IDamageable
         }
     }
 
-    private void UpdateDashCooldown(float delta)
+    private void UpdateDashUI()
     {
-        if (m_timeSinceLastDash < DashCooldown)
+        if (m_dashLabel != null && m_movementController != null)
         {
-            m_timeSinceLastDash += delta;
-            if (m_timeSinceLastDash > DashCooldown) m_timeSinceLastDash = DashCooldown;
-
-            if (m_dashLabel != null)
+            if (m_movementController.TimeSinceLastDash >= m_movementController.DashCooldown)
             {
-                if (m_timeSinceLastDash >= DashCooldown)
-                {
-                    m_dashLabel.Text = "Dash: Prêt";
-                }
-                else
-                {
-                    m_dashLabel.Text = $"Dash: {(DashCooldown - m_timeSinceLastDash):F1}s";
-                }
+                m_dashLabel.Text = "Dash: Prêt";
+            }
+            else
+            {
+                m_dashLabel.Text = $"Dash: {(m_movementController.DashCooldown - m_movementController.TimeSinceLastDash):F1}s";
             }
         }
     }
 
     private void ExecuteDash()
     {
-        m_timeSinceLastDash = 0f;
-        m_dashTimer = 0f;
-        SetState(PlayerState.Dashing);
-
-        // Update dash label immediately
-        if (m_dashLabel != null)
-        {
-            m_dashLabel.Text = $"Dash: {DashCooldown:F1}s";
-        }
+        if (m_movementController == null) return;
 
         Vector2 direction = Input.GetVector("move_left", "move_right", "move_up", "move_down");
-        if (direction != Vector2.Zero)
-        {
-            m_dashDirection = direction.Normalized();
-        }
-        else
-        {
-            // Dash in facing direction if no input
-            m_dashDirection = (m_sprite != null && m_sprite.FlipH) ? Vector2.Left : Vector2.Right;
-        }
-    }
+        Vector2 dashDirection = direction != Vector2.Zero ? direction.Normalized() : ((m_sprite != null && m_sprite.FlipH) ? Vector2.Left : Vector2.Right);
 
-    private void HandleDashState(float delta)
-    {
-        m_dashTimer += delta;
-
-        if (m_movementController != null)
+        if (m_movementController.TryDash(dashDirection))
         {
-            // Use movement controller with custom base speed
-            float baseSpeed = Stats?.BaseSpeedValue ?? 300f;
-            m_movementController.Move(m_dashDirection, baseSpeed * DashSpeedMultiplier);
-        }
-        else
-        {
-            float baseSpeed = Stats?.BaseSpeedValue ?? 300f;
-            float finalSpeed = baseSpeed * DashSpeedMultiplier;
-            Velocity = m_dashDirection * finalSpeed;
-            MoveAndSlide();
-        }
-
-        if (m_dashTimer >= DashDuration)
-        {
-            SetState(PlayerState.Idle);
+            SetState(PlayerState.Dashing);
+            UpdateDashUI(); // Force update label immediately
         }
     }
 
@@ -434,7 +391,7 @@ public partial class Player : CharacterBody2D, IDamageable
 
     public void TakeDamage(int p_amount, object p_attacker)
     {
-        if (m_currentState == PlayerState.Dashing) return; // Invincible during dash
+        if (m_movementController != null && m_movementController.IsDashing) return; // Invincible during dash
 
         if (Stats == null) return;
 
