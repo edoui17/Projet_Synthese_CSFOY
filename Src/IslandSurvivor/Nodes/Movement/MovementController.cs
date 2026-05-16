@@ -18,8 +18,11 @@ public partial class MovementController : Node
     public bool IsDashing { get; private set; } = false;
     public float TimeSinceLastDash { get; private set; } = 3.0f;
 
+    public bool IsStunned { get; private set; } = false;
+
     private float m_dashTimer = 0f;
     private Vector2 m_dashDirection = Vector2.Zero;
+    private float m_stunTimer = 0f;
 
     public override void _Ready()
     {
@@ -40,6 +43,15 @@ public partial class MovementController : Node
 
         float fDelta = (float)delta;
 
+        if (IsStunned)
+        {
+            m_stunTimer -= fDelta;
+            if (m_stunTimer <= 0f)
+            {
+                IsStunned = false;
+            }
+        }
+
         if (TimeSinceLastDash < DashCooldown)
         {
             TimeSinceLastDash += fDelta;
@@ -56,6 +68,13 @@ public partial class MovementController : Node
     {
         if (m_parentBody == null || IsDashing) return;
 
+        if (IsStunned)
+        {
+            m_parentBody.Velocity = Vector2.Zero;
+            m_parentBody.MoveAndSlide();
+            return;
+        }
+
         float baseSpeedToUse = p_customBaseSpeed ?? Stats?.BaseSpeedValue ?? 300f;
 
         // 1 stat point = +5% speed
@@ -68,7 +87,7 @@ public partial class MovementController : Node
 
     public bool TryDash(Vector2 p_direction)
     {
-        if (IsDashing || TimeSinceLastDash < DashCooldown) return false;
+        if (IsDashing || IsStunned || TimeSinceLastDash < DashCooldown) return false;
 
         IsDashing = true;
         TimeSinceLastDash = 0f;
@@ -76,6 +95,21 @@ public partial class MovementController : Node
         m_dashDirection = p_direction;
 
         return true;
+    }
+
+    public void CancelDash()
+    {
+        IsDashing = false;
+        m_dashTimer = 0f;
+    }
+
+    public void ApplyStun(float p_duration)
+    {
+        IsStunned = true;
+        if (m_stunTimer < p_duration)
+        {
+            m_stunTimer = p_duration;
+        }
     }
 
     private void HandleDash(float p_delta)

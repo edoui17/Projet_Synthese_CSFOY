@@ -29,18 +29,15 @@ public partial class Player : CharacterBody2D, IDamageable
     [Export] private Area2D? m_interactionArea;
 
     [ExportGroup("Attack")]
-    [Export] public float BaseAttackCooldown { get; set; } = 0.8f;
-    private float m_timeSinceLastAttack = 0f;
-    private bool m_canAttack = true;
-
     [Export] private Area2D? m_weaponAreaRight;
     [Export] private Area2D? m_weaponAreaLeft;
+
+    private IslandSurvivor.Nodes.Combat.AttackController? m_attackController;
 
     private readonly List<IInteractable> m_nearbyInteractables = new();
     private IInteractable? m_bestTarget;
     private readonly IInteractionService m_interactionService = new InteractionService();
     private MovementController? m_movementController;
-    private readonly HashSet<IDamageable> m_hitTargetsThisAttack = new();
 
     public override void _ExitTree()
     {
@@ -86,16 +83,43 @@ public partial class Player : CharacterBody2D, IDamageable
             m_interactionArea.AreaExited += OnInteractionAreaExited;
         }
 
-        if (m_weaponAreaRight != null && m_weaponAreaLeft != null)
+        m_attackController = GetNodeOrNull<IslandSurvivor.Nodes.Combat.AttackController>("AttackController");
+        if (m_attackController != null)
         {
-            m_weaponAreaRight.AreaEntered += OnWeaponAreaEntered;
-            m_weaponAreaRight.BodyEntered += OnWeaponBodyEntered;
-            m_weaponAreaLeft.AreaEntered += OnWeaponAreaEntered;
-            m_weaponAreaLeft.BodyEntered += OnWeaponBodyEntered;
+            m_attackController.Stats = Stats;
+            m_attackController.Faction = EntityFaction.Player;
+            if (m_weaponAreaRight != null) m_attackController.RegisterArea("Right", m_weaponAreaRight);
+            if (m_weaponAreaLeft != null) m_attackController.RegisterArea("Left", m_weaponAreaLeft);
 
-            // Désactivé par défaut
-            m_weaponAreaRight.Monitoring = false;
-            m_weaponAreaLeft.Monitoring = false;
+            m_attackController.AttackStarted += OnAttackStarted;
+            m_attackController.AttackFinished += OnAttackFinished;
+        }
+        else
+        {
+            GD.PushWarning("Player: AttackController not found.");
+        }
+    }
+
+    private void OnAttackStarted()
+    {
+        // Play attack swing sound
+        AudioStream swingStream = GD.Load<AudioStream>("res://Assets/Sounds/Combat/weapon_swing.wav");
+        if (swingStream != null)
+        {
+            AudioManager.Instance?.PlaySound2D(swingStream, GlobalPosition);
+        }
+
+        if (m_animationPlayer != null && m_animationPlayer.HasAnimation("ATTACK"))
+        {
+            m_animationPlayer.Play("ATTACK");
+        }
+    }
+
+    private void OnAttackFinished()
+    {
+        if (m_currentState == PlayerState.Attacking)
+        {
+            SetState(PlayerState.Idle);
         }
     }
 
@@ -106,7 +130,6 @@ public partial class Player : CharacterBody2D, IDamageable
             m_debugLabel.Text = m_currentState.ToString();
         }
 
-        UpdateAttackCooldown((float)p_delta);
         UpdateDashUI();
 
         if (m_movementController != null && m_movementController.IsDashing)
@@ -130,7 +153,7 @@ public partial class Player : CharacterBody2D, IDamageable
         ApplyMovement();
 
         // Continue attack if button is held and we can attack
-        if (Input.IsActionPressed("attack") && m_canAttack)
+        if (Input.IsActionPressed("attack") && m_attackController != null && m_attackController.CanAttack)
         {
             ExecuteAttack();
         }
@@ -151,24 +174,6 @@ public partial class Player : CharacterBody2D, IDamageable
         else if (p_event.IsActionPressed("dash") && m_movementController != null && !m_movementController.IsDashing)
         {
             ExecuteDash();
-        }
-    }
-
-    private void UpdateAttackCooldown(float delta)
-    {
-        if (m_canAttack) return;
-
-        m_timeSinceLastAttack += delta;
-        float speedStat = Stats?.GetCurrentValue(StatType.Speed) ?? 0f;
-        float cooldown = BaseAttackCooldown / (1f + (speedStat * 0.05f));
-
-        // Cooldown cannot be shorter than the animation time (assuming 0.6s max animation)
-        float minCooldown = 0.6f;
-        if (cooldown < minCooldown) cooldown = minCooldown;
-
-        if (m_timeSinceLastAttack >= cooldown)
-        {
-            m_canAttack = true;
         }
     }
 
@@ -285,43 +290,16 @@ public partial class Player : CharacterBody2D, IDamageable
         SetState(PlayerState.Idle);
     }
 
-    private async void ExecuteAttack()
+    private void ExecuteAttack()
     {
-        GD.Print("[COMBAT] Attack started!");
-        SetState(PlayerState.Attacking);
-        m_hitTargetsThisAttack.Clear();
-        m_canAttack = false;
-        m_timeSinceLastAttack = 0f;
+        if (m_attackController == null) return;
 
-        // Activation de la zone d'arme selon l'orientation
-        if (m_sprite != null && m_weaponAreaLeft != null && m_weaponAreaRight != null)
+        string direction = (m_sprite != null && m_sprite.FlipH) ? "Left" : "Right";
+
+        if (m_attackController.TryAttack(direction))
         {
-            m_weaponAreaLeft.Monitoring = m_sprite.FlipH;
-            m_weaponAreaRight.Monitoring = !m_sprite.FlipH;
+            SetState(PlayerState.Attacking);
         }
-
-        // Play attack swing sound
-        AudioStream swingStream = GD.Load<AudioStream>("res://Assets/Sounds/Combat/weapon_swing.wav");
-        if (swingStream != null)
-        {
-            AudioManager.Instance?.PlaySound2D(swingStream, GlobalPosition);
-        }
-
-        if (m_animationPlayer != null && m_animationPlayer.HasAnimation("ATTACK"))
-        {
-            m_animationPlayer.Play("ATTACK");
-            await ToSignal(m_animationPlayer, AnimationPlayer.SignalName.AnimationFinished);
-        }
-        else
-        {
-            GD.Print("[COMBAT] No animation found");
-            await ToSignal(GetTree().CreateTimer(0.4f), SceneTreeTimer.SignalName.Timeout);
-        }
-
-        if (m_weaponAreaLeft != null) m_weaponAreaLeft.Monitoring = false;
-        if (m_weaponAreaRight != null) m_weaponAreaRight.Monitoring = false;
-
-        SetState(PlayerState.Idle);
     }
 
     private void UpdateAnimation()
@@ -416,36 +394,6 @@ public partial class Player : CharacterBody2D, IDamageable
         {
             camera.PlayShake(0.2f, 8.0f);
         }
-    }
-
-    private void ApplyDamage(IDamageable p_target)
-    {
-        if (m_hitTargetsThisAttack.Contains(p_target)) return;
-
-        m_hitTargetsThisAttack.Add(p_target);
-
-        float attackStat = Stats?.GetCurrentValue(StatType.Attack) ?? 0f;
-        float baseDamage = Stats?.BaseAttackValue ?? 10f;
-        float finalDamageFloat = baseDamage * (1f + (attackStat * 0.05f));
-        int finalDamage = Mathf.RoundToInt(finalDamageFloat);
-
-        GD.Print($"[COMBAT] Hit target! Dealing {finalDamage} damage.");
-        p_target.TakeDamage(finalDamage, this);
-    }
-
-    private void OnWeaponAreaEntered(Area2D p_area)
-    {
-        if (m_currentState != PlayerState.Attacking) return;
-
-        IDamageable? damageable = p_area as IDamageable ?? p_area.GetParent() as IDamageable;
-        if (damageable != null) ApplyDamage(damageable);
-    }
-
-    private void OnWeaponBodyEntered(Node2D p_body)
-    {
-        if (m_currentState != PlayerState.Attacking) return;
-
-        if (p_body is IDamageable damageable) ApplyDamage(damageable);
     }
 
     private void OnInteractionAreaEntered(Area2D p_area)

@@ -7,6 +7,24 @@ using IslandSurvivor.Logic.Entities;
 public abstract partial class RangedEnemyBase : EnemyBase
 {
     [Export] public PackedScene ProjectileScene { get; set; }
+    protected IslandSurvivor.Nodes.Combat.AttackController? m_attackController;
+
+    public override void _Ready()
+    {
+        base._Ready();
+
+        m_attackController = GetNodeOrNull<IslandSurvivor.Nodes.Combat.AttackController>("AttackController");
+        if (m_attackController != null)
+        {
+            m_attackController.Stats = Stats;
+            m_attackController.Faction = IslandSurvivor.Enums.EntityFaction.Enemy;
+            m_attackController.AttackStarted += ShootProjectile;
+        }
+        else
+        {
+            GD.PushWarning($"{Name}: AttackController not found.");
+        }
+    }
 
     protected override void InitializeController()
     {
@@ -14,22 +32,26 @@ public abstract partial class RangedEnemyBase : EnemyBase
         m_agressorController = new RangedController(StoppingDistance);
     }
 
-    protected override async void HandleAttackState()
+    protected override void HandleAttackState()
     {
-        if (m_targetPlayer != null && m_agressorController is IRangedController controller)
+        if (m_targetPlayer != null && m_attackController != null && m_attackController.CanAttack)
         {
             float distanceToPlayer = GlobalPosition.DistanceTo(m_targetPlayer.GlobalPosition);
 
             if (distanceToPlayer <= StoppingDistance)
             {
-                if (controller.CanAttack() && CheckLineOfSight())
+                if (CheckLineOfSight())
                 {
-                    controller.StartAttack();
-
-                    await ToSignal(GetTree().CreateTimer(0.4f), SceneTreeTimer.SignalName.Timeout);
-                    if (m_agressorController.CurrentState == NpcStates.DEAD) return;
-
-                    ShootProjectile();
+                    // For Ranged attacks, direction area isn't strictly needed if we just spawn a projectile,
+                    // but we can pass a dummy direction or register a dummy area if required by TryAttack.
+                    // Assuming we pass any string since TryAttack might check for it.
+                    // Wait, TryAttack requires a registered area. We can either override TryAttack for ranged,
+                    // or just manage a fake Area2D or simply bypass the area requirement.
+                    // Since AttackController requires a registered direction, let's create a dummy area or use a generic method.
+                    // Actually, let's just add a method to trigger attack without direction in AttackController, or just register a dummy one.
+                    // Let's call TryAttack with "Ranged" and ensure a dummy area is registered if needed, or update TryAttack.
+                    string direction = (m_animatedSprite != null && m_animatedSprite.FlipH) ? "Left" : "Right";
+                    m_attackController.TryAttack(direction);
                 }
             }
         }
