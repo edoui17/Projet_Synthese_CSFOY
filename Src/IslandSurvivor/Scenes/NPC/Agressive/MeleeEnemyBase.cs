@@ -24,6 +24,9 @@ public abstract partial class MeleeEnemyBase : EnemyBase
         {
             m_attackController.Stats = Stats;
             m_attackController.Faction = IslandSurvivor.Enums.EntityFaction.Enemy;
+            m_attackController.AttackSprite = m_animatedSprite;
+            m_attackController.ActionFrame = 2; // Impact frame for Melee
+
             if (m_hitboxAreaRight != null) m_attackController.RegisterArea("Right", m_hitboxAreaRight);
             if (m_hitboxAreaLeft != null) m_attackController.RegisterArea("Left", m_hitboxAreaLeft);
 
@@ -60,5 +63,10 @@ public abstract partial class MeleeEnemyBase : EnemyBase
     protected virtual void OnAttackStarted()
     {
         // Custom logic for when attack starts, such as playing animation or sound.
+        if (m_animatedSprite != null)
+        {
+            m_animatedSprite.Play("Attack");
+            m_animatedSprite.Frame = 0;
+        }
     }
 }

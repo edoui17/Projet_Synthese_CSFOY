@@ -20,14 +20,48 @@ public partial class AttackController : Node
     [Signal]
     public delegate void AttackFinishedEventHandler();
 
+    [Signal]
+    public delegate void AttackActionTriggeredEventHandler();
+
     [Export] public StatManager? Stats { get; set; }
     [Export] public EntityFaction Faction { get; set; } = EntityFaction.None;
 
     [Export] public float BaseAttackCooldown { get; set; } = 1.0f;
-    [Export] public float BaseAttackDuration { get; set; } = 0.4f;
+
+    private AnimatedSprite2D? m_attackSprite;
+    [Export]
+    public AnimatedSprite2D? AttackSprite
+    {
+        get => m_attackSprite;
+        set
+        {
+            if (m_attackSprite != null)
+            {
+                if (m_attackSprite.IsConnected(AnimatedSprite2D.SignalName.FrameChanged, new Callable(this, MethodName.OnFrameChanged)))
+                {
+                    m_attackSprite.Disconnect(AnimatedSprite2D.SignalName.FrameChanged, new Callable(this, MethodName.OnFrameChanged));
+                }
+                if (m_attackSprite.IsConnected(AnimatedSprite2D.SignalName.AnimationFinished, new Callable(this, MethodName.OnAnimationFinished)))
+                {
+                    m_attackSprite.Disconnect(AnimatedSprite2D.SignalName.AnimationFinished, new Callable(this, MethodName.OnAnimationFinished));
+                }
+            }
+
+            m_attackSprite = value;
+
+            if (m_attackSprite != null)
+            {
+                m_attackSprite.Connect(AnimatedSprite2D.SignalName.FrameChanged, new Callable(this, MethodName.OnFrameChanged));
+                m_attackSprite.Connect(AnimatedSprite2D.SignalName.AnimationFinished, new Callable(this, MethodName.OnAnimationFinished));
+            }
+        }
+    }
+
+    [Export] public int ActionFrame { get; set; } = 2;
 
     private float m_cooldownTimer = 0f;
-    private float m_durationTimer = 0f;
+    private bool m_hasTriggeredAction = false;
+
     public bool IsAttacking { get; private set; } = false;
     public bool CanAttack => !IsAttacking && m_cooldownTimer <= 0f;
 
@@ -47,6 +81,28 @@ public partial class AttackController : Node
         }
     }
 
+    private void OnFrameChanged()
+    {
+        if (AttackSprite == null || !IsAttacking) return;
+
+        if (AttackSprite.Animation == "Attack" && AttackSprite.Frame >= ActionFrame && !m_hasTriggeredAction)
+        {
+            ExecuteAttackHit();
+            EmitSignal(SignalName.AttackActionTriggered);
+            m_hasTriggeredAction = true;
+        }
+    }
+
+    private void OnAnimationFinished()
+    {
+        if (AttackSprite == null || !IsAttacking) return;
+
+        if (AttackSprite.Animation == "Attack")
+        {
+            CancelAttack();
+        }
+    }
+
     public override void _PhysicsProcess(double p_delta)
     {
         if (Engine.IsEditorHint()) return;
@@ -58,14 +114,6 @@ public partial class AttackController : Node
             m_cooldownTimer -= delta;
         }
 
-        if (IsAttacking)
-        {
-            m_durationTimer -= delta;
-            if (m_durationTimer <= 0f)
-            {
-                EndAttack();
-            }
-        }
     }
 
     public void RegisterArea(string p_direction, Area2D p_area)
@@ -97,24 +145,29 @@ public partial class AttackController : Node
         // For ranged enemies, they might not have areas registered, so we allow it to proceed without one.
 
         IsAttacking = true;
+        m_hasTriggeredAction = false;
         m_hitTargetsThisAttack.Clear();
 
         float speedStat = Stats?.GetCurrentValue(StatType.Speed) ?? 0f;
 
-        float duration = CombatMath.CalculateTime(BaseAttackDuration, speedStat, 0.1f);
-        m_durationTimer = duration;
-
+        // Ensure cooldown scales with speed, but attacks are exclusively animation-driven
         float cooldown = CombatMath.CalculateTime(BaseAttackCooldown, speedStat, 0.2f);
-        m_cooldownTimer = Mathf.Max(cooldown, duration);
+        m_cooldownTimer = cooldown;
 
         m_currentActiveArea = area;
+
+        EmitSignal(SignalName.AttackStarted);
+        return true;
+    }
+
+    public void ExecuteAttackHit()
+    {
+        if (!IsAttacking) return;
+
         if (m_currentActiveArea != null)
         {
             m_currentActiveArea.Monitoring = true;
         }
-
-        EmitSignal(SignalName.AttackStarted);
-        return true;
     }
 
     public void CancelAttack()
