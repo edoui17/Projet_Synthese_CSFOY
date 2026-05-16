@@ -18,8 +18,8 @@ public partial class Player : CharacterBody2D, IDamageable
 
     private PlayerState m_currentState = PlayerState.Idle;
 
-    [Export] private AnimationPlayer? m_animationPlayer;
-    [Export] private Sprite2D? m_sprite;
+
+    [Export] private AnimatedSprite2D? m_animatedSprite;
     [Export] private Label? m_interactionLabel;
     [Export] private Label? m_debugLabel;
     [Export] private Label? m_levelLabel;
@@ -88,6 +88,8 @@ public partial class Player : CharacterBody2D, IDamageable
         {
             m_attackController.Stats = Stats;
             m_attackController.Faction = EntityFaction.Player;
+            m_attackController.AttackSprite = m_animatedSprite;
+
             if (m_weaponAreaRight != null) m_attackController.RegisterArea("Right", m_weaponAreaRight);
             if (m_weaponAreaLeft != null) m_attackController.RegisterArea("Left", m_weaponAreaLeft);
 
@@ -109,9 +111,9 @@ public partial class Player : CharacterBody2D, IDamageable
             AudioManager.Instance?.PlaySound2D(swingStream, GlobalPosition);
         }
 
-        if (m_animationPlayer != null && m_animationPlayer.HasAnimation("ATTACK"))
+        if (m_animatedSprite != null)
         {
-            m_animationPlayer.Play("ATTACK");
+            m_animatedSprite.Play("ATTACK");
         }
     }
 
@@ -152,18 +154,29 @@ public partial class Player : CharacterBody2D, IDamageable
 
         ApplyMovement();
 
+
         // Continue attack if button is held and we can attack
-        if (Input.IsActionPressed("attack") && m_attackController != null && m_attackController.CanAttack)
+        // Prevent attack if clicking on UI by checking if any control has focus or mouse is captured by UI.
+        // Actually, the simplest check in Godot 4 for this is `GetViewport().GuiGetFocusOwner() != null`
+        // or just checking `Input.IsActionPressed` and skipping if UI is hovered.
+        // Let's use `Input.IsActionPressed` but check `!GetViewport().GuiIsDragging()` ? No, the review suggested:
+        // "keep using Input.IsActionPressed("attack") in _PhysicsProcess, but add a guard clause checking if the UI currently has focus or is capturing the mouse"
+
+        bool isUiFocused = GetViewport().GuiGetFocusOwner() != null;
+
+        // Unset m_isAttackButtonDown (actually we don't need it at all now)
+        if (!isUiFocused && Input.IsActionPressed("attack") && m_attackController != null && m_attackController.CanAttack)
         {
             ExecuteAttack();
         }
 
         UpdateBestTarget();
+
         UpdateInteractionLabelPosition();
         UpdateAnimation();
     }
 
-    public override void _Input(InputEvent p_event)
+public override void _Input(InputEvent p_event)
     {
         if (m_currentState == PlayerState.Interacting || m_currentState == PlayerState.Attacking || m_currentState == PlayerState.Dashing) return;
 
@@ -197,7 +210,7 @@ public partial class Player : CharacterBody2D, IDamageable
         if (m_movementController == null) return;
 
         Vector2 direction = Input.GetVector("move_left", "move_right", "move_up", "move_down");
-        Vector2 dashDirection = direction != Vector2.Zero ? direction.Normalized() : ((m_sprite != null && m_sprite.FlipH) ? Vector2.Left : Vector2.Right);
+        Vector2 dashDirection = direction != Vector2.Zero ? direction.Normalized() : ((m_animatedSprite != null && m_animatedSprite.FlipH) ? Vector2.Left : Vector2.Right);
 
         if (m_movementController.TryDash(dashDirection))
         {
@@ -214,9 +227,9 @@ public partial class Player : CharacterBody2D, IDamageable
         {
             m_currentState = PlayerState.Moving;
 
-            if (m_sprite != null)
+            if (m_animatedSprite != null && m_currentState != PlayerState.Attacking)
             {
-                m_sprite.FlipH = direction.X < 0;
+                m_animatedSprite.FlipH = direction.X < 0;
             }
         }
         else
@@ -277,10 +290,10 @@ public partial class Player : CharacterBody2D, IDamageable
         SetState(PlayerState.Interacting);
         m_bestTarget.Interact();
 
-        if (m_animationPlayer != null && m_animationPlayer.HasAnimation("INTERACT"))
+        if (m_animatedSprite != null)
         {
-            m_animationPlayer.Play("INTERACT");
-            await ToSignal(m_animationPlayer, AnimationPlayer.SignalName.AnimationFinished);
+            m_animatedSprite.Play("INTERACT");
+            await ToSignal(m_animatedSprite, AnimatedSprite2D.SignalName.AnimationFinished);
         }
         else
         {
@@ -294,7 +307,7 @@ public partial class Player : CharacterBody2D, IDamageable
     {
         if (m_attackController == null) return;
 
-        string direction = (m_sprite != null && m_sprite.FlipH) ? "Left" : "Right";
+        string direction = (m_animatedSprite != null && m_animatedSprite.FlipH) ? "Left" : "Right";
 
         if (m_attackController.TryAttack(direction))
         {
@@ -304,15 +317,15 @@ public partial class Player : CharacterBody2D, IDamageable
 
     private void UpdateAnimation()
     {
-        if (m_animationPlayer == null) return;
+        if (m_animatedSprite == null) return;
 
         switch (m_currentState)
         {
             case PlayerState.Idle:
-                m_animationPlayer.Play("IDLE");
+                m_animatedSprite.Play("IDLE");
                 break;
             case PlayerState.Moving:
-                m_animationPlayer.Play("RUN");
+                m_animatedSprite.Play("RUN");
                 break;
         }
     }
