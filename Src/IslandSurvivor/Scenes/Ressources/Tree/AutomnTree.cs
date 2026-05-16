@@ -11,7 +11,7 @@ using System;
 public partial class AutomnTree : Area2D, ITree, IDamageable
 {
     [Export] public StatManager Stats { get; set; } = null!;
-    [Export] public string EntityId { get; set; } = "tree_automn_01";
+    [Export] public string EntityId { get; set; } = "wood_01";
     [Export] public Timer Timer { get; set; } = null!;
 
     [Export] public string MaterialName { get; set; } = "Bois d'automne";
