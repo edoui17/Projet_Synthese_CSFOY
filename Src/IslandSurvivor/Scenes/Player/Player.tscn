@@ -297,6 +297,7 @@ m_interactionLabel = NodePath("CanvasLayer/InteractionLabel")
 m_debugLabel = NodePath("DebugLabel")
 m_levelLabel = NodePath("LevelLabel")
 m_xpGainLabel = NodePath("XpGainLabel")
+m_dashLabel = NodePath("DashLabel")
 m_interactionArea = NodePath("PlayerInteraction")
 m_weaponAreaRight = NodePath("WeaponAttackRight")
 m_weaponAreaLeft = NodePath("WeaponAttackLeft")
@@ -391,5 +392,14 @@ offset_top = -100.0
 offset_right = 28.0
 offset_bottom = -77.0
 text = "+XP"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="DashLabel" type="Label" parent="."]
+offset_left = -30.0
+offset_top = 89.0
+offset_right = 28.0
+offset_bottom = 112.0
+text = "Dash: Prêt"
 horizontal_alignment = 1
 vertical_alignment = 1
