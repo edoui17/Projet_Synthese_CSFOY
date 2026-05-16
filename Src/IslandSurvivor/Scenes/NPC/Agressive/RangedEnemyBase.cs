@@ -8,7 +8,6 @@ public abstract partial class RangedEnemyBase : EnemyBase
 {
     [Export] public PackedScene ProjectileScene { get; set; }
     protected IslandSurvivor.Nodes.Combat.AttackController? m_attackController;
-    private bool m_hasShotThisAttack = false;
 
     public override void _Ready()
     {
@@ -19,17 +18,15 @@ public abstract partial class RangedEnemyBase : EnemyBase
         {
             m_attackController.Stats = Stats;
             m_attackController.Faction = IslandSurvivor.Enums.EntityFaction.Enemy;
+            m_attackController.AttackSprite = m_animatedSprite;
+            m_attackController.ActionFrame = 5; // Arrow release frame
+
             m_attackController.AttackStarted += OnAttackStarted;
+            m_attackController.AttackActionTriggered += ShootProjectile;
         }
         else
         {
             GD.PushWarning($"{Name}: AttackController not found.");
-        }
-
-        if (m_animatedSprite != null)
-        {
-            m_animatedSprite.FrameChanged += OnFrameChanged;
-            m_animatedSprite.AnimationFinished += OnAnimationFinished;
         }
     }
 
@@ -58,36 +55,10 @@ public abstract partial class RangedEnemyBase : EnemyBase
 
     protected virtual void OnAttackStarted()
     {
-        m_hasShotThisAttack = false;
         if (m_animatedSprite != null)
         {
             m_animatedSprite.Play("Attack");
             m_animatedSprite.Frame = 0;
-        }
-    }
-
-    private void OnFrameChanged()
-    {
-        if (m_animatedSprite == null || m_attackController == null) return;
-
-        if (m_animatedSprite.Animation == "Attack" && m_attackController.IsAttacking)
-        {
-            // Arrow release frame is usually around 5 or 6 for Archer (8 frames total)
-            if (m_animatedSprite.Frame >= 5 && !m_hasShotThisAttack)
-            {
-                ShootProjectile();
-                m_hasShotThisAttack = true;
-            }
-        }
-    }
-
-    private void OnAnimationFinished()
-    {
-        if (m_animatedSprite == null || m_attackController == null) return;
-
-        if (m_animatedSprite.Animation == "Attack")
-        {
-            m_attackController.CancelAttack();
         }
     }
 
