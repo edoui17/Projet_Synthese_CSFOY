@@ -7,7 +7,12 @@
 [ext_resource type="Texture2D" uid="uid://cff20mi4vyhg2" path="res://Assets/TinySwords/Sprites/Pawn/Blue/Pawn_Run Axe.png" id="5_t26db"]
 [ext_resource type="PackedScene" uid="uid://biqhbrp7fjfyj" path="res://Nodes/StatsManager/StatsManager.tscn" id="7_stat"]
 [ext_resource type="PackedScene" path="res://Nodes/Movement/MovementController.tscn" id="9_mov"]
+<<<<<<< HEAD
 [ext_resource type="Script" uid="uid://bhrvrxhl1h86p" path="res://Nodes/Combat/AttackController.cs" id="attack_controller_script"]
+=======
+[ext_resource type="Script" path="res://Nodes/Combat/AttackController.cs" id="attack_controller_script"]
+[ext_resource type="SpriteFrames" uid="uid://dd8xwmbmwbofx" path="res://Scenes/Player/PlayerFrames.tres" id="8_frames"]
+>>>>>>> 1b7383c5bb81f84222b8b8a6ffa33c810b45f268
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_h54ih"]
 radius = 20.0
@@ -286,14 +291,17 @@ height = 90.01888
 [sub_resource type="CircleShape2D" id="CircleShape2D_jmcll"]
 radius = 39.217342
 
+<<<<<<< HEAD
 [node name="Player" type="CharacterBody2D" unique_id=661327324 node_paths=PackedStringArray("Stats", "m_animationPlayer", "m_sprite", "m_interactionLabel", "m_debugLabel", "m_levelLabel", "m_xpGainLabel", "m_dashLabel", "m_interactionArea", "m_weaponAreaRight", "m_weaponAreaLeft") groups=["Player"]]
+=======
+[node name="Player" type="CharacterBody2D" unique_id=661327324 node_paths=PackedStringArray("Stats", "m_animatedSprite", "m_interactionLabel", "m_debugLabel", "m_levelLabel", "m_xpGainLabel", "m_interactionArea", "m_weaponAreaRight", "m_weaponAreaLeft") groups=["Player"]]
+>>>>>>> 1b7383c5bb81f84222b8b8a6ffa33c810b45f268
 collision_layer = 4
 collision_mask = 17
 motion_mode = 1
 script = ExtResource("1_s0eop")
 Stats = NodePath("StatManager")
-m_animationPlayer = NodePath("AnimationPlayer")
-m_sprite = NodePath("Sprite2D")
+m_animatedSprite = NodePath("AnimatedSprite2D")
 m_interactionLabel = NodePath("CanvasLayer/InteractionLabel")
 m_debugLabel = NodePath("DebugLabel")
 m_levelLabel = NodePath("LevelLabel")
@@ -303,18 +311,14 @@ m_interactionArea = NodePath("PlayerInteraction")
 m_weaponAreaRight = NodePath("WeaponAttackRight")
 m_weaponAreaLeft = NodePath("WeaponAttackLeft")
 
-[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1359797056]
-texture = ExtResource("2_ft8w5")
-hframes = 8
-frame = 1
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1359797056]
+sprite_frames = ExtResource("8_frames")
+animation = &"IDLE"
+autoplay = "IDLE"
 
 [node name="PlayerHitBox" type="CollisionShape2D" parent="." unique_id=86017915]
 position = Vector2(0, 4)
 shape = SubResource("CapsuleShape2D_h54ih")
-
-[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=933873674]
-libraries/ = SubResource("AnimationLibrary_4wape")
-autoplay = &"IDLE"
 
 [node name="WeaponAttackRight" type="Area2D" parent="." unique_id=395568969]
 collision_layer = 8
