@@ -59,6 +59,14 @@ public abstract partial class EnemyBase : CharacterBody2D, INpc, IEnemy, IDamage
         {
             GD.PrintErr($"{Name} node requires an AnimatedSprite2D child node.");
         }
+        else
+        {
+            var attackController = GetNodeOrNull<IslandSurvivor.Nodes.Combat.AttackController>("AttackController");
+            if (attackController != null && attackController.AttackSprite == null)
+            {
+                attackController.AttackSprite = m_animatedSprite;
+            }
+        }
 
         m_detectionArea = GetNodeOrNull<Area2D>("DetectionArea");
         if (m_detectionArea == null)
@@ -220,7 +228,11 @@ public abstract partial class EnemyBase : CharacterBody2D, INpc, IEnemy, IDamage
 
         if (isAttacking)
         {
-            m_animatedSprite.Play("Attack");
+            if (m_animatedSprite.Animation != "Attack")
+            {
+                m_animatedSprite.Play("Attack");
+                m_animatedSprite.Frame = 0;
+            }
             return;
         }
 

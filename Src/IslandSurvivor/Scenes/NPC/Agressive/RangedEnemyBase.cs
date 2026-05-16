@@ -18,7 +18,11 @@ public abstract partial class RangedEnemyBase : EnemyBase
         {
             m_attackController.Stats = Stats;
             m_attackController.Faction = IslandSurvivor.Enums.EntityFaction.Enemy;
-            m_attackController.AttackStarted += ShootProjectile;
+            m_attackController.AttackSprite = m_animatedSprite;
+            m_attackController.ActionFrame = 5; // Arrow release frame
+
+            m_attackController.AttackStarted += OnAttackStarted;
+            m_attackController.AttackActionTriggered += ShootProjectile;
         }
         else
         {
@@ -46,6 +50,15 @@ public abstract partial class RangedEnemyBase : EnemyBase
                     m_attackController.TryAttack(direction);
                 }
             }
+        }
+    }
+
+    protected virtual void OnAttackStarted()
+    {
+        if (m_animatedSprite != null)
+        {
+            m_animatedSprite.Play("Attack");
+            m_animatedSprite.Frame = 0;
         }
     }
 
