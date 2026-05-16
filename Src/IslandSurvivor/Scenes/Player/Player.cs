@@ -39,6 +39,8 @@ public partial class Player : CharacterBody2D, IDamageable
     private readonly IInteractionService m_interactionService = new InteractionService();
     private MovementController? m_movementController;
 
+    private bool m_isAttackButtonDown = false;
+
     public override void _ExitTree()
     {
         base._ExitTree();
@@ -159,13 +161,7 @@ public partial class Player : CharacterBody2D, IDamageable
         // Prevent attack if clicking on UI by checking if any control has focus or mouse is captured by UI.
         // Actually, the simplest check in Godot 4 for this is `GetViewport().GuiGetFocusOwner() != null`
         // or just checking `Input.IsActionPressed` and skipping if UI is hovered.
-        // Let's use `Input.IsActionPressed` but check `!GetViewport().GuiIsDragging()` ? No, the review suggested:
-        // "keep using Input.IsActionPressed("attack") in _PhysicsProcess, but add a guard clause checking if the UI currently has focus or is capturing the mouse"
-
-        bool isUiFocused = GetViewport().GuiGetFocusOwner() != null;
-
-        // Unset m_isAttackButtonDown (actually we don't need it at all now)
-        if (!isUiFocused && Input.IsActionPressed("attack") && m_attackController != null && m_attackController.CanAttack)
+        if (m_isAttackButtonDown && m_attackController != null && m_attackController.CanAttack)
         {
             ExecuteAttack();
         }
@@ -176,8 +172,17 @@ public partial class Player : CharacterBody2D, IDamageable
         UpdateAnimation();
     }
 
-public override void _Input(InputEvent p_event)
+    public override void _UnhandledInput(InputEvent p_event)
     {
+        if (p_event.IsActionPressed("attack"))
+        {
+            m_isAttackButtonDown = true;
+        }
+        else if (p_event.IsActionReleased("attack"))
+        {
+            m_isAttackButtonDown = false;
+        }
+
         if (m_currentState == PlayerState.Interacting || m_currentState == PlayerState.Attacking || m_currentState == PlayerState.Dashing) return;
 
         if (p_event.IsActionPressed("interact") && m_bestTarget != null)

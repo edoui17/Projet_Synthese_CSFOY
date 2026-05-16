@@ -85,7 +85,7 @@ public partial class AttackController : Node
     {
         if (AttackSprite == null || !IsAttacking) return;
 
-        if (AttackSprite.Animation == "Attack" && AttackSprite.Frame >= ActionFrame && !m_hasTriggeredAction)
+        if (AttackSprite.Animation.ToString().Equals("Attack", System.StringComparison.OrdinalIgnoreCase) && AttackSprite.Frame >= ActionFrame && !m_hasTriggeredAction)
         {
             ExecuteAttackHit();
             EmitSignal(SignalName.AttackActionTriggered);
@@ -97,7 +97,7 @@ public partial class AttackController : Node
     {
         if (AttackSprite == null || !IsAttacking) return;
 
-        if (AttackSprite.Animation == "Attack")
+        if (AttackSprite.Animation.ToString().Equals("Attack", System.StringComparison.OrdinalIgnoreCase))
         {
             CancelAttack();
         }
