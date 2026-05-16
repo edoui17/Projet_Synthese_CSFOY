@@ -351,8 +351,6 @@ Stats = NodePath("../StatManager")
 [node name="StatManager" parent="." unique_id=772458511 instance=ExtResource("7_stat")]
 m_isGlobal = true
 EntityType = 0
-BaseDamage = 10.0
-BaseSpeed = 400.0
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=238914161]
 
