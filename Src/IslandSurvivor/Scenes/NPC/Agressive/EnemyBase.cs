@@ -220,7 +220,11 @@ public abstract partial class EnemyBase : CharacterBody2D, INpc, IEnemy, IDamage
 
         if (isAttacking)
         {
-            m_animatedSprite.Play("Attack");
+            if (m_animatedSprite.Animation != "Attack")
+            {
+                m_animatedSprite.Play("Attack");
+                m_animatedSprite.Frame = 0;
+            }
             return;
         }
 

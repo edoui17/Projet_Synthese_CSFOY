@@ -108,13 +108,19 @@ public partial class AttackController : Node
         m_cooldownTimer = Mathf.Max(cooldown, duration);
 
         m_currentActiveArea = area;
+
+        EmitSignal(SignalName.AttackStarted);
+        return true;
+    }
+
+    public void ExecuteAttackHit()
+    {
+        if (!IsAttacking) return;
+
         if (m_currentActiveArea != null)
         {
             m_currentActiveArea.Monitoring = true;
         }
-
-        EmitSignal(SignalName.AttackStarted);
-        return true;
     }
 
     public void CancelAttack()
