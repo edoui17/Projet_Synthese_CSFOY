@@ -162,7 +162,9 @@ public abstract partial class EnemyBase : CharacterBody2D, INpc, IEnemy, IDamage
         Vector2 direction = new Vector2(m_agressorController.CurrentDirection.X, m_agressorController.CurrentDirection.Y);
         float targetSpeed = IdleSpeed;
 
-        if (m_agressorController.CurrentState == NpcStates.ATTACK)
+        var attackController = GetNodeOrNull<IslandSurvivor.Nodes.Combat.AttackController>("AttackController");
+
+        if (attackController != null && attackController.IsAttacking)
         {
             // Do not move while attacking
             targetSpeed = 0f;
@@ -178,7 +180,7 @@ public abstract partial class EnemyBase : CharacterBody2D, INpc, IEnemy, IDamage
             }
             else
             {
-                targetSpeed = m_agressorController.IsOnCooldown ? ChaseSpeed * 0.5f : ChaseSpeed;
+                targetSpeed = ChaseSpeed;
                 System.Numerics.Vector2 globalPositionNumerics = new System.Numerics.Vector2(GlobalPosition.X, GlobalPosition.Y);
                 System.Numerics.Vector2 targetPositionNumerics = new System.Numerics.Vector2(m_targetPlayer.GlobalPosition.X, m_targetPlayer.GlobalPosition.Y);
                 m_agressorController.UpdateChaseDirection(globalPositionNumerics, targetPositionNumerics);

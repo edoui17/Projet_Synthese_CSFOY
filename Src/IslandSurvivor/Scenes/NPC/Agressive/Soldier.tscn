@@ -6,6 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://cy36cydp3xyku" path="res://Assets/TinySwords/Sprites/Warrior/Black/Warrior_Run.png" id="4_ftayq"]
 [ext_resource type="PackedScene" path="res://Nodes/Movement/MovementController.tscn" id="5_hx8j2"]
 [ext_resource type="PackedScene" uid="uid://biqhbrp7fjfyj" path="res://Nodes/StatsManager/StatsManager.tscn" id="6_hx8j2"]
+[ext_resource type="Script" path="res://Nodes/Combat/AttackController.cs" id="attack_controller_script"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_8hhla"]
 atlas = ExtResource("2_ftayq")
@@ -221,3 +222,8 @@ collision_mask = 4
 position = Vector2(30.000004, 6)
 rotation = 1.5352188
 shape = SubResource("CapsuleShape2D_e1oyk")
+
+[node name="AttackController" type="Node" parent="." unique_id=56712398]
+script = ExtResource("attack_controller_script")
+BaseAttackCooldown = 2.0
+BaseAttackDuration = 0.8

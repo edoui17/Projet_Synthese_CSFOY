@@ -10,24 +10,28 @@ public abstract partial class MeleeEnemyBase : EnemyBase
 {
     protected Area2D m_hitboxAreaRight;
     protected Area2D m_hitboxAreaLeft;
-    protected HashSet<IDamageable> m_playersInHitbox = new();
+    protected IslandSurvivor.Nodes.Combat.AttackController? m_attackController;
 
     public override void _Ready()
     {
         base._Ready();
 
         m_hitboxAreaRight = GetNodeOrNull<Area2D>("HitboxAreaRight");
-        if (m_hitboxAreaRight != null)
-        {
-            m_hitboxAreaRight.BodyEntered += OnHitboxAreaBodyEntered;
-            m_hitboxAreaRight.BodyExited += OnHitboxAreaBodyExited;
-        }
-
         m_hitboxAreaLeft = GetNodeOrNull<Area2D>("HitboxAreaLeft");
-        if (m_hitboxAreaLeft != null)
+
+        m_attackController = GetNodeOrNull<IslandSurvivor.Nodes.Combat.AttackController>("AttackController");
+        if (m_attackController != null)
         {
-            m_hitboxAreaLeft.BodyEntered += OnHitboxAreaBodyEntered;
-            m_hitboxAreaLeft.BodyExited += OnHitboxAreaBodyExited;
+            m_attackController.Stats = Stats;
+            m_attackController.Faction = IslandSurvivor.Enums.EntityFaction.Enemy;
+            if (m_hitboxAreaRight != null) m_attackController.RegisterArea("Right", m_hitboxAreaRight);
+            if (m_hitboxAreaLeft != null) m_attackController.RegisterArea("Left", m_hitboxAreaLeft);
+
+            m_attackController.AttackStarted += OnAttackStarted;
+        }
+        else
+        {
+            GD.PushWarning($"{Name}: AttackController not found.");
         }
     }
 
@@ -35,53 +39,26 @@ public abstract partial class MeleeEnemyBase : EnemyBase
     {
         if (m_agressorController.CurrentState == NpcStates.DEAD) return;
 
-        UpdateHitboxDirection();
         base._PhysicsProcess(p_delta);
     }
 
-    protected virtual void UpdateHitboxDirection()
+    protected override void HandleAttackState()
     {
-        if (m_animatedSprite != null)
+        if (m_attackController != null && m_attackController.CanAttack && m_targetPlayer != null)
         {
-            if (m_hitboxAreaRight != null) m_hitboxAreaRight.Monitoring = !m_animatedSprite.FlipH;
-            if (m_hitboxAreaLeft != null) m_hitboxAreaLeft.Monitoring = m_animatedSprite.FlipH;
-        }
-    }
+            float distanceToPlayer = GlobalPosition.DistanceTo(m_targetPlayer.GlobalPosition);
 
-    protected override async void HandleAttackState()
-    {
-        if (m_playersInHitbox.Count > 0 && m_agressorController is IAgressorController controller && controller.CanAttack())
-        {
-            controller.StartAttack();
-
-            // Wind-up delay
-            await ToSignal(GetTree().CreateTimer(0.4f), SceneTreeTimer.SignalName.Timeout);
-            if (m_agressorController.CurrentState == NpcStates.DEAD) return;
-
-            int damageAmount = (int)(Stats?.BaseAttackValue ?? 5);
-            var playersToDamage = new List<IDamageable>(m_playersInHitbox);
-            foreach (var player in playersToDamage)
+            // Assume melee range is around 50 units
+            if (distanceToPlayer <= 50f)
             {
-                player.TakeDamage(damageAmount, this);
+                string direction = (m_animatedSprite != null && m_animatedSprite.FlipH) ? "Left" : "Right";
+                m_attackController.TryAttack(direction);
             }
         }
     }
 
-    protected virtual void OnHitboxAreaBodyEntered(Node2D p_body)
+    protected virtual void OnAttackStarted()
     {
-        if (CurrentState == NpcStates.DEAD) return;
-
-        if (p_body.IsInGroup("Player") && p_body is IDamageable playerDamageable)
-        {
-            m_playersInHitbox.Add(playerDamageable);
-        }
-    }
-
-    protected virtual void OnHitboxAreaBodyExited(Node2D p_body)
-    {
-        if (p_body.IsInGroup("Player") && p_body is IDamageable playerDamageable)
-        {
-            m_playersInHitbox.Remove(playerDamageable);
-        }
+        // Custom logic for when attack starts, such as playing animation or sound.
     }
 }
