@@ -16,6 +16,7 @@ public partial class Arrow : Area2D, IProjectile
 
     private Godot.Vector2 m_velocity;
     private object m_shooter;
+    private IslandSurvivor.Enums.EntityFaction m_faction = IslandSurvivor.Enums.EntityFaction.None;
     private bool m_isFired = false;
 
     // Automatically delete after a certain distance or time
@@ -36,6 +37,24 @@ public partial class Arrow : Area2D, IProjectile
         Speed = DefaultSpeed;
         Damage = p_damage;
         m_shooter = p_shooter;
+
+        // Determine faction based on shooter
+        if (m_shooter is Node shooterNode)
+        {
+            var controller = shooterNode.GetNodeOrNull<IslandSurvivor.Nodes.Combat.AttackController>("AttackController");
+            if (controller != null)
+            {
+                m_faction = controller.Faction;
+            }
+            else if (shooterNode.IsInGroup("Player"))
+            {
+                m_faction = IslandSurvivor.Enums.EntityFaction.Player;
+            }
+            else if (shooterNode.IsInGroup("EnnemiesNPC"))
+            {
+                m_faction = IslandSurvivor.Enums.EntityFaction.Enemy;
+            }
+        }
 
         // Set rotation to face the direction
         Rotation = directionGodot.Angle();
@@ -65,24 +84,47 @@ public partial class Arrow : Area2D, IProjectile
         // Don't hit the shooter
         if (p_body == m_shooter as Node2D) return;
 
+        bool isSolid = !(p_body is Area2D);
+
+        bool shouldDamage = false;
+
         if (p_body is IDamageable damageable)
         {
-            // If the shooter is an enemy, only hit players
-            if (m_shooter is Node2D shooterNode && shooterNode.IsInGroup("EnnemiesNPC") && !p_body.IsInGroup("Player"))
+            if (m_faction == IslandSurvivor.Enums.EntityFaction.Player)
             {
-                return;
+                shouldDamage = true;
+            }
+            else if (m_faction == IslandSurvivor.Enums.EntityFaction.Enemy)
+            {
+                if (p_body.IsInGroup("Player"))
+                {
+                    shouldDamage = true;
+                }
             }
 
-            // If the shooter is player, only hit enemies
-            if (m_shooter is Node2D sNode && sNode.IsInGroup("Player") && !p_body.IsInGroup("EnnemiesNPC"))
+            if (shouldDamage)
             {
-                return;
-            }
+                // Check if target is dashing and interrupt
+                if (p_body is CharacterBody2D charBody)
+                {
+                    var movementController = charBody.GetNodeOrNull<IslandSurvivor.Nodes.Movement.MovementController>("MovementController");
+                    if (movementController != null && movementController.IsDashing)
+                    {
+                        movementController.CancelDash();
+                        movementController.ApplyStun(0.5f); // Half a second stun
+                    }
+                }
 
-            damageable.TakeDamage((int)Damage, m_shooter);
-            QueueFree();
+                damageable.TakeDamage((int)Damage, m_shooter);
+                QueueFree();
+            }
+            else if (isSolid)
+            {
+                // Hit a solid object we don't damage
+                QueueFree();
+            }
         }
-        else if (!(p_body is Area2D))
+        else if (isSolid)
         {
             QueueFree();
         }
