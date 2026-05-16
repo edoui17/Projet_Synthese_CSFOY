@@ -12,7 +12,6 @@ using System;
 public partial class ConiferTree : Area2D, ITree, IDamageable
 {
   [Export] public StatManager Stats { get; set; } = null!;
-  [Export] public ScoreManager Scorer { get; set; } = null!;
   [Export] public string EntityId { get; set; } = "wood_01";
   [Export] public Timer Timer { get; set; } = null!;
 

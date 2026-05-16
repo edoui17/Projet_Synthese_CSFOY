@@ -7,7 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://cff20mi4vyhg2" path="res://Assets/TinySwords/Sprites/Pawn/Blue/Pawn_Run Axe.png" id="5_t26db"]
 [ext_resource type="PackedScene" uid="uid://biqhbrp7fjfyj" path="res://Nodes/StatsManager/StatsManager.tscn" id="7_stat"]
 [ext_resource type="PackedScene" path="res://Nodes/Movement/MovementController.tscn" id="9_mov"]
-[ext_resource type="Script" path="res://Nodes/Combat/AttackController.cs" id="attack_controller_script"]
+[ext_resource type="Script" uid="uid://bhrvrxhl1h86p" path="res://Nodes/Combat/AttackController.cs" id="attack_controller_script"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_h54ih"]
 radius = 20.0
@@ -350,6 +350,11 @@ shape = SubResource("CircleShape2D_jmcll")
 [node name="MovementController" parent="." unique_id=779695224 node_paths=PackedStringArray("Stats") instance=ExtResource("9_mov")]
 Stats = NodePath("../StatManager")
 
+[node name="AttackController" type="Node" parent="." unique_id=987654322 node_paths=PackedStringArray("Stats")]
+script = ExtResource("attack_controller_script")
+Stats = NodePath("../StatManager")
+Faction = 1
+
 [node name="StatManager" parent="." unique_id=772458511 instance=ExtResource("7_stat")]
 m_isGlobal = true
 EntityType = 0
@@ -402,6 +407,3 @@ offset_bottom = 112.0
 text = "Dash: Prêt"
 horizontal_alignment = 1
 vertical_alignment = 1
-
-[node name="AttackController" type="Node" parent="." unique_id=987654322]
-script = ExtResource("attack_controller_script")
