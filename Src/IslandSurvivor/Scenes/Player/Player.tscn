@@ -54,7 +54,6 @@ collision_mask = 16
 position = Vector2(45, 14)
 rotation = 1.5720258
 shape = SubResource("CapsuleShape2D_i5acl")
-disabled = true
 
 [node name="WeaponAttackLeft" type="Area2D" parent="." unique_id=974881817]
 collision_layer = 8
@@ -64,7 +63,6 @@ collision_mask = 16
 position = Vector2(-46.000015, 13.000002)
 rotation = 1.5771921
 shape = SubResource("CapsuleShape2D_fk5o5")
-disabled = true
 
 [node name="PlayerInteraction" type="Area2D" parent="." unique_id=46643777]
 light_mask = 2
