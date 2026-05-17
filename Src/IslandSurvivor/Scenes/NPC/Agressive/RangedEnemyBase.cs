@@ -46,6 +46,10 @@ public abstract partial class RangedEnemyBase : EnemyBase
             {
                 if (CheckLineOfSight())
                 {
+                    if (m_animatedSprite != null)
+                    {
+                        m_animatedSprite.FlipH = m_targetPlayer.GlobalPosition.X < GlobalPosition.X;
+                    }
                     string direction = (m_animatedSprite != null && m_animatedSprite.FlipH) ? "Left" : "Right";
                     m_attackController.TryAttack(direction);
                 }
@@ -57,6 +61,10 @@ public abstract partial class RangedEnemyBase : EnemyBase
     {
         if (m_animatedSprite != null)
         {
+            if (m_targetPlayer != null)
+            {
+                m_animatedSprite.FlipH = m_targetPlayer.GlobalPosition.X < GlobalPosition.X;
+            }
             m_animatedSprite.Play("Attack");
             m_animatedSprite.Frame = 0;
         }
