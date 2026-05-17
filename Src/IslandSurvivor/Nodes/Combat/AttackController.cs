@@ -29,7 +29,6 @@ public partial class AttackController : Node
     [Export] public float BaseAttackCooldown { get; set; } = 1.0f;
 
     private AnimatedSprite2D? m_attackSprite;
-    [Export]
     public AnimatedSprite2D? AttackSprite
     {
         get => m_attackSprite;
