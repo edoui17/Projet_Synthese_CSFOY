@@ -57,28 +57,8 @@ public partial class ConiferTree : Area2D, ITree, IDamageable
   public void DestroyResource(object? p_attacker = null)
   {
     Random random = new();
-    int quantity = random.Next(1, 5);
-
-    float luck = 0f;
-    if (p_attacker is Node GodotAttacker)
-    {
-        StatManager attackerStats = GodotAttacker.GetNodeOrNull<StatManager>("StatManager");
-        if (attackerStats != null)
-        {
-            luck = attackerStats.GetCurrentValue(StatType.Luck);
-        }
-    }
-
-    float bonusChance = luck * 0.05f;
-    int bonusQuantity = (int)bonusChance;
-    float fractionalChance = bonusChance - bonusQuantity;
-
-    if (random.NextDouble() < fractionalChance)
-    {
-        bonusQuantity++;
-    }
-
-    quantity += bonusQuantity;
+    int baseQuantity = random.Next(1, 5);
+    int quantity = IslandSurvivor.Logic.ResourceUtils.CalculateYield(baseQuantity, p_attacker);
 
     var item = new Core.Domain.ResourceItem(EntityId, MaterialName, MaterialType, IconPath);
     SignalManager.Instance.EmitMaterialDestroyed(this, item, quantity);
