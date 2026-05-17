@@ -18,6 +18,8 @@ public class ProgressionService : IProgressionService
 
     public bool CheckAndUpdateHighScore(Player p_player, int p_sessionScore)
     {
+        if (p_player == null) return false;
+
         if (p_sessionScore > p_player.HighScore)
         {
             p_player.HighScore = p_sessionScore;
