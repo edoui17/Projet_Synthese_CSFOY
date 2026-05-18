@@ -20,7 +20,7 @@ public partial class Gold : Area2D, IOre, IDamageable
     [Export] public string MaterialType { get; set; } = "Gold";
     [Export] public string IconPath { get; set; } = "sera a valider";
 
-    
+
 
     private object? m_lastAttacker;
 
@@ -53,7 +53,7 @@ public partial class Gold : Area2D, IOre, IDamageable
             if (Timer == null || Timer.IsStopped())
             {
                 Timer?.Start();
-               TakeDamage(10, p_area.GetParent() ?? p_area); // Example damage value, adjust as needed
+                TakeDamage(10, p_area.GetParent() ?? p_area); // Example damage value, adjust as needed
             }
         }
     }
@@ -103,7 +103,7 @@ public partial class Gold : Area2D, IOre, IDamageable
         if (Stats == null) return;
 
         m_lastAttacker = p_attacker;
-        Stats.ModifyCurrentValue(StatType.Health, - p_amount);
+        Stats.ModifyCurrentValue(StatType.Health, -p_amount);
 
         this.PlayHitFlash();
         this.PlayShake();

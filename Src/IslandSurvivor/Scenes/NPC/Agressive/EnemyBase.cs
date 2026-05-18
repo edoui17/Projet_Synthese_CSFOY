@@ -30,6 +30,7 @@ public abstract partial class EnemyBase : CharacterBody2D, INpc, IEnemy, IDamage
     protected IAgressorController m_agressorController;
     protected MovementController m_movementController;
 
+    protected IslandSurvivor.Nodes.Combat.AttackController? m_attackController;
     protected AnimatedSprite2D m_animatedSprite;
     protected Area2D m_detectionArea;
     protected RayCast2D m_lineOfSightRay;
@@ -55,16 +56,16 @@ public abstract partial class EnemyBase : CharacterBody2D, INpc, IEnemy, IDamage
         InitializeController();
 
         m_animatedSprite = GetNodeOrNull<AnimatedSprite2D>("AnimatedSprite2D");
+        m_attackController = GetNodeOrNull<IslandSurvivor.Nodes.Combat.AttackController>("AttackController");
         if (m_animatedSprite == null)
         {
             GD.PrintErr($"{Name} node requires an AnimatedSprite2D child node.");
         }
         else
         {
-            var attackController = GetNodeOrNull<IslandSurvivor.Nodes.Combat.AttackController>("AttackController");
-            if (attackController != null && attackController.AttackSprite == null)
+            if (m_attackController != null && m_attackController.AttackSprite == null)
             {
-                attackController.AttackSprite = m_animatedSprite;
+                m_attackController.AttackSprite = m_animatedSprite;
             }
         }
 
@@ -170,9 +171,8 @@ public abstract partial class EnemyBase : CharacterBody2D, INpc, IEnemy, IDamage
         Vector2 direction = new Vector2(m_agressorController.CurrentDirection.X, m_agressorController.CurrentDirection.Y);
         float targetSpeed = IdleSpeed;
 
-        var attackController = GetNodeOrNull<IslandSurvivor.Nodes.Combat.AttackController>("AttackController");
 
-        if (attackController != null && attackController.IsAttacking)
+        if (m_attackController != null && m_attackController.IsAttacking)
         {
             // Do not move while attacking
             targetSpeed = 0f;
@@ -223,8 +223,7 @@ public abstract partial class EnemyBase : CharacterBody2D, INpc, IEnemy, IDamage
     {
         if (m_animatedSprite == null) return;
 
-        var attackController = GetNodeOrNull<IslandSurvivor.Nodes.Combat.AttackController>("AttackController");
-        bool isAttacking = attackController != null && attackController.IsAttacking;
+        bool isAttacking = m_attackController != null && m_attackController.IsAttacking;
 
         if (isAttacking)
         {

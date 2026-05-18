@@ -28,7 +28,7 @@ public class ExceptionHandlingMiddleware
         }
         catch (InvalidOperationException p_ex) when (p_ex.Message.Contains("database", StringComparison.OrdinalIgnoreCase))
         {
-             await HandleDatabaseExceptionAsync(p_context, p_ex);
+            await HandleDatabaseExceptionAsync(p_context, p_ex);
         }
     }
 
