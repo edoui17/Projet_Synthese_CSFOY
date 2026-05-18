@@ -64,7 +64,7 @@ public partial class AttackController : Node
     public bool IsAttacking { get; private set; } = false;
     public bool CanAttack => !IsAttacking && m_cooldownTimer <= 0f;
 
-    private Godot.Collections.Dictionary<string, Area2D> m_directionAreas = new();
+    private System.Collections.Generic.Dictionary<string, Area2D> m_directionAreas = new();
     private HashSet<object> m_hitTargetsThisAttack = new();
     private Area2D? m_currentActiveArea;
     private Node? m_owner;

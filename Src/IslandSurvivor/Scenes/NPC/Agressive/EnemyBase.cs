@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using Godot;
 using IslandSurvivor.Extensions;
-using Core.Interfaces.Entities;
+using IslandSurvivor.Logic.Entities;
 using Core.Interfaces.Stats;
 using Core.Managers.Stats;
 using IslandSurvivor.Logic.Entities;
@@ -189,8 +189,8 @@ public abstract partial class EnemyBase : CharacterBody2D, INpc, IEnemy, IDamage
             else
             {
                 targetSpeed = ChaseSpeed;
-                System.Numerics.Vector2 globalPositionNumerics = new System.Numerics.Vector2(GlobalPosition.X, GlobalPosition.Y);
-                System.Numerics.Vector2 targetPositionNumerics = new System.Numerics.Vector2(m_targetPlayer.GlobalPosition.X, m_targetPlayer.GlobalPosition.Y);
+                Vector2 globalPositionNumerics = GlobalPosition;
+                Vector2 targetPositionNumerics = m_targetPlayer.GlobalPosition;
                 m_agressorController.UpdateChaseDirection(globalPositionNumerics, targetPositionNumerics);
                 direction = new Vector2(m_agressorController.CurrentDirection.X, m_agressorController.CurrentDirection.Y);
             }

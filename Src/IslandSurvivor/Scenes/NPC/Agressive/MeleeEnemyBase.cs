@@ -2,9 +2,8 @@ namespace IslandSurvivor.Scenes.NPC.Agressive;
 
 using System.Collections.Generic;
 using Godot;
-using Core.Interfaces.Entities;
-using Core.Interfaces.Stats;
 using IslandSurvivor.Logic.Entities;
+using Core.Interfaces.Stats;
 
 public abstract partial class MeleeEnemyBase : EnemyBase
 {
