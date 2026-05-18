@@ -7,13 +7,11 @@ using IslandSurvivor.Logic.Entities;
 public abstract partial class RangedEnemyBase : EnemyBase
 {
     [Export] public PackedScene ProjectileScene { get; set; }
-    protected IslandSurvivor.Nodes.Combat.AttackController? m_attackController;
 
     public override void _Ready()
     {
         base._Ready();
 
-        m_attackController = GetNodeOrNull<IslandSurvivor.Nodes.Combat.AttackController>("AttackController");
         if (m_attackController != null)
         {
             m_attackController.Stats = Stats;
