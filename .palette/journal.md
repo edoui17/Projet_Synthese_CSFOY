@@ -1,0 +1,3 @@
+## 2024-05-20 - [Explicit Focus for Gamepad Accessibility on Main Menus]
+**Learning:** Godot Control nodes do not automatically grant focus to UI elements on scene load. This leaves gamepad users stranded on Main Menus until they explicitly click with a mouse. The Quit button signal was also misaligned between the .cs code and .tscn file (`_on_quit_game_btn_pressed` vs `_on_quitgame_btn_pressed`).
+**Action:** Always map focus neighbors (`FocusNeighborTop` / `Bottom`) to create a wrap-around effect, explicitly call `GrabFocus()` on the default button during `_Ready()`, and use `MouseEntered += () => btn.GrabFocus();` so mouse movement syncs gracefully with gamepad focus selection. Ensure method signatures match the signal connections defined in `.tscn` files.
