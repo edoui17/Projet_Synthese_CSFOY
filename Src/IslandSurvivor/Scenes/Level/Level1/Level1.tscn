@@ -11,8 +11,8 @@
 [ext_resource type="Script" uid="uid://b2pgcq5bf17ym" path="res://Nodes/Zones/EnemySpawnZone.cs" id="9_35vrn"]
 [ext_resource type="PackedScene" uid="uid://mqagd60eodos" path="res://Scenes/NPC/Passive/Sheep/Sheep.tscn" id="9_k34qd"]
 [ext_resource type="Script" uid="uid://cbbphk4jiuhm5" path="res://Nodes/Zones/EnemySpawnConfig.cs" id="10_wyksf"]
-[ext_resource type="Resource" uid="uid://d1e2f3g4h5i6j" path="res://Scenes/NPC/Agressive/Normal/Soldier/SoldierConfig.tres" id="11_pylbn"]
-[ext_resource type="Resource" uid="uid://dbscgytmkqyn7" path="res://Scenes/NPC/Agressive/Normal/Archer/ArcherConfig.tres" id="12_wyksf"]
+[ext_resource type="Resource" uid="uid://d1e2f3g4h5i6j" path="res://Scenes/NPC/Aggressive/Normal/Soldier/SoldierConfig.tres" id="11_pylbn"]
+[ext_resource type="Resource" uid="uid://dbscgytmkqyn7" path="res://Scenes/NPC/Aggressive/Normal/Archer/ArcherConfig.tres" id="12_wyksf"]
 
 
 

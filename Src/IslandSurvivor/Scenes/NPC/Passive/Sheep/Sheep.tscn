@@ -1,34 +1,25 @@
 [gd_scene format=3 uid="uid://mqagd60eodos"]
 
-[ext_resource type="Script" uid="uid://fvn22w5rptq7" path="res://Scenes/NPC/Passive/Sheep/Sheep.cs" id="1_d7b5k"]
-[ext_resource type="SpriteFrames" uid="uid://ondukel2hk2a" path="res://Scenes/NPC/Passive/Sheep/SheepFrames.tres" id="2_frames"]
-[ext_resource type="PackedScene" uid="uid://biqhbrp7fjfyj" path="res://Nodes/StatsManager/StatsManager.tscn" id="4_cdkpw"]
-[ext_resource type="PackedScene" path="res://Nodes/Movement/MovementController.tscn" id="6_mov"]
+[ext_resource type="PackedScene" uid="uid://passivenpcbase123" path="res://Scenes/NPC/Passive/PassiveNpcBase.tscn" id="1_scene"]
+[ext_resource type="Script" uid="uid://fvn22w5rptq7" path="res://Scenes/NPC/Passive/Sheep/Sheep.cs" id="2_script"]
+[ext_resource type="SpriteFrames" uid="uid://ondukel2hk2a" path="res://Scenes/NPC/Passive/Sheep/SheepFrames.tres" id="3_frames"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ifvjj"]
 size = Vector2(43, 33)
 
-[node name="Sheep" type="CharacterBody2D" unique_id=317789339 node_paths=PackedStringArray("Stats", "m_movementController", "m_sprite")]
+[node name="Sheep" instance=ExtResource("1_scene")]
 collision_layer = 20
-collision_mask = 9
-motion_mode = 1
-script = ExtResource("1_d7b5k")
-Stats = NodePath("StatManager")
-m_movementController = NodePath("MovementController")
-m_sprite = NodePath("AnimatedSprite2D")
+script = ExtResource("2_script")
 
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1421437182]
-sprite_frames = ExtResource("2_frames")
+[node name="AnimatedSprite2D" parent="." index="0"]
+sprite_frames = ExtResource("3_frames")
 animation = &"IDLE"
 autoplay = "IDLE"
 
-[node name="StatManager" parent="." unique_id=1475410971 instance=ExtResource("4_cdkpw")]
-MaxHealth = 30.0
-
-[node name="MovementController" parent="." unique_id=473945652 node_paths=PackedStringArray("Stats") instance=ExtResource("6_mov")]
-Stats = NodePath("../StatManager")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=2005726366]
+[node name="CollisionShape2D" parent="." index="1"]
 light_mask = 5
 position = Vector2(0.5, 0.5)
 shape = SubResource("RectangleShape2D_ifvjj")
+
+[node name="StatManager" parent="." index="2"]
+MaxHealth = 30.0

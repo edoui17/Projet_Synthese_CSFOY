@@ -1,9 +1,9 @@
-namespace IslandSurvivor.Scenes.NPC.Agressive;
+namespace IslandSurvivor.Scenes.NPC.Aggressive;
 
 using Godot;
 using IslandSurvivor.Logic.Entities;
 
-public partial class BossBase : EnemyBase
+public partial class BossBase : AggressiveNpcBase
 {
     [Export] public PackedScene ProjectileScene { get; set; }
 

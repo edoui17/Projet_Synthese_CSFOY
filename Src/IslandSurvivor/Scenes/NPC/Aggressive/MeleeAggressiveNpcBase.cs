@@ -1,11 +1,8 @@
-namespace IslandSurvivor.Scenes.NPC.Agressive;
+namespace IslandSurvivor.Scenes.NPC.Aggressive;
 
-using System.Collections.Generic;
 using Godot;
-using IslandSurvivor.Logic.Entities;
-using Core.Interfaces.Stats;
 
-public abstract partial class MeleeEnemyBase : EnemyBase
+public abstract partial class MeleeAggressiveNpcBase : AggressiveNpcBase
 {
     protected Area2D m_hitboxAreaRight;
     protected Area2D m_hitboxAreaLeft;
@@ -35,20 +32,12 @@ public abstract partial class MeleeEnemyBase : EnemyBase
         }
     }
 
-    public override void _PhysicsProcess(double p_delta)
-    {
-        if (m_agressorController.CurrentState == NpcStates.DEAD) return;
-
-        base._PhysicsProcess(p_delta);
-    }
-
     protected override void HandleAttackState()
     {
         if (m_attackController != null && m_attackController.CanAttack && m_targetPlayer != null)
         {
             float distanceToPlayer = GlobalPosition.DistanceTo(m_targetPlayer.GlobalPosition);
 
-            // Assume melee range is around 50 units
             if (distanceToPlayer <= 50f)
             {
                 string direction = (m_animatedSprite != null && m_animatedSprite.FlipH) ? "Left" : "Right";
@@ -59,7 +48,6 @@ public abstract partial class MeleeEnemyBase : EnemyBase
 
     protected virtual void OnAttackStarted()
     {
-        // Custom logic for when attack starts, such as playing animation or sound.
         if (m_animatedSprite != null)
         {
             m_animatedSprite.Play("Attack");
