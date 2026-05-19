@@ -293,7 +293,7 @@ script = ExtResource("1_s0eop")
 Stats = NodePath("StatManager")
 m_animationPlayer = NodePath("AnimationPlayer")
 m_sprite = NodePath("Sprite2D")
-m_interactionLabel = NodePath("InteractionLabel")
+m_interactionLabel = NodePath("CanvasLayer/InteractionLabel")
 m_debugLabel = NodePath("DebugLabel")
 m_levelLabel = NodePath("LevelLabel")
 m_xpGainLabel = NodePath("XpGainLabel")
@@ -351,9 +351,10 @@ Stats = NodePath("../StatManager")
 [node name="StatManager" parent="." unique_id=772458511 instance=ExtResource("7_stat")]
 m_isGlobal = true
 EntityType = 0
-BaseSpeed = 400.0
 
-[node name="InteractionLabel" type="Label" parent="." unique_id=1913303428]
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=238914161]
+
+[node name="InteractionLabel" type="Label" parent="CanvasLayer" unique_id=1913303428]
 offset_left = -66.0
 offset_top = -80.0
 offset_right = 66.0

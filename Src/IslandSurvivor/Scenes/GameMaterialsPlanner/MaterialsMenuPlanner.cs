@@ -33,10 +33,10 @@ public partial class MaterialsMenuPlanner : Control
     Visible = false;
 
     // Connexions des boutons
-    if (_buyHealthBtn != null) _buyHealthBtn.Pressed += () => TryPurchaseUpgrade("Or", StatType.Health);
-    if (_buySpeedBtn != null) _buySpeedBtn.Pressed += () => TryPurchaseUpgrade("Bois", StatType.Speed);
-    if (_buyAttackBtn != null) _buyAttackBtn.Pressed += () => TryPurchaseUpgrade("Roche", StatType.Attack);
-    if (_buyLuckBtn != null) _buyLuckBtn.Pressed += () => TryPurchaseUpgrade("Viande", StatType.Luck);
+    if (_buyHealthBtn != null) _buyHealthBtn.Pressed += () => TryPurchaseUpgrade("meat_01", StatType.Health);
+    if (_buySpeedBtn != null) _buySpeedBtn.Pressed += () => TryPurchaseUpgrade("wood_01", StatType.Speed);
+    if (_buyAttackBtn != null) _buyAttackBtn.Pressed += () => TryPurchaseUpgrade("rock_01", StatType.Attack);
+    if (_buyLuckBtn != null) _buyLuckBtn.Pressed += () => TryPurchaseUpgrade("gold_01", StatType.Luck);
     if (_buyIslandBtn != null) _buyIslandBtn.Pressed += TryPurchaseIsland;
 
     SignalManager.Instance.BuildingShopToggled += OnBuildingShopToggled;

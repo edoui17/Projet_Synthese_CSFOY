@@ -56,11 +56,8 @@ public partial class PortalInteraction : Area2D, IInteractable
                 tween.TweenProperty(portalSprite, "modulate", new Color(2f, 2f, 2f, 1f), 1.0f);
             }
 
-            // Actually teleport after a short delay for effects
-            GetTree().CreateTimer(1.5f).Timeout += () =>
-            {
-                SignalManager.Instance.EmitTeleportRequested(this, m_destination);
-            };
+            // Teleport immediately to show loading screen during sync
+            SignalManager.Instance.EmitTeleportRequested(this, m_destination);
         }
     }
 

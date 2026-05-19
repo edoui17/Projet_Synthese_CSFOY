@@ -6,12 +6,12 @@ Ce document décrit l'architecture et le fonctionnement "End-to-End" du système
 
 La navigation entre les îles se déroule en plusieurs étapes :
 
-1. **Génération et Sélection :** Le joueur interagit avec un planificateur qui affiche le menu de navigation (`NavigationMenu`). Le `NavigationService` (Core) génère les destinations possibles et leurs coûts en ressources.
+1. **Génération et Sélection :** Le joueur interagit avec un planificateur qui affiche le menu de navigation (`NavigationMenu`). Le `NavigationService` (Core) génère les destinations possibles et leurs coûts en ressources. L'UI affiche désormais de façon détaillée les coûts en ressources directement sur les boutons de la boutique d'îles.
 2. **Paiement et Validation :** Le joueur sélectionne une destination. Le `NavigationService` vérifie si l'inventaire (`IInventoryManager`) contient les ressources requises et les déduit le cas échéant.
-3. **Activation du Portail :** Si la validation réussit, le `Portal` est activé dans la scène et se voit attribuer la destination choisie.
+3. **Activation du Portail :** Si la validation réussit, le `Portal` est activé dans la scène et se voit attribuer la destination choisie. Le label d'interaction "Press E to Interact" s'affiche correctement à l'aide d'un `CanvasLayer` pour se superposer proprement par-dessus l'environnement.
 4. **Interaction et Événement :** Le joueur interagit avec le `PortalInteraction`. Cela publie un événement `NavigationRequestedEvent` sur l'EventBus.
 5. **Sauvegarde d'État :** L'Autoload `NavigationManager` (Godot) écoute cet événement, sauvegarde l'inventaire et l'état de la session (comme `CurrentIslandId` dans `SessionState`). Cette sauvegarde garantit la persistance des données indépendamment du cycle de vie des scènes Godot.
-6. **Transition de Scène :** Le `NavigationManager` délègue le changement effectif de scène au `SceneLoadingManager`.
+6. **Transition de Scène :** Le `NavigationManager` délègue le changement effectif de scène au `SceneLoadingManager`. Ce dernier affiche un écran de chargement et force explicitement le moteur à faire un rendu (pendant 2 frames) avant de démarrer des opérations potentiellement bloquantes.
 
 ---
 
@@ -108,15 +108,21 @@ private void OnNavigationRequested(NavigationRequestedEvent p_event)
 }
 ```
 
-### D. Le SceneLoadingManager
+### D. Le SceneLoadingManager (Écran de Chargement)
 
-Le `SceneLoadingManager` se charge d'effectuer la transition de manière sécurisée en utilisant `CallDeferred` pour éviter de changer d'arbre de scène au milieu du traitement de la physique ou d'un signal en cours.
+Le `SceneLoadingManager` se charge d'effectuer la transition de manière sécurisée en affichant d'abord un écran de chargement. Pour garantir que l'interface de chargement s'affiche effectivement avant toute opération lourde (comme le chargement synchrone d'une nouvelle scène ou une requête réseau), le gestionnaire force explicitement un rendu pendant 2 frames avec `await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame)`.
 
 ```csharp
-// Extrait de SceneLoadingManager.cs
-public void LoadScene(string scenePath)
+// Extrait conceptuel de SceneLoadingManager.cs
+public async void LoadScene(string scenePath)
 {
-    // CallDeferred garantit que le moteur a fini le frame courant avant de charger la scène
+    // Affiche l'écran de chargement
+    m_loadingScreen.Show();
+
+    // Force Godot à dessiner l'UI avant de bloquer le thread principal
+    await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
+    await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
+
     CallDeferred(nameof(ChangeScene), scenePath);
 }
 
@@ -127,6 +133,7 @@ private void ChangeScene(string scenePath)
     {
         GD.PrintErr($"[SceneLoadingManager] Failed to load scene {scenePath}. Error: {error}");
     }
+    // L'écran de chargement est masqué une fois la nouvelle scène prête.
 }
 ```
 

@@ -9,8 +9,8 @@ Le système de statistiques d'IslandSurvivor suit rigoureusement l'architecture 
 
 Le Node `StatManager` sert de "pont" (Bridge) entre Godot et la logique pure du C#. Depuis la refactorisation majeure, **chaque entité possède sa propre instance locale isolée** de `StatTracker` et d'`EventBus`, éliminant le couplage lié à un Singleton global.
 
-1. **Le Node (`StatManager`) :** Attaché à l'entité en tant que Node2D, il expose ses valeurs de base (`MaxHealth`, `BaseDamage`, `BaseSpeed`, `Luck`) directement via l'inspecteur de l'éditeur sous un `[ExportGroup("Base Stats")]`.
-2. **Le Core (`StatTracker`) :** Maintient un dictionnaire (`Dictionary<StatType, IStat>`) en utilisant `PoolStat` pour la santé et `AttributeStat` pour le reste. Il calcule les valeurs effectives et s'assure qu'elles ne descendent pas sous `0` ou ne dépassent pas la valeur maximale pour les jauges. Les statistiques "Attaque" et "Vitesse" fonctionnent comme des modificateurs de +5% par point et sont initialisées à 0 dans le `StatTracker`, la base de la statistique (ex: `BaseSpeed` = 300) étant conservée sur le Node Godot.
+1. **Le Node (`StatManager`) :** Attaché à l'entité en tant que Node2D, il expose ses valeurs de base (`MaxHealth`, `BaseAttackValue`, `BaseSpeedValue`) et ses points de statistiques initiaux (`InitialAttackPoints`, `InitialSpeedPoints`, `InitialLuckPoints`) directement via l'inspecteur de l'éditeur. Les propriétés affichées dépendent strictement du type d'entité (`EntityType` : Ressource, PNJ, Joueur). Les Ressources n'affichent que la santé, les PNJ ajoutent l'attaque et la vitesse, et le Joueur possède toutes les statistiques dont la chance.
+2. **Le Core (`StatTracker`) :** Maintient un dictionnaire (`Dictionary<StatType, IStat>`) en utilisant `PoolStat` pour la santé et `AttributeStat` pour le reste. Il calcule les valeurs effectives et s'assure qu'elles ne descendent pas sous `0` ou ne dépassent pas la valeur maximale pour les jauges. Les statistiques "Attaque" et "Vitesse" fonctionnent comme des modificateurs de +5% par point de statistique, tandis que les valeurs de base (ex: `BaseSpeedValue` = 300) sont conservées sur le Node Godot.
 3. **La Communication Locale :** Quand une statistique change dans le Core, un `StatChangedEvent` est publié via l'**EventBus Local** de l'entité. Le `StatManager` de Godot écoute cet événement local et ré-émet un `[Signal] LocalStatChanged` natif. Les interfaces utilisateur s'abonnent à ce signal local, garantissant qu'une UI de monstre ne réagit pas aux dégâts pris par le joueur.
 
 ## Comment l'utiliser dans Godot ?
@@ -18,7 +18,8 @@ Le Node `StatManager` sert de "pont" (Bridge) entre Godot et la logique pure du 
 ### 1. Ajouter les statistiques à une Entité
 - Ouvrez la scène de votre entité (ex: `Player.tscn` ou `Goblin.tscn`).
 - Ajoutez un Node enfant de type `StatManager`.
-- Dans l'inspecteur du `StatManager`, définissez les variables de base sous la section **Base Stats** (ex: `Max Health` = 150, `Base Damage` = 10, `Base Speed` = 150).
+- Dans l'inspecteur du `StatManager`, définissez le `EntityType` approprié (Resource, NPC, ou Player).
+- Sous les sections **Base Values** et **Initial Stat Points**, définissez les valeurs pertinentes pour votre entité (ex: `Max Health` = 150, `Base Attack Value` = 10, `Base Speed Value` = 150, `Initial Attack Points` = 0).
 
 ### 2. Modifier la santé (Prendre des dégâts ou se soigner)
 Depuis un script (ex: `Player.cs` ou `Enemy.cs`) :

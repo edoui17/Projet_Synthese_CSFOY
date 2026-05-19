@@ -103,11 +103,13 @@ public partial class Player : CharacterBody2D, IDamageable
         {
             Velocity = Vector2.Zero;
             MoveAndSlide();
+            UpdateInteractionLabelPosition();
             return;
         }
 
         ApplyMovement();
         UpdateBestTarget();
+        UpdateInteractionLabelPosition();
         UpdateAnimation();
     }
 
@@ -150,11 +152,24 @@ public partial class Player : CharacterBody2D, IDamageable
         else
         {
             // Fallback
-            float baseSpeed = Stats?.BaseSpeed ?? 300f;
+            float baseSpeed = Stats?.BaseSpeedValue ?? 300f;
             float speedStat = Stats?.GetCurrentValue(StatType.Speed) ?? 0f;
             float finalSpeed = baseSpeed * (1f + (speedStat * 0.05f));
             Velocity = direction * finalSpeed;
             MoveAndSlide();
+        }
+    }
+
+    private void UpdateInteractionLabelPosition()
+    {
+        if (m_interactionLabel != null && m_interactionLabel.Visible)
+        {
+            var viewport = GetViewport();
+            if (viewport != null && m_interactionLabel.GetParent() is CanvasLayer)
+            {
+                var screenPos = GetGlobalTransformWithCanvas().Origin;
+                m_interactionLabel.SetGlobalPosition(new Godot.Vector2(screenPos.X - m_interactionLabel.Size.X / 2, screenPos.Y - 80));
+            }
         }
     }
 
@@ -332,7 +347,7 @@ public partial class Player : CharacterBody2D, IDamageable
         m_hitTargetsThisAttack.Add(p_target);
 
         float attackStat = Stats?.GetCurrentValue(StatType.Attack) ?? 0f;
-        float baseDamage = Stats?.BaseDamage ?? 10f;
+        float baseDamage = Stats?.BaseAttackValue ?? 10f;
         float finalDamageFloat = baseDamage * (1f + (attackStat * 0.05f));
         int finalDamage = Mathf.RoundToInt(finalDamageFloat);
 
