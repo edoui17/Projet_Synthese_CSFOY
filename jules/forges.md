@@ -172,3 +172,7 @@ When triggering updates (e.g., UI upgrades emitting events to a decoupled compon
 - **Level Progression**: Implemented a threshold-based level system (Level 1: 0-999, Level 2: 1000-2499, Level 3: 2500-4999, Level 4+: +5000 per level). Centralizing this in a service allows for easy future balancing.
 - **Consistency Strategy**: While a SQL trigger handles DB-level HighScore integrity, the `ProgressionService` updates the `Player` object in memory during the request. This ensures the API response (e.g., during `Sync`) contains the most up-to-date HighScore immediately.
 - **Leaderboard Performance**: Refactored `GetLeaderboard` to sort by the `HighScore` column in the `Players` table. This is O(1) or O(log N) with indexes, compared to the previous O(N*M) approach of scanning all session history.
+
+## 2026-05-16 - Attack Cooldowns and Action Mechanics (US Gameplay Loop)
+- **Continuous Actions**: Godot's `_Input(InputEvent)` is strictly event-driven (e.g. key pressed/released). For continuous actions (like holding down the mouse button to attack), logic must evaluate `Input.IsActionPressed()` every frame inside `_PhysicsProcess` or `_Process`.
+- **Stat-Bound Cooldown Strategy**: Action cooldowns (e.g., Attack cooldowns) should scale down based on progression stats (like `Speed`) using the asymptotic formula: `Cooldown = BaseCooldown / (1 + (Speed * 0.05))`. This ensures the cooldown never mathematically hits 0, preventing infinite DPS loops regardless of the stat ceiling.

@@ -7,6 +7,28 @@ using IslandSurvivor.Logic.Entities;
 public abstract partial class RangedEnemyBase : EnemyBase
 {
     [Export] public PackedScene ProjectileScene { get; set; }
+    protected IslandSurvivor.Nodes.Combat.AttackController? m_attackController;
+
+    public override void _Ready()
+    {
+        base._Ready();
+
+        m_attackController = GetNodeOrNull<IslandSurvivor.Nodes.Combat.AttackController>("AttackController");
+        if (m_attackController != null)
+        {
+            m_attackController.Stats = Stats;
+            m_attackController.Faction = IslandSurvivor.Enums.EntityFaction.Enemy;
+            m_attackController.AttackSprite = m_animatedSprite;
+            m_attackController.ActionFrame = 5; // Arrow release frame
+
+            m_attackController.AttackStarted += OnAttackStarted;
+            m_attackController.AttackActionTriggered += ShootProjectile;
+        }
+        else
+        {
+            GD.PushWarning($"{Name}: AttackController not found.");
+        }
+    }
 
     protected override void InitializeController()
     {
@@ -14,24 +36,37 @@ public abstract partial class RangedEnemyBase : EnemyBase
         m_agressorController = new RangedController(StoppingDistance);
     }
 
-    protected override async void HandleAttackState()
+    protected override void HandleAttackState()
     {
-        if (m_targetPlayer != null && m_agressorController is IRangedController controller)
+        if (m_targetPlayer != null && m_attackController != null && m_attackController.CanAttack)
         {
             float distanceToPlayer = GlobalPosition.DistanceTo(m_targetPlayer.GlobalPosition);
 
             if (distanceToPlayer <= StoppingDistance)
             {
-                if (controller.CanAttack() && CheckLineOfSight())
+                if (CheckLineOfSight())
                 {
-                    controller.StartAttack();
-
-                    await ToSignal(GetTree().CreateTimer(0.4f), SceneTreeTimer.SignalName.Timeout);
-                    if (m_agressorController.CurrentState == NpcStates.DEAD) return;
-
-                    ShootProjectile();
+                    if (m_animatedSprite != null)
+                    {
+                        m_animatedSprite.FlipH = m_targetPlayer.GlobalPosition.X < GlobalPosition.X;
+                    }
+                    string direction = (m_animatedSprite != null && m_animatedSprite.FlipH) ? "Left" : "Right";
+                    m_attackController.TryAttack(direction);
                 }
             }
+        }
+    }
+
+    protected virtual void OnAttackStarted()
+    {
+        if (m_animatedSprite != null)
+        {
+            if (m_targetPlayer != null)
+            {
+                m_animatedSprite.FlipH = m_targetPlayer.GlobalPosition.X < GlobalPosition.X;
+            }
+            m_animatedSprite.Play("Attack");
+            m_animatedSprite.Frame = 0;
         }
     }
 

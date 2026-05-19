@@ -59,6 +59,14 @@ public abstract partial class EnemyBase : CharacterBody2D, INpc, IEnemy, IDamage
         {
             GD.PrintErr($"{Name} node requires an AnimatedSprite2D child node.");
         }
+        else
+        {
+            var attackController = GetNodeOrNull<IslandSurvivor.Nodes.Combat.AttackController>("AttackController");
+            if (attackController != null && attackController.AttackSprite == null)
+            {
+                attackController.AttackSprite = m_animatedSprite;
+            }
+        }
 
         m_detectionArea = GetNodeOrNull<Area2D>("DetectionArea");
         if (m_detectionArea == null)
@@ -162,7 +170,9 @@ public abstract partial class EnemyBase : CharacterBody2D, INpc, IEnemy, IDamage
         Vector2 direction = new Vector2(m_agressorController.CurrentDirection.X, m_agressorController.CurrentDirection.Y);
         float targetSpeed = IdleSpeed;
 
-        if (m_agressorController.CurrentState == NpcStates.ATTACK)
+        var attackController = GetNodeOrNull<IslandSurvivor.Nodes.Combat.AttackController>("AttackController");
+
+        if (attackController != null && attackController.IsAttacking)
         {
             // Do not move while attacking
             targetSpeed = 0f;
@@ -178,7 +188,7 @@ public abstract partial class EnemyBase : CharacterBody2D, INpc, IEnemy, IDamage
             }
             else
             {
-                targetSpeed = m_agressorController.IsOnCooldown ? ChaseSpeed * 0.5f : ChaseSpeed;
+                targetSpeed = ChaseSpeed;
                 System.Numerics.Vector2 globalPositionNumerics = new System.Numerics.Vector2(GlobalPosition.X, GlobalPosition.Y);
                 System.Numerics.Vector2 targetPositionNumerics = new System.Numerics.Vector2(m_targetPlayer.GlobalPosition.X, m_targetPlayer.GlobalPosition.Y);
                 m_agressorController.UpdateChaseDirection(globalPositionNumerics, targetPositionNumerics);
@@ -213,9 +223,16 @@ public abstract partial class EnemyBase : CharacterBody2D, INpc, IEnemy, IDamage
     {
         if (m_animatedSprite == null) return;
 
-        if (m_agressorController.CurrentState == NpcStates.ATTACK)
+        var attackController = GetNodeOrNull<IslandSurvivor.Nodes.Combat.AttackController>("AttackController");
+        bool isAttacking = attackController != null && attackController.IsAttacking;
+
+        if (isAttacking)
         {
-            m_animatedSprite.Play("Attack");
+            if (m_animatedSprite.Animation != "Attack")
+            {
+                m_animatedSprite.Play("Attack");
+                m_animatedSprite.Frame = 0;
+            }
             return;
         }
 
@@ -228,7 +245,7 @@ public abstract partial class EnemyBase : CharacterBody2D, INpc, IEnemy, IDamage
             m_animatedSprite.Play("Idle");
         }
 
-        if (p_direction.X != 0)
+        if (p_direction.X != 0 && !isAttacking)
         {
             m_animatedSprite.FlipH = p_direction.X < 0;
         }

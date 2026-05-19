@@ -1,0 +1,115 @@
+[gd_resource type="SpriteFrames" format=3 uid="uid://dd8xwmbmwbofx_sheep"]
+
+[ext_resource type="Texture2D" uid="uid://bhauap76rg7mv" path="res://Assets/TinySwords/Decorations/Sheep/HappySheep_Idle.png" id="1_idle"]
+[ext_resource type="Texture2D" uid="uid://c7q4wps0c7vh1" path="res://Assets/TinySwords/Decorations/Sheep/HappySheep_Bouncing.png" id="2_flee"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_idle0"]
+atlas = ExtResource("1_idle")
+region = Rect2(0, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_idle1"]
+atlas = ExtResource("1_idle")
+region = Rect2(128, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_idle2"]
+atlas = ExtResource("1_idle")
+region = Rect2(256, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_idle3"]
+atlas = ExtResource("1_idle")
+region = Rect2(384, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_idle4"]
+atlas = ExtResource("1_idle")
+region = Rect2(512, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_idle5"]
+atlas = ExtResource("1_idle")
+region = Rect2(640, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_idle6"]
+atlas = ExtResource("1_idle")
+region = Rect2(768, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_idle7"]
+atlas = ExtResource("1_idle")
+region = Rect2(896, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_flee0"]
+atlas = ExtResource("2_flee")
+region = Rect2(0, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_flee1"]
+atlas = ExtResource("2_flee")
+region = Rect2(128, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_flee2"]
+atlas = ExtResource("2_flee")
+region = Rect2(256, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_flee3"]
+atlas = ExtResource("2_flee")
+region = Rect2(384, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_flee4"]
+atlas = ExtResource("2_flee")
+region = Rect2(512, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_flee5"]
+atlas = ExtResource("2_flee")
+region = Rect2(640, 0, 128, 128)
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_flee0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_flee1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_flee2")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_flee3")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_flee4")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_flee5")
+}],
+"loop": true,
+"name": &"FLEE",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_idle0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_idle1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_idle2")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_idle3")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_idle4")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_idle5")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_idle6")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_idle7")
+}],
+"loop": true,
+"name": &"IDLE",
+"speed": 10.0
+}]
