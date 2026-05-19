@@ -84,20 +84,21 @@ public partial class AutomnTree : Area2D, ITree, IDamageable
         var item = new Core.Domain.ResourceItem(EntityId, MaterialName, MaterialType, IconPath);
 
         // Target is the player who mined it
-        Vector2 targetPosition = GlobalPosition;
-        if (p_attacker is Node2D attackerNode)
-        {
-            targetPosition = attackerNode.GlobalPosition;
-        }
+        Node2D targetNode = p_attacker as Node2D;
+        Vector2 fallbackPosition = targetNode != null ? targetNode.GlobalPosition : GlobalPosition;
 
-        // Spawn Resource Drop for tweening
+        // Spawn Resource Drops for tweening
         PackedScene dropScene = GD.Load<PackedScene>("res://Scenes/Ressources/ResourceDrop.tscn");
         if (dropScene != null)
         {
-            if (dropScene.Instantiate() is IslandSurvivor.Scenes.Ressources.ResourceDrop drop)
+            for (int i = 0; i < quantity; i++)
             {
-                drop.Initialize(item, quantity, GlobalPosition, targetPosition);
-                GetParent().AddChild(drop);
+                if (dropScene.Instantiate() is IslandSurvivor.Scenes.Ressources.ResourceDrop drop)
+                {
+                    // Pass quantity 1 for each individual drop
+                    drop.Initialize(item, 1, GlobalPosition, targetNode, fallbackPosition);
+                    GetParent().AddChild(drop);
+                }
             }
         }
         else
