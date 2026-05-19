@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://dyxx1q578y7t0"]
 
-[ext_resource type="Script" uid="uid://d1eskrq5egat0" path="res://Scenes/NPC/Agressive/Soldier.cs" id="1_lf5hw"]
+[ext_resource type="Script" uid="uid://d1eskrq5egat0" path="res://Scenes/NPC/Agressive/Normal/Soldier/Soldier.cs" id="1_lf5hw"]
 [ext_resource type="Texture2D" uid="uid://dme25kdxbnqcy" path="res://Assets/TinySwords/Sprites/Warrior/Black/Warrior_Idle.png" id="1_s60lb"]
 [ext_resource type="Texture2D" uid="uid://dwsh1gspfwghh" path="res://Assets/TinySwords/Sprites/Warrior/Black/Warrior_Attack1.png" id="2_ftayq"]
 [ext_resource type="Texture2D" uid="uid://cy36cydp3xyku" path="res://Assets/TinySwords/Sprites/Warrior/Black/Warrior_Run.png" id="4_ftayq"]
