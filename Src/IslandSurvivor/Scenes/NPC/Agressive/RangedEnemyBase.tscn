@@ -1,0 +1,25 @@
+[gd_scene format=3 uid="uid://rbase12345"]
+
+[ext_resource type="PackedScene" path="res://Scenes/NPC/Agressive/EnemyBase.tscn" id="1_scene"]
+[ext_resource type="Script" uid="uid://bbrba0kvch7b6" path="res://Scenes/NPC/Agressive/RangedEnemyBase.cs" id="2_script"]
+[ext_resource type="PackedScene" uid="uid://crca7kdilqogk" path="res://Scenes/Projectiles/Arrow.tscn" id="3_arrow"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_hitbox_ranged"]
+radius = 21.986078
+height = 70.16913
+
+[node name="RangedEnemyBase" instance=ExtResource("1_scene")]
+script = ExtResource("2_script")
+ProjectileScene = ExtResource("3_arrow")
+
+[node name="HitboxArea" type="Area2D" parent="." index="8"]
+collision_layer = 0
+collision_mask = 4
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxArea" index="0"]
+position = Vector2(30, 6)
+rotation = 1.5352188
+shape = SubResource("CapsuleShape2D_hitbox_ranged")
+
+[node name="ProjectileSpawnPosition" type="Marker2D" parent="." index="9"]
+position = Vector2(15, 0)
