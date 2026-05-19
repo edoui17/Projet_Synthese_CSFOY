@@ -160,20 +160,20 @@ public partial class Sheep : CharacterBody2D, INpc, IDamageable
             ResourceItem meatResource = new ResourceItem("meat_01", "Viande", "Meat", "res://Assets/TinySwords/TinySwords(Update010)/Deco/17.png");
 
             // Target is the player who killed it
-            Vector2 targetPosition = GlobalPosition;
-            if (p_attacker is Node2D attackerNode)
-            {
-                targetPosition = attackerNode.GlobalPosition;
-            }
+            Node2D targetNode = p_attacker as Node2D;
+            Vector2 fallbackPosition = targetNode != null ? targetNode.GlobalPosition : GlobalPosition;
 
-            // Spawn Resource Drop for tweening
+            // Spawn Resource Drops for tweening
             PackedScene dropScene = GD.Load<PackedScene>("res://Scenes/Ressources/ResourceDrop.tscn");
             if (dropScene != null)
             {
-                if (dropScene.Instantiate() is IslandSurvivor.Scenes.Ressources.ResourceDrop drop)
+                for (int i = 0; i < meatAmount; i++)
                 {
-                    drop.Initialize(meatResource, meatAmount, GlobalPosition, targetPosition);
-                    GetParent().AddChild(drop);
+                    if (dropScene.Instantiate() is IslandSurvivor.Scenes.Ressources.ResourceDrop drop)
+                    {
+                        drop.Initialize(meatResource, 1, GlobalPosition, targetNode, fallbackPosition);
+                        GetParent().AddChild(drop);
+                    }
                 }
             }
             else

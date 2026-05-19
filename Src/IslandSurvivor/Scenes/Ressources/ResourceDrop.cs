@@ -9,15 +9,17 @@ public partial class ResourceDrop : Node2D
 {
     private ResourceItem m_item;
     private int m_quantity;
-    private Vector2 m_targetPosition;
+    private Node2D m_targetNode;
+    private Vector2 m_fallbackTargetPosition;
     private Sprite2D m_sprite;
 
-    public void Initialize(ResourceItem p_item, int p_quantity, Vector2 p_startPosition, Vector2 p_targetPosition)
+    public void Initialize(ResourceItem p_item, int p_quantity, Vector2 p_startPosition, Node2D p_targetNode, Vector2 p_fallbackTargetPosition)
     {
         m_item = p_item;
         m_quantity = p_quantity;
         GlobalPosition = p_startPosition;
-        m_targetPosition = p_targetPosition;
+        m_targetNode = p_targetNode;
+        m_fallbackTargetPosition = p_fallbackTargetPosition;
     }
 
     public override void _Ready()
@@ -34,41 +36,62 @@ public partial class ResourceDrop : Node2D
 
         AddChild(m_sprite);
 
+        // Scale it down so it's not too large on the ground
+        Scale = new Vector2(0.5f, 0.5f);
+
         // 2. Add an animation to burst out slightly before moving to the target
-        AnimateDrop();
+        AnimateBurst();
     }
 
-    private void AnimateDrop()
+    private void AnimateBurst()
     {
-        Tween tween = CreateTween();
+        Tween burstTween = CreateTween();
 
         // Random offset for burst effect
         Random random = new();
-        float burstX = GlobalPosition.X + (float)(random.NextDouble() * 40 - 20);
-        float burstY = GlobalPosition.Y - (float)(random.NextDouble() * 30 + 10);
+        float burstX = GlobalPosition.X + (float)(random.NextDouble() * 60 - 30);
+        float burstY = GlobalPosition.Y - (float)(random.NextDouble() * 50 - 10);
         Vector2 burstPosition = new Vector2(burstX, burstY);
 
         // Burst out
-        tween.TweenProperty(this, "global_position", burstPosition, 0.3f)
+        burstTween.TweenProperty(this, "global_position", burstPosition, 0.4f)
              .SetTrans(Tween.TransitionType.Quad)
              .SetEase(Tween.EaseType.Out);
 
-        // Optional small pause
-        tween.TweenInterval(0.1f);
+        // Wait 1 second on the floor, then start moving to target
+        burstTween.TweenInterval(1.0f);
+        burstTween.Finished += AnimateToTarget;
+    }
 
-        // Move to target position (e.g. inventory UI or player)
-        // Since UI position might be hard to map to world coordinates directly without specific setup,
-        // we'll tween to the target position provided (e.g., Player's position).
-        tween.TweenProperty(this, "global_position", m_targetPosition, 0.6f)
+    private void AnimateToTarget()
+    {
+        // Continuous tween to track moving target
+        Tween moveTween = CreateTween();
+
+        // We will do a generic movement using _Process instead to track the player,
+        // but since we want to use Tween for ease-in, we can tween property over time.
+        // However, a standard tween locks the target position at start.
+        // We can use TweenMethod to pass a value from 0 to 1 and lerp.
+        moveTween.TweenMethod(Callable.From<float>(MoveStep), 0.0f, 1.0f, 0.5f)
              .SetTrans(Tween.TransitionType.Back)
              .SetEase(Tween.EaseType.In);
 
-        // Scale down as it gets closer
-        tween.Parallel().TweenProperty(this, "scale", Vector2.Zero, 0.6f)
-             .SetDelay(0.4f); // Start shrinking halfway through the move
+        moveTween.Parallel().TweenProperty(this, "scale", Vector2.Zero, 0.5f)
+             .SetTrans(Tween.TransitionType.Quad)
+             .SetEase(Tween.EaseType.In);
 
-        // When animation finishes, notify inventory and destroy itself
-        tween.Finished += OnAnimationFinished;
+        moveTween.Finished += OnAnimationFinished;
+    }
+
+    private void MoveStep(float p_progress)
+    {
+        Vector2 currentTargetPos = m_fallbackTargetPosition;
+        if (GodotObject.IsInstanceValid(m_targetNode) && m_targetNode.IsInsideTree())
+        {
+            currentTargetPos = m_targetNode.GlobalPosition;
+        }
+
+        GlobalPosition = GlobalPosition.Lerp(currentTargetPos, p_progress);
     }
 
     private void OnAnimationFinished()
