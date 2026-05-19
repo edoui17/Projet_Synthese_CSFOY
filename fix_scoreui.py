@@ -1,13 +1,31 @@
-using Godot;
+import sys
 
-namespace IslandSurvivor.Nodes.StatsManager;
+def replace_in_file(filepath, search_str, replace_str):
+    with open(filepath, 'r') as file:
+        content = file.read()
+    if search_str in content:
+        content = content.replace(search_str, replace_str)
+        with open(filepath, 'w') as file:
+            file.write(content)
+        print(f"Replaced successfully in {filepath}")
+    else:
+        print(f"Search string not found in {filepath}")
 
-public partial class ScoreUI : Label
-{
-    [Export]
-    private ScoreManager m_scoreManager = null!;
+filepath = "./Src/IslandSurvivor/Nodes/ScoreManager/ScoreUI.cs"
 
-    public override void _Ready()
+search = """    public override void _Ready()
+    {
+        if (m_scoreManager != null)
+        {
+            m_scoreManager.ScoreChanged += OnScoreChanged;
+        }
+        else
+        {
+            GD.PushWarning("ScoreUI: ScoreManager reference is missing.");
+        }
+    }"""
+
+replace = """    public override void _Ready()
     {
         if (m_scoreManager == null)
         {
@@ -36,19 +54,6 @@ public partial class ScoreUI : Label
         {
             GD.PushWarning("ScoreUI: ScoreManager reference is missing and could not be resolved.");
         }
-    }
+    }"""
 
-    private void OnScoreChanged(int p_previousScore, int p_newScore)
-    {
-        Text = $"Score {p_newScore}";
-        GD.Print($"[ScoreUI] Score updated! Previous: {p_previousScore}, New: {p_newScore}");
-    }
-
-    public override void _ExitTree()
-    {
-        if (m_scoreManager != null)
-        {
-            m_scoreManager.ScoreChanged -= OnScoreChanged;
-        }
-    }
-}
+replace_in_file(filepath, search, replace)
