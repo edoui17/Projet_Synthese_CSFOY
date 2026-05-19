@@ -7,7 +7,7 @@ using Core.Managers.Stats;
 using IslandSurvivor.Interfaces;
 using IslandSurvivor.Nodes.Movement;
 
-public abstract partial class NpcBase : CharacterBody2D, INpc, IDamageable
+public partial class NpcBase : CharacterBody2D, INpc, IDamageable
 {
     [Export] public string NpcType { get; set; } = "NPC";
     [Export] public float IdleSpeed { get; set; } = 50.0f;
@@ -21,7 +21,7 @@ public abstract partial class NpcBase : CharacterBody2D, INpc, IDamageable
     protected bool m_wasKilledByPlayer = false;
 
     // Abstract state to be defined by subclasses
-    public abstract string CurrentState { get; }
+    public virtual string CurrentState { get; } = "";
 
     public override void _Ready()
     {
@@ -90,5 +90,5 @@ public abstract partial class NpcBase : CharacterBody2D, INpc, IDamageable
         // To be overridden by subclasses (e.g. Sheep flees, Aggressive targets player)
     }
 
-    protected abstract void HandleDeath(object? p_attacker = null);
+    protected virtual void HandleDeath(object? p_attacker = null) { }
 }

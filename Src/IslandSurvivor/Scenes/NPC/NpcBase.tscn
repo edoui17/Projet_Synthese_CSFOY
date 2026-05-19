@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://npcbase12345"]
 
-[ext_resource type="Script" uid="uid://npcbase_script_uid" path="res://Scenes/NPC/NpcBase.cs" id="1_script"]
+[ext_resource type="Script" uid="uid://dmj8y3jasw7qr" path="res://Scenes/NPC/NpcBase.cs" id="1_script"]
 [ext_resource type="PackedScene" path="res://Nodes/Movement/MovementController.tscn" id="2_movement"]
 [ext_resource type="PackedScene" uid="uid://biqhbrp7fjfyj" path="res://Nodes/StatsManager/StatsManager.tscn" id="3_stats"]
 

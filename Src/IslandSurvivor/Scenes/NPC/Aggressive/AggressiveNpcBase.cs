@@ -13,7 +13,7 @@ using IslandSurvivor.Nodes.Combat;
 using IslandSurvivor.Globals;
 using Core.Interfaces;
 
-public abstract partial class AggressiveNpcBase : NpcBase, IEnemy
+public partial class AggressiveNpcBase : NpcBase, IEnemy
 {
     [Export] public float ChaseSpeed { get; set; } = 100.0f;
     [Export] public float StoppingDistance { get; set; } = 40.0f;
