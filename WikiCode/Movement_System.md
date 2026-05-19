@@ -11,13 +11,21 @@ Le système est centré sur le nœud `MovementController` qui doit être ajouté
 
 ### Propriétés exportées
 - **BaseSpeed** (`float`) : La vitesse de base du mouvement si aucune n'est spécifiée, et sur laquelle les bonus de statistiques seront appliqués. Par défaut à `300.0`.
-- **Stats** (`StatManager?`) : Référence optionnelle au gestionnaire de statistiques de l'entité. S'il est fourni, la statistique `Speed` est extraite et appliquée sous forme de pourcentage d'augmentation à la vitesse de base (ex: 10 de speed = +10% de vitesse).
+- **Stats** (`StatManager?`) : Référence optionnelle au gestionnaire de statistiques de l'entité. S'il est fourni, la statistique `Speed` est extraite et appliquée sous forme de pourcentage d'augmentation à la vitesse de base (ex: 1 point de Speed = +5% de vitesse).
+- **DashCooldown** (`float`) : Le délai de recharge du Dash. Par défaut à `3.0`.
+- **DashDuration** (`float`) : La durée en secondes du déplacement de Dash. Par défaut à `0.2`.
+- **DashSpeedMultiplier** (`float`) : Le multiplicateur de vitesse appliqué lors du Dash. Par défaut à `3.0`.
 
-### Méthode principale
+### Méthodes principales
 - **Move(Vector2 p_direction, float? p_customBaseSpeed = null)** :
+  - Ne s'exécute pas si l'entité est en plein `Dash`.
   - Calcule la vitesse finale en ajoutant le pourcentage d'augmentation au `p_customBaseSpeed` (ou `BaseSpeed` s'il est null).
   - Applique la vélocité calculée (`p_direction * finalSpeed`) au `CharacterBody2D` parent.
   - Appelle `MoveAndSlide()` pour exécuter le déplacement et gérer les collisions avec l'environnement.
+
+- **TryDash(Vector2 p_direction)** :
+  - Renvoie `true` et déclenche le mode Dash si le cooldown est écoulé et que l'entité n'est pas déjà en train de dasher, sinon renvoie `false`.
+  - Le Dash bloque le mouvement standard (`Move`) pendant `DashDuration`, et déplace l'entité rapidement avec `MoveAndSlide` multiplié par `DashSpeedMultiplier`.
 
 ## Intégration
 ### Configuration d'une nouvelle entité

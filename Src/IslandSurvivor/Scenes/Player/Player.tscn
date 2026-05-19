@@ -1,278 +1,14 @@
 [gd_scene format=3 uid="uid://cqo7rlgy61vfa"]
 
 [ext_resource type="Script" uid="uid://1jvbx52ea810" path="res://Scenes/Player/Player.cs" id="1_s0eop"]
-[ext_resource type="Texture2D" uid="uid://dvcwp5qwpmdo1" path="res://Assets/TinySwords/Sprites/Pawn/Blue/Pawn_Idle Axe.png" id="2_ft8w5"]
-[ext_resource type="Texture2D" uid="uid://f1eu1fcb5woi" path="res://Assets/TinySwords/Sprites/Pawn/Blue/Pawn_Interact Axe.png" id="3_jmcll"]
-[ext_resource type="Texture2D" uid="uid://bnrdwqhy84a5e" path="res://Assets/TinySwords/Sprites/Pawn/Blue/Pawn_Run.png" id="4_4wape"]
-[ext_resource type="Texture2D" uid="uid://cff20mi4vyhg2" path="res://Assets/TinySwords/Sprites/Pawn/Blue/Pawn_Run Axe.png" id="5_t26db"]
 [ext_resource type="PackedScene" uid="uid://biqhbrp7fjfyj" path="res://Nodes/StatsManager/StatsManager.tscn" id="7_stat"]
+[ext_resource type="SpriteFrames" uid="uid://dd8xwmbmwbofx" path="res://Scenes/Player/PlayerFrames.tres" id="8_frames"]
 [ext_resource type="PackedScene" path="res://Nodes/Movement/MovementController.tscn" id="9_mov"]
+[ext_resource type="Script" uid="uid://bhrvrxhl1h86p" path="res://Nodes/Combat/AttackController.cs" id="attack_controller_script"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_h54ih"]
 radius = 20.0
 height = 58.0
-
-[sub_resource type="Animation" id="Animation_fk5o5"]
-resource_name = "ATTACK"
-length = 0.6
-step = 0.1
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Sprite2D:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5),
-"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
-"update": 1,
-"values": [0, 1, 2, 3, 4, 5]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("Sprite2D:texture")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [ExtResource("3_jmcll")]
-}
-tracks/2/type = "value"
-tracks/2/imported = false
-tracks/2/enabled = true
-tracks/2/path = NodePath("Sprite2D:hframes")
-tracks/2/interp = 1
-tracks/2/loop_wrap = true
-tracks/2/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [6]
-}
-tracks/3/type = "value"
-tracks/3/imported = false
-tracks/3/enabled = true
-tracks/3/path = NodePath("WeaponAttackRight/WeaponHitboxR:disabled")
-tracks/3/interp = 1
-tracks/3/loop_wrap = true
-tracks/3/keys = {
-"times": PackedFloat32Array(0.2, 0.4),
-"transitions": PackedFloat32Array(1, 1),
-"update": 1,
-"values": [false, true]
-}
-tracks/4/type = "value"
-tracks/4/imported = false
-tracks/4/enabled = true
-tracks/4/path = NodePath("WeaponAttackLeft/WeaponHitboxL:disabled")
-tracks/4/interp = 1
-tracks/4/loop_wrap = true
-tracks/4/keys = {
-"times": PackedFloat32Array(0.2, 0.4),
-"transitions": PackedFloat32Array(1, 1),
-"update": 1,
-"values": [false, true]
-}
-
-[sub_resource type="Animation" id="Animation_825xp"]
-resource_name = "IDLE"
-length = 0.8
-loop_mode = 1
-step = 0.1
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Sprite2D:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7),
-"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1),
-"update": 1,
-"values": [0, 1, 2, 3, 4, 5, 6, 7]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("Sprite2D:texture")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [ExtResource("2_ft8w5")]
-}
-tracks/2/type = "value"
-tracks/2/imported = false
-tracks/2/enabled = true
-tracks/2/path = NodePath("Sprite2D:hframes")
-tracks/2/interp = 1
-tracks/2/loop_wrap = true
-tracks/2/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [8]
-}
-
-[sub_resource type="Animation" id="Animation_ji083"]
-resource_name = "INTERACT"
-length = 0.2
-step = 0.05
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Sprite2D:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.099999994),
-"transitions": PackedFloat32Array(1, 1),
-"update": 1,
-"values": [0, 5]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("Sprite2D:texture")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [ExtResource("4_4wape")]
-}
-tracks/2/type = "value"
-tracks/2/imported = false
-tracks/2/enabled = true
-tracks/2/path = NodePath("Sprite2D:hframes")
-tracks/2/interp = 1
-tracks/2/loop_wrap = true
-tracks/2/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [6]
-}
-
-[sub_resource type="Animation" id="Animation_jmcll"]
-length = 0.001
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Sprite2D:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [1]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("Sprite2D:texture")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [ExtResource("2_ft8w5")]
-}
-tracks/2/type = "value"
-tracks/2/imported = false
-tracks/2/enabled = true
-tracks/2/path = NodePath("Sprite2D:hframes")
-tracks/2/interp = 1
-tracks/2/loop_wrap = true
-tracks/2/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [8]
-}
-tracks/3/type = "value"
-tracks/3/imported = false
-tracks/3/enabled = true
-tracks/3/path = NodePath("WeaponAttackRight/WeaponHitboxR:disabled")
-tracks/3/interp = 1
-tracks/3/loop_wrap = true
-tracks/3/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [true]
-}
-tracks/4/type = "value"
-tracks/4/imported = false
-tracks/4/enabled = true
-tracks/4/path = NodePath("WeaponAttackLeft/WeaponHitboxL:disabled")
-tracks/4/interp = 1
-tracks/4/loop_wrap = true
-tracks/4/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [true]
-}
-
-[sub_resource type="Animation" id="Animation_0kmp4"]
-resource_name = "RUN"
-length = 0.6
-loop_mode = 1
-step = 0.1
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Sprite2D:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5),
-"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
-"update": 1,
-"values": [0, 1, 2, 3, 4, 5]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("Sprite2D:texture")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [ExtResource("5_t26db")]
-}
-tracks/2/type = "value"
-tracks/2/imported = false
-tracks/2/enabled = true
-tracks/2/path = NodePath("Sprite2D:hframes")
-tracks/2/interp = 1
-tracks/2/loop_wrap = true
-tracks/2/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [6]
-}
-
-[sub_resource type="AnimationLibrary" id="AnimationLibrary_4wape"]
-_data = {
-&"ATTACK": SubResource("Animation_fk5o5"),
-&"IDLE": SubResource("Animation_825xp"),
-&"INTERACT": SubResource("Animation_ji083"),
-&"RESET": SubResource("Animation_jmcll"),
-&"RUN": SubResource("Animation_0kmp4")
-}
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_i5acl"]
 radius = 24.98892
@@ -285,34 +21,30 @@ height = 90.01888
 [sub_resource type="CircleShape2D" id="CircleShape2D_jmcll"]
 radius = 39.217342
 
-[node name="Player" type="CharacterBody2D" unique_id=661327324 node_paths=PackedStringArray("Stats", "m_animationPlayer", "m_sprite", "m_interactionLabel", "m_debugLabel", "m_levelLabel", "m_xpGainLabel", "m_interactionArea", "m_weaponAreaRight", "m_weaponAreaLeft") groups=["Player"]]
+[node name="Player" type="CharacterBody2D" unique_id=661327324 node_paths=PackedStringArray("Stats", "m_animatedSprite", "m_interactionLabel", "m_debugLabel", "m_levelLabel", "m_xpGainLabel", "m_dashLabel", "m_interactionArea", "m_weaponAreaRight", "m_weaponAreaLeft") groups=["Player"]]
 collision_layer = 4
 collision_mask = 17
 motion_mode = 1
 script = ExtResource("1_s0eop")
 Stats = NodePath("StatManager")
-m_animationPlayer = NodePath("AnimationPlayer")
-m_sprite = NodePath("Sprite2D")
-m_interactionLabel = NodePath("InteractionLabel")
+m_animatedSprite = NodePath("AnimatedSprite2D")
+m_interactionLabel = NodePath("CanvasLayer/InteractionLabel")
 m_debugLabel = NodePath("DebugLabel")
 m_levelLabel = NodePath("LevelLabel")
 m_xpGainLabel = NodePath("XpGainLabel")
+m_dashLabel = NodePath("DashLabel")
 m_interactionArea = NodePath("PlayerInteraction")
 m_weaponAreaRight = NodePath("WeaponAttackRight")
 m_weaponAreaLeft = NodePath("WeaponAttackLeft")
 
-[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1359797056]
-texture = ExtResource("2_ft8w5")
-hframes = 8
-frame = 1
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1359797056]
+sprite_frames = ExtResource("8_frames")
+animation = &"IDLE"
+autoplay = "IDLE"
 
 [node name="PlayerHitBox" type="CollisionShape2D" parent="." unique_id=86017915]
 position = Vector2(0, 4)
 shape = SubResource("CapsuleShape2D_h54ih")
-
-[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=933873674]
-libraries/ = SubResource("AnimationLibrary_4wape")
-autoplay = &"IDLE"
 
 [node name="WeaponAttackRight" type="Area2D" parent="." unique_id=395568969]
 collision_layer = 8
@@ -322,7 +54,6 @@ collision_mask = 16
 position = Vector2(45, 14)
 rotation = 1.5720258
 shape = SubResource("CapsuleShape2D_i5acl")
-disabled = true
 
 [node name="WeaponAttackLeft" type="Area2D" parent="." unique_id=974881817]
 collision_layer = 8
@@ -332,7 +63,6 @@ collision_mask = 16
 position = Vector2(-46.000015, 13.000002)
 rotation = 1.5771921
 shape = SubResource("CapsuleShape2D_fk5o5")
-disabled = true
 
 [node name="PlayerInteraction" type="Area2D" parent="." unique_id=46643777]
 light_mask = 2
@@ -348,12 +78,18 @@ shape = SubResource("CircleShape2D_jmcll")
 [node name="MovementController" parent="." unique_id=779695224 node_paths=PackedStringArray("Stats") instance=ExtResource("9_mov")]
 Stats = NodePath("../StatManager")
 
+[node name="AttackController" type="Node" parent="." unique_id=987654322 node_paths=PackedStringArray("Stats")]
+script = ExtResource("attack_controller_script")
+Stats = NodePath("../StatManager")
+Faction = 1
+
 [node name="StatManager" parent="." unique_id=772458511 instance=ExtResource("7_stat")]
 m_isGlobal = true
 EntityType = 0
-BaseSpeed = 400.0
 
-[node name="InteractionLabel" type="Label" parent="." unique_id=1913303428]
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=238914161]
+
+[node name="InteractionLabel" type="Label" parent="CanvasLayer" unique_id=1913303428]
 offset_left = -66.0
 offset_top = -80.0
 offset_right = 66.0
@@ -388,5 +124,14 @@ offset_top = -100.0
 offset_right = 28.0
 offset_bottom = -77.0
 text = "+XP"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="DashLabel" type="Label" parent="." unique_id=577872649]
+offset_left = -30.0
+offset_top = 89.0
+offset_right = 28.0
+offset_bottom = 112.0
+text = "Dash: Prêt"
 horizontal_alignment = 1
 vertical_alignment = 1

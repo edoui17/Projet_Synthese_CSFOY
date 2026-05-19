@@ -7,7 +7,7 @@
 size = Vector2(41, 6)
 
 [node name="Arrow" type="Area2D" unique_id=846892666]
-collision_mask = 4
+collision_mask = 15
 script = ExtResource("1_qaq63")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=805121935]

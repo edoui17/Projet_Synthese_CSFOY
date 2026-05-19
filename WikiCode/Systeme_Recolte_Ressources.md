@@ -8,9 +8,9 @@ Chaque ressource dans le jeu hérite d'un `Area2D` et possède un script C# (`Go
 
 ### Les Propriétés Exportées (`[Export]`)
 Pour respecter l'architecture N-Tier, le script Godot définit les informations de base de l'objet :
-- `EntityId` : L'identifiant unique (ex: `"gold_01"`).
+- `EntityId` : L'identifiant unique standardisé en anglais (ex: `"gold_01"`, `"wood_01"`).
 - `MaterialName` : Le nom affiché (ex: `"Or"`).
-- `MaterialType` : Le type de matériau (ex: `"Gold"`).
+- `MaterialType` : Le type de matériau (ex: `"Gold"`, `"Wood"`).
 - `IconPath` : Le chemin vers l'icône dans Godot (ex: `"res://Assets/.../Gold Stone 5.png"`). Ce chemin texte sera utilisé par l'interface utilisateur plus tard.
 
 ## 2. Interaction Physique (Le groupe "Tool")
@@ -39,12 +39,12 @@ private void OnAreaEntered(Area2D p_area)
 
 ## 3. Système de Stats Locales, Destruction et Publication
 
-Depuis la mise à jour majeure du système de statistiques, chaque ressource possède son propre `StatManager` (et donc sa propre barre de vie interne isolée).
+Depuis la mise à jour majeure du système de statistiques, chaque ressource possède son propre `StatManager` (et donc sa propre barre de vie interne isolée). Pour des animaux passifs servant de ressources, comme le mouton, la santé maximale a été définie à 30 HP.
 
 Une fois la ressource validée comme étant "détruite" (la vie descend à 0) :
 1. Le signal local `LocalStatChanged` déclenche `DestroyResource(object p_attacker)`.
 2. Le script récupère le `StatManager` de l'`attaquant` (généralement le Joueur) pour extraire sa statistique "Chance" (Luck) et octroyer des matériaux bonus (ex: 5% de bonus par point de stat).
-3. Une quantité aléatoire de base est générée puis additionnée au bonus de Chance.
+3. Une quantité aléatoire de base est générée puis additionnée au bonus de Chance. Il est important de noter que ce système de drop aléatoire influencé par la chance s'applique uniformément (par exemple, le mouton a vu son drop fixe de viande remplacé par ce système aléatoire, et tous les arbres lâchent désormais le même identifiant standardisé `wood_01`).
 4. Un objet purement C# `ResourceItem` est instancié avec les données de la ressource (`IconPath`, `Name`, etc.).
 5. Le Godot `SignalManager` est appelé via `EmitMaterialDestroyed(...)` qui publie à son tour un événement sur l'**EventBus** C# pur, informant les autres systèmes (comme l'inventaire) de la récolte de façon découplée.
 6. La ressource s'efface de la scène avec `QueueFree()`.

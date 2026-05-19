@@ -6,6 +6,6 @@ namespace IslandSurvivor.Classes
 {
     public interface IOre : IGatheringMaterials
     {
-     
+
     }
 }

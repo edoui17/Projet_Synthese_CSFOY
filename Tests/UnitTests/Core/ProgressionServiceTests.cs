@@ -15,6 +15,7 @@ public class ProgressionServiceTests
     }
 
     [Theory]
+    [InlineData(int.MinValue, 1)]
     [InlineData(-100, 1)]
     [InlineData(0, 1)]
     [InlineData(500, 1)]
@@ -27,10 +28,19 @@ public class ProgressionServiceTests
     [InlineData(9999, 4)]
     [InlineData(10000, 5)]
     [InlineData(15000, 6)]
+    [InlineData(500000, 103)]
+    [InlineData(int.MaxValue, 429499)]
     public void CalculateLevel_ReturnsCorrectLevel(int p_score, int p_expectedLevel)
     {
         int actualLevel = m_progressionService.CalculateLevel(p_score);
         Assert.Equal(p_expectedLevel, actualLevel);
+    }
+
+    [Fact]
+    public void CheckAndUpdateHighScore_ReturnsFalseWhenPlayerIsNull()
+    {
+        bool updated = m_progressionService.CheckAndUpdateHighScore(null!, 1500);
+        Assert.False(updated);
     }
 
     [Fact]

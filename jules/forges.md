@@ -156,6 +156,9 @@ When triggering updates (e.g., UI upgrades emitting events to a decoupled compon
 
 - **Physics Frame Continuity**: When interrupting movement to perform an action (like attacking), it's generally better to set the target speed and direction vector to zero and let the script flow down to `MoveAndSlide()` rather than using an early `return;`. This ensures that Godot's physics engine still processes the frame and resolves external collisions (e.g., being pushed by another entity) even while the character is seemingly standing still.
 
+## Audio and Visual Feedback Architecture
+- **Audio Global/Spatial Handling**: Created `AudioManager` singleton attached to the root, pooling `AudioStreamPlayer` (Global/UI) and `AudioStreamPlayer2D` (Spatial) to decouple sounds from node lifetimes. Prevents sounds cutting off prematurely when entities (like resources or enemies) queue free upon death.
+- **Node Tweening Extensions**: Added `PlayShake` extending `Node2D` using Godot's `Tween` API to systematically implement camera shakes and entity impact hits without polluting entity logic.
 ## 2026-05-14 - Meta-Progression & HighScore Refactoring (US 18.0)
 - **Database Evolution**: Migrated the `Stats` table from a 1-to-1 relationship with `Players` to a 1-to-many relationship under the new name `GameStats`.
 - **Relationship Quirk**: Moving from 1-to-1 to 1-to-many required updating the `PlayerEntity` navigation property to `ICollection<GameStatsEntity>`. This allows tracking full session history.
@@ -177,3 +180,36 @@ When triggering updates (e.g., UI upgrades emitting events to a decoupled compon
   - For session-based metrics (duration, level, bonuses), the API calculates the `Max()` value across the player's `GameStats` collection to determine their ranking.
 - **Search Functionality**: Added a `p_search` parameter for "Contains" (case-insensitive) filtering on `Username`, anticipating Scénario 3.
 - **Data Integrity**: Maintained the "Best Session" projection. Even when sorting by a specific stat (e.g., Speed), the returned entry displays the full stats from the player's highest-scoring session to ensure a coherent "Master Profile" view.
+## 2026-05-16 - Attack Cooldowns and Action Mechanics (US Gameplay Loop)
+- **Continuous Actions**: Godot's `_Input(InputEvent)` is strictly event-driven (e.g. key pressed/released). For continuous actions (like holding down the mouse button to attack), logic must evaluate `Input.IsActionPressed()` every frame inside `_PhysicsProcess` or `_Process`.
+- **Stat-Bound Cooldown Strategy**: Action cooldowns (e.g., Attack cooldowns) should scale down based on progression stats (like `Speed`) using the asymptotic formula: `Cooldown = BaseCooldown / (1 + (Speed * 0.05))`. This ensures the cooldown never mathematically hits 0, preventing infinite DPS loops regardless of the stat ceiling.
+
+## 2026-05-17 - Architecture N-Tiers, Règles Globales & CI/CD Unifié (Audit)
+- **Frontières N-Tiers Strictes** :
+  - **Core** : Couche "Comptable". Doit être 100% agnostique. Interdiction stricte de référencer Godot (`Godot.*`) ou Entity Framework. C'est ici que résident l'isolation mathématique (`CombatMath`, formules XP) et les abstractions (`IEventBus`, interfaces de services).
+  - **IslandSurvivor (Godot)** : Couche "Orchestrateur". Interdiction d'accès direct à l'infrastructure (DB). Elle gère le moteur, les noeuds (`Nodes`), la boucle de jeu locale, le visuel et notifie le Core via des événements.
+  - **API** : Couche d'Exposition. N'altère aucune logique métier. Sert de pont sécurisé entre le Client et la Base de données.
+  - **Infrastructure** : Couche Persistance. Seule autorisée à manipuler Entity Framework et le SQL. Dépend du Core pour les définitions métiers.
+  - **Web** : Couche Dashboard. Dépend du Core. Ne communique jamais avec la base de données directement ; consomme l'API.
+- **Règles Globales de Gameplay** :
+  - **Combat & Factions** : La logique temporelle (cooldowns), les hitboxes et le ciblage par `EntityFaction` (Joueur vs Ennemi) sont strictement isolés dans le Godot client (`AttackController`). L'animation (`AnimatedSprite2D`) pilote l'état visuel de l'attaque.
+  - **Projectiles** : Entrent en collision physique avec le décor, mais n'appliquent des dégâts logiques qu'aux cibles correspondant à leur `EntityFaction`.
+  - **Dash & Interruptions** : Recevoir des dégâts d'un projectile pendant un Dash l'interrompt immédiatement et applique un statut *Stun* via le `MovementController`.
+  - **Cooldowns** : Le scaling se fait via une formule asymptotique (ex: `Cooldown = BaseCooldown / (1 + (Speed * 0.05))`) centralisée en C# pour éviter les boucles infinies.
+- **CI/CD Unifié (Pipeline YAML)** :
+  - Le pipeline doit obligatoirement inclure un Stage de **Validation** (restauration, compilation globale `ProjetJeu.sln`, et `dotnet test` sur `Tests/`) avant de permettre le Stage de **Build & Export** Godot.
+  - Une tolérance d'erreur est requise sur l'étape de pré-importation headless de Godot (`exit 0` forcé) pour permettre la génération du `.godot/` sans échouer prématurément sur les erreurs C# initiales.
+
+## 2026-05-18 - Inspection Symétrique & Extraction du Couplage Gameplay
+- **Constat Critique :** L'inspection du `Core` a révélé que des interfaces actives de gameplay (`IAgressorController`, `IRangedController`, `IProjectile`), utilisant `System.Numerics.Vector2` pour contourner la restriction `Godot.*`, s'étaient infiltrées dans le projet. Ces interfaces encapsulaient de la logique spatio-temporelle (direction, poursuite, calcul de trajectoire).
+- **Correction Architecturale :** Le `Core` étant un "noyau mathématique pure", toute interface ou classe pilotant activement le temps (`_Process`), l'espace (`Vector2`) ou les cycles de vie des entités moteurs a été expulsée. Elles résident désormais légitimement dans `IslandSurvivor/Logic/Entities/` et consomment le vrai `Godot.Vector2`.
+- **Règle d'or :** Si un algorithme a besoin de connaître un vecteur (`X, Y`) pour interpoler un mouvement en temps réel, ou s'il dépend du `DeltaTime`, il **n'a pas sa place** dans le projet `Core`.
+
+## 2026-05-18 - Stratégie d'Optimisation des Collections (C# vs Godot)
+- **Constat Technique :** Le marshalling des données entre le domaine managé de C# (.NET) et le cœur natif en C++ de Godot a un coût de performance non négligeable.
+- **Règle d'Architecture :**
+  - **`System.Collections.Generic` (List, Dictionary, etc.) :** Doit être le standard absolu pour 100% de la logique interne, des calculs du `Core`, et de la gestion de l'état (inventaires, statistiques). Cela permet de conserver des performances natives C# et un accès complet à LINQ.
+  - **`Godot.Collections.Array<T>` / `Dictionary` :** Strictement réservés à la couche d'orchestration (`IslandSurvivor`) et uniquement dans deux scénarios précis : 
+    1. Pour exposer des tableaux dans l'Inspecteur Godot via l'attribut `[Export]`.
+    2. Pour appeler des méthodes de l'API Godot qui requièrent explicitement ces types de retour.
+- Cette ségrégation garantit que le projet `Core` reste totalement agnostique et hautement performant.
