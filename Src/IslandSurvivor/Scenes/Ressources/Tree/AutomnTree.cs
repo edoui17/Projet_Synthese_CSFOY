@@ -11,7 +11,7 @@ using System;
 public partial class AutomnTree : Area2D, ITree, IDamageable
 {
     [Export] public StatManager Stats { get; set; } = null!;
-    [Export] public string EntityId { get; set; } = "tree_automn_01";
+    [Export] public string EntityId { get; set; } = "wood_01";
     [Export] public Timer Timer { get; set; } = null!;
 
     [Export] public string MaterialName { get; set; } = "Bois d'automne";
@@ -58,28 +58,8 @@ public partial class AutomnTree : Area2D, ITree, IDamageable
     public void DestroyResource(object? p_attacker = null)
     {
         Random random = new();
-        int quantity = random.Next(1, 5);
-
-        float luck = 0f;
-        if (p_attacker is Node GodotAttacker)
-        {
-            StatManager attackerStats = GodotAttacker.GetNodeOrNull<StatManager>("StatManager");
-            if (attackerStats != null)
-            {
-                luck = attackerStats.GetCurrentValue(StatType.Luck);
-            }
-        }
-
-        float bonusChance = luck * 0.05f;
-        int bonusQuantity = (int)bonusChance;
-        float fractionalChance = bonusChance - bonusQuantity;
-
-        if (random.NextDouble() < fractionalChance)
-        {
-            bonusQuantity++;
-        }
-
-        quantity += bonusQuantity;
+        int baseQuantity = random.Next(1, 5);
+        int quantity = IslandSurvivor.Logic.ResourceUtils.CalculateYield(baseQuantity, p_attacker);
 
         var item = new Core.Domain.ResourceItem(EntityId, MaterialName, MaterialType, IconPath);
         SignalManager.Instance.EmitMaterialDestroyed(this, item, quantity);

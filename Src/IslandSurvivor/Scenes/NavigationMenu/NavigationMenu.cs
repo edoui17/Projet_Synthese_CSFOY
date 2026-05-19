@@ -109,7 +109,7 @@ public partial class NavigationMenu : Control
                 }
                 else
                 {
-                    btn.Text = $"Island {destination.Id.Substring(0, 5)} (Cost: {destination.ResourceCost}, Type: {destination.Biome})";
+                    btn.Text = $"Island {destination.Id.Substring(0, 5)} (Cost: {destination.ResourceCost} Wood, {destination.ResourceCost} Stone, {destination.ResourceCost} Meat, {destination.ResourceCost} Gold | Type: {destination.Biome})";
                 }
 
                 // Local copy for the closure

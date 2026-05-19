@@ -34,7 +34,7 @@ Chaque bouton est associé à une détection d’événement (clic), déclenchan
 
 ### Start
 - Action : change la scène active  
-- Résultat : redirige vers la map principale du jeu.
+- Résultat : redirige vers la map principale du jeu via le `SceneLoadingManager`. Le système affiche d'abord un écran de chargement (pour masquer les potentiels blocages réseaux) avant de procéder au chargement complet.
 - **Note US 8.1** : Au démarrage, le jeu appelle l'API de synchronisation (`GET /api/player/profile`) pour charger l'inventaire, les statistiques et les configurations du joueur identifié.
 
 ### Scoreboard

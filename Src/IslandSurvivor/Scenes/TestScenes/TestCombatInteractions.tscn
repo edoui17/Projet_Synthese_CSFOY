@@ -9,6 +9,7 @@
 [ext_resource type="PackedScene" uid="uid://rtx0k5qfaymn" path="res://Scenes/Ressources/Tree/ConiferTree.tscn" id="7_tree"]
 [ext_resource type="PackedScene" uid="uid://ms5y206nvi0v" path="res://Scenes/NPC/Agressive/Archer.tscn" id="8_gxrs4"]
 
+
 [node name="TestCombatInteractions" type="Node2D" unique_id=729654025]
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=925283878]

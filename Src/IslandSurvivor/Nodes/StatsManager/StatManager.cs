@@ -33,11 +33,15 @@ public partial class StatManager : Node2D
         }
     }
 
-    [ExportGroup("Base Stats")]
+    [ExportGroup("Base Values")]
     [Export] public float MaxHealth { get; set; } = 100f;
-    [Export] public float BaseDamage { get; set; } = 10f;
-    [Export] public float BaseSpeed { get; set; } = 300f;
-    [Export] public float Luck { get; set; } = 0f;
+    [Export] public float BaseAttackValue { get; set; } = 10f;
+    [Export] public float BaseSpeedValue { get; set; } = 300f;
+
+    [ExportGroup("Initial Stat Points")]
+    [Export] public float InitialAttackPoints { get; set; } = 0f;
+    [Export] public float InitialSpeedPoints { get; set; } = 0f;
+    [Export] public float InitialLuckPoints { get; set; } = 0f;
 
     [Signal]
     public delegate void LocalStatChangedEventHandler(int p_statType, float p_currentValue, float p_effectiveMaxValue);
@@ -50,7 +54,7 @@ public partial class StatManager : Node2D
 
         if (m_entityType == EntityType.Resource)
         {
-            if (name == "BaseDamage" || name == "BaseSpeed" || name == "Luck")
+            if (name == "BaseAttackValue" || name == "BaseSpeedValue" || name == "InitialAttackPoints" || name == "InitialSpeedPoints" || name == "InitialLuckPoints")
             {
                 var usage = property["usage"].As<PropertyUsageFlags>();
                 property["usage"] = (int)(usage & ~PropertyUsageFlags.Editor);
@@ -58,7 +62,7 @@ public partial class StatManager : Node2D
         }
         else if (m_entityType == EntityType.NPC)
         {
-            if (name == "Luck")
+            if (name == "InitialLuckPoints")
             {
                 var usage = property["usage"].As<PropertyUsageFlags>();
                 property["usage"] = (int)(usage & ~PropertyUsageFlags.Editor);
@@ -97,13 +101,13 @@ public partial class StatManager : Node2D
 
         if (m_entityType == EntityType.NPC || m_entityType == EntityType.Player)
         {
-            initialStats.Add(StatType.Attack, 0f);
-            initialStats.Add(StatType.Speed, 0f);
+            initialStats.Add(StatType.Attack, InitialAttackPoints);
+            initialStats.Add(StatType.Speed, InitialSpeedPoints);
         }
 
         if (m_entityType == EntityType.Player)
         {
-            initialStats.Add(StatType.Luck, Luck);
+            initialStats.Add(StatType.Luck, InitialLuckPoints);
         }
 
         if (m_isGlobal && m_statTracker.IsInitialized)

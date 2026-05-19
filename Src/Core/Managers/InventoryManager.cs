@@ -36,29 +36,29 @@ public class InventoryManager : IInventoryManager
 
         if (requiredCost > 0)
         {
-            bool hasViande = GetMaterialCount("Viande") >= requiredCost;
-            bool hasBois = GetMaterialCount("Bois") >= requiredCost;
-            bool hasRoche = GetMaterialCount("Roche") >= requiredCost;
-            bool hasOr = GetMaterialCount("Or") >= requiredCost;
+            bool hasMeat = GetMaterialCount("meat_01") >= requiredCost;
+            bool hasWood = GetMaterialCount("wood_01") >= requiredCost;
+            bool hasRock = GetMaterialCount("rock_01") >= requiredCost;
+            bool hasGold = GetMaterialCount("gold_01") >= requiredCost;
 
-            if (!hasViande || !hasBois || !hasRoche || !hasOr)
+            if (!hasMeat || !hasWood || !hasRock || !hasGold)
             {
                 m_eventBus.Publish(new NavigationRejectedEvent(destination, "Insufficient Resources"));
                 return;
             }
 
             // Deduct items and emit spent events
-            RemoveMaterial("Viande", requiredCost);
-            m_eventBus.Publish(new ResourceSpentEvent("Viande", requiredCost));
+            RemoveMaterial("meat_01", requiredCost);
+            m_eventBus.Publish(new ResourceSpentEvent("meat_01", requiredCost));
 
-            RemoveMaterial("Bois", requiredCost);
-            m_eventBus.Publish(new ResourceSpentEvent("Bois", requiredCost));
+            RemoveMaterial("wood_01", requiredCost);
+            m_eventBus.Publish(new ResourceSpentEvent("wood_01", requiredCost));
 
-            RemoveMaterial("Roche", requiredCost);
-            m_eventBus.Publish(new ResourceSpentEvent("Roche", requiredCost));
+            RemoveMaterial("rock_01", requiredCost);
+            m_eventBus.Publish(new ResourceSpentEvent("rock_01", requiredCost));
 
-            RemoveMaterial("Or", requiredCost);
-            m_eventBus.Publish(new ResourceSpentEvent("Or", requiredCost));
+            RemoveMaterial("gold_01", requiredCost);
+            m_eventBus.Publish(new ResourceSpentEvent("gold_01", requiredCost));
         }
 
         m_eventBus.Publish(new NavigationApprovedEvent(destination));
