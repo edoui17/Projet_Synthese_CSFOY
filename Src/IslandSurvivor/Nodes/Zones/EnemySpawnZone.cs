@@ -5,7 +5,7 @@ using System.Linq;
 using Core.Interfaces.Spawning;
 using Core.Interfaces.Utils;
 using Core.Utils;
-using IslandSurvivor.Scenes.NPC.Agressive;
+using IslandSurvivor.Scenes.NPC.Aggressive;
 using IslandSurvivor.Utils;
 using IslandSurvivor.Utils.Logging;
 
@@ -27,7 +27,7 @@ public partial class EnemySpawnZone : Node2D, IEnemySpawnZone
     [Export] public float MinDistanceBetweenEnemies { get; set; } = 100f;
     [Export] public float RespawnInterval { get; set; } = 60f;
 
-    private readonly List<EnemyBase> m_activeEnemies = new();
+    private readonly List<AggressiveNpcBase> m_activeEnemies = new();
     private float m_respawnTimer = 0f;
     private Rect2 m_cachedBounds;
     private readonly IWeightedRandomSelector<EnemySpawnConfig> m_weightedSelector = new WeightedRandomSelector<EnemySpawnConfig>(new GodotRandomProvider(), new GodotLogger());
@@ -158,7 +158,7 @@ public partial class EnemySpawnZone : Node2D, IEnemySpawnZone
         if (p_scene == null) return;
 
         Node instance = p_scene.Instantiate();
-        if (instance is EnemyBase enemyInstance)
+        if (instance is AggressiveNpcBase enemyInstance)
         {
             AddChild(enemyInstance);
             enemyInstance.Position = p_localPos;
@@ -171,7 +171,7 @@ public partial class EnemySpawnZone : Node2D, IEnemySpawnZone
         else
         {
             instance.QueueFree();
-            GD.PushError($"[EnemySpawnZone] Instantiated scene is not an EnemyBase: {p_scene.ResourcePath}");
+            GD.PushError($"[EnemySpawnZone] Instantiated scene is not an AggressiveNpcBase: {p_scene.ResourcePath}");
         }
     }
 

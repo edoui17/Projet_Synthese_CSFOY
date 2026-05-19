@@ -1,11 +1,11 @@
-namespace IslandSurvivor.Scenes.NPC.Agressive;
+namespace IslandSurvivor.Scenes.NPC.Aggressive;
 
 using Godot;
 using IslandSurvivor.Logic.Entities;
 
-public abstract partial class RangedEnemyBase : EnemyBase
+public abstract partial class RangedAggressiveNpcBase : AggressiveNpcBase
 {
-    [Export] public PackedScene ProjectileScene { get; set; }
+    [Export] public PackedScene ProjectileScene { get; set; } = null!;
 
     public override void _Ready()
     {
@@ -74,7 +74,6 @@ public abstract partial class RangedEnemyBase : EnemyBase
         Node projectileNode = ProjectileScene.Instantiate();
         if (projectileNode is IProjectile projectile)
         {
-            // Calculate direction to player
             Godot.Vector2 directionGodot = (m_targetPlayer.GlobalPosition - GlobalPosition).Normalized();
             Vector2 directionNumerics = new Vector2(directionGodot.X, directionGodot.Y);
             Vector2 startPositionNumerics = new Vector2(GlobalPosition.X, GlobalPosition.Y);

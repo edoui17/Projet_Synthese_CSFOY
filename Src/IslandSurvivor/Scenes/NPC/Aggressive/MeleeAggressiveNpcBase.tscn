@@ -1,16 +1,16 @@
 [gd_scene format=3 uid="uid://mbase12345"]
 
-[ext_resource type="PackedScene" path="res://Scenes/NPC/Agressive/EnemyBase.tscn" id="1_scene"]
-[ext_resource type="Script" uid="uid://c48csl8462qpf" path="res://Scenes/NPC/Agressive/MeleeEnemyBase.cs" id="2_script"]
+[ext_resource type="PackedScene" path="res://Scenes/NPC/Aggressive/AggressiveNpcBase.tscn" id="1_scene"]
+[ext_resource type="Script" uid="uid://c48csl8462qpf" path="res://Scenes/NPC/Aggressive/MeleeAggressiveNpcBase.cs" id="2_script"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_hitbox"]
 radius = 21.986078
 height = 70.16913
 
-[node name="MeleeEnemyBase" instance=ExtResource("1_scene")]
+[node name="MeleeAggressiveNpcBase" instance=ExtResource("1_scene")]
 script = ExtResource("2_script")
 
-[node name="HitboxAreaRight" type="Area2D" parent="." index="8"]
+[node name="HitboxAreaRight" type="Area2D" parent="." index="7"]
 collision_layer = 0
 collision_mask = 4
 
@@ -19,7 +19,7 @@ position = Vector2(30, 6)
 rotation = 1.5352188
 shape = SubResource("CapsuleShape2D_hitbox")
 
-[node name="HitboxAreaLeft" type="Area2D" parent="." index="9"]
+[node name="HitboxAreaLeft" type="Area2D" parent="." index="8"]
 position = Vector2(-68, 0)
 collision_layer = 0
 collision_mask = 4
