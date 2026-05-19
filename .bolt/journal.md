@@ -1,0 +1,3 @@
+## 2024-10-25 - [Cache Node Lookups in Hot Paths]
+**Learning:** `GetNodeOrNull<T>()` and `GetNode<T>()` create string marshaling overhead and perform tree lookups which generate minor GC pressure and unnecessary CPU usage. When called multiple times per physics frame (e.g. inside `_PhysicsProcess` or `UpdateAnimation` in `EnemyBase`), this compounds into measurable frame time spikes, especially with many enemies active simultaneously.
+**Action:** Always cache frequently accessed Node references inside a class field during `_Ready()` rather than polling them dynamically in `_Process` or `_PhysicsProcess`.

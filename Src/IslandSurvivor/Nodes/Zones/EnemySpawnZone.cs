@@ -70,8 +70,8 @@ public partial class EnemySpawnZone : Node2D, IEnemySpawnZone
     {
         if (EnemyConfigs == null || EnemyConfigs.Count == 0)
         {
-             GD.PushWarning($"[EnemySpawnZone] No EnemyConfigs assigned for {Name}.");
-             return;
+            GD.PushWarning($"[EnemySpawnZone] No EnemyConfigs assigned for {Name}.");
+            return;
         }
 
         CleanupDestroyedEnemies();

@@ -9,7 +9,6 @@ public abstract partial class MeleeEnemyBase : EnemyBase
 {
     protected Area2D m_hitboxAreaRight;
     protected Area2D m_hitboxAreaLeft;
-    protected IslandSurvivor.Nodes.Combat.AttackController? m_attackController;
 
     public override void _Ready()
     {
@@ -18,7 +17,6 @@ public abstract partial class MeleeEnemyBase : EnemyBase
         m_hitboxAreaRight = GetNodeOrNull<Area2D>("HitboxAreaRight");
         m_hitboxAreaLeft = GetNodeOrNull<Area2D>("HitboxAreaLeft");
 
-        m_attackController = GetNodeOrNull<IslandSurvivor.Nodes.Combat.AttackController>("AttackController");
         if (m_attackController != null)
         {
             m_attackController.Stats = Stats;

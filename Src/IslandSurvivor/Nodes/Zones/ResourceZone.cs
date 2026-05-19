@@ -66,8 +66,8 @@ public partial class ResourceZone : Node2D, IResourcePopulator
     {
         if (ResourceScenes == null || ResourceScenes.Count == 0)
         {
-             GD.PushWarning($"[ResourceZone] No ResourceScenes assigned for {Name}.");
-             return;
+            GD.PushWarning($"[ResourceZone] No ResourceScenes assigned for {Name}.");
+            return;
         }
 
         CleanupDestroyedResources();

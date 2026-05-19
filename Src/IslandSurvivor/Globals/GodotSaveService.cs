@@ -66,7 +66,9 @@ public class GodotSaveService : ISaveService
     public void SaveData(string p_fileName, string p_jsonData)
     {
         EnsureDirectoryExists();
-        string path = m_saveDir + p_fileName;
+        // SECURITY FIX: Sanitize input to prevent Path Traversal
+        string safeFileName = System.IO.Path.GetFileName(p_fileName);
+        string path = System.IO.Path.Combine(m_saveDir, safeFileName);
         using FileAccess file = FileAccess.Open(path, FileAccess.ModeFlags.Write);
 
         if (file == null)
@@ -81,7 +83,9 @@ public class GodotSaveService : ISaveService
 
     public string LoadData(string p_fileName)
     {
-        string path = m_saveDir + p_fileName;
+        // SECURITY FIX: Sanitize input to prevent Path Traversal
+        string safeFileName = System.IO.Path.GetFileName(p_fileName);
+        string path = System.IO.Path.Combine(m_saveDir, safeFileName);
 
         if (!FileAccess.FileExists(path))
         {
