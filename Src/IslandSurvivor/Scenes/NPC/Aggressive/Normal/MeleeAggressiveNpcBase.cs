@@ -2,7 +2,7 @@ namespace IslandSurvivor.Scenes.NPC.Aggressive;
 
 using Godot;
 
-public abstract partial class MeleeAggressiveNpcBase : AggressiveNpcBase
+public partial class MeleeAggressiveNpcBase : AggressiveNpcBase
 {
     protected Area2D m_hitboxAreaRight;
     protected Area2D m_hitboxAreaLeft;

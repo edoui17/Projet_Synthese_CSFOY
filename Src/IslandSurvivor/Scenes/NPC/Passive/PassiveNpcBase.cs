@@ -3,7 +3,7 @@ namespace IslandSurvivor.Scenes.NPC.Passive;
 using Godot;
 using IslandSurvivor.Logic.Entities;
 
-public abstract partial class PassiveNpcBase : NpcBase
+public partial class PassiveNpcBase : NpcBase
 {
     [Export] public float FleeSpeed { get; set; } = 120.0f;
 
