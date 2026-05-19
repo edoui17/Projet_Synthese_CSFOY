@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using Godot;
 using IslandSurvivor.Extensions;
-using Core.Interfaces.Entities;
+using IslandSurvivor.Logic.Entities;
 using Core.Interfaces.Stats;
 using Core.Managers.Stats;
 using IslandSurvivor.Logic.Entities;
@@ -30,6 +30,7 @@ public abstract partial class EnemyBase : CharacterBody2D, INpc, IEnemy, IDamage
     protected IAgressorController m_agressorController;
     protected MovementController m_movementController;
 
+    protected IslandSurvivor.Nodes.Combat.AttackController? m_attackController;
     protected AnimatedSprite2D m_animatedSprite;
     protected Area2D m_detectionArea;
     protected RayCast2D m_lineOfSightRay;
@@ -55,9 +56,17 @@ public abstract partial class EnemyBase : CharacterBody2D, INpc, IEnemy, IDamage
         InitializeController();
 
         m_animatedSprite = GetNodeOrNull<AnimatedSprite2D>("AnimatedSprite2D");
+        m_attackController = GetNodeOrNull<IslandSurvivor.Nodes.Combat.AttackController>("AttackController");
         if (m_animatedSprite == null)
         {
             GD.PrintErr($"{Name} node requires an AnimatedSprite2D child node.");
+        }
+        else
+        {
+            if (m_attackController != null && m_attackController.AttackSprite == null)
+            {
+                m_attackController.AttackSprite = m_animatedSprite;
+            }
         }
 
         m_detectionArea = GetNodeOrNull<Area2D>("DetectionArea");
@@ -93,11 +102,11 @@ public abstract partial class EnemyBase : CharacterBody2D, INpc, IEnemy, IDamage
 
     protected virtual void ApplyLevelScaling()
     {
-        // Calculate scaling factor: BaseStat * (1 + 0.2 * LevelIndex)
-        float scalingFactor = 1.0f + 0.2f * LevelIndex;
+        // Calculate scaling factor: BaseStat * (1 + 0.2 * (LevelIndex - 1))
+        float scalingFactor = 1.0f + 0.2f * (LevelIndex - 1);
 
         float maxHealth = Stats.MaxHealth * scalingFactor;
-        float baseDamage = Stats.BaseDamage * scalingFactor;
+        float baseDamage = Stats.BaseAttackValue * scalingFactor;
 
         // Apply scaling factor to speeds
         IdleSpeed *= scalingFactor;
@@ -130,7 +139,7 @@ public abstract partial class EnemyBase : CharacterBody2D, INpc, IEnemy, IDamage
         // Set the new max health, current health, and damage
         Stats.MaxHealth = maxHealth;
         Stats.SetCurrentValue(StatType.Health, maxHealth);
-        Stats.BaseDamage = baseDamage;
+        Stats.BaseAttackValue = baseDamage;
     }
 
     protected virtual void OnStatChanged(int p_statType, float p_currentValue, float p_effectiveMaxValue)
@@ -162,7 +171,8 @@ public abstract partial class EnemyBase : CharacterBody2D, INpc, IEnemy, IDamage
         Vector2 direction = new Vector2(m_agressorController.CurrentDirection.X, m_agressorController.CurrentDirection.Y);
         float targetSpeed = IdleSpeed;
 
-        if (m_agressorController.CurrentState == NpcStates.ATTACK)
+
+        if (m_attackController != null && m_attackController.IsAttacking)
         {
             // Do not move while attacking
             targetSpeed = 0f;
@@ -178,9 +188,9 @@ public abstract partial class EnemyBase : CharacterBody2D, INpc, IEnemy, IDamage
             }
             else
             {
-                targetSpeed = m_agressorController.IsOnCooldown ? ChaseSpeed * 0.5f : ChaseSpeed;
-                System.Numerics.Vector2 globalPositionNumerics = new System.Numerics.Vector2(GlobalPosition.X, GlobalPosition.Y);
-                System.Numerics.Vector2 targetPositionNumerics = new System.Numerics.Vector2(m_targetPlayer.GlobalPosition.X, m_targetPlayer.GlobalPosition.Y);
+                targetSpeed = ChaseSpeed;
+                Vector2 globalPositionNumerics = GlobalPosition;
+                Vector2 targetPositionNumerics = m_targetPlayer.GlobalPosition;
                 m_agressorController.UpdateChaseDirection(globalPositionNumerics, targetPositionNumerics);
                 direction = new Vector2(m_agressorController.CurrentDirection.X, m_agressorController.CurrentDirection.Y);
             }
@@ -213,9 +223,15 @@ public abstract partial class EnemyBase : CharacterBody2D, INpc, IEnemy, IDamage
     {
         if (m_animatedSprite == null) return;
 
-        if (m_agressorController.CurrentState == NpcStates.ATTACK)
+        bool isAttacking = m_attackController != null && m_attackController.IsAttacking;
+
+        if (isAttacking)
         {
-            m_animatedSprite.Play("Attack");
+            if (m_animatedSprite.Animation != "Attack")
+            {
+                m_animatedSprite.Play("Attack");
+                m_animatedSprite.Frame = 0;
+            }
             return;
         }
 
@@ -228,7 +244,7 @@ public abstract partial class EnemyBase : CharacterBody2D, INpc, IEnemy, IDamage
             m_animatedSprite.Play("Idle");
         }
 
-        if (p_direction.X != 0)
+        if (p_direction.X != 0 && !isAttacking)
         {
             m_animatedSprite.FlipH = p_direction.X < 0;
         }

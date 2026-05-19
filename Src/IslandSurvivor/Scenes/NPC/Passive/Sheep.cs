@@ -19,7 +19,7 @@ public partial class Sheep : CharacterBody2D, INpc, IDamageable
 
     private PassiveController m_passiveController = null!;
     [Export] private MovementController m_movementController = null!;
-    [Export] private Sprite2D m_sprite = null!;
+    [Export] private AnimatedSprite2D m_sprite = null!;
     private bool m_wasKilledByPlayer = false;
 
     public string CurrentState => m_passiveController?.CurrentState ?? NpcStates.IDLE;
@@ -32,7 +32,6 @@ public partial class Sheep : CharacterBody2D, INpc, IDamageable
 
         if (Stats != null)
         {
-            Stats.SetCurrentValue(StatType.Health, 3);
             Stats.Connect(StatManager.SignalName.LocalStatChanged, Callable.From<int, float, float>(OnStatChanged));
         }
     }
@@ -63,10 +62,30 @@ public partial class Sheep : CharacterBody2D, INpc, IDamageable
             targetSpeed = FleeSpeed;
         }
 
-        // Flip sprite based on movement direction
-        if (m_sprite != null && direction.X != 0)
+        // Flip sprite based on movement direction and update animation
+        if (m_sprite != null)
         {
-            m_sprite.FlipH = direction.X < 0;
+            if (direction.X != 0)
+            {
+                m_sprite.FlipH = direction.X < 0;
+            }
+
+            if (m_passiveController.CurrentState == NpcStates.FLEE)
+            {
+                if (m_sprite.Animation != "FLEE") m_sprite.Play("FLEE");
+            }
+            else
+            {
+                if (Velocity.LengthSquared() > 0 || direction.LengthSquared() > 0)
+                {
+                    // Sheep doesn't have a distinct moving animation right now, using IDLE or FLEE.
+                    if (m_sprite.Animation != "IDLE") m_sprite.Play("IDLE");
+                }
+                else
+                {
+                    if (m_sprite.Animation != "IDLE") m_sprite.Play("IDLE");
+                }
+            }
         }
 
         if (m_movementController != null)
@@ -130,7 +149,8 @@ public partial class Sheep : CharacterBody2D, INpc, IDamageable
 
         if (m_wasKilledByPlayer)
         {
-            int meatAmount = 1;
+            Random random = new();
+            int meatAmount = random.Next(1, 4); // 1 to 3 meat
 
             float luck = 0f;
             if (p_attacker is Node GodotAttacker)
@@ -146,7 +166,6 @@ public partial class Sheep : CharacterBody2D, INpc, IDamageable
             int bonusQuantity = (int)bonusChance;
             float fractionalChance = bonusChance - bonusQuantity;
 
-            Random random = new();
             if (random.NextDouble() < fractionalChance)
             {
                 bonusQuantity++;

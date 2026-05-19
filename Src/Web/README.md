@@ -1,15 +1,17 @@
-# Web (Tableau de bord)
+# Projet Web (Tableau de Bord / UI)
 
-Application **Blazor Web App** permettant de visualiser les statistiques r�colt�es.
+## 📌 Responsabilité Unique
+Ce répertoire contient l'application Blazor Web App. Son rôle est de fournir une interface utilisateur déportée (ex: tableaux de bord d'administration, classements en ligne) aux administrateurs ou joueurs.
 
-### Fonctionnalit�s :
-* Affichage des classements (Leaderboards).
-* Graphiques de progression des joueurs.
-* Interface d'administration des donn�es.
+## ✅ Composants Autorisés
+- Composants Razor (`.razor`)
+- Fichiers statiques web (`wwwroot/`, CSS, JS)
+- Services front-end d'appel HTTP vers l'API.
 
-### D�pendances :
-* `Core` : Pour l'affichage des mod�les.
+## 🚫 Dépendances Interdites
+- **Accès direct BDD** : Le Web ne doit jamais inclure Entity Framework ou le projet `Infrastructure`. Il doit impérativement consommer les données via le projet `API`.
+- **Logique de Jeu** : Aucun composant lié à la boucle de rendu de Godot.
 
-### Commande pour lancer le projet
-dotnet watch run --project Src/Web
-(watch permet de voir le code directement s'afficher sur le site, run n'a pas cette fonctionnalité sinon)
+## 💡 Conseils pour l'équipe (et l'IA)
+- Ce projet dépend du projet `Core` pour partager les Modèles (DTOs/Domaine) et éviter la duplication des structures de données.
+- Privilégiez une architecture par composants pour une réutilisation maximale dans l'interface utilisateur.

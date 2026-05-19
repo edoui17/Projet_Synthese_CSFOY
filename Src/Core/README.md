@@ -1,10 +1,22 @@
-# Core (Logique Partag�e)
+# Projet Core (Logique Partagée & Abstractions)
 
-C'est le projet le plus important de la solution. Il contient tout ce qui est **commun** � l'ensemble du syst�me.
+## 📌 Responsabilité Unique
+Ce répertoire est le cœur battant de notre architecture N-Tiers. Il contient les règles métier pures, les entités du domaine, la logique mathématique (calcul d'XP, formules de combat) et les abstractions (Interfaces).
+**Il est agnostique et représente la source de vérité absolue ("Single Source of Truth").**
 
-### Contenu :
-* **Models/** : Classes de donn�es (ex: `PlayerStats`, `MatchResult`).
-* **Interfaces/** : Contrats pour les services (ex: `IStatsService`).
-* **Logic/** : Algorithmes de calcul pur (XP, Elo, etc.) testables unitairement.
+## ✅ Composants Autorisés
+- Interfaces des services (`Interfaces/`)
+- Modèles de données purs (`Domain/` ou `Models/`)
+- Utilitaires mathématiques et algorithmiques (`Logic/`, `Utils/`)
+- POCOs pour les événements (`Events/`)
 
-> **Note :** Ce projet ne doit avoir aucune d�pendance vers les autres projets de la solution (Single Source of Truth).
+## 🚫 Dépendances Interdites
+- **Aucune dépendance externe majeure.**
+- **Godot** : Interdiction totale de référencer des namespaces liés au moteur (`Godot.*`).
+- **Entity Framework** : Interdiction d'utiliser `Microsoft.EntityFrameworkCore` ou des attributs spécifiques aux bases de données (ex: `[Table]`). L'infrastructure s'occupera du mapping.
+
+## 💡 Conseils pour l'équipe (et l'IA)
+- Pensez "Interfaces First". Toute fonctionnalité majeure doit d'abord être définie par un contrat ici.
+- Le code ici doit être 100% testable unitairement, sans avoir besoin de mocker une base de données complexe ou de démarrer un moteur de jeu.
+
+- **Logique Applicative de Gameplay** : Interdiction absolue d'inclure de la logique spatio-temporelle, des calculs de vecteurs 2D, des timers actifs, de la physique ou de la gestion d'états d'animation. Le `Core` ne simule pas le jeu, il compte et structure les données.

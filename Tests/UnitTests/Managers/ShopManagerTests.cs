@@ -83,10 +83,10 @@ public class ShopManagerTests
         IShopManager shopManager = new ShopManager(new global::Core.Services.EventBus());
         IInventoryManager inventoryManager = new InventoryManager(new global::Core.Services.EventBus());
 
-        inventoryManager.AddMaterial(new ResourceItem("Viande", "Viande", "Food", ""), 1);
-        inventoryManager.AddMaterial(new ResourceItem("Bois", "Bois", "Material", ""), 1);
-        inventoryManager.AddMaterial(new ResourceItem("Roche", "Roche", "Material", ""), 1);
-        inventoryManager.AddMaterial(new ResourceItem("Or", "Or", "Currency", ""), 1);
+        inventoryManager.AddMaterial(new ResourceItem("meat_01", "meat_01", "Food", ""), 1);
+        inventoryManager.AddMaterial(new ResourceItem("wood_01", "wood_01", "Material", ""), 1);
+        inventoryManager.AddMaterial(new ResourceItem("rock_01", "rock_01", "Material", ""), 1);
+        inventoryManager.AddMaterial(new ResourceItem("gold_01", "gold_01", "Currency", ""), 1);
 
         // Act
         bool result = shopManager.CanAffordIsland(inventoryManager, 1);
@@ -102,10 +102,10 @@ public class ShopManagerTests
         IShopManager shopManager = new ShopManager(new global::Core.Services.EventBus());
         IInventoryManager inventoryManager = new InventoryManager(new global::Core.Services.EventBus());
 
-        inventoryManager.AddMaterial(new ResourceItem("Viande", "Viande", "Food", ""), 1);
-        inventoryManager.AddMaterial(new ResourceItem("Bois", "Bois", "Material", ""), 1);
-        inventoryManager.AddMaterial(new ResourceItem("Roche", "Roche", "Material", ""), 1);
-        // Missing "Or"
+        inventoryManager.AddMaterial(new ResourceItem("meat_01", "meat_01", "Food", ""), 1);
+        inventoryManager.AddMaterial(new ResourceItem("wood_01", "wood_01", "Material", ""), 1);
+        inventoryManager.AddMaterial(new ResourceItem("rock_01", "rock_01", "Material", ""), 1);
+        // Missing "gold_01"
 
         // Act
         bool result = shopManager.CanAffordIsland(inventoryManager, 1);

@@ -2,7 +2,7 @@ namespace IslandSurvivor.Logic.Entities;
 
 using System;
 using Godot; // Vector2
-using Core.Interfaces.Entities;
+using IslandSurvivor.Logic.Entities;
 
 public class RangedController : AgressorController, IRangedController
 {

@@ -5,5 +5,6 @@ public enum PlayerState
     Idle,
     Moving,
     Interacting,
-    Attacking
+    Attacking,
+    Dashing
 }

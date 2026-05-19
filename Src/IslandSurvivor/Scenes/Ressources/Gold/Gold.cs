@@ -20,7 +20,7 @@ public partial class Gold : Area2D, IOre, IDamageable
     [Export] public string MaterialType { get; set; } = "Gold";
     [Export] public string IconPath { get; set; } = "sera a valider";
 
-    
+
 
     private object? m_lastAttacker;
 
@@ -53,7 +53,7 @@ public partial class Gold : Area2D, IOre, IDamageable
             if (Timer == null || Timer.IsStopped())
             {
                 Timer?.Start();
-               TakeDamage(10, p_area.GetParent() ?? p_area); // Example damage value, adjust as needed
+                TakeDamage(10, p_area.GetParent() ?? p_area); // Example damage value, adjust as needed
             }
         }
     }
@@ -61,28 +61,8 @@ public partial class Gold : Area2D, IOre, IDamageable
     public void DestroyResource(object? p_attacker = null)
     {
         Random random = new();
-        int quantity = random.Next(1, 5);
-
-        float luck = 0f;
-        if (p_attacker is Node GodotAttacker)
-        {
-            StatManager attackerStats = GodotAttacker.GetNodeOrNull<StatManager>("StatManager");
-            if (attackerStats != null)
-            {
-                luck = attackerStats.GetCurrentValue(StatType.Luck);
-            }
-        }
-
-        float bonusChance = luck * 0.05f;
-        int bonusQuantity = (int)bonusChance;
-        float fractionalChance = bonusChance - bonusQuantity;
-
-        if (random.NextDouble() < fractionalChance)
-        {
-            bonusQuantity++;
-        }
-
-        quantity += bonusQuantity;
+        int baseQuantity = random.Next(1, 5);
+        int quantity = IslandSurvivor.Logic.ResourceUtils.CalculateYield(baseQuantity, p_attacker);
 
         ResourceItem item = new ResourceItem(EntityId, MaterialName, MaterialType, IconPath);
 
@@ -123,7 +103,7 @@ public partial class Gold : Area2D, IOre, IDamageable
         if (Stats == null) return;
 
         m_lastAttacker = p_attacker;
-        Stats.ModifyCurrentValue(StatType.Health, - p_amount);
+        Stats.ModifyCurrentValue(StatType.Health, -p_amount);
 
         this.PlayHitFlash();
         this.PlayShake();

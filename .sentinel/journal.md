@@ -1,0 +1,4 @@
+## 2024-05-24 - [Path Traversal in GodotSaveService]
+**Vulnerability:** Path Traversal vulnerability in `GodotSaveService.cs` allows arbitrary file writes/reads outside the intended `Save/` directory.
+**Learning:** Using `ProjectSettings.GlobalizePath` removes Godot's internal virtual filesystem protections (`res://` or `user://`). When combined with raw string concatenation (`string path = m_saveDir + p_fileName`) and `FileAccess.Open`, it reintroduces standard OS-level path traversal exploits if `p_fileName` contains segments like `../../`.
+**Prevention:** Always sanitize filenames using `System.IO.Path.GetFileName()` to strip directory path segments before appending them to the absolute save directory, and prefer `System.IO.Path.Combine()` over string concatenation.
