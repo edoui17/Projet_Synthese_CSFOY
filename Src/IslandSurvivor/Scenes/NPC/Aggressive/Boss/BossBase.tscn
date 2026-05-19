@@ -1,8 +1,9 @@
 [gd_scene format=3 uid="uid://bossbase123"]
 
 [ext_resource type="PackedScene" uid="uid://ebase12345" path="res://Scenes/NPC/Aggressive/AggressiveNpcBase.tscn" id="1_scene"]
-[ext_resource type="Script" path="res://Scenes/NPC/Aggressive/BossBase.cs" id="2_script"]
+[ext_resource type="Script" uid="uid://b1py08fmiwthv" path="res://Scenes/NPC/Aggressive/Boss/BossBase.cs" id="2_script"]
 [ext_resource type="PackedScene" uid="uid://crca7kdilqogk" path="res://Scenes/Projectiles/Arrow.tscn" id="3_arrow"]
+
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_boss_hitbox"]
 radius = 40.0

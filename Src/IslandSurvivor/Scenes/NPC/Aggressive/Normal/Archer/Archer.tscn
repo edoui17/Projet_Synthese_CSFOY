@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://ms5y206nvi0v"]
 
-[ext_resource type="PackedScene" uid="uid://rbase12345" path="res://Scenes/NPC/Aggressive/RangedAggressiveNpcBase.tscn" id="1_scene"]
+[ext_resource type="PackedScene" uid="uid://rbase12345" path="res://Scenes/NPC/Aggressive/Normal/RangedAggressiveNpcBase.tscn" id="1_scene"]
 [ext_resource type="Script" uid="uid://dgynmagnnb7ih" path="res://Scenes/NPC/Aggressive/Normal/Archer/Archer.cs" id="2_script"]
 [ext_resource type="Texture2D" uid="uid://b8o63a2wvjr7y" path="res://Assets/TinySwords/Sprites/Archer/Black/Archer_Shoot.png" id="3_shoot"]
 [ext_resource type="Texture2D" uid="uid://b0b511y7uqtly" path="res://Assets/TinySwords/Sprites/Archer/Black/Archer_Idle.png" id="4_idle"]
@@ -153,8 +153,13 @@ animations = [{
 [sub_resource type="CircleShape2D" id="CircleShape2D_arch"]
 radius = 300.0
 
-[node name="Archer" instance=ExtResource("1_scene")]
+[node name="Archer" unique_id=61408674 instance=ExtResource("1_scene")]
 script = ExtResource("2_script")
+ChaseSpeed = 100.0
+StoppingDistance = 40.0
+LevelIndex = 1
+BaseXp = 30.0
+XpMultiplier = 0.2
 
 [node name="AnimatedSprite2D" parent="." index="0"]
 position = Vector2(0, -5.722046e-06)
@@ -167,11 +172,12 @@ frame_progress = 0.37355852
 position = Vector2(-2.0000005, 1)
 scale = Vector2(0.99999994, 0.99999994)
 
-[node name="StatManager" parent="." index="3"]
+[node name="StatManager" parent="." index="2"]
 MaxHealth = 30.0
+BaseAttackValue = 15.0
 
 [node name="CollisionShape2D" parent="DetectionArea" index="0"]
 shape = SubResource("CircleShape2D_arch")
 
-[node name="AttackController" parent="." index="7"]
+[node name="AttackController" parent="." index="6"]
 BaseAttackCooldown = 1.5

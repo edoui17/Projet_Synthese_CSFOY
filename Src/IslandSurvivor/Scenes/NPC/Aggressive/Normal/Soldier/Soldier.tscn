@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://dyxx1q578y7t0"]
 
-[ext_resource type="PackedScene" uid="uid://mbase12345" path="res://Scenes/NPC/Aggressive/MeleeAggressiveNpcBase.tscn" id="1_scene"]
+[ext_resource type="PackedScene" uid="uid://mbase12345" path="res://Scenes/NPC/Aggressive/Normal/MeleeAggressiveNpcBase.tscn" id="1_scene"]
 [ext_resource type="Script" uid="uid://d1eskrq5egat0" path="res://Scenes/NPC/Aggressive/Normal/Soldier/Soldier.cs" id="2_script"]
 [ext_resource type="Texture2D" uid="uid://dme25kdxbnqcy" path="res://Assets/TinySwords/Sprites/Warrior/Black/Warrior_Idle.png" id="3_idle"]
 [ext_resource type="Texture2D" uid="uid://dwsh1gspfwghh" path="res://Assets/TinySwords/Sprites/Warrior/Black/Warrior_Attack1.png" id="4_attack"]
@@ -150,8 +150,13 @@ animations = [{
 "speed": 5.0
 }]
 
-[node name="Soldier" instance=ExtResource("1_scene")]
+[node name="Soldier" unique_id=214381457 instance=ExtResource("1_scene")]
 script = ExtResource("2_script")
+ChaseSpeed = 100.0
+StoppingDistance = 40.0
+LevelIndex = 1
+BaseXp = 30.0
+XpMultiplier = 0.2
 
 [node name="AnimatedSprite2D" parent="." index="0"]
 position = Vector2(0, -5.722046e-06)
@@ -163,11 +168,8 @@ animation = &"Idle"
 position = Vector2(-2.0000005, 1)
 scale = Vector2(0.99999994, 0.99999994)
 
-[node name="StatManager" parent="." index="3"]
-MaxHealth = 50.0
+[node name="StatManager" parent="." index="2"]
+BaseAttackValue = 8.0
 
 [node name="DetectionArea" parent="." index="5"]
 visible = false
-
-[node name="AttackController" parent="." index="7"]
-BaseAttackCooldown = 2.0

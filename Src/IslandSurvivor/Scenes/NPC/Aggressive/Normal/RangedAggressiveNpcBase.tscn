@@ -1,8 +1,9 @@
 [gd_scene format=3 uid="uid://rbase12345"]
 
-[ext_resource type="PackedScene" path="res://Scenes/NPC/Aggressive/AggressiveNpcBase.tscn" id="1_scene"]
-[ext_resource type="Script" uid="uid://bbrba0kvch7b6" path="res://Scenes/NPC/Aggressive/RangedAggressiveNpcBase.cs" id="2_script"]
+[ext_resource type="PackedScene" uid="uid://ebase12345" path="res://Scenes/NPC/Aggressive/AggressiveNpcBase.tscn" id="1_scene"]
+[ext_resource type="Script" uid="uid://bbrba0kvch7b6" path="res://Scenes/NPC/Aggressive/Normal/RangedAggressiveNpcBase.cs" id="2_script"]
 [ext_resource type="PackedScene" uid="uid://crca7kdilqogk" path="res://Scenes/Projectiles/Arrow.tscn" id="3_arrow"]
+
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_hitbox_ranged"]
 radius = 21.986078
