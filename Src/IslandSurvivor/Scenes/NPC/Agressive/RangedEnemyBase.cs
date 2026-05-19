@@ -1,7 +1,6 @@
 namespace IslandSurvivor.Scenes.NPC.Agressive;
 
 using Godot;
-using Core.Interfaces.Entities;
 using IslandSurvivor.Logic.Entities;
 
 public abstract partial class RangedEnemyBase : EnemyBase
@@ -79,8 +78,8 @@ public abstract partial class RangedEnemyBase : EnemyBase
         {
             // Calculate direction to player
             Godot.Vector2 directionGodot = (m_targetPlayer.GlobalPosition - GlobalPosition).Normalized();
-            System.Numerics.Vector2 directionNumerics = new System.Numerics.Vector2(directionGodot.X, directionGodot.Y);
-            System.Numerics.Vector2 startPositionNumerics = new System.Numerics.Vector2(GlobalPosition.X, GlobalPosition.Y);
+            Vector2 directionNumerics = new Vector2(directionGodot.X, directionGodot.Y);
+            Vector2 startPositionNumerics = new Vector2(GlobalPosition.X, GlobalPosition.Y);
 
             float damageAmount = Stats?.BaseAttackValue ?? 10.0f;
 

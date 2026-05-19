@@ -1,6 +1,6 @@
-namespace Core.Interfaces.Entities;
+namespace IslandSurvivor.Logic.Entities;
 
-using System.Numerics;
+using Godot;
 
 public interface IRangedController : IAgressorController
 {

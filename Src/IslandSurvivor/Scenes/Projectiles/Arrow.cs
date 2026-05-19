@@ -1,7 +1,7 @@
 namespace IslandSurvivor.Scenes.Projectiles;
 
 using Godot;
-using Core.Interfaces.Entities;
+using IslandSurvivor.Logic.Entities;
 using Core.Interfaces.Stats;
 using IslandSurvivor.Extensions;
 
@@ -12,7 +12,7 @@ public partial class Arrow : Area2D, IProjectile
 
     public float Speed { get; private set; }
     public float Damage { get; private set; }
-    public System.Numerics.Vector2 Direction { get; private set; }
+    public Vector2 Direction { get; private set; }
 
     private Godot.Vector2 m_velocity;
     private object m_shooter;
@@ -28,7 +28,7 @@ public partial class Arrow : Area2D, IProjectile
         BodyEntered += OnBodyEntered;
     }
 
-    public void Initialize(System.Numerics.Vector2 p_startPosition, System.Numerics.Vector2 p_direction, float p_damage, object p_shooter)
+    public void Initialize(Vector2 p_startPosition, Vector2 p_direction, float p_damage, object p_shooter)
     {
         GlobalPosition = new Godot.Vector2(p_startPosition.X, p_startPosition.Y);
         Direction = p_direction;
