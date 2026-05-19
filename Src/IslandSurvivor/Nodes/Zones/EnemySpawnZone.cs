@@ -6,6 +6,7 @@ using Core.Interfaces.Spawning;
 using Core.Interfaces.Utils;
 using Core.Utils;
 using IslandSurvivor.Scenes.NPC.Agressive;
+using IslandSurvivor.Utils.Logging;
 
 namespace IslandSurvivor.Nodes.Zones;
 
@@ -29,7 +30,7 @@ public partial class EnemySpawnZone : Node2D, IEnemySpawnZone
     private float m_respawnTimer = 0f;
     private readonly Random m_random = new();
     private Rect2 m_cachedBounds;
-    private readonly IWeightedRandomSelector<EnemySpawnConfig> m_weightedSelector = new WeightedRandomSelector<EnemySpawnConfig>();
+    private readonly IWeightedRandomSelector<EnemySpawnConfig> m_weightedSelector = new WeightedRandomSelector<EnemySpawnConfig>(new SystemRandomProvider(), new GodotLogger());
 
     public override void _Ready()
     {
