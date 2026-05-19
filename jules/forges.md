@@ -169,3 +169,11 @@ When triggering updates (e.g., UI upgrades emitting events to a decoupled compon
 - **Level Progression**: Implemented a threshold-based level system (Level 1: 0-999, Level 2: 1000-2499, Level 3: 2500-4999, Level 4+: +5000 per level). Centralizing this in a service allows for easy future balancing.
 - **Consistency Strategy**: While a SQL trigger handles DB-level HighScore integrity, the `ProgressionService` updates the `Player` object in memory during the request. This ensures the API response (e.g., during `Sync`) contains the most up-to-date HighScore immediately.
 - **Leaderboard Performance**: Refactored `GetLeaderboard` to sort by the `HighScore` column in the `Players` table. This is O(1) or O(log N) with indexes, compared to the previous O(N*M) approach of scanning all session history.
+
+## 2026-05-15 - Leaderboard Filtering & Sorting (US 10.1.5)
+- **POCO Enrichment**: Updated `PlayerLeaderboardEntry` to include `Duration`, `BonusHealth`, `BonusAttack`, `BonusSpeed`, and `BonusLuck`. This allows the frontend to display detailed performance metrics regardless of the active filter.
+- **Dynamic Sorting Logic**: Implemented a `switch` based sorting mechanism in `PlayerController.GetLeaderboard`.
+  - Sorting criteria include: `score`, `duration`, `level`, and bonus stats (`health`, `attack`, `speed`, `luck`).
+  - For session-based metrics (duration, level, bonuses), the API calculates the `Max()` value across the player's `GameStats` collection to determine their ranking.
+- **Search Functionality**: Added a `p_search` parameter for "Contains" (case-insensitive) filtering on `Username`, anticipating Scénario 3.
+- **Data Integrity**: Maintained the "Best Session" projection. Even when sorting by a specific stat (e.g., Speed), the returned entry displays the full stats from the player's highest-scoring session to ensure a coherent "Master Profile" view.
