@@ -84,7 +84,7 @@ public partial class Gold : Area2D, IOre, IDamageable
         }
 
         // Try to play destroy sound
-        AudioStream destroyStream = GD.Load<AudioStream>("res://Assets/Sounds/Combat/rock_destroy.wav");
+        AudioStream destroyStream = GD.Load<AudioStream>("res://Assets/Audio/kenney_impact-sounds/Audio/impactMining_001.ogg");
         if (destroyStream != null)
         {
             AudioManager.Instance?.PlaySound2D(destroyStream, GlobalPosition);
@@ -109,7 +109,12 @@ public partial class Gold : Area2D, IOre, IDamageable
         this.PlayShake();
 
         // Try to play impact sound
-        AudioStream impactStream = GD.Load<AudioStream>("res://Assets/Sounds/Combat/rock_impact.wav");
+        AudioStream impactStream = null;
+        if (Stats.GetCurrentValue(StatType.Health) > 0)
+        {
+            impactStream = GD.Load<AudioStream>("res://Assets/Audio/kenney_impact-sounds/Audio/impactMining_001.ogg");
+
+        }
         if (impactStream != null)
         {
             AudioManager.Instance?.PlaySound2D(impactStream, GlobalPosition);

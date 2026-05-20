@@ -65,8 +65,32 @@ public partial class Sheep : PassiveNpcBase
             {
                 GD.PrintErr("SignalManager is not available.");
             }
+
+            AudioStream destroyStream = GD.Load<AudioStream>("res://Assets/Audio/kenney_impact-sounds/Audio/impactMining_001.ogg");
+
+            if (destroyStream != null)
+            {
+                AudioManager.Instance?.PlaySound2D(destroyStream, GlobalPosition);
+            }
         }
 
+
         QueueFree();
+    }
+    protected override void OnDamageTaken(Node2D p_attacker)
+    {
+
+        base.OnDamageTaken(p_attacker);
+
+        AudioStream impactStream = null;
+        if (Stats.GetCurrentValue(StatType.Health) > 0)
+        {
+            impactStream = GD.Load<AudioStream>("res://Assets/Audio/kenney_impact-sounds/Audio/scottishperson-sound-effect-woman-scream-236488.mp3");
+
+        }
+        if (impactStream != null)
+        {
+            AudioManager.Instance?.PlaySound2D(impactStream, GlobalPosition);
+        }
     }
 }
