@@ -1,6 +1,7 @@
 namespace IslandSurvivor.Scenes.NPC.Aggressive;
 
 using Godot;
+using IslandSurvivor.Globals;
 
 public partial class MeleeAggressiveNpcBase : AggressiveNpcBase
 {
@@ -48,6 +49,8 @@ public partial class MeleeAggressiveNpcBase : AggressiveNpcBase
 
     protected virtual void OnAttackStarted()
     {
+        PlayAttackSound();
+
         if (m_animatedSprite != null)
         {
             m_animatedSprite.Play("Attack");
