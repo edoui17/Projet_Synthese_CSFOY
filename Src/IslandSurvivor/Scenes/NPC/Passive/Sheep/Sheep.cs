@@ -30,29 +30,8 @@ public partial class Sheep : PassiveNpcBase
 
         if (m_wasKilledByPlayer)
         {
-            Random random = new();
-            int meatAmount = random.Next(1, 4); // 1 to 3 meat
-
-            float luck = 0f;
-            if (p_attacker is Node GodotAttacker)
-            {
-                StatManager attackerStats = GodotAttacker.GetNodeOrNull<StatManager>("StatManager");
-                if (attackerStats != null)
-                {
-                    luck = attackerStats.GetCurrentValue(StatType.Luck);
-                }
-            }
-
-            float bonusChance = luck * 0.05f;
-            int bonusQuantity = (int)bonusChance;
-            float fractionalChance = bonusChance - bonusQuantity;
-
-            if (random.NextDouble() < fractionalChance)
-            {
-                bonusQuantity++;
-            }
-
-            meatAmount += bonusQuantity;
+            int baseMeatAmount = (int)(GD.Randi() % 3) + 1; // 1 to 3 meat
+            int meatAmount = IslandSurvivor.Logic.ResourceUtils.CalculateYield(baseMeatAmount, p_attacker);
 
             ResourceItem meatResource = new ResourceItem("meat_01", "Viande", "Meat", "res://Assets/TinySwords/TinySwords(Update010)/Deco/17.png");
 
