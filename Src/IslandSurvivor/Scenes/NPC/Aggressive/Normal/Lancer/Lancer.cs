@@ -233,6 +233,12 @@ public partial class Lancer : MeleeAggressiveNpcBase
             if (attackDirectionStr == "Up") animName = "AttackUp";
             else if (attackDirectionStr == "Down") animName = "AttackDown";
 
+            if (m_animatedSprite != null)
+            {
+                if (attackDirectionStr == "Left") m_animatedSprite.FlipH = true;
+                else if (attackDirectionStr == "Right") m_animatedSprite.FlipH = false;
+            }
+
             m_attackController.SetAttackAnimation(animName);
             m_attackController.TryAttack(attackDirectionStr);
         }
@@ -283,7 +289,7 @@ public partial class Lancer : MeleeAggressiveNpcBase
             // Just ensure it keeps playing whatever was locked in
             if (m_animatedSprite.Animation.ToString().StartsWith("Dash") == false)
             {
-                 m_animatedSprite.Play("DashSide"); // Fallback
+                m_animatedSprite.Play("DashSide"); // Fallback
             }
             return;
         }
