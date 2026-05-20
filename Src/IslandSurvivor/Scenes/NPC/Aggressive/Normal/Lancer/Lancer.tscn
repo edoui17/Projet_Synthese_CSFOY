@@ -7,13 +7,6 @@
 [ext_resource type="Texture2D" uid="uid://c8m0cy55dalkf" path="res://Assets/TinySwords/Sprites/Lancer/Blue/Lancer_Right_Defence.png" id="3_4t0e8"]
 [ext_resource type="Texture2D" uid="uid://xjppjsnbf28b" path="res://Assets/TinySwords/Sprites/Lancer/Blue/Lancer_Run.png" id="3_qp1c1"]
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_lancer_detection"]
-radius = 400.0
-
-[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_lancer_hitbox"]
-radius = 21.986
-height = 120.0
-
 [sub_resource type="AtlasTexture" id="AtlasTexture_twomw"]
 atlas = ExtResource("2_qp1c1")
 region = Rect2(640, 0, 320, 320)
@@ -253,6 +246,13 @@ animations = [{
 "speed": 6.0
 }]
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_lancer_detection"]
+radius = 400.0
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_lancer_hitbox"]
+radius = 21.986
+height = 120.0
+
 [node name="Lancer" unique_id=1880312545 instance=ExtResource("1_gsctu")]
 script = ExtResource("1_x8y9z")
 ChaseSpeed = 100.0
@@ -271,18 +271,16 @@ frame_progress = 1.0
 MaxHealth = 40.0
 BaseSpeedValue = 200.0
 
-[node name="DetectionArea" parent="." index="5"]
-
 [node name="CollisionShape2D" parent="DetectionArea" index="0"]
-shape = SubResource("CircleShape2D_lancer_detection")
 visible = false
+shape = SubResource("CircleShape2D_lancer_detection")
 
 [node name="CollisionShape2D" parent="HitboxAreaRight" index="0"]
-position = Vector2(50, 9)
-shape = SubResource("CapsuleShape2D_lancer_hitbox")
+position = Vector2(73.00001, 9.000001)
 rotation = 1.567259
+shape = SubResource("CapsuleShape2D_lancer_hitbox")
 
 [node name="CollisionShape2D" parent="HitboxAreaLeft" index="0"]
-position = Vector2(-50, 10)
-shape = SubResource("CapsuleShape2D_lancer_hitbox")
+position = Vector2(-4.9999847, 8)
 rotation = 1.5765897
+shape = SubResource("CapsuleShape2D_lancer_hitbox")
