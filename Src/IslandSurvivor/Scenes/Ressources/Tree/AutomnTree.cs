@@ -16,7 +16,7 @@ public partial class AutomnTree : Area2D, ITree, IDamageable
 
     [Export] public string MaterialName { get; set; } = "Bois d'automne";
     [Export] public string MaterialType { get; set; } = "Wood";
-    [Export] public string IconPath { get; set; } = "res://Assets/TinySwords(FreePack)/TinySwords(FreePack)/Terrain/Resources/Wood/Trees/Tree4.png";
+    [Export] public string IconPath { get; set; } = "res://Assets/TinySwords/Terrain/Wood Resource/Wood Resource.png";
 
 
     private object? m_lastAttacker;
