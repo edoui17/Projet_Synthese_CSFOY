@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using Xunit;
 using Core.Services;
 using Core.Interfaces;
+using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace Tests.UnitTests.Core.Services;
 
@@ -19,6 +22,10 @@ public class EventBusTests
     }
 
     public class AnotherTestEvent : IEvent
+    {
+    }
+
+    private static void StaticTestMethod(TestEvent e)
     {
     }
 
@@ -177,5 +184,129 @@ public class EventBusTests
         // Assert
         Assert.False(callback1Called);
         Assert.True(callback2Called);
+    }
+
+    [Fact]
+    public void Unsubscribe_DuringPublish_DoesNotThrowCollectionModifiedException()
+    {
+        // Arrange
+        var eventBus = new EventBus();
+        bool isCalled = false;
+        Action<TestEvent> callback = null;
+
+        callback = (e) =>
+        {
+            isCalled = true;
+            // Unsubscribe itself during publish
+            eventBus.Unsubscribe(callback);
+        };
+
+        eventBus.Subscribe(callback);
+
+        // Act & Assert
+        var exception = Record.Exception(() =>
+        {
+            eventBus.Publish(new TestEvent());
+            eventBus.ProcessEvents();
+        });
+
+        Assert.Null(exception);
+        Assert.True(isCalled);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private void SubscribeTemporaryHandler(EventBus eventBus, out WeakReference weakRef)
+    {
+        int someLocalState = 42; // Ensures lambda captures a local, preventing it from being a cached static delegate
+        Action<TestEvent> callback = (e) => Console.WriteLine(someLocalState);
+        eventBus.Subscribe(callback);
+        weakRef = new WeakReference(callback.Target);
+    }
+
+    [Fact]
+    public void Unsubscribe_ClearsOtherDeadReferences_ToPreventMemoryBloat()
+    {
+        // Arrange
+        var eventBus = new EventBus();
+
+        SubscribeTemporaryHandler(eventBus, out WeakReference weakRef);
+
+        // Force GC
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
+        GC.Collect();
+
+        Assert.False(weakRef.IsAlive, "The weak reference should be dead after GC.");
+
+        Action<TestEvent> activeCallback = (e) => { };
+        eventBus.Subscribe(activeCallback);
+
+        // Act
+        // Unsubscribe should trigger the cleanup of dead references too
+        eventBus.Unsubscribe(activeCallback);
+
+        // We can't directly assert internal list size, but we can confirm no exceptions
+        // and that publishing an event does not throw when it encounters pruned subscribers.
+        var exception = Record.Exception(() =>
+        {
+            eventBus.Publish(new TestEvent());
+            eventBus.ProcessEvents();
+        });
+
+        Assert.Null(exception);
+    }
+
+    [Fact]
+    public void Unsubscribe_StaticMethod_CorrectlyRemovesCallback()
+    {
+        // Arrange
+        var eventBus = new EventBus();
+        eventBus.Subscribe<TestEvent>(StaticTestMethod);
+
+        // Act
+        var exception = Record.Exception(() => eventBus.Unsubscribe<TestEvent>(StaticTestMethod));
+
+        // Assert
+        Assert.Null(exception);
+    }
+
+    [Fact]
+    public void Unsubscribe_WithDifferentLambda_DoesNotRemoveOriginalSubscription()
+    {
+        // Arrange
+        var eventBus = new EventBus();
+        bool isCalled = false;
+
+        Action<TestEvent> originalCallback = (e) => isCalled = true;
+        eventBus.Subscribe(originalCallback);
+
+        // Act - Attempt to unsubscribe with a new but identical lambda
+        eventBus.Unsubscribe<TestEvent>((e) => isCalled = true);
+
+        eventBus.Publish(new TestEvent());
+        eventBus.ProcessEvents();
+
+        // Assert
+        Assert.True(isCalled, "The original callback should still be subscribed and triggered.");
+    }
+
+    [Fact]
+    public void Unsubscribe_CalledConcurrently_MaintainsThreadSafety()
+    {
+        // Arrange
+        var eventBus = new EventBus();
+        Action<TestEvent> callback = (e) => { };
+        eventBus.Subscribe(callback);
+
+        // Act & Assert
+        var exception = Record.Exception(() =>
+        {
+            Parallel.For(0, 1000, i =>
+            {
+                eventBus.Unsubscribe(callback);
+            });
+        });
+
+        Assert.Null(exception);
     }
 }

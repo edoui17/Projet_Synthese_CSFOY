@@ -6,6 +6,8 @@ using Core.Interfaces.Spawning;
 using Core.Interfaces.Utils;
 using Core.Utils;
 using IslandSurvivor.Scenes.NPC.Agressive;
+using IslandSurvivor.Utils;
+using IslandSurvivor.Utils.Logging;
 
 namespace IslandSurvivor.Nodes.Zones;
 
@@ -27,9 +29,8 @@ public partial class EnemySpawnZone : Node2D, IEnemySpawnZone
 
     private readonly List<EnemyBase> m_activeEnemies = new();
     private float m_respawnTimer = 0f;
-    private readonly Random m_random = new();
     private Rect2 m_cachedBounds;
-    private readonly IWeightedRandomSelector<EnemySpawnConfig> m_weightedSelector = new WeightedRandomSelector<EnemySpawnConfig>();
+    private readonly IWeightedRandomSelector<EnemySpawnConfig> m_weightedSelector = new WeightedRandomSelector<EnemySpawnConfig>(new GodotRandomProvider(), new GodotLogger());
 
     public override void _Ready()
     {
@@ -121,8 +122,8 @@ public partial class EnemySpawnZone : Node2D, IEnemySpawnZone
     private Vector2 GenerateRandomPointInBounds()
     {
         return new Vector2(
-            (float)m_random.NextDouble() * m_cachedBounds.Size.X + m_cachedBounds.Position.X,
-            (float)m_random.NextDouble() * m_cachedBounds.Size.Y + m_cachedBounds.Position.Y
+            GD.Randf() * m_cachedBounds.Size.X + m_cachedBounds.Position.X,
+            GD.Randf() * m_cachedBounds.Size.Y + m_cachedBounds.Position.Y
         );
     }
 

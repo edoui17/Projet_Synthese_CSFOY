@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://mqagd60eodos"]
 
-[ext_resource type="Script" uid="uid://fvn22w5rptq7" path="res://Scenes/NPC/Passive/Sheep.cs" id="1_d7b5k"]
-[ext_resource type="SpriteFrames" uid="uid://dd8xwmbmwbofx_sheep" path="res://Scenes/NPC/Passive/SheepFrames.tres" id="2_frames"]
+[ext_resource type="Script" uid="uid://fvn22w5rptq7" path="res://Scenes/NPC/Passive/Sheep/Sheep.cs" id="1_d7b5k"]
+[ext_resource type="SpriteFrames" uid="uid://ondukel2hk2a" path="res://Scenes/NPC/Passive/Sheep/SheepFrames.tres" id="2_frames"]
 [ext_resource type="PackedScene" uid="uid://biqhbrp7fjfyj" path="res://Nodes/StatsManager/StatsManager.tscn" id="4_cdkpw"]
 [ext_resource type="PackedScene" path="res://Nodes/Movement/MovementController.tscn" id="6_mov"]
 
