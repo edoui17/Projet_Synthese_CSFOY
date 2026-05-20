@@ -42,6 +42,7 @@ public class PlayerController : ControllerBase
         {
             Username = player.Username,
             HighScore = player.HighScore,
+            UpdatedAt = player.UpdatedAt,
             LastSessions = gameStats,
             Config = player.Config,
             Inventory = inventory
