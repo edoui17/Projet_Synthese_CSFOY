@@ -168,7 +168,7 @@ public partial class Lancer : MeleeAggressiveNpcBase
                 {
                     if (m_isDashing && m_dashActiveHitbox != null)
                     {
-                        m_dashActiveHitbox.Monitoring = true;
+                        m_dashActiveHitbox.SetDeferred(Area2D.PropertyName.Monitoring, true);
 
                         // Godot 4 requires explicitly checking already overlapping bodies when turning on Monitoring
                         var bodies = m_dashActiveHitbox.GetOverlappingBodies();
@@ -340,7 +340,7 @@ public partial class Lancer : MeleeAggressiveNpcBase
         m_isDashing = false;
         if (m_dashActiveHitbox != null)
         {
-            m_dashActiveHitbox.Monitoring = false;
+            m_dashActiveHitbox.SetDeferred(Area2D.PropertyName.Monitoring, false);
             m_dashActiveHitbox = null;
         }
         m_lancerController.FinishDash();
