@@ -75,12 +75,61 @@ public class PlayerController : ControllerBase
     }
 
     [HttpGet("leaderboard")]
-    public async Task<IActionResult> GetLeaderboard()
+    public async Task<IActionResult> GetLeaderboard(
+        [FromQuery] string? p_sortBy = "score",
+        [FromQuery] string? p_order = "desc",
+        [FromQuery] string? p_search = null)
     {
         IEnumerable<Player> players = await m_playerRepository.GetAllAsync();
 
+        if (!string.IsNullOrWhiteSpace(p_search))
+        {
+            players = players.Where(p => p.Username.Contains(p_search, StringComparison.OrdinalIgnoreCase));
+        }
+
+        bool isDescending = p_order?.ToLower() != "asc";
+
+        switch (p_sortBy?.ToLower())
+        {
+            case "duration":
+                players = isDescending
+                    ? players.OrderByDescending(p => p.GameStats.Any() ? p.GameStats.Max(s => s.Duration) : TimeSpan.Zero)
+                    : players.OrderBy(p => p.GameStats.Any() ? p.GameStats.Max(s => s.Duration) : TimeSpan.Zero);
+                break;
+            case "level":
+                players = isDescending
+                    ? players.OrderByDescending(p => p.GameStats.Any() ? p.GameStats.Max(s => s.LevelReached) : 0)
+                    : players.OrderBy(p => p.GameStats.Any() ? p.GameStats.Max(s => s.LevelReached) : 0);
+                break;
+            case "health":
+                players = isDescending
+                    ? players.OrderByDescending(p => p.GameStats.Any() ? p.GameStats.Max(s => s.BonusHealth) : 0)
+                    : players.OrderBy(p => p.GameStats.Any() ? p.GameStats.Max(s => s.BonusHealth) : 0);
+                break;
+            case "attack":
+                players = isDescending
+                    ? players.OrderByDescending(p => p.GameStats.Any() ? p.GameStats.Max(s => s.BonusAttack) : 0)
+                    : players.OrderBy(p => p.GameStats.Any() ? p.GameStats.Max(s => s.BonusAttack) : 0);
+                break;
+            case "speed":
+                players = isDescending
+                    ? players.OrderByDescending(p => p.GameStats.Any() ? p.GameStats.Max(s => s.BonusSpeed) : 0)
+                    : players.OrderBy(p => p.GameStats.Any() ? p.GameStats.Max(s => s.BonusSpeed) : 0);
+                break;
+            case "luck":
+                players = isDescending
+                    ? players.OrderByDescending(p => p.GameStats.Any() ? p.GameStats.Max(s => s.BonusLuck) : 0)
+                    : players.OrderBy(p => p.GameStats.Any() ? p.GameStats.Max(s => s.BonusLuck) : 0);
+                break;
+            case "score":
+            default:
+                players = isDescending
+                    ? players.OrderByDescending(p => p.HighScore)
+                    : players.OrderBy(p => p.HighScore);
+                break;
+        }
+
         IEnumerable<PlayerLeaderboardEntry> leaderboard = players
-            .OrderByDescending(p => p.HighScore)
             .Take(50)
             .Select(p =>
             {
@@ -93,8 +142,13 @@ public class PlayerController : ControllerBase
                     Attack = bestSession?.Attack ?? 0,
                     Speed = bestSession?.Speed ?? 0,
                     Luck = bestSession?.Luck ?? 0,
+                    BonusHealth = bestSession?.BonusHealth ?? 0,
+                    BonusAttack = bestSession?.BonusAttack ?? 0,
+                    BonusSpeed = bestSession?.BonusSpeed ?? 0,
+                    BonusLuck = bestSession?.BonusLuck ?? 0,
                     Level = bestSession?.LevelReached ?? 1,
-                    Score = p.HighScore
+                    Score = p.HighScore,
+                    Duration = bestSession?.Duration ?? TimeSpan.Zero
                 };
             });
 

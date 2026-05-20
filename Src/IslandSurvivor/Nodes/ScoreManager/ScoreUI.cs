@@ -9,13 +9,32 @@ public partial class ScoreUI : Label
 
     public override void _Ready()
     {
+        if (m_scoreManager == null)
+        {
+            // Try to find it dynamically globally
+            m_scoreManager = GetTree().Root.GetNodeOrNull<ScoreManager>("Main/ScoreManager");
+        }
+
+        if (m_scoreManager == null)
+        {
+            // Alternative search using groups if it's there
+            var currentScene = GetTree().CurrentScene;
+            if (currentScene != null)
+            {
+                m_scoreManager = currentScene.GetNodeOrNull<ScoreManager>("ScoreManager");
+            }
+        }
+
         if (m_scoreManager != null)
         {
             m_scoreManager.ScoreChanged += OnScoreChanged;
+
+            // Set initial score if possible
+            Text = $"Score {m_scoreManager.GetCurrentScore()}";
         }
         else
         {
-            GD.PushWarning("ScoreUI: ScoreManager reference is missing.");
+            GD.PushWarning("ScoreUI: ScoreManager reference is missing and could not be resolved.");
         }
     }
 

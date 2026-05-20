@@ -1,8 +1,8 @@
-namespace IslandSurvivor.Scenes.NPC.Agressive;
+namespace IslandSurvivor.Scenes.NPC.Aggressive;
 
 using Godot;
 
-public partial class Archer : RangedEnemyBase
+public partial class Archer : RangedAggressiveNpcBase
 {
     public override void _Ready()
     {
