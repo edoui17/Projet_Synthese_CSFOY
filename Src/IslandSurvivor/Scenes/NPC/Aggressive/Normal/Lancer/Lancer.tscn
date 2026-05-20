@@ -246,7 +246,6 @@ animations = [{
 "speed": 6.0
 }]
 
-
 [node name="Lancer" unique_id=1880312545 instance=ExtResource("1_gsctu")]
 script = ExtResource("1_x8y9z")
 ChaseSpeed = 100.0
@@ -272,4 +271,3 @@ rotation = 1.567259
 [node name="CollisionShape2D" parent="HitboxAreaLeft" index="0"]
 position = Vector2(-21.000002, 10.000001)
 rotation = 1.5765897
-
