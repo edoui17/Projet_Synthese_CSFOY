@@ -263,15 +263,9 @@ animation = &"Attack"
 frame = 4
 frame_progress = 1.0
 
-[node name="CollisionShape2D" parent="." index="1"]
-visible = false
-
 [node name="StatManager" parent="." index="2"]
 MaxHealth = 40.0
 BaseSpeedValue = 200.0
-
-[node name="DetectionArea" parent="." index="5"]
-visible = false
 
 [node name="CollisionShape2D" parent="HitboxAreaRight" index="0"]
 position = Vector2(90.00001, 9)
