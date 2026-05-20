@@ -50,13 +50,13 @@ public class LancerController : AgressorController, ILancerController
                 // Prioritize moving on the Y axis to line up for the dash
                 if (Math.Abs(direction.Y) > DASH_Y_ALIGNMENT_TOLERANCE)
                 {
-                     // Give Y movement much higher weight
-                     m_currentDirection = new Vector2(direction.X / length * 0.2f, direction.Y > 0 ? 1f : -1f).Normalized();
+                    // Give Y movement much higher weight
+                    m_currentDirection = new Vector2(direction.X / length * 0.2f, direction.Y > 0 ? 1f : -1f).Normalized();
                 }
                 else
                 {
-                     // Once aligned, normal chase direction
-                     m_currentDirection = new Vector2(direction.X / length, direction.Y / length);
+                    // Once aligned, normal chase direction
+                    m_currentDirection = new Vector2(direction.X / length, direction.Y / length);
                 }
             }
             else
