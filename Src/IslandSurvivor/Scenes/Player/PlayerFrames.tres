@@ -115,7 +115,7 @@ animations = [{
 "texture": SubResource("AtlasTexture_atk5")
 }],
 "loop": false,
-"name": &"ATTACK",
+"name": &"Attack",
 "speed": 10.0
 }, {
 "frames": [{
@@ -144,7 +144,7 @@ animations = [{
 "texture": SubResource("AtlasTexture_id7")
 }],
 "loop": true,
-"name": &"IDLE",
+"name": &"Idle",
 "speed": 10.0
 }, {
 "frames": [{
@@ -155,7 +155,7 @@ animations = [{
 "texture": SubResource("AtlasTexture_int5")
 }],
 "loop": false,
-"name": &"INTERACT",
+"name": &"Interact",
 "speed": 10.0
 }, {
 "frames": [{
@@ -178,6 +178,6 @@ animations = [{
 "texture": SubResource("AtlasTexture_run5")
 }],
 "loop": true,
-"name": &"RUN",
+"name": &"Run",
 "speed": 10.0
 }]

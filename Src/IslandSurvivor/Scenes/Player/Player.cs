@@ -17,6 +17,7 @@ public partial class Player : CharacterBody2D, IDamageable
     [Export] public StatManager? Stats { get; set; }
 
     private PlayerState m_currentState = PlayerState.Idle;
+    private PlayerState m_lastDebugState = (PlayerState)(-1);
 
 
     [Export] private AnimatedSprite2D? m_animatedSprite;
@@ -115,7 +116,7 @@ public partial class Player : CharacterBody2D, IDamageable
 
         if (m_animatedSprite != null)
         {
-            m_animatedSprite.Play("ATTACK");
+            m_animatedSprite.Play("Attack");
         }
     }
 
@@ -129,9 +130,12 @@ public partial class Player : CharacterBody2D, IDamageable
 
     public override void _PhysicsProcess(double p_delta)
     {
-        if (m_debugLabel != null)
+        if (m_currentState == PlayerState.Dead) return;
+
+        if (m_debugLabel != null && m_currentState != m_lastDebugState)
         {
             m_debugLabel.Text = m_currentState.ToString();
+            m_lastDebugState = m_currentState;
         }
 
         UpdateDashUI();
@@ -174,6 +178,8 @@ public partial class Player : CharacterBody2D, IDamageable
 
     public override void _UnhandledInput(InputEvent p_event)
     {
+        if (m_currentState == PlayerState.Dead) return;
+
         if (p_event.IsActionPressed("attack"))
         {
             m_isAttackButtonDown = true;
@@ -297,7 +303,7 @@ public partial class Player : CharacterBody2D, IDamageable
 
         if (m_animatedSprite != null)
         {
-            m_animatedSprite.Play("INTERACT");
+            m_animatedSprite.Play("Interact");
             await ToSignal(m_animatedSprite, AnimatedSprite2D.SignalName.AnimationFinished);
         }
         else
@@ -327,10 +333,10 @@ public partial class Player : CharacterBody2D, IDamageable
         switch (m_currentState)
         {
             case PlayerState.Idle:
-                m_animatedSprite.Play("IDLE");
+                m_animatedSprite.Play("Idle");
                 break;
             case PlayerState.Moving:
-                m_animatedSprite.Play("RUN");
+                m_animatedSprite.Play("Run");
                 break;
         }
     }
@@ -387,6 +393,7 @@ public partial class Player : CharacterBody2D, IDamageable
 
     public void TakeDamage(int p_amount, object p_attacker)
     {
+        if (m_currentState == PlayerState.Dead) return;
         if (m_movementController != null && m_movementController.IsDashing) return; // Invincible during dash
 
         if (Stats == null) return;
@@ -395,6 +402,14 @@ public partial class Player : CharacterBody2D, IDamageable
         if (currentHealth <= 0) return;
 
         Stats.ModifyCurrentValue(StatType.Health, -p_amount);
+
+        currentHealth = Stats.GetCurrentValue(StatType.Health);
+
+        if (currentHealth <= 0)
+        {
+            HandleDeath();
+            return;
+        }
 
         this.PlayHitFlash();
         this.PlayShake();
@@ -411,6 +426,31 @@ public partial class Player : CharacterBody2D, IDamageable
         if (camera != null)
         {
             camera.PlayShake(0.2f, 8.0f);
+        }
+    }
+
+    private void HandleDeath()
+    {
+        SetState(PlayerState.Dead);
+        Velocity = Vector2.Zero;
+
+        // Play death sound (reusing hurt sound or specific death sound if available)
+        AudioStream deathStream = GD.Load<AudioStream>("res://Assets/Sounds/Combat/player_hurt.wav"); // Fallback
+        if (deathStream != null)
+        {
+            AudioManager.Instance?.PlaySound(deathStream);
+        }
+
+        if (m_animatedSprite != null)
+        {
+            // If there's a death animation, play it. Otherwise, stop animation.
+            m_animatedSprite.Stop();
+        }
+
+        // Emit PlayerDiedEvent
+        if (IslandSurvivor.Globals.ServiceRegistry.Instance != null && IslandSurvivor.Globals.ServiceRegistry.Instance.EventBus != null)
+        {
+            IslandSurvivor.Globals.ServiceRegistry.Instance.EventBus.Publish(new Core.Events.PlayerDiedEvent());
         }
     }
 

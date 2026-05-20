@@ -1,0 +1,26 @@
+[gd_scene format=3 uid="uid://mqagd60eodos"]
+
+[ext_resource type="PackedScene" uid="uid://passivenpcbase123" path="res://Scenes/NPC/Passive/PassiveNpcBase.tscn" id="1_scene"]
+[ext_resource type="Script" uid="uid://fvn22w5rptq7" path="res://Scenes/NPC/Passive/Sheep/Sheep.cs" id="2_script"]
+[ext_resource type="SpriteFrames" uid="uid://ondukel2hk2a" path="res://Scenes/NPC/Passive/Sheep/SheepFrames.tres" id="3_frames"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ifvjj"]
+size = Vector2(43, 33)
+
+[node name="Sheep" unique_id=724644528 node_paths=PackedStringArray("Stats") instance=ExtResource("1_scene")]
+collision_layer = 4
+collision_mask = 1
+Stats = NodePath("StatManager")
+script = ExtResource("2_script")
+
+[node name="AnimatedSprite2D" parent="." index="0"]
+sprite_frames = ExtResource("3_frames")
+animation = &"IDLE"
+autoplay = "IDLE"
+
+[node name="CollisionShape2D" parent="." index="1"]
+position = Vector2(0.5, 0.5)
+shape = SubResource("RectangleShape2D_ifvjj")
+
+[node name="StatManager" parent="." index="2"]
+MaxHealth = 30.0

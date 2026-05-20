@@ -1,0 +1,25 @@
+[gd_scene format=3 uid="uid://npcbase12345"]
+
+[ext_resource type="Script" uid="uid://dmj8y3jasw7qr" path="res://Scenes/NPC/NpcBase.cs" id="1_script"]
+[ext_resource type="PackedScene" path="res://Nodes/Movement/MovementController.tscn" id="2_movement"]
+[ext_resource type="PackedScene" uid="uid://biqhbrp7fjfyj" path="res://Nodes/StatsManager/StatsManager.tscn" id="3_stats"]
+
+[node name="NpcBase" type="CharacterBody2D" node_paths=PackedStringArray("Stats")]
+y_sort_enabled = true
+collision_layer = 17
+collision_mask = 9
+motion_mode = 1
+script = ExtResource("1_script")
+Stats = NodePath("StatManager")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+light_mask = 4
+z_index = 1
+y_sort_enabled = true
+
+[node name="StatManager" parent="." instance=ExtResource("3_stats")]
+
+[node name="MovementController" parent="." node_paths=PackedStringArray("Stats") instance=ExtResource("2_movement")]
+Stats = NodePath("../StatManager")

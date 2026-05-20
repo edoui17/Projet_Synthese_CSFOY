@@ -11,11 +11,13 @@ namespace Core.Utils;
 /// <typeparam name="T">The type of items in the collection, must implement IWeightedItem.</typeparam>
 public class WeightedRandomSelector<T> : IWeightedRandomSelector<T> where T : IWeightedItem
 {
-    private readonly Random m_random;
+    private readonly IRandomProvider m_random;
+    private readonly ILogger? m_logger;
 
-    public WeightedRandomSelector()
+    public WeightedRandomSelector(IRandomProvider p_random, ILogger? p_logger = null)
     {
-        m_random = new Random();
+        m_random = p_random ?? throw new ArgumentNullException(nameof(p_random));
+        m_logger = p_logger;
     }
 
     /// <inheritdoc />
@@ -32,7 +34,16 @@ public class WeightedRandomSelector<T> : IWeightedRandomSelector<T> where T : IW
             return default;
         }
 
-        float totalWeight = itemList.Sum(item => item.Weight);
+        float totalWeight = 0;
+        foreach (var item in itemList)
+        {
+            if (item.Weight < 0)
+            {
+                m_logger?.LogWarning($"Negative weight {item.Weight} detected in WeightedRandomSelector. Clamping to 0.");
+            }
+            totalWeight += Math.Max(0, item.Weight);
+        }
+
         if (totalWeight <= 0)
         {
             // If all weights are 0, pick one randomly with equal probability
@@ -45,7 +56,8 @@ public class WeightedRandomSelector<T> : IWeightedRandomSelector<T> where T : IW
 
         foreach (var item in itemList)
         {
-            currentWeightSum += item.Weight;
+            float clampedWeight = Math.Max(0, item.Weight);
+            currentWeightSum += clampedWeight;
             if (roll < currentWeightSum)
             {
                 return item;
