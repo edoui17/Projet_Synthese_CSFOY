@@ -72,8 +72,6 @@ public partial class Lancer : MeleeAggressiveNpcBase
         m_lancerController.UpdateDistanceToTarget(distanceToPlayer);
         m_lancerController.Update((float)p_delta, m_targetPlayer != null, hasLineOfSight);
 
-        UpdateAnimation(new Vector2(m_lancerController.CurrentDirection.X, m_lancerController.CurrentDirection.Y));
-
         Vector2 direction = new Vector2(m_lancerController.CurrentDirection.X, m_lancerController.CurrentDirection.Y);
         float targetSpeed = IdleSpeed;
 
@@ -165,10 +163,21 @@ public partial class Lancer : MeleeAggressiveNpcBase
                 else if (dashDirectionStr == "Down") m_dashActiveHitbox = m_hitboxAreaDown;
                 else m_dashActiveHitbox = m_hitboxAreaRight;
 
-                if (m_dashActiveHitbox != null)
+                // Delay hitbox activation by 0.2 seconds so the thrust has a travel visual
+                GetTree().CreateTimer(0.2f).Timeout += () =>
                 {
-                    m_dashActiveHitbox.Monitoring = true;
-                }
+                    if (m_isDashing && m_dashActiveHitbox != null)
+                    {
+                        m_dashActiveHitbox.Monitoring = true;
+
+                        // Godot 4 requires explicitly checking already overlapping bodies when turning on Monitoring
+                        var bodies = m_dashActiveHitbox.GetOverlappingBodies();
+                        foreach (var body in bodies)
+                        {
+                            OnDashHitboxEntered(body);
+                        }
+                    }
+                };
             }
 
             // Dash speed is ChaseSpeed * DashSpeedMultiplier
@@ -212,6 +221,8 @@ public partial class Lancer : MeleeAggressiveNpcBase
         {
             m_lancerController.ForceNewDirection();
         }
+
+        UpdateAnimation(new Vector2(m_lancerController.CurrentDirection.X, m_lancerController.CurrentDirection.Y));
     }
 
     private string GetDirectionString(Vector2 p_targetPosition)
