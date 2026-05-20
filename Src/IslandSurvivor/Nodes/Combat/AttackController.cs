@@ -28,6 +28,9 @@ public partial class AttackController : Node
 
     [Export] public float BaseAttackCooldown { get; set; } = 1.0f;
 
+    [Export] public string AttackAnimationName { get; set; } = "Attack";
+    private StringName m_cachedAttackAnimationName = null!;
+
     private AnimatedSprite2D? m_attackSprite;
     public AnimatedSprite2D? AttackSprite
     {
@@ -73,6 +76,9 @@ public partial class AttackController : Node
     {
         base._Ready();
         if (Engine.IsEditorHint()) return;
+
+        m_cachedAttackAnimationName = new StringName(AttackAnimationName);
+
         m_owner = GetOwner<Node>();
         if (m_owner == null)
         {
@@ -84,7 +90,7 @@ public partial class AttackController : Node
     {
         if (AttackSprite == null || !IsAttacking) return;
 
-        if (AttackSprite.Animation.ToString().Equals("Attack", System.StringComparison.OrdinalIgnoreCase) && AttackSprite.Frame >= ActionFrame && !m_hasTriggeredAction)
+        if (AttackSprite.Animation == m_cachedAttackAnimationName && AttackSprite.Frame >= ActionFrame && !m_hasTriggeredAction)
         {
             ExecuteAttackHit();
             EmitSignal(SignalName.AttackActionTriggered);
@@ -96,7 +102,7 @@ public partial class AttackController : Node
     {
         if (AttackSprite == null || !IsAttacking) return;
 
-        if (AttackSprite.Animation.ToString().Equals("Attack", System.StringComparison.OrdinalIgnoreCase))
+        if (AttackSprite.Animation == m_cachedAttackAnimationName)
         {
             CancelAttack();
         }
@@ -200,30 +206,28 @@ public partial class AttackController : Node
         ProcessHit(p_body);
     }
 
+    private bool IsValidTarget(Node p_node)
+    {
+        if (Faction == EntityFaction.Player)
+        {
+            return p_node is IDamageable || p_node is IAttackable;
+        }
+
+        if (Faction == EntityFaction.Enemy)
+        {
+            return p_node is IDamageable && p_node.IsInGroup("Player");
+        }
+
+        return false;
+    }
+
     private void ProcessHit(Node? p_node)
     {
         if (p_node == null || p_node == m_owner) return;
         if (!IsAttacking) return;
         if (m_hitTargetsThisAttack.Contains(p_node)) return;
 
-        bool isValidTarget = false;
-
-        if (Faction == EntityFaction.Player)
-        {
-            if (p_node is IDamageable || p_node is IAttackable)
-            {
-                isValidTarget = true;
-            }
-        }
-        else if (Faction == EntityFaction.Enemy)
-        {
-            if (p_node is IDamageable && p_node.IsInGroup("Player"))
-            {
-                isValidTarget = true;
-            }
-        }
-
-        if (isValidTarget)
+        if (IsValidTarget(p_node))
         {
             ApplyDamage(p_node);
         }

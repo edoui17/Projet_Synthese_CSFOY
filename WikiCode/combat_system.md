@@ -1,39 +1,40 @@
-# Combat System Architecture
+# Architecture du Système de Combat
 
-## Overview
-The combat system for IslandSurvivor uses a unified Area of Effect (AoE) attack mechanic. A single action (attacking via Left Mouse Click) allows the player to damage both enemies and gatherable resources simultaneously, provided they are within the player's weapon hitbox. The attack input can be held down to trigger consecutive attacks as soon as their cooldown expires. The attack cooldown duration dynamically decreases based on the player's `Speed` stat formula: `Cooldown = BaseCooldown / (1 + Speed * 0.05)`.
+## Vue d'Ensemble
+Le système de combat de IslandSurvivor utilise une mécanique d'attaque à zone d'effet (AoE) unifiée. Une seule action (attaquer via un clic gauche de la souris) permet au joueur d'infliger des dégâts aux ennemis et de récolter des ressources simultanément, à condition qu'ils se trouvent dans la hitbox de l'arme du joueur. Le bouton d'attaque peut être maintenu enfoncé pour déclencher des attaques consécutives dès l'expiration de leur temps de recharge (cooldown). La durée du temps de recharge diminue dynamiquement en fonction de la statistique de `Vitesse` (`Speed`) du joueur, selon la formule : `Cooldown = BaseCooldown / (1 + Speed * 0.05)`.
 
-## Key Interfaces
-*   **`IDamageable`** (`Src/Core/Interfaces/Stats/IDamageable.cs`): Defines the contract for any entity that can take damage.
+## Interfaces Clés
+*   **`IDamageable`** (`Src/Core/Interfaces/Stats/IDamageable.cs`) : Définit le contrat pour toute entité pouvant subir des dégâts.
     *   `void TakeDamage(int p_amount, Core.Domain.DamageContext p_context);`
-    *   This interface is implemented by aggressive NPCs (e.g., `Soldier.cs`), passive NPCs (e.g., `Sheep.cs`), and Resources (e.g., `Rock.cs`, `Gold.cs`, `ConiferTree.cs`, `AutomnTree.cs`). The `DamageContext` allows the system to pass the attacker reference along with calculated damage and specific stat snapshots (like Luck) without forcing the victim to read another entity's `StatManager`.
+    *   Cette interface est implémentée par les PNJ agressifs (ex: `Soldier.cs`), les PNJ passifs (ex: `Sheep.cs`), et les ressources (ex: `Rock.cs`, `Gold.cs`, `ConiferTree.cs`, `AutomnTree.cs`). Le `DamageContext` permet au système de transmettre la référence de l'attaquant en plus des dégâts calculés et d'instantanés de statistiques spécifiques (comme la Chance), sans forcer la victime à lire le `StatManager` d'une autre entité.
 
-## Damage Resolution Flow (Player Attacking Enemy/Resource)
-1.  **Attack Trigger**: The player presses or holds the left mouse button. If the `m_canAttack` flag is true (cooldown completed), `Player.cs` enters the `Attacking` state and locks out movement.
-2.  **Target Acquisition**: The script relies on event-driven signals (`AreaEntered`, `BodyEntered`) from the player's `m_weaponAreaRight` / `m_weaponAreaLeft` (`Area2D`).
-3.  **Filtration and Deduplication**: The script checks if each overlapping object (or its parent node) implements `IDamageable`. It uses a `HashSet<IDamageable>` to guarantee that an entity with multiple overlapping colliders only receives damage once per attack execution.
-4.  **Damage Calculation**: The damage amount is calculated based on the base damage and retrieved from the player's `StatManager` (`StatType.Attack`).
-5.  **Damage Application**: `TakeDamage(amount, new DamageContext(...))` is invoked on each valid target in the `HashSet`.
+## Flux de Résolution des Dégâts (Joueur attaquant un Ennemi/Ressource)
+1.  **Déclenchement de l'Attaque** : Le joueur appuie ou maintient le bouton gauche de la souris. Si le drapeau `m_canAttack` est vrai (temps de recharge terminé), `Player.cs` entre dans l'état `Attacking` et verrouille le mouvement.
+2.  **Acquisition de la Cible** : Le script s'appuie sur des signaux basés sur des événements (`AreaEntered`, `BodyEntered`) provenant de `m_weaponAreaRight` / `m_weaponAreaLeft` (`Area2D`) du joueur.
+3.  **Filtrage et Déduplication** : Le script vérifie si chaque objet en chevauchement (ou son nœud parent) implémente `IDamageable`. Il utilise un `HashSet<IDamageable>` pour garantir qu'une entité avec plusieurs collisionneurs en chevauchement ne reçoive des dégâts qu'une seule fois par exécution d'attaque.
+4.  **Calcul des Dégâts** : Le montant des dégâts est calculé en se basant sur le `BaseAttackValue` et récupéré depuis le `StatManager` du joueur (`StatType.Attack`).
+5.  **Application des Dégâts** : `TakeDamage(amount, new DamageContext(...))` est invoqué sur chaque cible valide dans le `HashSet`.
 
-## Damage Resolution Flow (Enemy Attacking Player)
-1.  **Hitbox Trigger**: The aggressive enemy (e.g., `Soldier` or `Archer`) has an `Area2D` named `HitboxArea` used to detect the player.
-2.  **Target Acquisition**: When a body enters the `HitboxArea`, the `BodyEntered` signal fires.
-3.  **Verification & Damage Application**: The script verifies if the colliding body is in the "Player" group and implements `IDamageable`. If true, the enemy immediately calls `TakeDamage(amount, new DamageContext(...))` on the player. The base damage is configured to scale properly starting from Level 1 for these entities. The player's `StatManager` then deducts the corresponding health.
+## Flux de Résolution des Dégâts (Ennemi attaquant le Joueur)
+1.  **Déclencheur de Hitbox** : L'ennemi agressif (ex: `Soldier` ou `Archer`) possède une `Area2D` nommée `HitboxArea` utilisée pour détecter le joueur.
+2.  **Acquisition de la Cible** : Lorsqu'un corps (Body) entre dans la `HitboxArea`, le signal `BodyEntered` se déclenche.
+3.  **Vérification & Application des Dégâts** : Le script vérifie si le corps en collision fait partie du groupe "Player" et implémente `IDamageable`. Si c'est vrai, l'ennemi appelle immédiatement `TakeDamage(amount, new DamageContext(...))` sur le joueur. Le `BaseAttackValue` est configuré pour s'adapter correctement à partir du Niveau 1 pour ces entités. Le `StatManager` du joueur déduit ensuite la santé correspondante.
 
-## Subsystem Integrations
-*   **StatManager**: Since the major stats refactoring, every entity has an isolated `StatManager` utilizing a local `EventBus`. The attacker determines its outgoing damage (Base Damage + Attack multiplier). The defender deducts health and uses the `LocalStatChanged` signal to trigger its death sequence if health reaches 0.
-*   **InventorySystem**: When a resource (or an enemy with drops) reaches 0 health, it receives the `DamageContext` containing the attacker's `Luck` bonus, instantiates a `ResourceItem`, and broadcasts its destruction via `SignalManager.Instance.EmitMaterialDestroyed()`. The global `InventoryNode` listens to this signal and increments the player's inventory.
-*   **ScoreManager**: When an aggressive enemy (like `Soldier`) dies, it notifies the core `ScoreTracker` via `ServiceRegistry.Instance.ScoreTracker.AddScore(int)` to increment the player's score.
-## Enemy Combat System (Melee)
+## Intégrations des Sous-systèmes
+*   **StatManager** : Depuis la refonte majeure des statistiques, chaque entité possède un `StatManager` isolé utilisant un `EventBus` local. L'attaquant détermine ses dégâts sortants (BaseAttackValue + Multiplicateur d'Attaque). Le défenseur déduit la santé et utilise le signal `LocalStatChanged` pour déclencher sa séquence de mort si la santé atteint 0.
+*   **InventorySystem** : Lorsqu'une ressource (ou un ennemi avec du butin) atteint 0 de santé, elle reçoit le `DamageContext` contenant le bonus de Chance (`Luck`) de l'attaquant, instancie un `ResourceItem`, et diffuse sa destruction via `SignalManager.Instance.EmitMaterialDestroyed()`. L'`InventoryNode` global écoute ce signal et incrémente l'inventaire du joueur.
+*   **ScoreManager** : Lorsqu'un ennemi agressif (comme `Soldier`) meurt, il notifie le `ScoreTracker` du Core via `ServiceRegistry.Instance.ScoreTracker.AddScore(int)` pour incrémenter le score du joueur.
 
-The enemy combat system in IslandSurvivor follows the N-Tier architecture, separating business logic from the Godot client representation.
+## Système de Combat des Ennemis (Mêlée)
 
-### Core Logic (Src/Core)
-- **Interfaces:** `IAttackable`, `IDamageable` dictate the fundamental interaction for dealing and receiving damage.
-- **Controllers:** `IAgressorController` handles the state machine for aggressive entities. It tracks states (`IDLE`, `CHASE`, `ATTACK`, `DEAD`) and manages attack cooldowns and durations purely in C# logic, oblivious to Godot frames.
+Le système de combat des ennemis dans IslandSurvivor suit l'architecture N-Tier, séparant la logique métier de la représentation client Godot.
 
-### Godot Client (Src/IslandSurvivor)
-- **Hit Detection:** Melee attacks use dedicated `Area2D` nodes (`HitboxArea` on enemies, `WeaponAttack` on players).
-- **Target Tracking:** Entities utilize `BodyEntered` and `BodyExited` signals to maintain a `HashSet<IDamageable>` of currently overlapping targets. This approach is more reliable than polling `GetOverlappingBodies()` mid-animation.
-- **Visuals:** The `_PhysicsProcess` queries the Controller's current state. If the state is `ATTACK`, movement is halted, and the `AnimatedSprite2D` transitions to the "Attack" animation.
-- **Stats Integration:** Damage calculations and health modifications are processed through the attached `StatManager`, ensuring all entity stats are centralized and driven by `EntityStats` resources.
+### Logique Core (Src/Core)
+- **Interfaces :** `IAttackable`, `IDamageable` dictent l'interaction fondamentale pour infliger et recevoir des dégâts.
+- **Contrôleurs :** `IAgressorController` gère la machine à états pour les entités agressives. Il suit les états (`IDLE`, `CHASE`, `ATTACK`, `DEAD`) et gère les temps de recharge d'attaque et les durées purement en logique C#, sans avoir conscience des frames (images) Godot.
+
+### Client Godot (Src/IslandSurvivor)
+- **Détection des Coups (Hit Detection) :** Les attaques de mêlée utilisent des nœuds `Area2D` dédiés (`HitboxArea` sur les ennemis, `WeaponAttack` sur les joueurs).
+- **Suivi des Cibles (Target Tracking) :** Les entités utilisent les signaux `BodyEntered` et `BodyExited` pour maintenir un `HashSet<IDamageable>` des cibles actuellement en chevauchement. Cette approche est plus fiable que d'interroger `GetOverlappingBodies()` en plein milieu d'une animation.
+- **Visuels :** Le `_PhysicsProcess` interroge l'état actuel du contrôleur. Si l'état est `ATTACK`, le mouvement est arrêté, et l'`AnimatedSprite2D` passe à l'animation "Attack".
+- **Intégration des Statistiques :** Les calculs de dégâts et les modifications de santé sont traités via le `StatManager` attaché, garantissant que toutes les statistiques de l'entité sont centralisées et pilotées par les ressources `EntityStats`.
