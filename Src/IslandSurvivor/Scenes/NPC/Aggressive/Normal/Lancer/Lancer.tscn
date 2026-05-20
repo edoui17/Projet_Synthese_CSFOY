@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://bt5vis3qswuxb"]
 
 [ext_resource type="PackedScene" uid="uid://mbase12345" path="res://Scenes/NPC/Aggressive/Normal/MeleeAggressiveNpcBase.tscn" id="1_gsctu"]
-[ext_resource type="Script" path="res://Scenes/NPC/Aggressive/Normal/Lancer/Lancer.cs" id="1_x8y9z"]
+[ext_resource type="Script" uid="uid://bhahnm2w8jfr6" path="res://Scenes/NPC/Aggressive/Normal/Lancer/Lancer.cs" id="1_x8y9z"]
 [ext_resource type="Texture2D" uid="uid://cltvmnoxer3qs" path="res://Assets/TinySwords/Sprites/Lancer/Blue/Lancer_Idle.png" id="2_lryv6"]
 [ext_resource type="Texture2D" uid="uid://btfwfp0sry5xw" path="res://Assets/TinySwords/Sprites/Lancer/Blue/Lancer_Right_Attack.png" id="2_qp1c1"]
 [ext_resource type="Texture2D" uid="uid://c8m0cy55dalkf" path="res://Assets/TinySwords/Sprites/Lancer/Blue/Lancer_Right_Defence.png" id="3_4t0e8"]
@@ -139,7 +139,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_x8p06")
 }],
-"loop": true,
+"loop": false,
 "name": &"Attack",
 "speed": 5.0
 }, {
@@ -171,7 +171,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_12520")
 }],
-"loop": true,
+"loop": false,
 "name": &"Dash",
 "speed": 10.0
 }, {
@@ -253,8 +253,7 @@ XpMultiplier = 0.2
 
 [node name="AnimatedSprite2D" parent="." index="0"]
 sprite_frames = SubResource("SpriteFrames_twomw")
-animation = &"Attack"
-frame_progress = 0.8460994
+animation = &"Moving"
 
 [node name="CollisionShape2D" parent="." index="1"]
 visible = false
@@ -267,16 +266,16 @@ BaseSpeedValue = 200.0
 visible = false
 
 [node name="CollisionShape2D" parent="HitboxAreaRight" index="0"]
-position = Vector2(87.00001, 4.9999995)
+position = Vector2(90.00001, 9)
 rotation = 1.567259
 
 [node name="CollisionShape2D" parent="HitboxAreaLeft" index="0"]
-position = Vector2(-7, 4)
+position = Vector2(-21.000002, 10.000001)
 rotation = 1.5765897
 
-[node name="DashBodyArea" type="Area2D" parent="." index="9"]
+[node name="DashBodyArea" type="Area2D" parent="." index="9" unique_id=1908072193]
 collision_layer = 0
 collision_mask = 2
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="DashBodyArea" index="0"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DashBodyArea" index="0" unique_id=1560396326]
 shape = SubResource("CircleShape2D_dash")
