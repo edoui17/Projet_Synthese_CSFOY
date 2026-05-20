@@ -12,6 +12,7 @@ public partial class ResourceDrop : Node2D
     private Node2D m_targetNode;
     private Vector2 m_fallbackTargetPosition;
     private Sprite2D m_sprite;
+    private Vector2 m_startLerpPosition;
 
     public void Initialize(ResourceItem p_item, int p_quantity, Vector2 p_startPosition, Node2D p_targetNode, Vector2 p_fallbackTargetPosition)
     {
@@ -65,6 +66,9 @@ public partial class ResourceDrop : Node2D
 
     private void AnimateToTarget()
     {
+        // Save the position where the drop currently is after the burst, so the lerp has a stable origin.
+        m_startLerpPosition = GlobalPosition;
+
         // Continuous tween to track moving target
         Tween moveTween = CreateTween();
 
@@ -91,7 +95,7 @@ public partial class ResourceDrop : Node2D
             currentTargetPos = m_targetNode.GlobalPosition;
         }
 
-        GlobalPosition = GlobalPosition.Lerp(currentTargetPos, p_progress);
+        GlobalPosition = m_startLerpPosition.Lerp(currentTargetPos, p_progress);
     }
 
     private void OnAnimationFinished()
