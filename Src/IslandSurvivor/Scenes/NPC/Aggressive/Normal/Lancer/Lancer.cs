@@ -14,6 +14,8 @@ public partial class Lancer : MeleeAggressiveNpcBase
     private bool m_isDashing = false;
     private float m_windUpTimer = 0f;
     private float m_recoveryTimer = 0f;
+    private float m_dashHitboxDelayTimer = 0f;
+    private bool m_dashHitboxPending = false;
 
     private Area2D? m_hitboxAreaUp;
     private Area2D? m_hitboxAreaDown;
@@ -164,20 +166,21 @@ public partial class Lancer : MeleeAggressiveNpcBase
                 else m_dashActiveHitbox = m_hitboxAreaRight;
 
                 // Delay hitbox activation by 0.2 seconds so the thrust has a travel visual
-                GetTree().CreateTimer(0.2f).Timeout += () =>
+                m_dashHitboxDelayTimer = 0.2f;
+                m_dashHitboxPending = true;
+            }
+
+            if (m_dashHitboxPending)
+            {
+                m_dashHitboxDelayTimer -= (float)p_delta;
+                if (m_dashHitboxDelayTimer <= 0f)
                 {
+                    m_dashHitboxPending = false;
                     if (m_isDashing && m_dashActiveHitbox != null)
                     {
                         m_dashActiveHitbox.SetDeferred(Area2D.PropertyName.Monitoring, true);
-
-                        // Godot 4 requires explicitly checking already overlapping bodies when turning on Monitoring
-                        var bodies = m_dashActiveHitbox.GetOverlappingBodies();
-                        foreach (var body in bodies)
-                        {
-                            OnDashHitboxEntered(body);
-                        }
                     }
-                };
+                }
             }
 
             // Dash speed is ChaseSpeed * DashSpeedMultiplier
@@ -338,6 +341,7 @@ public partial class Lancer : MeleeAggressiveNpcBase
     private void EndDashSequence()
     {
         m_isDashing = false;
+        m_dashHitboxPending = false;
         if (m_dashActiveHitbox != null)
         {
             m_dashActiveHitbox.SetDeferred(Area2D.PropertyName.Monitoring, false);
