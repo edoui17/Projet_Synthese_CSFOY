@@ -79,53 +79,53 @@ public partial class Arrow : Area2D, IProjectile
         }
     }
 
+    private bool IsValidTarget(Node2D p_body)
+    {
+        if (!(p_body is IDamageable)) return false;
+
+        if (m_faction == IslandSurvivor.Enums.EntityFaction.Player)
+        {
+            return true;
+        }
+
+        if (m_faction == IslandSurvivor.Enums.EntityFaction.Enemy && p_body.IsInGroup("Player"))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
     private void OnBodyEntered(Node2D p_body)
     {
         // Don't hit the shooter
         if (p_body == m_shooter as Node2D) return;
 
-        bool isSolid = !(p_body is Area2D);
-
-        bool shouldDamage = false;
-
-        if (p_body is IDamageable damageable)
+        if (IsValidTarget(p_body))
         {
-            if (m_faction == IslandSurvivor.Enums.EntityFaction.Player)
+            // Check if target is dashing and interrupt
+            if (p_body is CharacterBody2D charBody)
             {
-                shouldDamage = true;
-            }
-            else if (m_faction == IslandSurvivor.Enums.EntityFaction.Enemy)
-            {
-                if (p_body.IsInGroup("Player"))
+                var movementController = charBody.GetNodeOrNull<IslandSurvivor.Nodes.Movement.MovementController>("MovementController");
+                if (movementController != null && movementController.IsDashing)
                 {
-                    shouldDamage = true;
+                    movementController.CancelDash();
+                    movementController.ApplyStun(0.5f); // Half a second stun
                 }
             }
 
-            if (shouldDamage)
+            if (p_body is IDamageable damageable)
             {
-                // Check if target is dashing and interrupt
-                if (p_body is CharacterBody2D charBody)
-                {
-                    var movementController = charBody.GetNodeOrNull<IslandSurvivor.Nodes.Movement.MovementController>("MovementController");
-                    if (movementController != null && movementController.IsDashing)
-                    {
-                        movementController.CancelDash();
-                        movementController.ApplyStun(0.5f); // Half a second stun
-                    }
-                }
-
                 damageable.TakeDamage((int)Damage, m_shooter);
-                QueueFree();
             }
-            else if (isSolid)
-            {
-                // Hit a solid object we don't damage
-                QueueFree();
-            }
+            QueueFree();
+            return;
         }
-        else if (isSolid)
+
+        bool isSolid = !(p_body is Area2D);
+        if (isSolid)
         {
+            // Hit a solid object we don't damage
             QueueFree();
         }
     }

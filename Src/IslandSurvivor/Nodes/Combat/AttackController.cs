@@ -206,30 +206,28 @@ public partial class AttackController : Node
         ProcessHit(p_body);
     }
 
+    private bool IsValidTarget(Node p_node)
+    {
+        if (Faction == EntityFaction.Player)
+        {
+            return p_node is IDamageable || p_node is IAttackable;
+        }
+
+        if (Faction == EntityFaction.Enemy)
+        {
+            return p_node is IDamageable && p_node.IsInGroup("Player");
+        }
+
+        return false;
+    }
+
     private void ProcessHit(Node? p_node)
     {
         if (p_node == null || p_node == m_owner) return;
         if (!IsAttacking) return;
         if (m_hitTargetsThisAttack.Contains(p_node)) return;
 
-        bool isValidTarget = false;
-
-        if (Faction == EntityFaction.Player)
-        {
-            if (p_node is IDamageable || p_node is IAttackable)
-            {
-                isValidTarget = true;
-            }
-        }
-        else if (Faction == EntityFaction.Enemy)
-        {
-            if (p_node is IDamageable && p_node.IsInGroup("Player"))
-            {
-                isValidTarget = true;
-            }
-        }
-
-        if (isValidTarget)
+        if (IsValidTarget(p_node))
         {
             ApplyDamage(p_node);
         }
