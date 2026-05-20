@@ -116,7 +116,7 @@ public partial class Player : CharacterBody2D, IDamageable
 
         if (m_animatedSprite != null)
         {
-            m_animatedSprite.Play("ATTACK");
+            m_animatedSprite.Play("Attack");
         }
     }
 
@@ -303,7 +303,7 @@ public partial class Player : CharacterBody2D, IDamageable
 
         if (m_animatedSprite != null)
         {
-            m_animatedSprite.Play("INTERACT");
+            m_animatedSprite.Play("Interact");
             await ToSignal(m_animatedSprite, AnimatedSprite2D.SignalName.AnimationFinished);
         }
         else
@@ -333,10 +333,10 @@ public partial class Player : CharacterBody2D, IDamageable
         switch (m_currentState)
         {
             case PlayerState.Idle:
-                m_animatedSprite.Play("IDLE");
+                m_animatedSprite.Play("Idle");
                 break;
             case PlayerState.Moving:
-                m_animatedSprite.Play("RUN");
+                m_animatedSprite.Play("Run");
                 break;
         }
     }
