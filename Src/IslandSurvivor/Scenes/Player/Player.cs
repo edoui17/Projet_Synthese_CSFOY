@@ -29,6 +29,11 @@ public partial class Player : CharacterBody2D, IDamageable
     private Timer? m_xpGainTimer;
     [Export] private Area2D? m_interactionArea;
 
+    [ExportGroup("Audio")]
+    [Export] public AudioStream? AttackSound { get; set; }
+    [Export] public AudioStream? HurtSound { get; set; }
+    [Export] public AudioStream? DeathSound { get; set; }
+
     [ExportGroup("Attack")]
     [Export] private Area2D? m_weaponAreaRight;
     [Export] private Area2D? m_weaponAreaLeft;
@@ -108,7 +113,7 @@ public partial class Player : CharacterBody2D, IDamageable
     private void OnAttackStarted()
     {
         // Play attack swing sound
-        AudioStream swingStream = GD.Load<AudioStream>("res://Assets/Sounds/Combat/weapon_swing.wav");
+        AudioStream? swingStream = AttackSound ?? GD.Load<AudioStream>("res://Assets/Sounds/Combat/weapon_swing.wav");
         if (swingStream != null)
         {
             AudioManager.Instance?.PlaySound2D(swingStream, GlobalPosition);
@@ -415,7 +420,7 @@ public partial class Player : CharacterBody2D, IDamageable
         this.PlayShake();
 
         // Play hurt sound
-        AudioStream hurtStream = GD.Load<AudioStream>("res://Assets/Sounds/Combat/player_hurt.wav");
+        AudioStream? hurtStream = HurtSound ?? GD.Load<AudioStream>("res://Assets/Sounds/Combat/player_hurt.wav");
         if (hurtStream != null)
         {
             AudioManager.Instance?.PlaySound(hurtStream);
@@ -435,7 +440,7 @@ public partial class Player : CharacterBody2D, IDamageable
         Velocity = Vector2.Zero;
 
         // Play death sound (reusing hurt sound or specific death sound if available)
-        AudioStream deathStream = GD.Load<AudioStream>("res://Assets/Sounds/Combat/player_hurt.wav"); // Fallback
+        AudioStream? deathStream = DeathSound ?? GD.Load<AudioStream>("res://Assets/Sounds/Combat/player_hurt.wav");
         if (deathStream != null)
         {
             AudioManager.Instance?.PlaySound(deathStream);

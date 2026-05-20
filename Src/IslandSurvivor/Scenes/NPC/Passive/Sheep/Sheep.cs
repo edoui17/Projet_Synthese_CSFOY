@@ -13,6 +13,11 @@ using IslandSurvivor.Globals;
 
 public partial class Sheep : PassiveNpcBase
 {
+    [ExportGroup("Audio")]
+    [Export] public AudioStream? HurtSound { get; set; }
+    [Export] public AudioStream? DeathSound { get; set; }
+    [Export] public AudioStream? IdleSound { get; set; }
+
     public override void _Ready()
     {
         base._Ready();
@@ -65,13 +70,12 @@ public partial class Sheep : PassiveNpcBase
             {
                 GD.PrintErr("SignalManager is not available.");
             }
+        }
 
-            AudioStream destroyStream = GD.Load<AudioStream>("res://Assets/Audio/kenney_impact-sounds/Audio/impactMining_001.ogg");
-
-            if (destroyStream != null)
-            {
-                AudioManager.Instance?.PlaySound2D(destroyStream, GlobalPosition);
-            }
+        AudioStream? deathStream = DeathSound ?? GD.Load<AudioStream>("res://Assets/Audio/kenney_impact-sounds/Audio/impactMining_001.ogg");
+        if (deathStream != null)
+        {
+            AudioManager.Instance?.PlaySound2D(deathStream, GlobalPosition);
         }
 
 
@@ -79,18 +83,15 @@ public partial class Sheep : PassiveNpcBase
     }
     protected override void OnDamageTaken(Node2D p_attacker)
     {
-
         base.OnDamageTaken(p_attacker);
 
-        AudioStream impactStream = null;
         if (Stats.GetCurrentValue(StatType.Health) > 0)
         {
-            impactStream = GD.Load<AudioStream>("res://Assets/Audio/kenney_impact-sounds/Audio/scottishperson-sound-effect-woman-scream-236488.mp3");
-
-        }
-        if (impactStream != null)
-        {
-            AudioManager.Instance?.PlaySound2D(impactStream, GlobalPosition);
+            AudioStream? hurtStream = HurtSound ?? GD.Load<AudioStream>("res://Assets/Audio/kenney_impact-sounds/Audio/scottishperson-sound-effect-woman-scream-236488.mp3");
+            if (hurtStream != null)
+            {
+                AudioManager.Instance?.PlaySound2D(hurtStream, GlobalPosition);
+            }
         }
     }
 }
