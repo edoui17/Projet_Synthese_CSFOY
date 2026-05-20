@@ -112,8 +112,6 @@ public partial class AggressiveNpcBase : NpcBase, IEnemy
 
         HandleAttackState();
 
-        UpdateAnimation(new Vector2(m_agressorController.CurrentDirection.X, m_agressorController.CurrentDirection.Y));
-
         Vector2 direction = new Vector2(m_agressorController.CurrentDirection.X, m_agressorController.CurrentDirection.Y);
         float targetSpeed = IdleSpeed;
 
@@ -154,6 +152,8 @@ public partial class AggressiveNpcBase : NpcBase, IEnemy
         {
             m_agressorController.ForceNewDirection();
         }
+
+        UpdateAnimation(new Vector2(m_agressorController.CurrentDirection.X, m_agressorController.CurrentDirection.Y));
     }
 
     protected virtual void HandleAttackState()
