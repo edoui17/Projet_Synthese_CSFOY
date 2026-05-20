@@ -56,6 +56,7 @@ public partial class Lancer : MeleeAggressiveNpcBase
         if (m_targetPlayer != null)
         {
             distanceToPlayer = GlobalPosition.DistanceTo(m_targetPlayer.GlobalPosition);
+            m_lancerController.UpdateTargetPositions(GlobalPosition, m_targetPlayer.GlobalPosition);
         }
 
         m_lancerController.UpdateDistanceToTarget(distanceToPlayer);

@@ -11,6 +11,11 @@ public class LancerController : AgressorController, ILancerController
 
     private float m_distanceToTarget = float.MaxValue;
     private float m_dashCooldownTimer = 0f;
+    private Vector2 m_agressorPos = Vector2.Zero;
+    private Vector2 m_targetPos = Vector2.Zero;
+
+    // Tolerance for how closely aligned the Y axis must be to trigger a dash
+    public const float DASH_Y_ALIGNMENT_TOLERANCE = 20f;
 
     public LancerController() : base()
     {
@@ -19,6 +24,46 @@ public class LancerController : AgressorController, ILancerController
     public void UpdateDistanceToTarget(float p_distance)
     {
         m_distanceToTarget = p_distance;
+    }
+
+    public void UpdateTargetPositions(Vector2 p_agressorPos, Vector2 p_targetPos)
+    {
+        m_agressorPos = p_agressorPos;
+        m_targetPos = p_targetPos;
+    }
+
+    public override void UpdateChaseDirection(Vector2 p_agressorPosition, Vector2 p_targetPosition)
+    {
+        Vector2 direction = p_targetPosition - p_agressorPosition;
+        if (direction.LengthSquared() > 0)
+        {
+            float length = (float)Math.Sqrt(direction.X * direction.X + direction.Y * direction.Y);
+
+            if (m_currentState == LancerStates.DASHING || m_currentState == LancerStates.WIND_UP)
+            {
+                // Force pure horizontal dash
+                m_currentDirection = new Vector2(direction.X > 0 ? 1f : -1f, 0f);
+            }
+            else if (m_currentState == NpcStates.CHASE && m_dashCooldownTimer <= 0f && m_distanceToTarget >= MinDashDistance)
+            {
+                // Dash is ready, but we are in Chase because we need Y alignment
+                // Prioritize moving on the Y axis to line up for the dash
+                if (Math.Abs(direction.Y) > DASH_Y_ALIGNMENT_TOLERANCE)
+                {
+                     // Give Y movement much higher weight
+                     m_currentDirection = new Vector2(direction.X / length * 0.2f, direction.Y > 0 ? 1f : -1f).Normalized();
+                }
+                else
+                {
+                     // Once aligned, normal chase direction
+                     m_currentDirection = new Vector2(direction.X / length, direction.Y / length);
+                }
+            }
+            else
+            {
+                m_currentDirection = new Vector2(direction.X / length, direction.Y / length);
+            }
+        }
     }
 
     public override void Update(float p_delta, bool p_hasTarget, bool p_hasLineOfSight)
@@ -63,10 +108,14 @@ public class LancerController : AgressorController, ILancerController
 
             if (m_distanceToTarget >= MinDashDistance && m_dashCooldownTimer <= 0f)
             {
-                // In dash range and ready
-                StartDashWindUp();
-                m_disengageTimer = DISENGAGE_TIME;
-                return;
+                // Must be vertically aligned to dash
+                if (Math.Abs(m_targetPos.Y - m_agressorPos.Y) <= DASH_Y_ALIGNMENT_TOLERANCE)
+                {
+                    // In dash range, ready, and aligned on Y axis
+                    StartDashWindUp();
+                    m_disengageTimer = DISENGAGE_TIME;
+                    return;
+                }
             }
 
             // Normal chase if we aren't in range for abilities
