@@ -476,7 +476,7 @@ height = 120.0
 [node name="Lancer" unique_id=1880312545 instance=ExtResource("1_gsctu")]
 script = ExtResource("1_x8y9z")
 DashSpeedMultiplier = 4.0
-MinDashDistance = 200.0
+MinDashDistance = 175.0
 ChaseSpeed = 100.0
 StoppingDistance = 40.0
 LevelIndex = 1
@@ -526,6 +526,3 @@ collision_mask = 4
 position = Vector2(85.999985, -72)
 rotation = 1.567259
 shape = SubResource("CapsuleShape2D_lancer_hitbox")
-
-[node name="AttackController" parent="." index="6"]
-BaseAttackCooldown = 2.0
