@@ -6,11 +6,17 @@ using Core.Managers.Stats;
 
 public partial class Lancer : MeleeAggressiveNpcBase
 {
+    [Export] public float DashSpeedMultiplier { get; set; } = 5f;
+    [Export] public float MinDashDistance { get; set; } = 200f;
+
     private ILancerController m_lancerController;
     private Area2D? m_dashActiveHitbox;
     private bool m_isDashing = false;
     private float m_windUpTimer = 0f;
     private float m_recoveryTimer = 0f;
+
+    private Area2D? m_hitboxAreaUp;
+    private Area2D? m_hitboxAreaDown;
 
     public override void _Ready()
     {
@@ -22,19 +28,22 @@ public partial class Lancer : MeleeAggressiveNpcBase
 
         base._Ready();
 
-        if (m_hitboxAreaRight != null)
+        m_hitboxAreaUp = GetNodeOrNull<Area2D>("HitboxAreaUp");
+        m_hitboxAreaDown = GetNodeOrNull<Area2D>("HitboxAreaDown");
+
+        if (m_attackController != null)
         {
-            m_hitboxAreaRight.BodyEntered += OnDashHitboxEntered;
+            if (m_hitboxAreaUp != null) m_attackController.RegisterArea("Up", m_hitboxAreaUp);
+            if (m_hitboxAreaDown != null) m_attackController.RegisterArea("Down", m_hitboxAreaDown);
         }
 
-        if (m_hitboxAreaLeft != null)
-        {
-            m_hitboxAreaLeft.BodyEntered += OnDashHitboxEntered;
-        }
+        if (m_hitboxAreaRight != null) m_hitboxAreaRight.BodyEntered += OnDashHitboxEntered;
+        if (m_hitboxAreaLeft != null) m_hitboxAreaLeft.BodyEntered += OnDashHitboxEntered;
+        if (m_hitboxAreaUp != null) m_hitboxAreaUp.BodyEntered += OnDashHitboxEntered;
+        if (m_hitboxAreaDown != null) m_hitboxAreaDown.BodyEntered += OnDashHitboxEntered;
 
         if (m_animatedSprite != null)
         {
-            // For loops on specific animations
             m_animatedSprite.AnimationFinished += OnAnimationFinished;
         }
     }
@@ -42,6 +51,7 @@ public partial class Lancer : MeleeAggressiveNpcBase
     protected override void InitializeController()
     {
         m_lancerController = new LancerController();
+        m_lancerController.MinDashDistance = MinDashDistance;
         m_agressorController = (AgressorController)m_lancerController;
     }
 
@@ -130,15 +140,29 @@ public partial class Lancer : MeleeAggressiveNpcBase
             {
                 m_isDashing = true;
 
-                // Determine which hitbox to use based on dash direction
-                if (m_animatedSprite != null && m_animatedSprite.FlipH)
+                string dashDirectionStr = "Right";
+                if (m_targetPlayer != null)
                 {
-                    m_dashActiveHitbox = m_hitboxAreaLeft;
+                    dashDirectionStr = GetDirectionString(m_targetPlayer.GlobalPosition);
                 }
-                else
+
+                // Cache the visual animation string so it doesn't change mid-dash if player moves
+                string dashAnimName = "DashSide";
+                if (dashDirectionStr == "Up") dashAnimName = "DashUp";
+                else if (dashDirectionStr == "Down") dashAnimName = "DashDown";
+
+                if (m_animatedSprite != null)
                 {
-                    m_dashActiveHitbox = m_hitboxAreaRight;
+                    m_animatedSprite.Play(dashAnimName);
+                    // Also lock visual flip for Side dashes
+                    if (dashDirectionStr == "Left") m_animatedSprite.FlipH = true;
+                    else if (dashDirectionStr == "Right") m_animatedSprite.FlipH = false;
                 }
+
+                if (dashDirectionStr == "Left") m_dashActiveHitbox = m_hitboxAreaLeft;
+                else if (dashDirectionStr == "Up") m_dashActiveHitbox = m_hitboxAreaUp;
+                else if (dashDirectionStr == "Down") m_dashActiveHitbox = m_hitboxAreaDown;
+                else m_dashActiveHitbox = m_hitboxAreaRight;
 
                 if (m_dashActiveHitbox != null)
                 {
@@ -146,8 +170,8 @@ public partial class Lancer : MeleeAggressiveNpcBase
                 }
             }
 
-            // Dash speed is ChaseSpeed * 3
-            targetSpeed = ChaseSpeed * 3f;
+            // Dash speed is ChaseSpeed * DashSpeedMultiplier
+            targetSpeed = ChaseSpeed * DashSpeedMultiplier;
             direction = new Vector2(m_lancerController.CurrentDirection.X, m_lancerController.CurrentDirection.Y);
         }
         else if (state == NpcStates.CHASE && m_targetPlayer != null)
@@ -189,13 +213,43 @@ public partial class Lancer : MeleeAggressiveNpcBase
         }
     }
 
+    private string GetDirectionString(Vector2 p_targetPosition)
+    {
+        Vector2 direction = p_targetPosition - GlobalPosition;
+        if (System.Math.Abs(direction.Y) > System.Math.Abs(direction.X))
+        {
+            return direction.Y < 0 ? "Up" : "Down";
+        }
+        return direction.X < 0 ? "Left" : "Right";
+    }
+
     protected override void HandleAttackState()
     {
         if (m_attackController != null && m_attackController.CanAttack && m_targetPlayer != null)
         {
-            // Attack controller will handle cooldowns
-            string direction = (m_animatedSprite != null && m_animatedSprite.FlipH) ? "Left" : "Right";
-            m_attackController.TryAttack(direction);
+            string attackDirectionStr = GetDirectionString(m_targetPlayer.GlobalPosition);
+
+            string animName = "AttackSide";
+            if (attackDirectionStr == "Up") animName = "AttackUp";
+            else if (attackDirectionStr == "Down") animName = "AttackDown";
+
+            if (m_animatedSprite != null)
+            {
+                if (attackDirectionStr == "Left") m_animatedSprite.FlipH = true;
+                else if (attackDirectionStr == "Right") m_animatedSprite.FlipH = false;
+            }
+
+            m_attackController.SetAttackAnimation(animName);
+            m_attackController.TryAttack(attackDirectionStr);
+        }
+    }
+
+    protected override void OnAttackStarted()
+    {
+        if (m_animatedSprite != null && m_attackController != null)
+        {
+            m_animatedSprite.Play(m_attackController.AttackAnimationName);
+            m_animatedSprite.Frame = 0;
         }
     }
 
@@ -214,9 +268,10 @@ public partial class Lancer : MeleeAggressiveNpcBase
 
         if (isAttacking)
         {
-            if (m_animatedSprite.Animation != "Attack")
+            string animName = m_attackController.AttackAnimationName;
+            if (m_animatedSprite.Animation != animName)
             {
-                m_animatedSprite.Play("Attack");
+                m_animatedSprite.Play(animName);
                 m_animatedSprite.Frame = 0;
             }
             return;
@@ -230,7 +285,12 @@ public partial class Lancer : MeleeAggressiveNpcBase
         }
         else if (state == LancerStates.DASHING)
         {
-            m_animatedSprite.Play("Dash");
+            // Dash animation and flipping are locked in when dash starts to prevent desync
+            // Just ensure it keeps playing whatever was locked in
+            if (m_animatedSprite.Animation.ToString().StartsWith("Dash") == false)
+            {
+                m_animatedSprite.Play("DashSide"); // Fallback
+            }
             return;
         }
         else if (state == LancerStates.RECOVERY)
@@ -240,7 +300,7 @@ public partial class Lancer : MeleeAggressiveNpcBase
         }
 
         // Base movements
-        if (Velocity.LengthSquared() > 0)
+        if (Velocity.LengthSquared() > 0 && state != "Resting")
         {
             m_animatedSprite.Play("Moving");
         }
@@ -256,7 +316,7 @@ public partial class Lancer : MeleeAggressiveNpcBase
 
         string state = m_lancerController.CurrentState;
 
-        if (state == LancerStates.DASHING && m_animatedSprite.Animation == "Dash")
+        if (state == LancerStates.DASHING && m_animatedSprite.Animation.ToString().StartsWith("Dash"))
         {
             // End of dash animation
             EndDashSequence();

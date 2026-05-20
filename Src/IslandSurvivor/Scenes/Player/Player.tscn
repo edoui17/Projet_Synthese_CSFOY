@@ -8,7 +8,7 @@
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_h54ih"]
 radius = 20.0
-height = 58.0
+height = 52.0
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_i5acl"]
 radius = 24.98892
@@ -39,8 +39,8 @@ m_weaponAreaLeft = NodePath("WeaponAttackLeft")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1359797056]
 sprite_frames = ExtResource("8_frames")
-animation = &"IDLE"
-autoplay = "IDLE"
+animation = &"Idle"
+autoplay = "Idle"
 
 [node name="PlayerHitBox" type="CollisionShape2D" parent="." unique_id=86017915]
 position = Vector2(0, 4)

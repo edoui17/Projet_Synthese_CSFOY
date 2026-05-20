@@ -20,7 +20,6 @@ public class AuthRepository : IAuthRepository
     public async Task<Player?> GetBySessionTokenAsync(string p_token)
     {
         var entity = await m_context.Players
-            .Include(p => p.GameStats)
             .Include(p => p.Config)
             .FirstOrDefaultAsync(p => p.SessionToken == p_token);
 

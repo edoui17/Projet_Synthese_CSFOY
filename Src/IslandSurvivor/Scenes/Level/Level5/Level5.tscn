@@ -13,6 +13,7 @@
 [ext_resource type="Script" uid="uid://cbbphk4jiuhm5" path="res://Nodes/Zones/EnemySpawnConfig.cs" id="10_fp86d"]
 [ext_resource type="Resource" uid="uid://d1e2f3g4h5i6j" path="res://Scenes/NPC/Aggressive/Normal/Soldier/SoldierConfig.tres" id="11_bgy4g"]
 [ext_resource type="Resource" uid="uid://dbscgytmkqyn7" path="res://Scenes/NPC/Aggressive/Normal/Archer/ArcherConfig.tres" id="12_q4mu0"]
+[ext_resource type="Resource" uid="uid://cxq9oiy51w9h7" path="res://Scenes/NPC/Aggressive/Normal/Lancer/LancerConfig.tres" id="13_lancer"]
 
 
 [node name="Main" unique_id=956225192 instance=ExtResource("1_base")]
@@ -41,7 +42,7 @@ uv = PackedVector2Array(-277.30957, 36.86975)
 [node name="EnemieZone" type="Node2D" parent="." index="3" unique_id=2010878527 node_paths=PackedStringArray("SpawningArea")]
 position = Vector2(0, 2)
 script = ExtResource("9_mixyp")
-EnemyConfigs = Array[ExtResource("10_fp86d")]([ExtResource("11_bgy4g"), ExtResource("12_q4mu0")])
+EnemyConfigs = Array[ExtResource("10_fp86d")]([ExtResource("11_bgy4g"), ExtResource("12_q4mu0"), ExtResource("13_lancer")])
 SpawningArea = NodePath("EnemySpawningArea")
 RespawnInterval = 30.0
 
