@@ -35,7 +35,7 @@ public partial class Lancer : MeleeAggressiveNpcBase
 
         if (m_attackController != null)
         {
-            m_attackController.ActionFrame = 4;
+            m_attackController.ActionFrame = 3;
             if (m_hitboxAreaUp != null) m_attackController.RegisterArea("Up", m_hitboxAreaUp);
             if (m_hitboxAreaDown != null) m_attackController.RegisterArea("Down", m_hitboxAreaDown);
         }
