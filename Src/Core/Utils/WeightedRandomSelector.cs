@@ -21,21 +21,15 @@ public class WeightedRandomSelector<T> : IWeightedRandomSelector<T> where T : IW
     }
 
     /// <inheritdoc />
-    public T? SelectRandom(IEnumerable<T> p_items)
+    public T? SelectRandom(IReadOnlyList<T> p_items)
     {
-        if (p_items == null)
-        {
-            return default;
-        }
-
-        var itemList = p_items.ToList();
-        if (itemList.Count == 0)
+        if (p_items == null || p_items.Count == 0)
         {
             return default;
         }
 
         float totalWeight = 0;
-        foreach (var item in itemList)
+        foreach (var item in p_items)
         {
             if (item.Weight < 0)
             {
@@ -47,14 +41,14 @@ public class WeightedRandomSelector<T> : IWeightedRandomSelector<T> where T : IW
         if (totalWeight <= 0)
         {
             // If all weights are 0, pick one randomly with equal probability
-            int index = m_random.Next(itemList.Count);
-            return itemList[index];
+            int index = m_random.Next(p_items.Count);
+            return p_items[index];
         }
 
         double roll = m_random.NextDouble() * totalWeight;
         float currentWeightSum = 0;
 
-        foreach (var item in itemList)
+        foreach (var item in p_items)
         {
             float clampedWeight = Math.Max(0, item.Weight);
             currentWeightSum += clampedWeight;
@@ -64,6 +58,6 @@ public class WeightedRandomSelector<T> : IWeightedRandomSelector<T> where T : IW
             }
         }
 
-        return itemList.Last();
+        return p_items[p_items.Count - 1];
     }
 }
