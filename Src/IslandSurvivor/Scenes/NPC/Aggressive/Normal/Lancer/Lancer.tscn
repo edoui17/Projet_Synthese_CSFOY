@@ -9,7 +9,7 @@
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_twomw"]
 atlas = ExtResource("2_qp1c1")
-region = Rect2(0, 0, 320, 320)
+region = Rect2(640, 0, 320, 320)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_56aua"]
 atlas = ExtResource("2_qp1c1")
@@ -17,7 +17,7 @@ region = Rect2(320, 0, 320, 320)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_x8p06"]
 atlas = ExtResource("2_qp1c1")
-region = Rect2(640, 0, 320, 320)
+region = Rect2(0, 0, 320, 320)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_qth4m"]
 atlas = ExtResource("3_4t0e8")
@@ -138,10 +138,16 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_x8p06")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_56aua")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_twomw")
 }],
 "loop": false,
 "name": &"Attack",
-"speed": 5.0
+"speed": 10.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -253,7 +259,9 @@ XpMultiplier = 0.2
 
 [node name="AnimatedSprite2D" parent="." index="0"]
 sprite_frames = SubResource("SpriteFrames_twomw")
-animation = &"Moving"
+animation = &"Attack"
+frame = 4
+frame_progress = 1.0
 
 [node name="CollisionShape2D" parent="." index="1"]
 visible = false
