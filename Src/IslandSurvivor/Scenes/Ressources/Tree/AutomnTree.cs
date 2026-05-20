@@ -62,7 +62,31 @@ public partial class AutomnTree : Area2D, ITree, IDamageable
         int quantity = IslandSurvivor.Logic.ResourceUtils.CalculateYield(baseQuantity, p_attacker);
 
         var item = new Core.Domain.ResourceItem(EntityId, MaterialName, MaterialType, IconPath);
-        SignalManager.Instance.EmitMaterialDestroyed(this, item, quantity);
+
+        // Target is the player who mined it
+        Node2D targetNode = p_attacker as Node2D;
+        Vector2 fallbackPosition = targetNode != null ? targetNode.GlobalPosition : GlobalPosition;
+
+        // Spawn Resource Drops for tweening
+        PackedScene dropScene = GD.Load<PackedScene>("res://Scenes/Ressources/ResourceDrop.tscn");
+        if (dropScene != null)
+        {
+            for (int i = 0; i < quantity; i++)
+            {
+                if (dropScene.Instantiate() is IslandSurvivor.Scenes.Ressources.ResourceDrop drop)
+                {
+                    // Pass quantity 1 for each individual drop
+                    drop.Initialize(item, 1, GlobalPosition, targetNode, fallbackPosition);
+                    GetParent().AddChild(drop);
+                }
+            }
+        }
+        else
+        {
+            // Fallback if scene is not yet setup
+            SignalManager.Instance.EmitMaterialDestroyed(this, item, quantity);
+        }
+
         // Detach and play particles if they exist
         GpuParticles2D particles = GetNodeOrNull<GpuParticles2D>("DestructionParticles");
         if (particles != null)

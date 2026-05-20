@@ -399,11 +399,23 @@ public partial class Player : CharacterBody2D, IDamageable
         this.PlayHitFlash();
         this.PlayShake();
 
-        // Play hurt sound
-        AudioStream hurtStream = GD.Load<AudioStream>("res://Assets/Sounds/Combat/player_hurt.wav");
-        if (hurtStream != null)
+        if (Stats.GetCurrentValue(StatType.Health) <= 0)
         {
-            AudioManager.Instance?.PlaySound(hurtStream);
+            // Play death sound
+            AudioStream deathStream = GD.Load<AudioStream>("res://Assets/Sounds/Combat/player_death.wav");
+            if (deathStream != null)
+            {
+                AudioManager.Instance?.PlaySound(deathStream);
+            }
+        }
+        else
+        {
+            // Play hurt sound
+            AudioStream hurtStream = GD.Load<AudioStream>("res://Assets/Sounds/Combat/player_hurt.wav");
+            if (hurtStream != null)
+            {
+                AudioManager.Instance?.PlaySound(hurtStream);
+            }
         }
 
         // Lightweight camera shake

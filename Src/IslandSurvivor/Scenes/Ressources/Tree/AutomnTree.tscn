@@ -3,7 +3,6 @@
 [ext_resource type="Texture2D" uid="uid://qljs2tditm8y" path="res://Assets/TinySwords/Terrain/Trees/Tree4.png" id="1_amoml"]
 [ext_resource type="Script" uid="uid://d2sqd5ttge0c1" path="res://Scenes/Ressources/Tree/AutomnTree.cs" id="1_sd2x1"]
 [ext_resource type="PackedScene" uid="uid://biqhbrp7fjfyj" path="res://Nodes/StatsManager/StatsManager.tscn" id="3_2xutj"]
-[ext_resource type="Texture2D" uid="uid://1aef03ijhesw" path="res://Assets/TinySwords/Terrain/Trees/leaf.png" id="4_2xutj"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_y1hdp"]
 size = Vector2(26, 23)
@@ -75,28 +74,6 @@ animations = [{
 "speed": 5.0
 }]
 
-[sub_resource type="Curve" id="Curve_sw6xs"]
-_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.38528138, 0.3411306), -0.7516776, -0.7516776, 0, 0, Vector2(0.8051948, 0), 0.0, 0.0, 0, 0]
-point_count = 3
-
-[sub_resource type="CurveTexture" id="CurveTexture_atlda"]
-curve = SubResource("Curve_sw6xs")
-
-[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_j008p"]
-emission_shape = 1
-emission_sphere_radius = 46.4
-angle_min = -360.0
-angle_max = 360.00003
-spread = 180.0
-initial_velocity_min = 100.0
-initial_velocity_max = 200.0
-angular_velocity_min = -200.00002
-angular_velocity_max = 199.99998
-gravity = Vector3(0, 98, 0)
-scale_min = 0.06
-scale_max = 0.06
-scale_curve = SubResource("CurveTexture_atlda")
-
 [node name="AutomnTree" type="Area2D" unique_id=1636812557 node_paths=PackedStringArray("Stats", "Timer")]
 z_index = 2
 y_sort_enabled = true
@@ -105,6 +82,7 @@ collision_mask = 8
 script = ExtResource("1_sd2x1")
 Stats = NodePath("StatManager")
 Timer = NodePath("Timer")
+IconPath = "res://Assets/TinySwords/Terrain/Wood Resource/Wood Resource.png"
 
 [node name="StaticBody2D" type="StaticBody2D" parent="." unique_id=892363287]
 position = Vector2(1.5, 44.5)
@@ -127,10 +105,3 @@ frame_progress = 0.18821257
 [node name="StatManager" parent="." unique_id=1475410971 instance=ExtResource("3_2xutj")]
 EntityType = 2
 MaxHealth = 20.0
-
-[node name="DestructionParticles" type="GPUParticles2D" parent="." unique_id=459622565]
-position = Vector2(1, 1)
-emitting = false
-texture = ExtResource("4_2xutj")
-one_shot = true
-process_material = SubResource("ParticleProcessMaterial_j008p")

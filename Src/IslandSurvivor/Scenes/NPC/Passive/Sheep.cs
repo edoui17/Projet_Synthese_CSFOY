@@ -134,6 +134,14 @@ public partial class Sheep : CharacterBody2D, INpc, IDamageable
 
                 // Visual feedback
                 IslandSurvivor.Extensions.NodeExtensions.PlayHitFlash(this);
+                IslandSurvivor.Extensions.NodeExtensions.PlayShake(this);
+
+                // Audio feedback
+                AudioStream hurtStream = GD.Load<AudioStream>("res://Assets/Sounds/Combat/animal_hurt.wav");
+                if (hurtStream != null)
+                {
+                    IslandSurvivor.Globals.AudioManager.Instance?.PlaySound2D(hurtStream, GlobalPosition);
+                }
             }
         }
     }
@@ -175,15 +183,38 @@ public partial class Sheep : CharacterBody2D, INpc, IDamageable
 
             ResourceItem meatResource = new ResourceItem("meat_01", "Viande", "Meat", "res://Assets/TinySwords/TinySwords(Update010)/Deco/17.png");
 
-            if (SignalManager.Instance != null)
+            // Target is the player who killed it
+            Node2D targetNode = p_attacker as Node2D;
+            Vector2 fallbackPosition = targetNode != null ? targetNode.GlobalPosition : GlobalPosition;
+
+            // Spawn Resource Drops for tweening
+            PackedScene dropScene = GD.Load<PackedScene>("res://Scenes/Ressources/ResourceDrop.tscn");
+            if (dropScene != null)
             {
-                SignalManager.Instance.EmitMaterialDestroyed(this, meatResource, meatAmount);
-                GD.Print($"Sheep died. Sent {meatAmount} meat to inventory.");
+                for (int i = 0; i < meatAmount; i++)
+                {
+                    if (dropScene.Instantiate() is IslandSurvivor.Scenes.Ressources.ResourceDrop drop)
+                    {
+                        drop.Initialize(meatResource, 1, GlobalPosition, targetNode, fallbackPosition);
+                        GetParent().AddChild(drop);
+                    }
+                }
             }
             else
             {
-                GD.PrintErr("SignalManager is not available.");
+                if (SignalManager.Instance != null)
+                {
+                    SignalManager.Instance.EmitMaterialDestroyed(this, meatResource, meatAmount);
+                    GD.Print($"Sheep died. Sent {meatAmount} meat to inventory.");
+                }
             }
+        }
+
+        // Try to play death sound
+        AudioStream deathStream = GD.Load<AudioStream>("res://Assets/Sounds/Combat/animal_death.wav");
+        if (deathStream != null)
+        {
+            IslandSurvivor.Globals.AudioManager.Instance?.PlaySound2D(deathStream, GlobalPosition);
         }
 
         QueueFree();
