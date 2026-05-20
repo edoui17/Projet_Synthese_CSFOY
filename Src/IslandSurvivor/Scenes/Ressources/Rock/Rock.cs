@@ -18,7 +18,7 @@ public partial class Rock : Area2D, IOre, IDamageable
 
     [Export] public string MaterialName { get; set; } = "Roche";
     [Export] public string MaterialType { get; set; } = "Rock";
-    [Export] public string IconPath { get; set; } = "res://Assets/TinySwords/TinySwords(Update010)/Deco/06.png";
+    [Export] public string IconPath { get; set; } = "res://Assets/TinySwords/Decorations/Deco/06.png";
 
     private object? m_lastAttacker;
 

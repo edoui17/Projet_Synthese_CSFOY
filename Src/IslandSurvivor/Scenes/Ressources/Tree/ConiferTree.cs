@@ -18,7 +18,7 @@ public partial class ConiferTree : Area2D, ITree, IDamageable
 
   [Export] public string MaterialName { get; set; } = "Conifère";
   [Export] public string MaterialType { get; set; } = "Wood";
-  [Export] public string IconPath { get; set; } = "res://Assets/Tiny Swords/Tiny Swords (Update 010)/Resources/Trees/Tree.png";
+  [Export] public string IconPath { get; set; } = "res://Assets/TinySwords/Terrain/Wood Resource/Wood Resource.png";
 
   private object? m_lastAttacker;
 
