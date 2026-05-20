@@ -24,6 +24,7 @@
     <ProjectReference Include="..\..\Src\Core\Core.csproj" />
     <ProjectReference Include="..\..\Src\IslandSurvivor\IslandSurvivor.csproj" />
     <ProjectReference Include="..\..\Src\Infrastructure\Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Src\API\API.csproj" />
   </ItemGroup>
 
 </Project>
