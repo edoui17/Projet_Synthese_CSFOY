@@ -33,6 +33,7 @@ public partial class Lancer : MeleeAggressiveNpcBase
 
         if (m_attackController != null)
         {
+            m_attackController.ActionFrame = 4;
             if (m_hitboxAreaUp != null) m_attackController.RegisterArea("Up", m_hitboxAreaUp);
             if (m_hitboxAreaDown != null) m_attackController.RegisterArea("Down", m_hitboxAreaDown);
         }
@@ -106,7 +107,7 @@ public partial class Lancer : MeleeAggressiveNpcBase
             else
             {
                 // Initialize wind up timer
-                m_windUpTimer = 0.5f;
+                m_windUpTimer = 0.75f;
             }
         }
         else if (state == LancerStates.RECOVERY)
