@@ -157,7 +157,7 @@ public partial class Sheep : CharacterBody2D, INpc, IDamageable
 
             meatAmount += bonusQuantity;
 
-            ResourceItem meatResource = new ResourceItem("meat_01", "Viande", "Meat", "res://Assets/TinySwords/TinySwords(Update010)/Deco/17.png");
+            ResourceItem meatResource = new ResourceItem("meat_01", "Viande", "Meat", "res://Assets/TinySwords/Terrain/Meat Resource/Meat Resource.png");
 
             // Target is the player who killed it
             Node2D targetNode = p_attacker as Node2D;
