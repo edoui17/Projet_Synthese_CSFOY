@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://bt5vis3qswuxb"]
 
 [ext_resource type="PackedScene" uid="uid://mbase12345" path="res://Scenes/NPC/Aggressive/Normal/MeleeAggressiveNpcBase.tscn" id="1_gsctu"]
+[ext_resource type="Script" path="res://Scenes/NPC/Aggressive/Normal/Lancer/Lancer.cs" id="1_x8y9z"]
 [ext_resource type="Texture2D" uid="uid://cltvmnoxer3qs" path="res://Assets/TinySwords/Sprites/Lancer/Blue/Lancer_Idle.png" id="2_lryv6"]
 [ext_resource type="Texture2D" uid="uid://btfwfp0sry5xw" path="res://Assets/TinySwords/Sprites/Lancer/Blue/Lancer_Right_Attack.png" id="2_qp1c1"]
 [ext_resource type="Texture2D" uid="uid://c8m0cy55dalkf" path="res://Assets/TinySwords/Sprites/Lancer/Blue/Lancer_Right_Defence.png" id="3_4t0e8"]
@@ -239,7 +240,11 @@ animations = [{
 "speed": 6.0
 }]
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_dash"]
+radius = 20.0
+
 [node name="Lancer" unique_id=1880312545 instance=ExtResource("1_gsctu")]
+script = ExtResource("1_x8y9z")
 ChaseSpeed = 100.0
 StoppingDistance = 40.0
 LevelIndex = 1
@@ -268,3 +273,10 @@ rotation = 1.567259
 [node name="CollisionShape2D" parent="HitboxAreaLeft" index="0"]
 position = Vector2(-7, 4)
 rotation = 1.5765897
+
+[node name="DashBodyArea" type="Area2D" parent="." index="9"]
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DashBodyArea" index="0"]
+shape = SubResource("CircleShape2D_dash")
