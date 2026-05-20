@@ -133,8 +133,8 @@ public partial class Lancer : MeleeAggressiveNpcBase
                 if (m_dashBodyArea != null) m_dashBodyArea.Monitoring = true;
             }
 
-            // Dash speed is BaseSpeed * 3
-            targetSpeed = Stats.GetCurrentValue(StatType.Speed) * 3f;
+            // Dash speed is ChaseSpeed * 3
+            targetSpeed = ChaseSpeed * 3f;
             direction = new Vector2(m_lancerController.CurrentDirection.X, m_lancerController.CurrentDirection.Y);
         }
         else if (state == NpcStates.CHASE && m_targetPlayer != null)
