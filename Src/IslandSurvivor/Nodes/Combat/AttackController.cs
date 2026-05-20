@@ -28,6 +28,9 @@ public partial class AttackController : Node
 
     [Export] public float BaseAttackCooldown { get; set; } = 1.0f;
 
+    [Export] public string AttackAnimationName { get; set; } = "Attack";
+    private StringName m_cachedAttackAnimationName = null!;
+
     private AnimatedSprite2D? m_attackSprite;
     public AnimatedSprite2D? AttackSprite
     {
@@ -73,6 +76,9 @@ public partial class AttackController : Node
     {
         base._Ready();
         if (Engine.IsEditorHint()) return;
+
+        m_cachedAttackAnimationName = new StringName(AttackAnimationName);
+
         m_owner = GetOwner<Node>();
         if (m_owner == null)
         {
@@ -84,7 +90,7 @@ public partial class AttackController : Node
     {
         if (AttackSprite == null || !IsAttacking) return;
 
-        if (AttackSprite.Animation.ToString().Equals("Attack", System.StringComparison.OrdinalIgnoreCase) && AttackSprite.Frame >= ActionFrame && !m_hasTriggeredAction)
+        if (AttackSprite.Animation == m_cachedAttackAnimationName && AttackSprite.Frame >= ActionFrame && !m_hasTriggeredAction)
         {
             ExecuteAttackHit();
             EmitSignal(SignalName.AttackActionTriggered);
@@ -96,7 +102,7 @@ public partial class AttackController : Node
     {
         if (AttackSprite == null || !IsAttacking) return;
 
-        if (AttackSprite.Animation.ToString().Equals("Attack", System.StringComparison.OrdinalIgnoreCase))
+        if (AttackSprite.Animation == m_cachedAttackAnimationName)
         {
             CancelAttack();
         }
