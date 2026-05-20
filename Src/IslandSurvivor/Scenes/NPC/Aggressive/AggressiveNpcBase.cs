@@ -24,6 +24,7 @@ public partial class AggressiveNpcBase : NpcBase, IEnemy
     [Export] public float XpMultiplier { get; set; } = 0.2f;
 
     [ExportGroup("Audio")]
+    [Export] public AudioStream? AttackSound { get; set; }
     [Export] public AudioStream? HurtSound { get; set; }
     [Export] public AudioStream? DeathSound { get; set; }
 
@@ -253,7 +254,7 @@ public partial class AggressiveNpcBase : NpcBase, IEnemy
     {
         m_agressorController.SetDead();
 
-        AudioStream? deathStream = DeathSound ?? GD.Load<AudioStream>("res://Src/IslandSurvivor/Assets/Sounds/Combat/enemy_death.wav");
+        AudioStream? deathStream = DeathSound ?? GD.Load<AudioStream>("res://Assets/Sounds/Combat/enemy_death.wav");
         if (deathStream != null)
         {
             AudioManager.Instance?.PlaySound2D(deathStream, GlobalPosition);

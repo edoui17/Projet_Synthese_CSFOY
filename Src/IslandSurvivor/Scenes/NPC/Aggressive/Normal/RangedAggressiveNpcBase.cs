@@ -2,6 +2,7 @@ namespace IslandSurvivor.Scenes.NPC.Aggressive;
 
 using Godot;
 using IslandSurvivor.Logic.Entities;
+using IslandSurvivor.Globals;
 
 public partial class RangedAggressiveNpcBase : AggressiveNpcBase
 {
@@ -56,6 +57,13 @@ public partial class RangedAggressiveNpcBase : AggressiveNpcBase
 
     protected virtual void OnAttackStarted()
     {
+        // Play attack sound (bow drawback or similar)
+        AudioStream? swingStream = AttackSound ?? GD.Load<AudioStream>("res://Assets/Sounds/Combat/weapon_swing.wav");
+        if (swingStream != null)
+        {
+            AudioManager.Instance?.PlaySound2D(swingStream, GlobalPosition);
+        }
+
         if (m_animatedSprite != null)
         {
             if (m_targetPlayer != null)

@@ -18,10 +18,28 @@ public partial class Sheep : PassiveNpcBase
     [Export] public AudioStream? DeathSound { get; set; }
     [Export] public AudioStream? IdleSound { get; set; }
 
+    private Timer? m_idleSoundTimer;
+
     public override void _Ready()
     {
         base._Ready();
         IdleSpeed = 30.0f;
+
+        m_idleSoundTimer = new Timer();
+        m_idleSoundTimer.WaitTime = new Random().Next(5, 15);
+        m_idleSoundTimer.OneShot = false;
+        m_idleSoundTimer.Timeout += OnIdleSoundTimeout;
+        AddChild(m_idleSoundTimer);
+        m_idleSoundTimer.Start();
+    }
+
+    private void OnIdleSoundTimeout()
+    {
+        if (IdleSound != null && CurrentState != NpcStates.DEAD)
+        {
+            AudioManager.Instance?.PlaySound2D(IdleSound, GlobalPosition);
+            m_idleSoundTimer!.WaitTime = new Random().Next(10, 30);
+        }
     }
 
     protected override void HandleDeath(object? p_attacker = null)
