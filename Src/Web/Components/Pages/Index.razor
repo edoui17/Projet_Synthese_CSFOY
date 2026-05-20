@@ -28,10 +28,13 @@
             </button>
             <div id="sortRank">
                 <select name="ranks" id="rank-select" @bind="SortCriteria">
-                <option value="Best">Meilleurs</option>
-                <option value="Worst">Pires</option>
                 <option value="Level">Level</option>
-                <option value="Speed">Vitesse</option>
+                <option value="Temps">Temps</option>
+                <option value="Vie">Vie</option>
+                <option value="Chance">Chance</option>
+                <option value="Attaque">Attaque</option>
+                <option value="Vitesse">Vitesse</option>
+                <option value="No stat">No stat</option>
                 </select>
             </div>
         </div>
@@ -57,7 +60,7 @@
                 <div class="solo">
                     <img src="images/solobar.png" alt="rank bar">
                     <h3>@entry.Rank. @entry.Player.Username.ToUpper()</h3>
-                    <h2>Lvl @entry.Player.Level</h2>
+                    <h2>@GetStatDisplay(entry.Player)</h2>
                 </div>
             }
             else
@@ -74,7 +77,7 @@
                     <div class="@cssClass">
                         <img src="@barImage" alt="rank bar">
                         <h3>@entry.Rank. @entry.Player.Username.ToUpper()</h3>
-                        <h2>Lvl @entry.Player.Level</h2>
+                        <h2>@GetStatDisplay(entry.Player)</h2>
                     </div>
                 }
             }
@@ -85,7 +88,7 @@
 @code {
     private IEnumerable<PlayerLeaderboardEntry>? m_players;
     private string m_searchQuery = string.Empty;
-    private string m_sortCriteria = "Best";
+    private string m_sortCriteria = "Level";
 
     public string SearchQuery
     {
@@ -113,13 +116,23 @@
         {
             if (m_players == null) return Array.Empty<(int, PlayerLeaderboardEntry)>();
 
+            IEnumerable<PlayerLeaderboardEntry> playersToFilter = m_players;
+
+            if (SortCriteria == "No stat")
+            {
+                playersToFilter = playersToFilter.Where(p => p.BonusHealth == 0 && p.BonusAttack == 0 && p.BonusSpeed == 0 && p.BonusLuck == 0);
+            }
+
             var sorted = SortCriteria switch
             {
-                "Best" => m_players.OrderByDescending(p => p.Level).ThenByDescending(p => p.Health),
-                "Worst" => m_players.OrderBy(p => p.Level).ThenBy(p => p.Health),
-                "Level" => m_players.OrderByDescending(p => p.Level),
-                "Speed" => m_players.OrderByDescending(p => p.Speed),
-                _ => m_players.OrderByDescending(p => p.Level)
+                "Level" => playersToFilter.OrderByDescending(p => p.Level),
+                "Temps" => playersToFilter.OrderByDescending(p => p.Level).ThenBy(p => p.Duration),
+                "Vie" => playersToFilter.OrderByDescending(p => p.Health),
+                "Chance" => playersToFilter.OrderByDescending(p => p.Luck),
+                "Attaque" => playersToFilter.OrderByDescending(p => p.Attack),
+                "Vitesse" => playersToFilter.OrderByDescending(p => p.Speed),
+                "No stat" => playersToFilter.OrderByDescending(p => p.Level),
+                _ => playersToFilter.OrderByDescending(p => p.Level)
             };
 
             var ranked = sorted.Select((p, index) => (Rank: index + 1, Player: p));
@@ -129,6 +142,19 @@
 
             return ranked;
         }
+    }
+
+    private string GetStatDisplay(PlayerLeaderboardEntry player)
+    {
+        return SortCriteria switch
+        {
+            "Temps" => $"Lvl {player.Level} - {player.Duration:hh\\:mm\\:ss} - {player.Score} pts",
+            "Vie" => $"Lvl {player.Level} - {player.Health} Vie",
+            "Chance" => $"Lvl {player.Level} - {player.Luck} Chance",
+            "Attaque" => $"Lvl {player.Level} - {player.Attack} Attaque",
+            "Vitesse" => $"Lvl {player.Level} - {player.Speed} Vitesse",
+            _ => $"Lvl {player.Level}"
+        };
     }
 
     protected override async Task OnInitializedAsync()
