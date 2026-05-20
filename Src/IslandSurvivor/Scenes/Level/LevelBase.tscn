@@ -5,6 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://djv45romp3vxj" path="res://Scenes/HomeMap/PlayerHUD.tscn" id="3_hud"]
 [ext_resource type="PackedScene" uid="uid://c7w3b4h8f6j0a" path="res://Scenes/NavigationMenu/NavigationMenu.tscn" id="4_nav"]
 [ext_resource type="PackedScene" uid="uid://du6mrtfohbxi8" path="res://Scenes/GameMaterialsPlanner/MaterialsMenuPlanner.tscn" id="5_mat"]
+[ext_resource type="PackedScene" uid="uid://cxab32" path="res://Scenes/MainMenu/DefeatMenu/DefeatMenu.tscn" id="6_defeat"]
 
 [node name="Main" type="Node2D" unique_id=376045740]
 
@@ -47,3 +48,5 @@ grow_vertical = 1
 scale = Vector2(0.5, 0.5)
 size_flags_horizontal = 4
 size_flags_vertical = 4
+
+[node name="DefeatMenu" parent="CanvasLayer" unique_id=987654321 instance=ExtResource("6_defeat")]

@@ -1,0 +1,101 @@
+@page "/login"
+@using Web.Services
+@using Microsoft.AspNetCore.Components.Authorization
+@inject AuthService AuthService
+@inject NavigationManager Navigation
+@inject AuthenticationStateProvider AuthStateProvider
+@rendermode InteractiveServer
+
+<PageTitle>Login - Island Survivor</PageTitle>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white text-center">
+                    <h3>Island Survivor - Login</h3>
+                </div>
+                <div class="card-body p-4">
+                    @if (!string.IsNullOrEmpty(m_errorMessage))
+                    {
+                        <div class="alert alert-danger">@m_errorMessage</div>
+                    }
+
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="username" @bind="m_username" placeholder="Enter username" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="password" @bind="m_password" placeholder="Enter password" />
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-primary" @onclick="HandleLogin" disabled="@m_isLoggingIn">
+                            @if (m_isLoggingIn)
+                            {
+                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                <span> Logging in...</span>
+                            }
+                            else
+                            {
+                                <span>Login</span>
+                            }
+                        </button>
+                    </div>
+                </div>
+                <div class="card-footer text-center text-muted">
+                    Squelette de connexion (US 17.0.1)
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private string m_username = string.Empty;
+    private string m_password = string.Empty;
+    private string? m_errorMessage;
+    private bool m_isLoggingIn = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        if (authState.User.Identity?.IsAuthenticated ?? false)
+        {
+            Navigation.NavigateTo("dashboard");
+        }
+    }
+
+    private async Task HandleLogin()
+    {
+        m_errorMessage = null;
+
+        if (string.IsNullOrWhiteSpace(m_username) || string.IsNullOrWhiteSpace(m_password))
+        {
+            m_errorMessage = "Please enter both username and password.";
+            return;
+        }
+
+        m_isLoggingIn = true;
+        try
+        {
+            bool success = await AuthService.LoginAsync(m_username, m_password);
+            if (success)
+            {
+                Navigation.NavigateTo("dashboard");
+            }
+            else
+            {
+                m_errorMessage = "Invalid credentials. Please try again.";
+            }
+        }
+        catch (Exception ex)
+        {
+            m_errorMessage = $"An error occurred: {ex.Message}";
+        }
+        finally
+        {
+            m_isLoggingIn = false;
+        }
+    }
+}

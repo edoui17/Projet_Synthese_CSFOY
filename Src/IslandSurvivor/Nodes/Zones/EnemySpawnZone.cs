@@ -5,7 +5,9 @@ using System.Linq;
 using Core.Interfaces.Spawning;
 using Core.Interfaces.Utils;
 using Core.Utils;
-using IslandSurvivor.Scenes.NPC.Agressive;
+using IslandSurvivor.Scenes.NPC.Aggressive;
+using IslandSurvivor.Utils;
+using IslandSurvivor.Utils.Logging;
 
 namespace IslandSurvivor.Nodes.Zones;
 
@@ -25,11 +27,10 @@ public partial class EnemySpawnZone : Node2D, IEnemySpawnZone
     [Export] public float MinDistanceBetweenEnemies { get; set; } = 100f;
     [Export] public float RespawnInterval { get; set; } = 60f;
 
-    private readonly List<EnemyBase> m_activeEnemies = new();
+    private readonly List<AggressiveNpcBase> m_activeEnemies = new();
     private float m_respawnTimer = 0f;
-    private readonly Random m_random = new();
     private Rect2 m_cachedBounds;
-    private readonly IWeightedRandomSelector<EnemySpawnConfig> m_weightedSelector = new WeightedRandomSelector<EnemySpawnConfig>();
+    private readonly IWeightedRandomSelector<EnemySpawnConfig> m_weightedSelector = new WeightedRandomSelector<EnemySpawnConfig>(new GodotRandomProvider(), new GodotLogger());
 
     public override void _Ready()
     {
@@ -121,8 +122,8 @@ public partial class EnemySpawnZone : Node2D, IEnemySpawnZone
     private Vector2 GenerateRandomPointInBounds()
     {
         return new Vector2(
-            (float)m_random.NextDouble() * m_cachedBounds.Size.X + m_cachedBounds.Position.X,
-            (float)m_random.NextDouble() * m_cachedBounds.Size.Y + m_cachedBounds.Position.Y
+            GD.Randf() * m_cachedBounds.Size.X + m_cachedBounds.Position.X,
+            GD.Randf() * m_cachedBounds.Size.Y + m_cachedBounds.Position.Y
         );
     }
 
@@ -157,7 +158,7 @@ public partial class EnemySpawnZone : Node2D, IEnemySpawnZone
         if (p_scene == null) return;
 
         Node instance = p_scene.Instantiate();
-        if (instance is EnemyBase enemyInstance)
+        if (instance is AggressiveNpcBase enemyInstance)
         {
             AddChild(enemyInstance);
             enemyInstance.Position = p_localPos;
@@ -170,7 +171,7 @@ public partial class EnemySpawnZone : Node2D, IEnemySpawnZone
         else
         {
             instance.QueueFree();
-            GD.PushError($"[EnemySpawnZone] Instantiated scene is not an EnemyBase: {p_scene.ResourcePath}");
+            GD.PushError($"[EnemySpawnZone] Instantiated scene is not an AggressiveNpcBase: {p_scene.ResourcePath}");
         }
     }
 

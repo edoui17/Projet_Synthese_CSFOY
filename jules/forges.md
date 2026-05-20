@@ -173,6 +173,13 @@ When triggering updates (e.g., UI upgrades emitting events to a decoupled compon
 - **Consistency Strategy**: While a SQL trigger handles DB-level HighScore integrity, the `ProgressionService` updates the `Player` object in memory during the request. This ensures the API response (e.g., during `Sync`) contains the most up-to-date HighScore immediately.
 - **Leaderboard Performance**: Refactored `GetLeaderboard` to sort by the `HighScore` column in the `Players` table. This is O(1) or O(log N) with indexes, compared to the previous O(N*M) approach of scanning all session history.
 
+## 2026-05-15 - Leaderboard Filtering & Sorting (US 10.1.5)
+- **POCO Enrichment**: Updated `PlayerLeaderboardEntry` to include `Duration`, `BonusHealth`, `BonusAttack`, `BonusSpeed`, and `BonusLuck`. This allows the frontend to display detailed performance metrics regardless of the active filter.
+- **Dynamic Sorting Logic**: Implemented a `switch` based sorting mechanism in `PlayerController.GetLeaderboard`.
+  - Sorting criteria include: `score`, `duration`, `level`, and bonus stats (`health`, `attack`, `speed`, `luck`).
+  - For session-based metrics (duration, level, bonuses), the API calculates the `Max()` value across the player's `GameStats` collection to determine their ranking.
+- **Search Functionality**: Added a `p_search` parameter for "Contains" (case-insensitive) filtering on `Username`, anticipating Scénario 3.
+- **Data Integrity**: Maintained the "Best Session" projection. Even when sorting by a specific stat (e.g., Speed), the returned entry displays the full stats from the player's highest-scoring session to ensure a coherent "Master Profile" view.
 ## 2026-05-16 - Attack Cooldowns and Action Mechanics (US Gameplay Loop)
 - **Continuous Actions**: Godot's `_Input(InputEvent)` is strictly event-driven (e.g. key pressed/released). For continuous actions (like holding down the mouse button to attack), logic must evaluate `Input.IsActionPressed()` every frame inside `_PhysicsProcess` or `_Process`.
 - **Stat-Bound Cooldown Strategy**: Action cooldowns (e.g., Attack cooldowns) should scale down based on progression stats (like `Speed`) using the asymptotic formula: `Cooldown = BaseCooldown / (1 + (Speed * 0.05))`. This ensures the cooldown never mathematically hits 0, preventing infinite DPS loops regardless of the stat ceiling.
@@ -206,3 +213,8 @@ When triggering updates (e.g., UI upgrades emitting events to a decoupled compon
     1. Pour exposer des tableaux dans l'Inspecteur Godot via l'attribut `[Export]`.
     2. Pour appeler des méthodes de l'API Godot qui requièrent explicitement ces types de retour.
 - Cette ségrégation garantit que le projet `Core` reste totalement agnostique et hautement performant.
+
+## 2026-05-18 - Blazor Authentication & Navigation Guards
+ - **Quirk/Discovery:** In a Blazor Web setup using `AddAuthorizationCore()` without full ASP.NET Identity, the `AuthorizeRouteView` component enables the use of `[Authorize]` attributes and `<AuthorizeView>` tags, but it does not automatically perform redirects for unauthorized access.
+ - **Solution:** Manual navigation guards within the `OnInitializedAsync` method (by checking `GetAuthenticationStateAsync`) are necessary to enforce redirects to `/login`.
+ - **API Interception:** Implementing a `DelegatingHandler` for the `HttpClient` is the most efficient way to centralize the injection of the `x-Session-Token` header and to handle global `401 Unauthorized` responses (e.g., by clearing LocalStorage and redirecting the user).

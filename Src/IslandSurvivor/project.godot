@@ -37,7 +37,9 @@ project/assembly_name="IslandSurvivor"
 [file_customization]
 
 folder_colors={
-"res://Scenes/NPC/Agressive/": "red",
+"res://Scenes/Level/": "orange",
+"res://Scenes/NPC/": "yellow",
+"res://Scenes/NPC/Aggressive/": "red",
 "res://Scenes/NPC/Passive/": "green",
 "res://Scenes/Player/": "blue",
 "res://Scenes/Ressources/Gold/": "green",
