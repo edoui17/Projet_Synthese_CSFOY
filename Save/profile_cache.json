@@ -1,14 +1,1 @@
-{
-    "Player": null,
-    "Inventory": [
-        {
-            "PlayerId": "00000000-0000-0000-0000-000000000000",
-            "ResourceItemId": "tree_automn_01",
-            "Quantity": 11,
-            "Player": null,
-            "ResourceItem": null
-        }
-    ],
-    "GameStats": [],
-    "Config": null
-}
+{"Player":null,"Inventory":[],"GameStats":[],"Config":null}

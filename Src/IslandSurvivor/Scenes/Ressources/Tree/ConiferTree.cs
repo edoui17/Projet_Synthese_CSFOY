@@ -62,6 +62,13 @@ public partial class ConiferTree : Area2D, ITree, IDamageable
 
         var item = new Core.Domain.ResourceItem(EntityId, MaterialName, MaterialType, IconPath);
         SignalManager.Instance.EmitMaterialDestroyed(this, item, quantity);
+        
+        AudioStream destroyStream = GD.Load<AudioStream>("res://Assets/Audio/kenney_impact-sounds/Audio/floraphonic-rustling-bushes-dried-leaves-2-230202.mp3");
+        if (destroyStream != null)
+        {
+            AudioManager.Instance?.PlaySound2D(destroyStream, GlobalPosition);
+        }
+
         QueueFree();
     }
 
@@ -71,6 +78,17 @@ public partial class ConiferTree : Area2D, ITree, IDamageable
 
         m_lastAttacker = p_attacker;
         Stats.ModifyCurrentValue(StatType.Health, -p_amount);
+
+        AudioStream impactStream = null;
+        if (Stats.GetCurrentValue(StatType.Health) > 0)
+        {
+            impactStream = GD.Load<AudioStream>("res://Assets/Audio/kenney_impact-sounds/Audio/impactWood_heavy_004.ogg");
+
+        }
+        if (impactStream != null)
+        {
+            AudioManager.Instance?.PlaySound2D(impactStream, GlobalPosition);
+        }
 
         this.PlayHitFlash();
     }

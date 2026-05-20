@@ -134,3 +134,7 @@ emitting = false
 texture = ExtResource("4_2xutj")
 one_shot = true
 process_material = SubResource("ParticleProcessMaterial_j008p")
+
+[node name="AudioStreamAutomnTree" type="AudioStreamPlayer2D" parent="." unique_id=233106588]
+max_distance = 15.0
+bus = &"SFX"

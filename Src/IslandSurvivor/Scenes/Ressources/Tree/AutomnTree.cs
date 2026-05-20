@@ -79,8 +79,8 @@ public partial class AutomnTree : Area2D, ITree, IDamageable
             };
         }
 
-        // Try to play destroy sound
-        AudioStream destroyStream = GD.Load<AudioStream>("res://Assets/Sounds/Combat/wood_destroy.wav");
+        // Try to play destroy sound 
+        AudioStream destroyStream = GD.Load<AudioStream>("res://Assets/Audio/kenney_impact-sounds/Audio/floraphonic-rustling-bushes-dried-leaves-2-230202.mp3");
         if (destroyStream != null)
         {
             AudioManager.Instance?.PlaySound2D(destroyStream, GlobalPosition);
@@ -99,8 +99,13 @@ public partial class AutomnTree : Area2D, ITree, IDamageable
         this.PlayHitFlash();
         this.PlayShake();
 
-        // Try to play impact sound
-        AudioStream impactStream = GD.Load<AudioStream>("res://Assets/Sounds/Combat/wood_impact.wav");
+        //Try to play impact sound
+       AudioStream impactStream = null;
+        if (Stats.GetCurrentValue(StatType.Health) > 0)
+        {
+            impactStream = GD.Load<AudioStream>("res://Assets/Audio/kenney_impact-sounds/Audio/impactWood_light_003.ogg");
+
+        }
         if (impactStream != null)
         {
             AudioManager.Instance?.PlaySound2D(impactStream, GlobalPosition);
