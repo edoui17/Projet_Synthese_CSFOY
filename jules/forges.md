@@ -213,3 +213,8 @@ When triggering updates (e.g., UI upgrades emitting events to a decoupled compon
     1. Pour exposer des tableaux dans l'Inspecteur Godot via l'attribut `[Export]`.
     2. Pour appeler des méthodes de l'API Godot qui requièrent explicitement ces types de retour.
 - Cette ségrégation garantit que le projet `Core` reste totalement agnostique et hautement performant.
+
+## 2026-05-18 - Blazor Authentication & Navigation Guards
+ - **Quirk/Discovery:** In a Blazor Web setup using `AddAuthorizationCore()` without full ASP.NET Identity, the `AuthorizeRouteView` component enables the use of `[Authorize]` attributes and `<AuthorizeView>` tags, but it does not automatically perform redirects for unauthorized access.
+ - **Solution:** Manual navigation guards within the `OnInitializedAsync` method (by checking `GetAuthenticationStateAsync`) are necessary to enforce redirects to `/login`.
+ - **API Interception:** Implementing a `DelegatingHandler` for the `HttpClient` is the most efficient way to centralize the injection of the `x-Session-Token` header and to handle global `401 Unauthorized` responses (e.g., by clearing LocalStorage and redirecting the user).
