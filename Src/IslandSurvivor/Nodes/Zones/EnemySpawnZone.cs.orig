@@ -163,8 +163,6 @@ public partial class EnemySpawnZone : Node2D, IEnemySpawnZone
             enemyInstance.YSortEnabled = true;
 
 
-            enemyInstance.TreeExited += () => m_activeEnemies.Remove(enemyInstance);
-
             m_activeEnemies.Add(enemyInstance);
         }
         else
