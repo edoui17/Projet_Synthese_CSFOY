@@ -5,8 +5,8 @@ using Godot;
 
 public class LancerController : AgressorController, ILancerController
 {
-    public float MinDashDistance { get; } = 150f;
-    public float MeleeDistance { get; } = 50f;
+    public float MinDashDistance { get; } = 250f;
+    public float MeleeDistance { get; } = 120f;
     public float DashCooldown { get; } = 3.0f; // Seconds between dashes
 
     private float m_distanceToTarget = float.MaxValue;
