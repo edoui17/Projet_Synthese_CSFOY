@@ -178,6 +178,20 @@ public partial class AttackController : Node
         if (m_currentActiveArea != null)
         {
             m_currentActiveArea.Monitoring = true;
+
+            // Manually check for already overlapping bodies and areas to prevent missed hits
+            var overlappingBodies = m_currentActiveArea.GetOverlappingBodies();
+            foreach (var body in overlappingBodies)
+            {
+                ProcessHit(body);
+            }
+
+            var overlappingAreas = m_currentActiveArea.GetOverlappingAreas();
+            foreach (var area in overlappingAreas)
+            {
+                ProcessHit(area);
+                ProcessHit(area.GetParent());
+            }
         }
     }
 
