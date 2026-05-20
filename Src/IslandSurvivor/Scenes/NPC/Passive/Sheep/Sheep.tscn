@@ -11,6 +11,9 @@ size = Vector2(43, 33)
 collision_layer = 4
 collision_mask = 1
 script = ExtResource("2_script")
+HurtSound = null
+DeathSound = null
+IdleSound = null
 
 [node name="AnimatedSprite2D" parent="." index="0"]
 sprite_frames = ExtResource("3_frames")
@@ -23,6 +26,3 @@ shape = SubResource("RectangleShape2D_ifvjj")
 
 [node name="StatManager" parent="." index="2"]
 MaxHealth = 30.0
-
-[node name="AudioStreamSheep" type="AudioStreamPlayer2D" parent="." index="4" unique_id=1380657467]
-max_distance = 15.0

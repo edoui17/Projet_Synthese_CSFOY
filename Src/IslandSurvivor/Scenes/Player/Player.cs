@@ -113,7 +113,7 @@ public partial class Player : CharacterBody2D, IDamageable
     private void OnAttackStarted()
     {
         // Play attack swing sound
-        AudioStream? swingStream = AttackSound ?? GD.Load<AudioStream>("res://Assets/Sounds/Combat/weapon_swing.wav");
+        AudioStream? swingStream = AttackSound ?? GD.Load<AudioStream>("res://Assets/Audio/kenney_impact-sounds/Audio/jofae-swing-whoosh-110410.mp3");
         if (swingStream != null)
         {
             AudioManager.Instance?.PlaySound2D(swingStream, GlobalPosition);
@@ -373,6 +373,11 @@ public partial class Player : CharacterBody2D, IDamageable
             m_xpGainLabel.Text = "LEVEL UP!";
             m_xpGainLabel.Visible = true;
             m_xpGainTimer.Start();
+            AudioStream? levelUpStream = GD.Load<AudioStream>("res://Assets/Audio/kenney_impact-sounds/Audio/floraphonic-cute-level-up-2-189851.mp3");
+            if (levelUpStream != null)
+            {
+                AudioManager.Instance?.PlaySound2D(levelUpStream, GlobalPosition);
+            }
         }
     }
 
@@ -420,7 +425,7 @@ public partial class Player : CharacterBody2D, IDamageable
         this.PlayShake();
 
         // Play hurt sound
-        AudioStream? hurtStream = HurtSound ?? GD.Load<AudioStream>("res://Assets/Sounds/Combat/player_hurt.wav");
+        AudioStream? hurtStream = HurtSound ?? GD.Load<AudioStream>("res://Assets/Audio/kenney_impact-sounds/Audio/freesound_community-alphascream001-98301.mp3");
         if (hurtStream != null)
         {
             AudioManager.Instance?.PlaySound(hurtStream);
@@ -440,7 +445,7 @@ public partial class Player : CharacterBody2D, IDamageable
         Velocity = Vector2.Zero;
 
         // Play death sound (reusing hurt sound or specific death sound if available)
-        AudioStream? deathStream = DeathSound ?? GD.Load<AudioStream>("res://Assets/Sounds/Combat/player_hurt.wav");
+        AudioStream? deathStream = DeathSound ?? GD.Load<AudioStream>("res://Assets/Audio/kenney_impact-sounds/Audio/stickypix7996-bell-toll-407826.mp3");
         if (deathStream != null)
         {
             AudioManager.Instance?.PlaySound(deathStream);

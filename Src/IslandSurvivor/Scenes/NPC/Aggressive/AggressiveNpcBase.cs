@@ -240,7 +240,7 @@ public partial class AggressiveNpcBase : NpcBase, IEnemy
 
     protected void PlayAttackSound()
     {
-        AudioStream? swingStream = AttackSound ?? GD.Load<AudioStream>("res://Assets/Sounds/Combat/weapon_swing.wav");
+        AudioStream? swingStream = AttackSound ?? GD.Load<AudioStream>("res://Assets/Audio/kenney_impact-sounds/Audio/jofae-swing-whoosh-110410.mp3");
         if (swingStream != null)
         {
             AudioManager.Instance?.PlaySound2D(swingStream, GlobalPosition);
@@ -251,8 +251,8 @@ public partial class AggressiveNpcBase : NpcBase, IEnemy
     {
         base.OnDamageTaken(p_attacker);
         m_targetPlayer = p_attacker;
-
-        AudioStream? hurtStream = HurtSound ?? GD.Load<AudioStream>("res://Assets/Sounds/Combat/enemy_hurt.wav");
+        
+        AudioStream? hurtStream = HurtSound ?? GD.Load<AudioStream>("res://Assets/Audio/kenney_impact-sounds/Audio/impactGlass_medium_003.ogg");
         if (hurtStream != null)
         {
             AudioManager.Instance?.PlaySound2D(hurtStream, GlobalPosition);
@@ -262,12 +262,12 @@ public partial class AggressiveNpcBase : NpcBase, IEnemy
     protected override void HandleDeath(object? p_attacker = null)
     {
         m_agressorController.SetDead();
-
+        //avoir si on veut vraiment un dead sound
         AudioStream? deathStream = DeathSound ?? GD.Load<AudioStream>("res://Assets/Sounds/Combat/enemy_death.wav");
-        if (deathStream != null)
-        {
-            AudioManager.Instance?.PlaySound2D(deathStream, GlobalPosition);
-        }
+        //if (deathStream != null)
+        //{
+        //    AudioManager.Instance?.PlaySound2D(deathStream, GlobalPosition);
+        //}
 
         if (ServiceRegistry.Instance != null)
         {
