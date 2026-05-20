@@ -37,7 +37,14 @@ public class ExceptionHandlingMiddleware
         p_context.Response.ContentType = "application/json";
         p_context.Response.StatusCode = (int)HttpStatusCode.ServiceUnavailable;
 
-        var result = JsonSerializer.Serialize(new { error = "Database is temporarily offline" });
+        var errorResponse = new
+        {
+            error = "Service Unavailable",
+            message = "The database is temporarily offline. Please try again later.",
+            timestamp = DateTime.UtcNow.ToString("O")
+        };
+
+        var result = JsonSerializer.Serialize(errorResponse);
         return p_context.Response.WriteAsync(result);
     }
 }

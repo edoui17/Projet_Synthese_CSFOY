@@ -23,7 +23,6 @@ public class PlayerRepository : IPlayerRepository
         if (p_id is Guid guidId)
         {
             var entity = await m_context.Players
-                .Include(p => p.GameStats)
                 .Include(p => p.Config)
                 .FirstOrDefaultAsync(p => p.Id == guidId);
 
@@ -35,7 +34,6 @@ public class PlayerRepository : IPlayerRepository
     public async Task<IEnumerable<Player>> GetAllAsync()
     {
         var entities = await m_context.Players
-            .Include(p => p.GameStats)
             .Include(p => p.Config)
             .ToListAsync();
         return entities.Select(MapToDomain).Where(p => p != null)!;
@@ -83,7 +81,6 @@ public class PlayerRepository : IPlayerRepository
     public async Task<Player?> GetByUsernameAsync(string p_username)
     {
         var entity = await m_context.Players
-            .Include(p => p.GameStats)
             .Include(p => p.Config)
             .FirstOrDefaultAsync(p => p.Username == p_username);
 
