@@ -14,8 +14,6 @@
 [ext_resource type="Resource" uid="uid://d1e2f3g4h5i6j" path="res://Scenes/NPC/Aggressive/Normal/Soldier/SoldierConfig.tres" id="13_c46a2"]
 [ext_resource type="Resource" uid="uid://dbscgytmkqyn7" path="res://Scenes/NPC/Aggressive/Normal/Archer/ArcherConfig.tres" id="14_5xbyb"]
 
-
-
 [node name="Main" unique_id=1230220837 instance=ExtResource("1_base")]
 
 [node name="Map2" parent="." index="1" unique_id=1333386273 instance=ExtResource("2_map")]
