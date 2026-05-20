@@ -1,4 +1,5 @@
 using System;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Core.Domain;
 using Core.Interfaces;
@@ -27,15 +28,31 @@ public class AuthController : ControllerBase
             return BadRequest("Username and password are required.");
         }
 
-        // Logic temporarily simplified for audit phase.
-        // Verification will be implemented later with JWT.
         Player? player = await m_playerRepository.GetByUsernameAsync(p_request.Username);
         if (player == null)
         {
             return Unauthorized("Invalid username or password.");
         }
 
-        string token = Guid.NewGuid().ToString();
+#if DEBUG
+        // Bypass temporarily simplified for audit phase in DEBUG mode.
+#else
+        bool isPasswordValid = await m_authRepository.VerifyPasswordAsync(p_request.Username, p_request.Password);
+        if (!isPasswordValid)
+        {
+            return Unauthorized("Invalid username or password.");
+        }
+#endif
+
+        byte[] tokenBytes = new byte[32];
+        using (var rng = RandomNumberGenerator.Create())
+        {
+            rng.GetBytes(tokenBytes);
+        }
+        string token = Convert.ToBase64String(tokenBytes)
+            .Replace("+", "-")
+            .Replace("/", "_")
+            .TrimEnd('=');
         await m_authRepository.UpdateSessionTokenAsync(player.Id, token);
 
         AuthResponse response = new AuthResponse
