@@ -238,6 +238,15 @@ public partial class Lancer : MeleeAggressiveNpcBase
         }
     }
 
+    protected override void OnAttackStarted()
+    {
+        if (m_animatedSprite != null && m_attackController != null)
+        {
+            m_animatedSprite.Play(m_attackController.AttackAnimationName);
+            m_animatedSprite.Frame = 0;
+        }
+    }
+
     protected override void UpdateAnimation(Vector2 p_direction)
     {
         if (m_animatedSprite == null) return;

@@ -17,8 +17,8 @@ public class LancerController : AgressorController, ILancerController
     private const string WANDERING = "Wandering";
     private const string RESTING = "Resting";
 
-    // Tolerance for how closely aligned the Y axis must be to trigger a dash
-    public const float DASH_Y_ALIGNMENT_TOLERANCE = 20f;
+    // Tolerance for how closely aligned the axis must be to trigger a dash
+    public const float DASH_ALIGNMENT_TOLERANCE = 20f;
 
     public LancerController() : base()
     {
@@ -46,22 +46,44 @@ public class LancerController : AgressorController, ILancerController
 
             if (m_currentState == LancerStates.DASHING || m_currentState == LancerStates.WIND_UP)
             {
-                // Force pure horizontal dash
-                m_currentDirection = new Vector2(direction.X > 0 ? 1f : -1f, 0f);
-            }
-            else if (m_currentState == NpcStates.CHASE && m_dashCooldownTimer <= 0f && m_distanceToTarget >= MinDashDistance)
-            {
-                // Dash is ready, but we are in Chase because we need Y alignment
-                // Prioritize moving on the Y axis to line up for the dash
-                if (Math.Abs(direction.Y) > DASH_Y_ALIGNMENT_TOLERANCE)
+                // Force pure directional dash on the closest axis
+                if (Math.Abs(direction.X) > Math.Abs(direction.Y))
                 {
-                    // Give Y movement much higher weight
-                    m_currentDirection = new Vector2(direction.X / length * 0.2f, direction.Y > 0 ? 1f : -1f).Normalized();
+                    m_currentDirection = new Vector2(direction.X > 0 ? 1f : -1f, 0f);
                 }
                 else
                 {
-                    // Once aligned, normal chase direction
-                    m_currentDirection = new Vector2(direction.X / length, direction.Y / length);
+                    m_currentDirection = new Vector2(0f, direction.Y > 0 ? 1f : -1f);
+                }
+            }
+            else if (m_currentState == NpcStates.CHASE && m_dashCooldownTimer <= 0f && m_distanceToTarget >= MinDashDistance)
+            {
+                // Dash is ready, prioritize aligning to the closest axis
+                bool xCloser = Math.Abs(direction.Y) > Math.Abs(direction.X);
+
+                if (xCloser)
+                {
+                    // Prioritize X alignment
+                    if (Math.Abs(direction.X) > DASH_ALIGNMENT_TOLERANCE)
+                    {
+                        m_currentDirection = new Vector2(direction.X > 0 ? 1f : -1f, direction.Y / length * 0.2f).Normalized();
+                    }
+                    else
+                    {
+                        m_currentDirection = new Vector2(direction.X / length, direction.Y / length);
+                    }
+                }
+                else
+                {
+                    // Prioritize Y alignment
+                    if (Math.Abs(direction.Y) > DASH_ALIGNMENT_TOLERANCE)
+                    {
+                        m_currentDirection = new Vector2(direction.X / length * 0.2f, direction.Y > 0 ? 1f : -1f).Normalized();
+                    }
+                    else
+                    {
+                        m_currentDirection = new Vector2(direction.X / length, direction.Y / length);
+                    }
                 }
             }
             else
@@ -113,10 +135,13 @@ public class LancerController : AgressorController, ILancerController
 
             if (m_distanceToTarget >= MinDashDistance && m_dashCooldownTimer <= 0f)
             {
-                // Must be vertically aligned to dash
-                if (Math.Abs(m_targetPos.Y - m_agressorPos.Y) <= DASH_Y_ALIGNMENT_TOLERANCE)
+                // Must be aligned to an axis to dash
+                bool alignedY = Math.Abs(m_targetPos.Y - m_agressorPos.Y) <= DASH_ALIGNMENT_TOLERANCE;
+                bool alignedX = Math.Abs(m_targetPos.X - m_agressorPos.X) <= DASH_ALIGNMENT_TOLERANCE;
+
+                if (alignedY || alignedX)
                 {
-                    // In dash range, ready, and aligned on Y axis
+                    // In dash range, ready, and aligned on an axis
                     StartDashWindUp();
                     m_disengageTimer = DISENGAGE_TIME;
                     return;
