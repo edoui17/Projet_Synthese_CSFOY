@@ -238,6 +238,15 @@ public partial class AggressiveNpcBase : NpcBase, IEnemy
         }
     }
 
+    protected void PlayAttackSound()
+    {
+        AudioStream? swingStream = AttackSound ?? GD.Load<AudioStream>("res://Assets/Sounds/Combat/weapon_swing.wav");
+        if (swingStream != null)
+        {
+            AudioManager.Instance?.PlaySound2D(swingStream, GlobalPosition);
+        }
+    }
+
     protected override void OnDamageTaken(Node2D p_attacker)
     {
         base.OnDamageTaken(p_attacker);

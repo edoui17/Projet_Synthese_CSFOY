@@ -247,12 +247,7 @@ public partial class Lancer : MeleeAggressiveNpcBase
 
     protected override void OnAttackStarted()
     {
-        // Play attack swing sound
-        AudioStream? swingStream = AttackSound ?? GD.Load<AudioStream>("res://Assets/Sounds/Combat/weapon_swing.wav");
-        if (swingStream != null)
-        {
-            AudioManager.Instance?.PlaySound2D(swingStream, GlobalPosition);
-        }
+        PlayAttackSound();
 
         if (m_animatedSprite != null && m_attackController != null)
         {
