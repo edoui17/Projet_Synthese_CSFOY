@@ -470,12 +470,12 @@ animations = [{
 radius = 400.0
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_lancer_hitbox"]
-radius = 21.986
+radius = 16.999716
 height = 120.0
 
 [node name="Lancer" unique_id=1880312545 instance=ExtResource("1_gsctu")]
 script = ExtResource("1_x8y9z")
-DashSpeedMultiplier = 5.0
+DashSpeedMultiplier = 4.0
 MinDashDistance = 200.0
 ChaseSpeed = 100.0
 StoppingDistance = 40.0
@@ -485,7 +485,7 @@ XpMultiplier = 0.2
 
 [node name="AnimatedSprite2D" parent="." index="0"]
 sprite_frames = SubResource("SpriteFrames_twomw")
-animation = &"DashUp"
+animation = &"DashSide"
 
 [node name="StatManager" parent="." index="2"]
 MaxHealth = 40.0
@@ -496,12 +496,12 @@ visible = false
 shape = SubResource("CircleShape2D_lancer_detection")
 
 [node name="CollisionShape2D" parent="HitboxAreaRight" index="0"]
-position = Vector2(73.00001, 9.000001)
+position = Vector2(73.000015, 14.000002)
 rotation = 1.567259
 shape = SubResource("CapsuleShape2D_lancer_hitbox")
 
 [node name="CollisionShape2D" parent="HitboxAreaLeft" index="0"]
-position = Vector2(-4.9999847, 8)
+position = Vector2(-4.9999847, 12)
 rotation = 1.5765897
 shape = SubResource("CapsuleShape2D_lancer_hitbox")
 
@@ -512,8 +512,8 @@ collision_layer = 0
 collision_mask = 4
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxAreaUp" index="0" unique_id=1828660220]
-position = Vector2(79, 137.00002)
-rotation = 1.5765897
+position = Vector2(79, 140)
+rotation = 1.5707964
 shape = SubResource("CapsuleShape2D_lancer_hitbox")
 
 [node name="HitboxAreaDown" type="Area2D" parent="." index="10" unique_id=1136700618]
@@ -523,6 +523,6 @@ collision_layer = 0
 collision_mask = 4
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxAreaDown" index="0" unique_id=873683685]
-position = Vector2(85.999985, -68)
+position = Vector2(85.999985, -72)
 rotation = 1.567259
 shape = SubResource("CapsuleShape2D_lancer_hitbox")
