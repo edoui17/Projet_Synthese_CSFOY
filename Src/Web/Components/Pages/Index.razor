@@ -148,7 +148,7 @@
     {
         return SortCriteria switch
         {
-            "Temps" => $"Lvl {player.Level} - {player.Duration:hh\\:mm\\:ss} - {player.Score} pts",
+            "Temps" => $"{player.Duration:hh\\:mm\\:ss} - {player.Score} pts",
             "Vie" => $"Lvl {player.Level} - {player.Health} Vie",
             "Chance" => $"Lvl {player.Level} - {player.Luck} Chance",
             "Attaque" => $"Lvl {player.Level} - {player.Attack} Attaque",
