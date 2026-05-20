@@ -72,16 +72,23 @@ public partial class ResourceDrop : Node2D
         // Continuous tween to track moving target
         Tween moveTween = CreateTween();
 
+        // Increase travel time to 0.8 seconds so it doesn't disappear too quickly
+        float travelDuration = 0.8f;
+        float shrinkDuration = 0.4f;
+        float shrinkDelay = travelDuration - shrinkDuration; // Start shrinking halfway through
+
         // We will do a generic movement using _Process instead to track the player,
         // but since we want to use Tween for ease-in, we can tween property over time.
         // However, a standard tween locks the target position at start.
         // We can use TweenMethod to pass a value from 0 to 1 and lerp.
-        moveTween.TweenMethod(Callable.From<float>(MoveStep), 0.0f, 1.0f, 0.5f)
+        moveTween.TweenMethod(Callable.From<float>(MoveStep), 0.0f, 1.0f, travelDuration)
              .SetTrans(Tween.TransitionType.Back)
              .SetEase(Tween.EaseType.In);
 
-        moveTween.Parallel().TweenProperty(this, "scale", Vector2.Zero, 0.5f)
-             .SetTrans(Tween.TransitionType.Quad)
+        // Delay the scale reduction so the resource stays larger for longer
+        moveTween.Parallel().TweenProperty(this, "scale", Vector2.Zero, shrinkDuration)
+             .SetDelay(shrinkDelay)
+             .SetTrans(Tween.TransitionType.Expo)
              .SetEase(Tween.EaseType.In);
 
         moveTween.Finished += OnAnimationFinished;
