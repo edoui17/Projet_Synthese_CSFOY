@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="EnemySpawnConfig" format=3 uid="uid://d1e2f3g4h5i6j"]
+
+[ext_resource type="PackedScene" uid="uid://dyxx1q578y7t0" path="res://Scenes/NPC/Agressive/Normal/Soldier/Soldier.tscn" id="1_scene"]
+[ext_resource type="Script" uid="uid://cbbphk4jiuhm5" path="res://Nodes/Zones/EnemySpawnConfig.cs" id="2_script"]
+
+[resource]
+script = ExtResource("2_script")
+EnemyScene = ExtResource("1_scene")
