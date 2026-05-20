@@ -7,7 +7,7 @@ using Core.Managers.Stats;
 public partial class Lancer : MeleeAggressiveNpcBase
 {
     private ILancerController m_lancerController;
-    private Area2D m_dashBodyArea;
+    private Area2D? m_dashActiveHitbox;
     private bool m_isDashing = false;
     private float m_windUpTimer = 0f;
     private float m_recoveryTimer = 0f;
@@ -22,15 +22,14 @@ public partial class Lancer : MeleeAggressiveNpcBase
 
         base._Ready();
 
-        m_dashBodyArea = GetNodeOrNull<Area2D>("DashBodyArea");
-        if (m_dashBodyArea != null)
+        if (m_hitboxAreaRight != null)
         {
-            m_dashBodyArea.Monitoring = false; // Disabled by default
-            m_dashBodyArea.BodyEntered += OnDashBodyEntered;
+            m_hitboxAreaRight.BodyEntered += OnDashHitboxEntered;
         }
-        else
+
+        if (m_hitboxAreaLeft != null)
         {
-            GD.PushWarning($"{Name}: DashBodyArea not found.");
+            m_hitboxAreaLeft.BodyEntered += OnDashHitboxEntered;
         }
 
         if (m_animatedSprite != null)
@@ -130,7 +129,21 @@ public partial class Lancer : MeleeAggressiveNpcBase
             if (!m_isDashing)
             {
                 m_isDashing = true;
-                if (m_dashBodyArea != null) m_dashBodyArea.Monitoring = true;
+
+                // Determine which hitbox to use based on dash direction
+                if (m_animatedSprite != null && m_animatedSprite.FlipH)
+                {
+                    m_dashActiveHitbox = m_hitboxAreaLeft;
+                }
+                else
+                {
+                    m_dashActiveHitbox = m_hitboxAreaRight;
+                }
+
+                if (m_dashActiveHitbox != null)
+                {
+                    m_dashActiveHitbox.Monitoring = true;
+                }
             }
 
             // Dash speed is ChaseSpeed * 3
@@ -253,12 +266,16 @@ public partial class Lancer : MeleeAggressiveNpcBase
     private void EndDashSequence()
     {
         m_isDashing = false;
-        if (m_dashBodyArea != null) m_dashBodyArea.Monitoring = false;
+        if (m_dashActiveHitbox != null)
+        {
+            m_dashActiveHitbox.Monitoring = false;
+            m_dashActiveHitbox = null;
+        }
         m_lancerController.FinishDash();
         m_recoveryTimer = 0.8f;
     }
 
-    private void OnDashBodyEntered(Node2D p_body)
+    private void OnDashHitboxEntered(Node2D p_body)
     {
         if (m_lancerController.CurrentState != LancerStates.DASHING) return;
 
