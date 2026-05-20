@@ -246,8 +246,6 @@ animations = [{
 "speed": 6.0
 }]
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_dash"]
-radius = 20.0
 
 [node name="Lancer" unique_id=1880312545 instance=ExtResource("1_gsctu")]
 script = ExtResource("1_x8y9z")
@@ -275,9 +273,3 @@ rotation = 1.567259
 position = Vector2(-21.000002, 10.000001)
 rotation = 1.5765897
 
-[node name="DashBodyArea" type="Area2D" parent="." index="9" unique_id=1908072193]
-collision_layer = 0
-collision_mask = 4
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="DashBodyArea" index="0" unique_id=1560396326]
-shape = SubResource("CircleShape2D_dash")
