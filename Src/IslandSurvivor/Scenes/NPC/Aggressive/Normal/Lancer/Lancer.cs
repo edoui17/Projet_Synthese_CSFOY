@@ -6,6 +6,9 @@ using Core.Managers.Stats;
 
 public partial class Lancer : MeleeAggressiveNpcBase
 {
+    [Export] public float DashSpeedMultiplier { get; set; } = 5f;
+    [Export] public float MinDashDistance { get; set; } = 200f;
+
     private ILancerController m_lancerController;
     private Area2D? m_dashActiveHitbox;
     private bool m_isDashing = false;
@@ -42,6 +45,7 @@ public partial class Lancer : MeleeAggressiveNpcBase
     protected override void InitializeController()
     {
         m_lancerController = new LancerController();
+        m_lancerController.MinDashDistance = MinDashDistance;
         m_agressorController = (AgressorController)m_lancerController;
     }
 
@@ -146,8 +150,8 @@ public partial class Lancer : MeleeAggressiveNpcBase
                 }
             }
 
-            // Dash speed is ChaseSpeed * 3
-            targetSpeed = ChaseSpeed * 3f;
+            // Dash speed is ChaseSpeed * DashSpeedMultiplier
+            targetSpeed = ChaseSpeed * DashSpeedMultiplier;
             direction = new Vector2(m_lancerController.CurrentDirection.X, m_lancerController.CurrentDirection.Y);
         }
         else if (state == NpcStates.CHASE && m_targetPlayer != null)
