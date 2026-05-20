@@ -31,6 +31,12 @@ public partial class AttackController : Node
     [Export] public string AttackAnimationName { get; set; } = "Attack";
     private StringName m_cachedAttackAnimationName = null!;
 
+    public void SetAttackAnimation(string p_animationName)
+    {
+        AttackAnimationName = p_animationName;
+        m_cachedAttackAnimationName = new StringName(AttackAnimationName);
+    }
+
     private AnimatedSprite2D? m_attackSprite;
     public AnimatedSprite2D? AttackSprite
     {

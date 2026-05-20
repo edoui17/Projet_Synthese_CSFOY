@@ -7,18 +7,23 @@ public class LancerController : AgressorController, ILancerController
 {
     public float MinDashDistance { get; set; } = 200f;
     public float MeleeDistance { get; } = 120f;
-    public float DashCooldown { get; } = 3.0f; // Seconds between dashes
+    public float DashCooldown { get; } = 1.5f; // Seconds between dashes
 
     private float m_distanceToTarget = float.MaxValue;
     private float m_dashCooldownTimer = 0f;
     private Vector2 m_agressorPos = Vector2.Zero;
     private Vector2 m_targetPos = Vector2.Zero;
 
+    private const string WANDERING = "Wandering";
+    private const string RESTING = "Resting";
+
     // Tolerance for how closely aligned the Y axis must be to trigger a dash
     public const float DASH_Y_ALIGNMENT_TOLERANCE = 20f;
 
     public LancerController() : base()
     {
+        m_currentState = RESTING;
+        m_currentDirection = Vector2.Zero;
     }
 
     public void UpdateDistanceToTarget(float p_distance)
@@ -132,18 +137,33 @@ public class LancerController : AgressorController, ILancerController
             if (m_disengageTimer <= 0)
             {
                 // Timer expired, return to idle
-                m_currentState = NpcStates.IDLE;
+                m_currentState = WANDERING;
                 PickNewRandomDirection();
             }
         }
         else
         {
-            // IDLE behavior (WANDERING)
-            m_currentState = NpcStates.IDLE;
+            // Alternate between wandering and resting
             m_idleTimer -= p_delta;
             if (m_idleTimer <= 0)
             {
-                PickNewRandomDirection();
+                if (m_currentState == WANDERING || m_currentState == NpcStates.IDLE)
+                {
+                    m_currentState = RESTING;
+                    m_currentDirection = Vector2.Zero;
+                    m_idleTimer = IDLE_DIRECTION_CHANGE_INTERVAL + (float)(m_random.NextDouble() * 2.0 - 1.0); // Rest for 1 to 3 seconds
+                }
+                else
+                {
+                    m_currentState = WANDERING;
+                    PickNewRandomDirection();
+                }
+            }
+            else if (m_currentState == NpcStates.IDLE)
+            {
+                // If base logic sets to IDLE, map to RESTING
+                m_currentState = RESTING;
+                m_currentDirection = Vector2.Zero;
             }
         }
     }
