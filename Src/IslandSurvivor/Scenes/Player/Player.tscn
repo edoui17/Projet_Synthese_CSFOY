@@ -39,8 +39,8 @@ m_weaponAreaLeft = NodePath("WeaponAttackLeft")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1359797056]
 sprite_frames = ExtResource("8_frames")
-animation = &"IDLE"
-autoplay = "IDLE"
+animation = &"Idle"
+autoplay = "Idle"
 
 [node name="PlayerHitBox" type="CollisionShape2D" parent="." unique_id=86017915]
 position = Vector2(0, 4)
