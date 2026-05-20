@@ -33,4 +33,3 @@ position = Vector2(350, 450)
 position = Vector2(650, 450)
 
 [node name="Lancer" parent="Entities" unique_id=1880312545 instance=ExtResource("9_crhun")]
-MinDashDistance = 175.0
