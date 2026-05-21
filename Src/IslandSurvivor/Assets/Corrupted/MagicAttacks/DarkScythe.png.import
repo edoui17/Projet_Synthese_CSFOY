@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bu17ys88f5noe"
-path="res://.godot/imported/PremiumPack-Malacryst-Sheet.png-577c0773e5f4af1b45dc436a2cdf3db3.ctex"
+uid="uid://cd8iknqk3cdka"
+path="res://.godot/imported/DarkScythe.png-e66c2a9013db4230f5077d75a12dfd5b.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/Corrupted/Malacryst/PremiumPack-Malacryst-Sheet.png"
-dest_files=["res://.godot/imported/PremiumPack-Malacryst-Sheet.png-577c0773e5f4af1b45dc436a2cdf3db3.ctex"]
+source_file="res://Assets/Corrupted/MagicAttacks/DarkScythe.png"
+dest_files=["res://.godot/imported/DarkScythe.png-e66c2a9013db4230f5077d75a12dfd5b.ctex"]
 
 [params]
 

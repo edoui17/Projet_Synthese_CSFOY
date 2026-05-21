@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://pwt65bfoiy5m"
-path="res://.godot/imported/TopDownTileset.png-7a1b2bfb0dddbf01334d905e71b99bd8.ctex"
+uid="uid://cx8742dwkk0fn"
+path="res://.godot/imported/Malacryst.png-ca2dd0b67cdcb868aa9ab1ab3512ce28.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/Corrupted/TopDownTileset/TopDownTileset.png"
-dest_files=["res://.godot/imported/TopDownTileset.png-7a1b2bfb0dddbf01334d905e71b99bd8.ctex"]
+source_file="res://Assets/Corrupted/Malacryst/Malacryst.png"
+dest_files=["res://.godot/imported/Malacryst.png-ca2dd0b67cdcb868aa9ab1ab3512ce28.ctex"]
 
 [params]
 

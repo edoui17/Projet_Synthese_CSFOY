@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://pwt65bfoiy5m"
-path="res://.godot/imported/TopDownTileset.png-7a1b2bfb0dddbf01334d905e71b99bd8.ctex"
+uid="uid://njmu6aaxyrrb"
+path="res://.godot/imported/DarkLightning.png-4f92a88ba7d399e109baf55808a4f7dc.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/Corrupted/TopDownTileset/TopDownTileset.png"
-dest_files=["res://.godot/imported/TopDownTileset.png-7a1b2bfb0dddbf01334d905e71b99bd8.ctex"]
+source_file="res://Assets/Corrupted/MagicAttacks/DarkLightning.png"
+dest_files=["res://.godot/imported/DarkLightning.png-4f92a88ba7d399e109baf55808a4f7dc.ctex"]
 
 [params]
 

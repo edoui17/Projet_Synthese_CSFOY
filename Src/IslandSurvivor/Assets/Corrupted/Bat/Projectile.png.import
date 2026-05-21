@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://pwt65bfoiy5m"
-path="res://.godot/imported/TopDownTileset.png-7a1b2bfb0dddbf01334d905e71b99bd8.ctex"
+uid="uid://nkyhcbltbf5e"
+path="res://.godot/imported/Projectile.png-2dbe8d261bfe646feb4bded86dc22346.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/Corrupted/TopDownTileset/TopDownTileset.png"
-dest_files=["res://.godot/imported/TopDownTileset.png-7a1b2bfb0dddbf01334d905e71b99bd8.ctex"]
+source_file="res://Assets/Corrupted/Bat/Projectile.png"
+dest_files=["res://.godot/imported/Projectile.png-2dbe8d261bfe646feb4bded86dc22346.ctex"]
 
 [params]
 

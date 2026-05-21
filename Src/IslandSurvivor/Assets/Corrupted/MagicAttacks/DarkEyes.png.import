@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://pwt65bfoiy5m"
-path="res://.godot/imported/TopDownTileset.png-7a1b2bfb0dddbf01334d905e71b99bd8.ctex"
+uid="uid://uyptg4g3v3pk"
+path="res://.godot/imported/DarkEyes.png-93a7f25e236e3aad5ba591daaad4c4c0.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/Corrupted/TopDownTileset/TopDownTileset.png"
-dest_files=["res://.godot/imported/TopDownTileset.png-7a1b2bfb0dddbf01334d905e71b99bd8.ctex"]
+source_file="res://Assets/Corrupted/MagicAttacks/DarkEyes.png"
+dest_files=["res://.godot/imported/DarkEyes.png-93a7f25e236e3aad5ba591daaad4c4c0.ctex"]
 
 [params]
 

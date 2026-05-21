@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://sojq1on8l73c"
-path="res://.godot/imported/Slime-Sheet.png-9dce2d1e625c69ce32059ef352a01847.ctex"
+uid="uid://cr85y1h8qhmpq"
+path="res://.godot/imported/DarkShuriken.png-1c9bd98324c8ed36dd83332e8e837889.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/Corrupted/Slime/Slime-Sheet.png"
-dest_files=["res://.godot/imported/Slime-Sheet.png-9dce2d1e625c69ce32059ef352a01847.ctex"]
+source_file="res://Assets/Corrupted/MagicAttacks/DarkShuriken.png"
+dest_files=["res://.godot/imported/DarkShuriken.png-1c9bd98324c8ed36dd83332e8e837889.ctex"]
 
 [params]
 

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://pwt65bfoiy5m"
-path="res://.godot/imported/TopDownTileset.png-7a1b2bfb0dddbf01334d905e71b99bd8.ctex"
+uid="uid://dkrld7r0a5sj0"
+path="res://.godot/imported/DarkStone.png-24fd170857683ce04e8ff98333f4d779.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/Corrupted/TopDownTileset/TopDownTileset.png"
-dest_files=["res://.godot/imported/TopDownTileset.png-7a1b2bfb0dddbf01334d905e71b99bd8.ctex"]
+source_file="res://Assets/Corrupted/MagicAttacks/DarkStone.png"
+dest_files=["res://.godot/imported/DarkStone.png-24fd170857683ce04e8ff98333f4d779.ctex"]
 
 [params]
 
