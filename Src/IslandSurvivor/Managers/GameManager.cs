@@ -2,6 +2,8 @@ using Godot;
 using System.Threading.Tasks;
 using Core.Domain;
 using Core.Interfaces;
+using Core.Events;
+using Core.Utils;
 using IslandSurvivor.Globals;
 using IslandSurvivor.Utils;
 
@@ -48,10 +50,15 @@ public partial class GameManager : Node
 
             try
             {
-                PlayerProfile? profile = await apiService.GetProfileAsync();
-                if (profile != null)
+                ProfileResponse? profileResponse = await apiService.GetProfileAsync();
+                if (profileResponse != null)
                 {
-                    GD.Print("[GameManager] Session validated successfully.");
+                    GD.Print("[GameManager] Session validated successfully. Mapping profile...");
+                    PlayerProfile profile = ProfileMapper.MapToDomain(profileResponse);
+
+                    GD.Print("[GameManager] Publishing ProfileLoadedEvent.");
+                    ServiceRegistry.Instance.EventBus.Publish(new ProfileLoadedEvent(profile));
+
                     m_status = AppStatus.Ready;
                     GetTree().ChangeSceneToFile("res://Scenes/MainMenu/MainMenu/MainMenu.tscn");
                     return;
@@ -81,6 +88,26 @@ public partial class GameManager : Node
     {
         GD.Print("[GameManager] Entering Guest Mode.");
         m_isGuest = true;
+
+        IApiService apiService = ServiceRegistry.Instance.ApiService;
+        ProfileResponse? cachedProfile = apiService.GetCachedProfile();
+
+        if (cachedProfile != null)
+        {
+            GD.Print("[GameManager] Found cached profile for Guest mode. Mapping...");
+            PlayerProfile profile = ProfileMapper.MapToDomain(cachedProfile);
+            ServiceRegistry.Instance.EventBus.Publish(new ProfileLoadedEvent(profile));
+        }
+        else
+        {
+            GD.Print("[GameManager] No cached profile found. Initializing default guest profile.");
+            PlayerProfile defaultProfile = new PlayerProfile
+            {
+                Player = new Core.Domain.Player { Username = "Guest" }
+            };
+            ServiceRegistry.Instance.EventBus.Publish(new ProfileLoadedEvent(defaultProfile));
+        }
+
         m_status = AppStatus.Ready;
         GetTree().ChangeSceneToFile("res://Scenes/MainMenu/MainMenu/MainMenu.tscn");
     }
