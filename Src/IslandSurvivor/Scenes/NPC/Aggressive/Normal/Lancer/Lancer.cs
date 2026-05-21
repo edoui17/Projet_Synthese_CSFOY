@@ -14,6 +14,8 @@ public partial class Lancer : MeleeAggressiveNpcBase
     private bool m_isDashing = false;
     private float m_windUpTimer = 0f;
     private float m_recoveryTimer = 0f;
+    private float m_dashHitboxDelayTimer = 0f;
+    private bool m_dashHitboxPending = false;
 
     private Area2D? m_hitboxAreaUp;
     private Area2D? m_hitboxAreaDown;
@@ -33,6 +35,7 @@ public partial class Lancer : MeleeAggressiveNpcBase
 
         if (m_attackController != null)
         {
+            m_attackController.ActionFrame = 3;
             if (m_hitboxAreaUp != null) m_attackController.RegisterArea("Up", m_hitboxAreaUp);
             if (m_hitboxAreaDown != null) m_attackController.RegisterArea("Down", m_hitboxAreaDown);
         }
@@ -71,8 +74,6 @@ public partial class Lancer : MeleeAggressiveNpcBase
         m_lancerController.UpdateDistanceToTarget(distanceToPlayer);
         m_lancerController.Update((float)p_delta, m_targetPlayer != null, hasLineOfSight);
 
-        UpdateAnimation(new Vector2(m_lancerController.CurrentDirection.X, m_lancerController.CurrentDirection.Y));
-
         Vector2 direction = new Vector2(m_lancerController.CurrentDirection.X, m_lancerController.CurrentDirection.Y);
         float targetSpeed = IdleSpeed;
 
@@ -106,7 +107,7 @@ public partial class Lancer : MeleeAggressiveNpcBase
             else
             {
                 // Initialize wind up timer
-                m_windUpTimer = 0.5f;
+                m_windUpTimer = 0.75f;
             }
         }
         else if (state == LancerStates.RECOVERY)
@@ -164,9 +165,21 @@ public partial class Lancer : MeleeAggressiveNpcBase
                 else if (dashDirectionStr == "Down") m_dashActiveHitbox = m_hitboxAreaDown;
                 else m_dashActiveHitbox = m_hitboxAreaRight;
 
-                if (m_dashActiveHitbox != null)
+                // Delay hitbox activation by 0.2 seconds so the thrust has a travel visual
+                m_dashHitboxDelayTimer = 0.2f;
+                m_dashHitboxPending = true;
+            }
+
+            if (m_dashHitboxPending)
+            {
+                m_dashHitboxDelayTimer -= (float)p_delta;
+                if (m_dashHitboxDelayTimer <= 0f)
                 {
-                    m_dashActiveHitbox.Monitoring = true;
+                    m_dashHitboxPending = false;
+                    if (m_isDashing && m_dashActiveHitbox != null)
+                    {
+                        m_dashActiveHitbox.SetDeferred(Area2D.PropertyName.Monitoring, true);
+                    }
                 }
             }
 
@@ -211,6 +224,8 @@ public partial class Lancer : MeleeAggressiveNpcBase
         {
             m_lancerController.ForceNewDirection();
         }
+
+        UpdateAnimation(new Vector2(m_lancerController.CurrentDirection.X, m_lancerController.CurrentDirection.Y));
     }
 
     private string GetDirectionString(Vector2 p_targetPosition)
@@ -326,9 +341,10 @@ public partial class Lancer : MeleeAggressiveNpcBase
     private void EndDashSequence()
     {
         m_isDashing = false;
+        m_dashHitboxPending = false;
         if (m_dashActiveHitbox != null)
         {
-            m_dashActiveHitbox.Monitoring = false;
+            m_dashActiveHitbox.SetDeferred(Area2D.PropertyName.Monitoring, false);
             m_dashActiveHitbox = null;
         }
         m_lancerController.FinishDash();
