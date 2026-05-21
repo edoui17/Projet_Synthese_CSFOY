@@ -20,6 +20,8 @@ public partial class LoadingScreen : CanvasLayer
     private Button m_offlineBtn = null!;
 
     private float m_rotationSpeed = 360.0f;
+    private int m_cooldownRemaining = 0;
+    private string m_originalRetryText = string.Empty;
 
     public override void _Ready()
     {
@@ -32,6 +34,7 @@ public partial class LoadingScreen : CanvasLayer
         m_retryBtn = GetNode<Button>("Overlay/CenterContainer/ErrorSection/VBoxContainer/HBoxContainer/RetryBtn");
         m_offlineBtn = GetNode<Button>("Overlay/CenterContainer/ErrorSection/VBoxContainer/HBoxContainer/OfflineBtn");
 
+        m_originalRetryText = m_retryBtn.Text;
         m_retryBtn.Pressed += OnRetryPressed;
         m_offlineBtn.Pressed += OnOfflinePressed;
 
@@ -44,6 +47,48 @@ public partial class LoadingScreen : CanvasLayer
         {
             m_spinner.RotationDegrees += m_rotationSpeed * (float)p_delta;
         }
+    }
+
+    public void StartRetryCooldown(int p_seconds)
+    {
+        m_cooldownRemaining = p_seconds;
+        m_retryBtn.Disabled = true;
+        UpdateRetryButtonText();
+
+        Timer timer = new Timer();
+        timer.WaitTime = 1.0f;
+        timer.OneShot = false;
+        timer.Timeout += OnCooldownTick;
+        AddChild(timer);
+        timer.Start();
+    }
+
+    private void OnCooldownTick()
+    {
+        m_cooldownRemaining--;
+        if (m_cooldownRemaining <= 0)
+        {
+            m_retryBtn.Disabled = false;
+            m_retryBtn.Text = m_originalRetryText;
+
+            // Cleanup timer
+            foreach (Node child in GetChildren())
+            {
+                if (child is Timer t && t.IsConnected(Timer.SignalName.Timeout, Callable.From(OnCooldownTick)))
+                {
+                    t.Stop();
+                    t.QueueFree();
+                }
+            }
+            return;
+        }
+
+        UpdateRetryButtonText();
+    }
+
+    private void UpdateRetryButtonText()
+    {
+        m_retryBtn.Text = $"{m_originalRetryText} ({m_cooldownRemaining}s)";
     }
 
     public void ShowLoading(string p_message = "Synchronisation en cours...")
