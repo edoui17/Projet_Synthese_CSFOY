@@ -2,7 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://bossbase123" path="res://Scenes/NPC/Aggressive/Boss/BossBase.tscn" id="1_t3tbm"]
 [ext_resource type="Texture2D" uid="uid://dp5xwdfvc4aoi" path="res://Assets/Corrupted/Reaper/Reaper.png" id="2_dp46e"]
-[ext_resource type="Script" path="res://Scenes/NPC/Aggressive/Boss/Reaper/Reaper.cs" id="3_reaper_script"]
+[ext_resource type="Script" uid="uid://drd3hylg8xmy3" path="res://Scenes/NPC/Aggressive/Boss/Reaper/Reaper.cs" id="3_reaper_script"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_c0sqb"]
 atlas = ExtResource("2_dp46e")
@@ -422,11 +422,10 @@ radius = 602.0407
 script = ExtResource("3_reaper_script")
 
 [node name="AnimatedSprite2D" parent="." index="0"]
-scale = Vector2(8, 8)
+scale = Vector2(5, 5)
 sprite_frames = SubResource("SpriteFrames_t3tbm")
 animation = &"Dying"
 autoplay = "Idle"
-frame_progress = 0.28872833
 
 [node name="CollisionShape2D" parent="." index="1"]
 visible = false
@@ -440,11 +439,11 @@ visible = false
 shape = SubResource("CircleShape2D_dp46e")
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="HitboxAreaRight" parent_id_path=PackedInt32Array(1487526117) index="0" unique_id=1491598165]
-polygon = PackedVector2Array(64, -155, 127, -123, 166, -62, 190, 33, 173, 86, 148, 115, 65, 118)
+polygon = PackedVector2Array(45, -96, 93, -61, 113, -13, 116, 44, 98, 74, 45, 74)
 
 [node name="HitboxAreaLeft" parent="." index="8" unique_id=912344583]
 position = Vector2(-2, 0)
 
-[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="HitboxAreaLeft" index="0" unique_id=301530744]
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="HitboxAreaLeft" index="0" unique_id=1087917700]
 scale = Vector2(-1, 1)
-polygon = PackedVector2Array(64, -155, 127, -123, 166, -62, 190, 33, 173, 86, 148, 115, 65, 118)
+polygon = PackedVector2Array(45, -96, 93, -61, 113, -13, 116, 44, 98, 74, 45, 74)
