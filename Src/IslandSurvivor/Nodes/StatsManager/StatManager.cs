@@ -46,27 +46,24 @@ public partial class StatManager : Node2D
     [Signal]
     public delegate void LocalStatChangedEventHandler(int p_statType, float p_currentValue, float p_effectiveMaxValue);
 
-    public override void _ValidateProperty(Godot.Collections.Dictionary property)
+    public override void _ValidateProperty(Godot.Collections.Dictionary p_property)
     {
         if (!Engine.IsEditorHint()) return;
 
-        string name = property["name"].AsString();
+        string name = p_property["name"].AsString();
 
-        if (m_entityType == EntityType.Resource)
+        if (m_entityType == EntityType.Resource && (name == "BaseAttackValue" || name == "BaseSpeedValue" || name == "InitialAttackPoints" || name == "InitialSpeedPoints" || name == "InitialLuckPoints"))
         {
-            if (name == "BaseAttackValue" || name == "BaseSpeedValue" || name == "InitialAttackPoints" || name == "InitialSpeedPoints" || name == "InitialLuckPoints")
-            {
-                var usage = property["usage"].As<PropertyUsageFlags>();
-                property["usage"] = (int)(usage & ~PropertyUsageFlags.Editor);
-            }
+            var usage = p_property["usage"].As<PropertyUsageFlags>();
+            p_property["usage"] = (int)(usage & ~PropertyUsageFlags.Editor);
+            return;
         }
-        else if (m_entityType == EntityType.NPC)
+
+        if (m_entityType == EntityType.NPC && name == "InitialLuckPoints")
         {
-            if (name == "InitialLuckPoints")
-            {
-                var usage = property["usage"].As<PropertyUsageFlags>();
-                property["usage"] = (int)(usage & ~PropertyUsageFlags.Editor);
-            }
+            var usage = p_property["usage"].As<PropertyUsageFlags>();
+            p_property["usage"] = (int)(usage & ~PropertyUsageFlags.Editor);
+            return;
         }
     }
 
@@ -131,9 +128,9 @@ public partial class StatManager : Node2D
         }
     }
 
-    private void OnProfileLoaded(ProfileLoadedEvent e)
+    private void OnProfileLoaded(ProfileLoadedEvent p_event)
     {
-        var bestStats = e.Profile?.GameStats?.OrderByDescending(s => s.Score).FirstOrDefault();
+        var bestStats = p_event.Profile?.GameStats?.OrderByDescending(s => s.Score).FirstOrDefault();
         if (bestStats != null)
         {
             GD.Print("[StatManager] Profile Loaded. Syncing global stats from best session.");
@@ -144,9 +141,9 @@ public partial class StatManager : Node2D
         }
     }
 
-    private void OnStatChangedEvent(StatChangedEvent e)
+    private void OnStatChangedEvent(StatChangedEvent p_event)
     {
-        EmitSignal(SignalName.LocalStatChanged, (int)e.StatType, e.CurrentValue, e.EffectiveMaxValue);
+        EmitSignal(SignalName.LocalStatChanged, (int)p_event.StatType, p_event.CurrentValue, p_event.EffectiveMaxValue);
     }
 
     public float GetCurrentValue(StatType p_statType)
@@ -185,21 +182,26 @@ public partial class StatManager : Node2D
 
     protected override void Dispose(bool p_disposing)
     {
-        if (p_disposing)
+        if (!p_disposing)
         {
-            if (m_eventBus != null && !Engine.IsEditorHint())
+            base.Dispose(p_disposing);
+            return;
+        }
+
+        if (m_eventBus != null && !Engine.IsEditorHint())
+        {
+            m_eventBus.Unsubscribe<StatChangedEvent>(OnStatChangedEvent);
+            if (m_isGlobal)
             {
-                m_eventBus.Unsubscribe<StatChangedEvent>(OnStatChangedEvent);
-                if (m_isGlobal)
-                {
-                    m_eventBus.Unsubscribe<ProfileLoadedEvent>(OnProfileLoaded);
-                }
-            }
-            if (SignalManager.Instance != null && !Engine.IsEditorHint())
-            {
-                SignalManager.Instance.StatUpgradePurchased -= OnStatUpgradePurchased;
+                m_eventBus.Unsubscribe<ProfileLoadedEvent>(OnProfileLoaded);
             }
         }
+
+        if (SignalManager.Instance != null && !Engine.IsEditorHint())
+        {
+            SignalManager.Instance.StatUpgradePurchased -= OnStatUpgradePurchased;
+        }
+
         base.Dispose(p_disposing);
     }
 }
