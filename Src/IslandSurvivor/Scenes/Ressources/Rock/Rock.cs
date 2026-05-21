@@ -20,6 +20,10 @@ public partial class Rock : Area2D, IOre, IDamageable
     [Export] public string MaterialType { get; set; } = "Rock";
     [Export] public string IconPath { get; set; } = "res://Assets/TinySwords/TinySwords(Update010)/Deco/06.png";
 
+    [ExportGroup("Audio")]
+    [Export] public float AudioMaxDistance { get; set; } = 2000f;
+    [Export] public float AudioAttenuation { get; set; } = 1f;
+
     private object? m_lastAttacker;
 
     public override void _Ready()
@@ -81,7 +85,7 @@ public partial class Rock : Area2D, IOre, IDamageable
         }
 
         // Try to play destroy sound impactMining_002
-        AudioManager.Instance?.PlaySound2D("Resource_Mining_2", GlobalPosition);
+        AudioManager.Instance?.PlaySound2D("Resource_Mining_2", GlobalPosition, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
 
         QueueFree();
     }
@@ -104,7 +108,7 @@ public partial class Rock : Area2D, IOre, IDamageable
         // Try to play impact sound
         if (Stats.GetCurrentValue(StatType.Health) > 0)
         {
-            AudioManager.Instance?.PlaySound2D("Resource_Mining_2", GlobalPosition);
+            AudioManager.Instance?.PlaySound2D("Resource_Mining_2", GlobalPosition, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
         }
     }
 }

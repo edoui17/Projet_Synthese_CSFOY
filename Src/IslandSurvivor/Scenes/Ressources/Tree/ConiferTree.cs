@@ -18,6 +18,10 @@ public partial class ConiferTree : Area2D, ITree, IDamageable
     [Export] public string MaterialType { get; set; } = "Wood";
     [Export] public string IconPath { get; set; } = "res://Assets/Tiny Swords/Tiny Swords (Update 010)/Resources/Trees/Tree.png";
 
+    [ExportGroup("Audio")]
+    [Export] public float AudioMaxDistance { get; set; } = 2000f;
+    [Export] public float AudioAttenuation { get; set; } = 1f;
+
     private object? m_lastAttacker;
 
     public override void _Ready()
@@ -62,7 +66,7 @@ public partial class ConiferTree : Area2D, ITree, IDamageable
         var item = new Core.Domain.ResourceItem(EntityId, MaterialName, MaterialType, IconPath);
         SignalManager.Instance.EmitMaterialDestroyed(this, item, quantity);
         
-        AudioManager.Instance?.PlaySound2D("Resource_Rustling", GlobalPosition);
+        AudioManager.Instance?.PlaySound2D("Resource_Rustling", GlobalPosition, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
 
         QueueFree();
     }
@@ -76,7 +80,7 @@ public partial class ConiferTree : Area2D, ITree, IDamageable
 
         if (Stats.GetCurrentValue(StatType.Health) > 0)
         {
-            AudioManager.Instance?.PlaySound2D("Impact_Wood_Heavy", GlobalPosition);
+            AudioManager.Instance?.PlaySound2D("Impact_Wood_Heavy", GlobalPosition, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
         }
 
         this.PlayHitFlash();

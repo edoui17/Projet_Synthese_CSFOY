@@ -81,6 +81,9 @@ shape = SubResource("CircleShape2D_jmcll")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=24708510]
 
+[node name="AudioListener2D" type="AudioListener2D" parent="." unique_id=24708511]
+enabled = true
+
 [node name="MovementController" parent="." unique_id=779695224 node_paths=PackedStringArray("Stats") instance=ExtResource("9_mov")]
 Stats = NodePath("../StatManager")
 

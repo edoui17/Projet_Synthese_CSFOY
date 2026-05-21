@@ -143,7 +143,7 @@ public partial class AudioManager : Node
     /// <summary>
     /// Plays a spatial sound at a specific position (e.g., Impact, Death)
     /// </summary>
-    public void PlaySound2D(AudioStream p_stream, Vector2 p_globalPosition, float p_volumeDb = 0f, float p_pitchScale = 1f)
+    public void PlaySound2D(AudioStream p_stream, Vector2 p_globalPosition, float p_volumeDb = 0f, float p_pitchScale = 1f, float p_maxDistance = 2000f, float p_attenuation = 1f)
     {
         if (p_stream == null) return;
 
@@ -155,6 +155,8 @@ public partial class AudioManager : Node
                 player.GlobalPosition = p_globalPosition;
                 player.VolumeDb = p_volumeDb;
                 player.PitchScale = p_pitchScale;
+                player.MaxDistance = p_maxDistance;
+                player.Attenuation = p_attenuation;
                 player.Play();
                 return;
             }
@@ -165,12 +167,12 @@ public partial class AudioManager : Node
     /// <summary>
     /// Plays a spatial sound by key
     /// </summary>
-    public void PlaySound2D(string p_soundKey, Vector2 p_globalPosition, float p_volumeOffsetDb = 0f, float p_pitchScale = 0f)
+    public void PlaySound2D(string p_soundKey, Vector2 p_globalPosition, float p_volumeOffsetDb = 0f, float p_pitchScale = 0f, float p_maxDistance = 2000f, float p_attenuation = 1f)
     {
         if (m_soundLibrary.TryGetValue(p_soundKey, out var data))
         {
             float finalPitch = p_pitchScale > 0 ? p_pitchScale : data.DefaultPitchScale;
-            PlaySound2D(data.Stream, p_globalPosition, data.DefaultVolumeDb + p_volumeOffsetDb, finalPitch);
+            PlaySound2D(data.Stream, p_globalPosition, data.DefaultVolumeDb + p_volumeOffsetDb, finalPitch, p_maxDistance, p_attenuation);
         }
         else
         {
