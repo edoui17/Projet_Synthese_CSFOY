@@ -24,6 +24,10 @@ public class PlayerRepository : IPlayerRepository
         {
             var entity = await m_context.Players
                 .Include(p => p.Config)
+                //AJOUT POUR LE CLASSEMENT
+                //===========================================================================
+                .Include(p => p.GameStats)
+                //===========================================================================
                 .FirstOrDefaultAsync(p => p.Id == guidId);
 
             return MapToDomain(entity);
@@ -35,6 +39,10 @@ public class PlayerRepository : IPlayerRepository
     {
         var entities = await m_context.Players
             .Include(p => p.Config)
+            //AJOUT POUR LE CLASSEMENT
+                            //===========================================================================
+            .Include(p => p.GameStats)
+                            //===========================================================================
             .ToListAsync();
         return entities.Select(MapToDomain).Where(p => p != null)!;
     }
@@ -82,6 +90,10 @@ public class PlayerRepository : IPlayerRepository
     {
         var entity = await m_context.Players
             .Include(p => p.Config)
+            //AJOUT POUR LE CLASSEMENT
+                //===========================================================================
+            .Include(p => p.GameStats)
+                            //===========================================================================
             .FirstOrDefaultAsync(p => p.Username == p_username);
 
         return MapToDomain(entity);

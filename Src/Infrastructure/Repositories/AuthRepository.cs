@@ -21,6 +21,9 @@ public class AuthRepository : IAuthRepository
     {
         var entity = await m_context.Players
             .Include(p => p.Config)
+            //===========================================================================
+            .Include(p => p.GameStats)
+            //===========================================================================
             .FirstOrDefaultAsync(p => p.SessionToken == p_token);
 
         return MapToDomain(entity);
