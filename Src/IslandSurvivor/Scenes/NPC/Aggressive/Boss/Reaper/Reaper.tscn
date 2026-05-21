@@ -407,7 +407,7 @@ animations = [{
 "texture": SubResource("AtlasTexture_mvu4d")
 }],
 "loop": true,
-"name": &"Walk",
+"name": &"Moving",
 "speed": 5.0
 }]
 

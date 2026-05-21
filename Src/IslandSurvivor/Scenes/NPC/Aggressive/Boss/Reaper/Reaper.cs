@@ -128,4 +128,62 @@ public partial class Reaper : BossBase
         // Run normal boss physics process
         base._PhysicsProcess(p_delta);
     }
+
+    protected override void UpdateAnimation(Vector2 p_direction)
+    {
+        if (m_animatedSprite == null) return;
+
+        bool isAttacking = m_attackController != null && m_attackController.IsAttacking;
+
+        if (isAttacking)
+        {
+            // Attack animation is handled by OnAttackStarted via signals
+            return;
+        }
+
+        if (Velocity.LengthSquared() > 0)
+        {
+            if (m_animatedSprite.Animation != m_animMoving)
+            {
+                m_animatedSprite.Play(m_animMoving);
+            }
+        }
+        else
+        {
+            StringName targetIdleAnim = m_animIdle;
+
+            // If we are in the Shielded phase (under 66% HP but not enraged), play Shielded idle animation
+            if (m_bossController != null && m_bossController.CurrentPhase == IslandSurvivor.Logic.Entities.BossPhase.Shielded)
+            {
+                targetIdleAnim = new StringName("IdleShielded");
+            }
+
+            if (m_animatedSprite.Animation != targetIdleAnim)
+            {
+                m_animatedSprite.Play(targetIdleAnim);
+            }
+        }
+    }
+
+    protected override void OnAttackStarted()
+    {
+        if (m_animatedSprite != null)
+        {
+            if (m_targetPlayer != null)
+            {
+                m_animatedSprite.FlipH = m_targetPlayer.GlobalPosition.X < GlobalPosition.X;
+            }
+
+            // Reaper specific attack animations based on phase
+            if (m_bossController.CurrentPhase == IslandSurvivor.Logic.Entities.BossPhase.Enraged)
+            {
+                m_animatedSprite.Play("MeleeAttackEnraged");
+            }
+            else
+            {
+                m_animatedSprite.Play("MeleeAttackNormal");
+            }
+            m_animatedSprite.Frame = 0;
+        }
+    }
 }

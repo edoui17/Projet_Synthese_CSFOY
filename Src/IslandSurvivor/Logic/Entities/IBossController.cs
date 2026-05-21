@@ -4,6 +4,7 @@ public enum BossPhase
 {
     Melee,
     Ranged,
+    Shielded,
     Enraged
 }
 
