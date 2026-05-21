@@ -16,6 +16,7 @@ public class ApiService : IApiService
     private readonly ISaveService m_saveService;
     private string? m_sessionToken;
     private const string CACHE_FILE = "profile_cache.json";
+    private const string SESSION_HEADER = "X-Session-Token";
 
     // We are going to use default options to handle circular ref just in case
     private readonly JsonSerializerOptions m_jsonOptions;
@@ -35,6 +36,22 @@ public class ApiService : IApiService
         };
     }
 
+    public bool HasSessionToken => !string.IsNullOrEmpty(m_sessionToken);
+
+    public void SetSessionToken(string? p_token)
+    {
+        m_sessionToken = p_token;
+        if (m_httpClient.DefaultRequestHeaders.Contains(SESSION_HEADER))
+        {
+            m_httpClient.DefaultRequestHeaders.Remove(SESSION_HEADER);
+        }
+
+        if (!string.IsNullOrEmpty(m_sessionToken))
+        {
+            m_httpClient.DefaultRequestHeaders.Add(SESSION_HEADER, m_sessionToken);
+        }
+    }
+
     public async Task<string?> LoginAsync(string p_username, string p_password)
     {
         try
@@ -45,7 +62,7 @@ public class ApiService : IApiService
             if (response.IsSuccessStatusCode)
             {
                 LoginResponse? result = await response.Content.ReadFromJsonAsync<LoginResponse>();
-                m_sessionToken = result?.SessionToken;
+                SetSessionToken(result?.SessionToken);
                 return m_sessionToken;
             }
         }
@@ -62,10 +79,7 @@ public class ApiService : IApiService
         {
             try
             {
-                HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, "/api/player/profile");
-                request.Headers.Add("X-Session-Token", m_sessionToken);
-
-                HttpResponseMessage response = await m_httpClient.SendAsync(request);
+                HttpResponseMessage response = await m_httpClient.GetAsync("/api/player/profile");
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -100,11 +114,7 @@ public class ApiService : IApiService
 
         try
         {
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, "/api/player/sync");
-            request.Headers.Add("X-Session-Token", m_sessionToken);
-            request.Content = JsonContent.Create(p_request, options: m_jsonOptions);
-
-            HttpResponseMessage response = await m_httpClient.SendAsync(request);
+            HttpResponseMessage response = await m_httpClient.PostAsJsonAsync("/api/player/sync", p_request, options: m_jsonOptions);
             return response.IsSuccessStatusCode;
         }
         catch (HttpRequestException)

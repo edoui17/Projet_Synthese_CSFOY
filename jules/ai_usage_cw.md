@@ -116,6 +116,12 @@
 | :--- | :--- | :--- |
 | **Task 17.0.3: Dashboard Integration.**<br>- Consume `/api/player/profile` API.<br>- Implement loading spinner and error banners (503).<br>- Bind data to UI (Stats, History, Audit). | **1. UI Logic**: Implemented async data fetching in `OnInitializedAsync`. Added `m_isLoading` and `m_errorMessage` states.<br>**2. Resilience**: Wrapped API calls in try-catch blocks with 503-specific logging and user-friendly error banners.<br>**3. Data Display**: Integrated `ProfileResponse` data with Bootstrap 5 components. Implemented "Best Session" logic by projecting the first element of `LastSessions`.<br>**4. Audit**: Displayed the `UpdatedAt` field in `dd/MM/yyyy HH:mm` format for user audit. | **UX Continuity**: Ensuring the dashboard remains interactive (with loading and error states) prevents users from thinking the application has crashed during API outages. **Data Integrity**: Using the "Best Session" projection ensures visual consistency with the leaderboard, reinforcing the player's meta-progression achievements. |
 
+### 2026-05-24 - [US 20.0.1 : Synchronisation BD vers le Jeu (Stats / Personnage)]
+
+| **Request** | **AI Contribution** | **Decision Reasoning** |
+| :--- | :--- | :--- |
+| **US 20.0.1: Gestion de Session, Initialisation et Accès Jeu.**<br>- Persistance du Jeton (user://).<br>- GameManager (Machine à états).<br>- Scène de Login dédiée.<br>- Pop-up d'erreur et Mode Hors Ligne. | **1. Core Evolution**: Added `AppStatus` enum and enriched `IApiService` with token management.<br>**2. Persistence**: Created `SessionProvider` using Godot's `ConfigFile` for OS-agnostic session storage in `user://`.<br>**3. Orchestration**: Implemented `GameManager` (Autoload) to handle the startup sequence (Validation -> Redirect).<br>**4. UI/UX**: Created `Login.tscn` and `ErrorPopup.tscn` to handle authentication and API connection failures. | **Separation of Responsibilities**: Decoupling service initialization (`ServiceRegistry`) from the application lifecycle (`GameManager`) ensures a cleaner boot sequence. **Deployment Readiness**: Using `user://` is the only way to guarantee persistent data storage across all platforms when the game is exported. |
+
 ### 2026-05-20 - [US 17.0.2 : Point d'accès de Synchronisation et Audit Backend]
 
 | **Request** | **AI Contribution** | **Decision Reasoning** |
