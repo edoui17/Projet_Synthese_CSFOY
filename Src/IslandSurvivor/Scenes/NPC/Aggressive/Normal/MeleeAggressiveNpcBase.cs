@@ -4,6 +4,9 @@ using Godot;
 
 public partial class MeleeAggressiveNpcBase : AggressiveNpcBase
 {
+    [ExportGroup("Animations")]
+    [Export] public string AttackAnimationName { get; set; } = "Attack";
+
     protected Area2D m_hitboxAreaRight;
     protected Area2D m_hitboxAreaLeft;
 
@@ -48,10 +51,6 @@ public partial class MeleeAggressiveNpcBase : AggressiveNpcBase
 
     protected virtual void OnAttackStarted()
     {
-        if (m_animatedSprite != null)
-        {
-            m_animatedSprite.Play("Attack");
-            m_animatedSprite.Frame = 0;
-        }
+        PlayAttackAnimation(AttackAnimationName);
     }
 }

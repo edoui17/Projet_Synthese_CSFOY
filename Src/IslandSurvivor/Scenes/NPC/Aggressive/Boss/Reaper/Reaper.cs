@@ -5,6 +5,10 @@ namespace IslandSurvivor.Scenes.NPC.Aggressive;
 
 public partial class Reaper : BossBase
 {
+    [ExportGroup("Reaper Animations")]
+    [Export] public string NormalAttackAnimationName { get; set; } = "MeleeAttackNormal";
+    [Export] public string EnragedAttackAnimationName { get; set; } = "MeleeAttackEnraged";
+
     private bool m_isAnimationTestMode = false;
     private int m_currentAnimationIndex = 0;
     private string[] m_animationNames;
@@ -167,23 +171,7 @@ public partial class Reaper : BossBase
 
     protected override void OnAttackStarted()
     {
-        if (m_animatedSprite != null)
-        {
-            if (m_targetPlayer != null)
-            {
-                m_animatedSprite.FlipH = m_targetPlayer.GlobalPosition.X < GlobalPosition.X;
-            }
-
-            // Reaper specific attack animations based on phase
-            string animName = m_bossController.CurrentPhase == IslandSurvivor.Logic.Entities.BossPhase.Enraged ? "MeleeAttackEnraged" : "MeleeAttackNormal";
-
-            if (m_attackController != null)
-            {
-                m_attackController.SetAttackAnimation(animName);
-            }
-
-            m_animatedSprite.Play(animName);
-            m_animatedSprite.Frame = 0;
-        }
+        string animName = m_bossController.CurrentPhase == IslandSurvivor.Logic.Entities.BossPhase.Enraged ? EnragedAttackAnimationName : NormalAttackAnimationName;
+        PlayAttackAnimation(animName);
     }
 }

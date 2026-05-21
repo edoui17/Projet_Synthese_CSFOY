@@ -7,6 +7,10 @@ public partial class BossBase : AggressiveNpcBase
 {
     [Export] public PackedScene ProjectileScene { get; set; }
 
+    [ExportGroup("Animations")]
+    [Export] public string MeleeAttackAnimationName { get; set; } = "Attack_Melee";
+    [Export] public string RangedAttackAnimationName { get; set; } = "Attack_Ranged";
+
     protected Area2D m_hitboxAreaRight;
     protected Area2D m_hitboxAreaLeft;
     protected IBossController m_bossController;
@@ -159,24 +163,8 @@ public partial class BossBase : AggressiveNpcBase
 
     protected virtual void OnAttackStarted()
     {
-        if (m_animatedSprite != null)
-        {
-            if (m_targetPlayer != null)
-            {
-                m_animatedSprite.FlipH = m_targetPlayer.GlobalPosition.X < GlobalPosition.X;
-            }
-
-            // Play corresponding animation based on current phase (could be more complex)
-            string animName = m_bossController.CurrentPhase == BossPhase.Ranged ? "Attack_Ranged" : "Attack_Melee";
-
-            if (m_attackController != null)
-            {
-                m_attackController.SetAttackAnimation(animName);
-            }
-
-            m_animatedSprite.Play(animName);
-            m_animatedSprite.Frame = 0;
-        }
+        string animName = m_bossController.CurrentPhase == BossPhase.Ranged ? RangedAttackAnimationName : MeleeAttackAnimationName;
+        PlayAttackAnimation(animName);
     }
 
     protected virtual void OnAttackActionTriggered()
