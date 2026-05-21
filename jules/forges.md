@@ -230,6 +230,12 @@ When triggering updates (e.g., UI upgrades emitting events to a decoupled compon
 - **Data Binding & Null Safety**: Used null-conditional operators (`?.`) and fallback values (e.g., `?? "0.0"`) when binding `ProfileResponse` to the UI. This prevents runtime exceptions if the player has no session history.
 - **UI Architecture**: Leveraged Bootstrap 5 for a responsive dashboard, including a fixed-top style header and a scrollable session history table.
 
+## 2026-05-21 - API Error Standardization & UTC Synchronization (US 20.0.2)
+- **Centralized Error Handling**: Created `ErrorResponseHelper` in `Src/API/Utils` to unify the `{ error, message, timestamp }` JSON format. This reduces duplication across `ApiKeyMiddleware`, `SessionAuthMiddleware`, and `ExceptionHandlingMiddleware`.
+- **Infrastructure Mapping (503)**: Refined `ExceptionHandlingMiddleware` to catch `SqlException` and `DbUpdateException`, returning a `503 Service Unavailable` status. This informs the Godot client that the failure is at the persistence layer rather than a logic error.
+- **ISO 8601 / UTC Compliance**: In `PlayerController.GetProfile`, used `DateTime.SpecifyKind(player.UpdatedAt, DateTimeKind.Utc)` before assignment. This ensures the .NET JSON serializer appends the `Z` suffix, which is critical for Godot's `Time.get_datetime_dict_from_datetime_string()` parser.
+- **Security & Whitelisting**: Tightened `SessionAuthMiddleware` by switching from `Contains` to `StartsWith` for path whitelisting (e.g., `/api/auth/login`, `/swagger`) to prevent bypasses via crafted query parameters.
+
 ## 2026-05-24 - Game Session Management & Persistence (US 20.0.1)
 - **State Machine**: Implemented a global `GameManager` (Autoload) using the `AppStatus` enum (Loading, Ready, Error). This decouples application lifecycle from service initialization (`ServiceRegistry`).
 - **Persistence (user://)**: Introduced `SessionProvider` using Godot's `ConfigFile` specifically for `user://session.cfg`. This ensures the session token remains persistent and OS-compliant in exported builds, unlike project-root relative paths.
