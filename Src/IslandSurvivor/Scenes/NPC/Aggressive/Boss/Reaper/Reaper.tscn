@@ -2,6 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://bossbase123" path="res://Scenes/NPC/Aggressive/Boss/BossBase.tscn" id="1_t3tbm"]
 [ext_resource type="Texture2D" uid="uid://dp5xwdfvc4aoi" path="res://Assets/Corrupted/Reaper/Reaper.png" id="2_dp46e"]
+[ext_resource type="Script" path="res://Scenes/NPC/Aggressive/Boss/Reaper/Reaper.cs" id="3_reaper_script"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_c0sqb"]
 atlas = ExtResource("2_dp46e")
@@ -418,6 +419,7 @@ height = 206.0
 radius = 602.0407
 
 [node name="Reaper" unique_id=495261644 instance=ExtResource("1_t3tbm")]
+script = ExtResource("3_reaper_script")
 
 [node name="AnimatedSprite2D" parent="." index="0"]
 scale = Vector2(8, 8)
