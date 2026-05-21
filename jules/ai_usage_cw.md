@@ -110,6 +110,12 @@
 | :--- | :--- | :--- |
 | **US 17.0.1: Sécurisation et Routage.**<br>- Persistance du Jeton (LocalStorage).<br>- Contrôle d'accès (Guard / Redirection).<br>- Gestionnaire d'API Global (Header injection). | **1. Auth Infrastructure**: Implemented `CustomAuthenticationStateProvider` and `AuthService` using native `IJSRuntime` for LocalStorage persistence.<br>**2. Global API Handler**: Created `SessionTokenHandler` to automatically inject `x-Session-Token` and handle `401 Unauthorized`.<br>**3. UI Protection**: Configured `Routes.razor` with `AuthorizeRouteView` and implemented component-level navigation guards in `Login.razor` and `Dashboard.razor`. | **Security by Default**: Centralizing token injection in a `DelegatingHandler` ensures that all outgoing requests are authenticated without manual boilerplate. **User Experience**: Implementing bi-directional guards (redirect to login if unauth, redirect to dashboard if auth) provides a seamless and secure navigation flow. |
 
+### 2026-05-21 - [Task 17.0.3 : Intégration de l'Interface du Dashboard et Consommation du Profil]
+
+| **Request** | **AI Contribution** | **Decision Reasoning** |
+| :--- | :--- | :--- |
+| **Task 17.0.3: Dashboard Integration.**<br>- Consume `/api/player/profile` API.<br>- Implement loading spinner and error banners (503).<br>- Bind data to UI (Stats, History, Audit). | **1. UI Logic**: Implemented async data fetching in `OnInitializedAsync`. Added `m_isLoading` and `m_errorMessage` states.<br>**2. Resilience**: Wrapped API calls in try-catch blocks with 503-specific logging and user-friendly error banners.<br>**3. Data Display**: Integrated `ProfileResponse` data with Bootstrap 5 components. Implemented "Best Session" logic by projecting the first element of `LastSessions`.<br>**4. Audit**: Displayed the `UpdatedAt` field in `dd/MM/yyyy HH:mm` format for user audit. | **UX Continuity**: Ensuring the dashboard remains interactive (with loading and error states) prevents users from thinking the application has crashed during API outages. **Data Integrity**: Using the "Best Session" projection ensures visual consistency with the leaderboard, reinforcing the player's meta-progression achievements. |
+
 ### 2026-05-20 - [US 17.0.2 : Point d'accès de Synchronisation et Audit Backend]
 
 | **Request** | **AI Contribution** | **Decision Reasoning** |

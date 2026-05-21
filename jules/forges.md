@@ -243,3 +243,8 @@ When triggering updates (e.g., UI upgrades emitting events to a decoupled compon
 ## 2026-05-22 - Refined Audio Unique Identification
 - **Specific Key Overrides**: Implemented unique sound key assignments in enemy subclasses (`Lancer`, `Archer`, `Soldier`) within their `_Ready()` methods. This ensures that while the trigger logic is centralized in the base class, each enemy type can play distinct sounds from the `AudioManager` library.
 - **Pitch Management**: Extended `SoundData` and `RegisterSound` to support a `DefaultPitchScale`, allowing for audio variety (e.g., higher pitch for Archer arrows) without increasing the number of physical audio files.
+## 2026-05-21 - Blazor Lifecycle and API Integration (US 17.0.3)
+- **Lifecycle Management**: Integrated `OnInitializedAsync` in `Dashboard.razor` to handle data fetching during the Blazor component's initialization.
+- **Visual State Management**: Implemented a tri-state UI (Loading, Error, Success) using boolean flags (`m_isLoading`) and error message strings. This ensures Scénarios 2 and 5 are handled gracefully.
+- **Data Binding & Null Safety**: Used null-conditional operators (`?.`) and fallback values (e.g., `?? "0.0"`) when binding `ProfileResponse` to the UI. This prevents runtime exceptions if the player has no session history.
+- **UI Architecture**: Leveraged Bootstrap 5 for a responsive dashboard, including a fixed-top style header and a scrollable session history table.
