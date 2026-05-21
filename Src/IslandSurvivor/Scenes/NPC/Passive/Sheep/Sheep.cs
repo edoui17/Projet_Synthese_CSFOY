@@ -14,10 +14,15 @@ using IslandSurvivor.Globals;
 public partial class Sheep : PassiveNpcBase
 {
     [ExportGroup("Audio")]
+    [Export] public AudioStream? HurtSound { get; set; }
     [Export] public string HurtSoundKey { get; set; } = "Sheep_Hurt";
     [Export] public float HurtSoundVolume { get; set; } = 0f;
+
+    [Export] public AudioStream? DeathSound { get; set; }
     [Export] public string DeathSoundKey { get; set; } = "Resource_Mining_1";
     [Export] public float DeathSoundVolume { get; set; } = 0f;
+
+    [Export] public AudioStream? IdleSound { get; set; }
     [Export] public string IdleSoundKey { get; set; } = "Sheep_Idle";
     [Export] public float IdleSoundVolume { get; set; } = 0f;
 
@@ -38,9 +43,13 @@ public partial class Sheep : PassiveNpcBase
 
     private void OnIdleSoundTimeout()
     {
-        if (!string.IsNullOrEmpty(IdleSoundKey) && CurrentState != NpcStates.DEAD)
+        if (CurrentState != NpcStates.DEAD)
         {
-            AudioManager.Instance?.PlaySound2D(IdleSoundKey, GlobalPosition, IdleSoundVolume);
+            if (IdleSound != null)
+                AudioManager.Instance?.PlaySound2D(IdleSound, GlobalPosition, IdleSoundVolume);
+            else if (!string.IsNullOrEmpty(IdleSoundKey))
+                AudioManager.Instance?.PlaySound2D(IdleSoundKey, GlobalPosition, IdleSoundVolume);
+
             m_idleSoundTimer!.WaitTime = new Random().Next(10, 30);
         }
     }
@@ -72,7 +81,10 @@ public partial class Sheep : PassiveNpcBase
             }
         }
 
-        AudioManager.Instance?.PlaySound2D(DeathSoundKey, GlobalPosition, DeathSoundVolume);
+        if (DeathSound != null)
+            AudioManager.Instance?.PlaySound2D(DeathSound, GlobalPosition, DeathSoundVolume);
+        else
+            AudioManager.Instance?.PlaySound2D(DeathSoundKey, GlobalPosition, DeathSoundVolume);
 
 
         QueueFree();
@@ -83,7 +95,10 @@ public partial class Sheep : PassiveNpcBase
 
         if (Stats.GetCurrentValue(StatType.Health) > 0)
         {
-            AudioManager.Instance?.PlaySound2D(HurtSoundKey, GlobalPosition, HurtSoundVolume);
+            if (HurtSound != null)
+                AudioManager.Instance?.PlaySound2D(HurtSound, GlobalPosition, HurtSoundVolume);
+            else
+                AudioManager.Instance?.PlaySound2D(HurtSoundKey, GlobalPosition, HurtSoundVolume);
         }
     }
 }

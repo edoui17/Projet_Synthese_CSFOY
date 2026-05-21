@@ -3,6 +3,9 @@
 [ext_resource type="PackedScene" uid="uid://df6gel801af1s" path="res://Scenes/NPC/Passive/PassiveNpcBase.tscn" id="1_scene"]
 [ext_resource type="Script" uid="uid://fvn22w5rptq7" path="res://Scenes/NPC/Passive/Sheep/Sheep.cs" id="2_script"]
 [ext_resource type="SpriteFrames" uid="uid://ondukel2hk2a" path="res://Scenes/NPC/Passive/Sheep/SheepFrames.tres" id="3_frames"]
+[ext_resource type="AudioStream" uid="uid://cxw3eunh7g4id" path="res://Assets/Audio/kenney_impact-sounds/Audio/scottishperson-sound-effect-woman-scream-236488.mp3" id="hurt_stream"]
+[ext_resource type="AudioStream" uid="uid://p4l7o66y0e6k" path="res://Assets/Audio/kenney_impact-sounds/Audio/impactMining_001.ogg" id="death_stream"]
+[ext_resource type="AudioStream" uid="uid://be08a1ivx05s5" path="res://Assets/Audio/kenney_impact-sounds/Audio/stu9-monsheep-352819.mp3" id="idle_stream"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ifvjj"]
 size = Vector2(43, 33)
@@ -11,9 +14,9 @@ size = Vector2(43, 33)
 collision_layer = 4
 collision_mask = 1
 script = ExtResource("2_script")
-HurtSound = null
-DeathSound = null
-IdleSound = null
+HurtSound = ExtResource("hurt_stream")
+DeathSound = ExtResource("death_stream")
+IdleSound = ExtResource("idle_stream")
 
 [node name="AnimatedSprite2D" parent="." index="0"]
 sprite_frames = ExtResource("3_frames")

@@ -235,6 +235,14 @@ When triggering updates (e.g., UI upgrades emitting events to a decoupled compon
 - **Perfect Attack Synchronization**: Moved the `PlayAttackSound` trigger from the "Attack Start" event (Frame 0) to the `AttackActionTriggered` signal emitted by `AttackController`. This ensures the audio effect is perfectly synchronized with the animation's impact/release frame (defined by `ActionFrame`).
 - **Resource Migration**: Successfully migrated Player, NPCs (Passive & Aggressive), and Environmental Resources to the centralized system, eliminating scattered `GD.Load<AudioStream>` calls and redundant `[Export] AudioStream` properties in favor of key-based identification.
 
+## 2026-05-25 - Hybrid Audio System & Centralization (US Audio Refactor)
+- **Hybrid Assignment Pattern**: Refactored entities (`Player`, `Sheep`, `AggressiveNpcBase`) to support a hybrid audio system.
+  - They now feature `[Export] AudioStream?` properties (e.g., `HurtSound`) alongside their existing `string` keys.
+  - Logic: If a sound is assigned in the Godot Inspector, it is used directly. Otherwise, the system falls back to the `AudioManager`'s centralized library via the string key.
+  - This satisfies the need for easy IDE-based modification while preserving the robustness of a centralized system.
+- **Volume Fine-Tuning**: Each exported sound property is accompanied by an `[Export] float` volume offset, allowing developers to balance sounds (like the Player's damage sound) directly in the editor.
+- **Cleanup**: Removed unused `AudioStreamPlayer2D` nodes from entity scenes (like `Player.tscn`) to prevent developer confusion between scene-bound players and the global `AudioManager` pool.
+
 ### 2026-05-24 - Per-Instance Volume Control & Sheep Audio Uniformization
 - **Feature**: Added `[Export]` volume properties (in dB) to `Player` and `Sheep` to allow fine-tuning of audio levels directly from the Godot Inspector.
 - **Architectural Shift**: Uniformized `Sheep.cs` to use the key-based audio system (consistent with `Player` and Enemies) instead of direct `AudioStream` references, facilitating centralized management in `AudioManager`.
