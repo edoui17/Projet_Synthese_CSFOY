@@ -10,6 +10,7 @@ public partial class RangedAggressiveNpcBase : AggressiveNpcBase
 
     public override void _Ready()
     {
+        AttackSoundKey = "Archer_Attack";
         base._Ready();
 
         if (m_attackController != null)

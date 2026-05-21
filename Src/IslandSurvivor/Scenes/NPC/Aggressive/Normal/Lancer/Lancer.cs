@@ -23,6 +23,7 @@ public partial class Lancer : MeleeAggressiveNpcBase
 
     public override void _Ready()
     {
+        AttackSoundKey = "Lancer_Attack";
         Stats = GetNodeOrNull<IslandSurvivor.Nodes.StatManager>("StatManager");
         if (Stats == null)
         {

@@ -234,3 +234,7 @@ When triggering updates (e.g., UI upgrades emitting events to a decoupled compon
 - **Volume & Decibel Control**: Introduced a `SoundData` structure to store both the `AudioStream` and a `DefaultVolumeDb`. This allows for fine-tuning sound levels at the source (the dictionary) and provides a `p_volumeOffsetDb` parameter in play methods for dynamic adjustments.
 - **Perfect Attack Synchronization**: Moved the `PlayAttackSound` trigger from the "Attack Start" event (Frame 0) to the `AttackActionTriggered` signal emitted by `AttackController`. This ensures the audio effect is perfectly synchronized with the animation's impact/release frame (defined by `ActionFrame`).
 - **Resource Migration**: Successfully migrated Player, NPCs (Passive & Aggressive), and Environmental Resources to the centralized system, eliminating scattered `GD.Load<AudioStream>` calls and redundant `[Export] AudioStream` properties in favor of key-based identification.
+
+## 2026-05-22 - Refined Audio Unique Identification
+- **Specific Key Overrides**: Implemented unique sound key assignments in enemy subclasses (`Lancer`, `Archer`, `Soldier`) within their `_Ready()` methods. This ensures that while the trigger logic is centralized in the base class, each enemy type can play distinct sounds from the `AudioManager` library.
+- **Pitch Management**: Extended `SoundData` and `RegisterSound` to support a `DefaultPitchScale`, allowing for audio variety (e.g., higher pitch for Archer arrows) without increasing the number of physical audio files.

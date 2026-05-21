@@ -9,6 +9,7 @@ public partial class AudioManager : Node
     {
         public AudioStream Stream { get; set; } = null!;
         public float DefaultVolumeDb { get; set; } = 0f;
+        public float DefaultPitchScale { get; set; } = 1f;
     }
 
     private static AudioManager m_instance;
@@ -59,6 +60,11 @@ public partial class AudioManager : Node
         RegisterSound("Enemy_Hurt_Default", "res://Assets/Audio/kenney_impact-sounds/Audio/impactGlass_medium_003.ogg");
         RegisterSound("Enemy_Death_Default", "res://Assets/Sounds/Combat/enemy_death.wav");
 
+        // Specific Enemy Sounds (demonstrating separation)
+        RegisterSound("Lancer_Attack", "res://Assets/Audio/kenney_impact-sounds/Audio/jofae-swing-whoosh-110410.mp3", -2f); // Slightly quieter
+        RegisterSound("Archer_Attack", "res://Assets/Audio/kenney_impact-sounds/Audio/jofae-swing-whoosh-110410.mp3", p_defaultPitchScale: 1.2f); // Higher pitch for arrow
+        RegisterSound("Soldier_Attack", "res://Assets/Audio/kenney_impact-sounds/Audio/jofae-swing-whoosh-110410.mp3");
+
         // Player Sounds
         RegisterSound("Player_Swing", "res://Assets/Audio/kenney_impact-sounds/Audio/jofae-swing-whoosh-110410.mp3");
         RegisterSound("Player_Hurt", "res://Assets/Audio/kenney_impact-sounds/Audio/freesound_community-alphascream001-98301.mp3");
@@ -79,14 +85,15 @@ public partial class AudioManager : Node
         RegisterSound("Sheep_Hurt", "res://Assets/Audio/kenney_impact-sounds/Audio/scottishperson-sound-effect-woman-scream-236488.mp3");
     }
 
-    private void RegisterSound(string p_key, string p_path, float p_defaultVolumeDb = 0f)
+    private void RegisterSound(string p_key, string p_path, float p_defaultVolumeDb = 0f, float p_defaultPitchScale = 1f)
     {
         if (FileAccess.FileExists(p_path))
         {
             m_soundLibrary[p_key] = new SoundData
             {
                 Stream = GD.Load<AudioStream>(p_path),
-                DefaultVolumeDb = p_defaultVolumeDb
+                DefaultVolumeDb = p_defaultVolumeDb,
+                DefaultPitchScale = p_defaultPitchScale
             };
         }
         else
@@ -119,11 +126,12 @@ public partial class AudioManager : Node
     /// <summary>
     /// Plays a global sound by key
     /// </summary>
-    public void PlaySound(string p_soundKey, float p_volumeOffsetDb = 0f, float p_pitchScale = 1f)
+    public void PlaySound(string p_soundKey, float p_volumeOffsetDb = 0f, float p_pitchScale = 0f)
     {
         if (m_soundLibrary.TryGetValue(p_soundKey, out var data))
         {
-            PlaySound(data.Stream, data.DefaultVolumeDb + p_volumeOffsetDb, p_pitchScale);
+            float finalPitch = p_pitchScale > 0 ? p_pitchScale : data.DefaultPitchScale;
+            PlaySound(data.Stream, data.DefaultVolumeDb + p_volumeOffsetDb, finalPitch);
         }
         else
         {
@@ -156,11 +164,12 @@ public partial class AudioManager : Node
     /// <summary>
     /// Plays a spatial sound by key
     /// </summary>
-    public void PlaySound2D(string p_soundKey, Vector2 p_globalPosition, float p_volumeOffsetDb = 0f, float p_pitchScale = 1f)
+    public void PlaySound2D(string p_soundKey, Vector2 p_globalPosition, float p_volumeOffsetDb = 0f, float p_pitchScale = 0f)
     {
         if (m_soundLibrary.TryGetValue(p_soundKey, out var data))
         {
-            PlaySound2D(data.Stream, p_globalPosition, data.DefaultVolumeDb + p_volumeOffsetDb, p_pitchScale);
+            float finalPitch = p_pitchScale > 0 ? p_pitchScale : data.DefaultPitchScale;
+            PlaySound2D(data.Stream, p_globalPosition, data.DefaultVolumeDb + p_volumeOffsetDb, finalPitch);
         }
         else
         {
