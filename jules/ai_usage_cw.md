@@ -140,7 +140,7 @@
 | :--- | :--- | :--- |
 | **US 20.0.3: Integration Jeu / Mapping.**<br>- Refactoriser 'IApiService' pour 'ProfileResponse'.<br>- Créer 'ProfileMapper' (Core).<br>- Initialiser l'inventaire et les stats.<br>- Gérer le mode Hors Ligne via cache. | **1. Core Utils**: Created 'ProfileMapper' to decouple network DTOs ('ProfileResponse') from domain aggregates ('PlayerProfile'), handling null safety for collections.<br>**2. Infrastructure Refactoring**: Updated 'IApiService' and 'ApiService' to support cached profile retrieval and 'ProfileResponse' as the primary source of truth.<br>**3. Game Logic**: Enhanced 'IInventoryManager' and 'InventoryManager' with idempotent initialization logic and 'ProfileLoadedEvent' subscription.<br>**4. Godot Orchestration**: Integrated 'GameManager' startup flow to publish 'ProfileLoadedEvent', triggering automatic synchronization of local player stats and inventory with remote data. | **Decoupling & Robustness**: Using a mapper and an event-driven approach ensures that gameplay systems remain agnostic of the network layer. **Stability**: Null-safe mapping prevents runtime crashes from malformed JSON or empty caches, while interface-level access to the cache respects N-Tier constraints. |
 
-### 2026-05-10 - [US 20.0.4] | Implémentation de l'écran de chargement, blocage des inputs et gestion de l'UI d'erreur dans Godot
+### 2026-05-25 - [US 20.0.4] | Implémentation de l'écran de chargement, blocage des inputs et gestion de l'UI d'erreur dans Godot
 
 | **Request** | **AI Contribution** | **Decision Reasoning** |
 | :--- | :--- | :--- |
