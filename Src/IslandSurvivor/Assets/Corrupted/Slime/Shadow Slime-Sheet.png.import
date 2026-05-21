@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://pwt65bfoiy5m"
-path="res://.godot/imported/TopDownTileset.png-e9e15a03b2115a5648426f5c019a7eb1.ctex"
+uid="uid://nslbdh7jn5c"
+path="res://.godot/imported/Shadow Slime-Sheet.png-b30b89be118349a504c784e42ec90dd5.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/Corrupted/TopdownTileset/TopDownTileset.png"
-dest_files=["res://.godot/imported/TopDownTileset.png-e9e15a03b2115a5648426f5c019a7eb1.ctex"]
+source_file="res://Assets/Corrupted/Slime/Shadow Slime-Sheet.png"
+dest_files=["res://.godot/imported/Shadow Slime-Sheet.png-b30b89be118349a504c784e42ec90dd5.ctex"]
 
 [params]
 

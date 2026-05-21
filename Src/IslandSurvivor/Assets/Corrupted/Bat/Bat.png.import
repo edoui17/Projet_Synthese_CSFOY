@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://pwt65bfoiy5m"
-path="res://.godot/imported/TopDownTileset.png-e9e15a03b2115a5648426f5c019a7eb1.ctex"
+uid="uid://caqc4opqw1kse"
+path="res://.godot/imported/Bat.png-b0de36bf718e168630eed2d4b8490da6.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/Corrupted/TopdownTileset/TopDownTileset.png"
-dest_files=["res://.godot/imported/TopDownTileset.png-e9e15a03b2115a5648426f5c019a7eb1.ctex"]
+source_file="res://Assets/Corrupted/Bat/Bat.png"
+dest_files=["res://.godot/imported/Bat.png-b0de36bf718e168630eed2d4b8490da6.ctex"]
 
 [params]
 
