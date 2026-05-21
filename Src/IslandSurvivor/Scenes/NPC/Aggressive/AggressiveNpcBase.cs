@@ -36,6 +36,9 @@ public partial class AggressiveNpcBase : NpcBase, IEnemy
     [Export] public string DeathSoundKey { get; set; } = "Enemy_Death_Default";
     [Export] public float DeathSoundVolume { get; set; } = 0f;
 
+    [Export] public float AudioMaxDistance { get; set; } = 2000f;
+    [Export] public float AudioAttenuation { get; set; } = 1f;
+
     protected IAgressorController m_agressorController;
     protected AttackController? m_attackController;
     protected Area2D m_detectionArea;
@@ -253,9 +256,9 @@ public partial class AggressiveNpcBase : NpcBase, IEnemy
     protected void PlayAttackSound()
     {
         if (AttackSound != null)
-            AudioManager.Instance?.PlaySound2D(AttackSound, GlobalPosition, AttackSoundVolume);
+            AudioManager.Instance?.PlaySound2D(AttackSound, GlobalPosition, AttackSoundVolume, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
         else
-            AudioManager.Instance?.PlaySound2D(AttackSoundKey, GlobalPosition, AttackSoundVolume);
+            AudioManager.Instance?.PlaySound2D(AttackSoundKey, GlobalPosition, AttackSoundVolume, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
     }
 
     protected override void OnDamageTaken(Node2D p_attacker)
@@ -264,9 +267,9 @@ public partial class AggressiveNpcBase : NpcBase, IEnemy
         m_targetPlayer = p_attacker;
         
         if (HurtSound != null)
-            AudioManager.Instance?.PlaySound2D(HurtSound, GlobalPosition, HurtSoundVolume);
+            AudioManager.Instance?.PlaySound2D(HurtSound, GlobalPosition, HurtSoundVolume, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
         else
-            AudioManager.Instance?.PlaySound2D(HurtSoundKey, GlobalPosition, HurtSoundVolume);
+            AudioManager.Instance?.PlaySound2D(HurtSoundKey, GlobalPosition, HurtSoundVolume, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
     }
 
     protected override void HandleDeath(object? p_attacker = null)
@@ -274,9 +277,9 @@ public partial class AggressiveNpcBase : NpcBase, IEnemy
         m_agressorController.SetDead();
 
         if (DeathSound != null)
-            AudioManager.Instance?.PlaySound2D(DeathSound, GlobalPosition, DeathSoundVolume);
+            AudioManager.Instance?.PlaySound2D(DeathSound, GlobalPosition, DeathSoundVolume, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
         else if (!string.IsNullOrEmpty(DeathSoundKey))
-            AudioManager.Instance?.PlaySound2D(DeathSoundKey, GlobalPosition, DeathSoundVolume);
+            AudioManager.Instance?.PlaySound2D(DeathSoundKey, GlobalPosition, DeathSoundVolume, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
 
         if (ServiceRegistry.Instance != null)
         {

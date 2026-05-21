@@ -248,6 +248,12 @@ When triggering updates (e.g., UI upgrades emitting events to a decoupled compon
 - **Architectural Shift**: Uniformized `Sheep.cs` to use the key-based audio system (consistent with `Player` and Enemies) instead of direct `AudioStream` references, facilitating centralized management in `AudioManager`.
 - **Gameplay**: Re-implemented the Sheep's idle sound ("baaa") using a randomized timer and the centralized `AudioManager.PlaySound2D` with the new volume offset support.
 
+## 2026-05-26 - Spatial Audio & Distance Attenuation (US Audio Radius)
+- **Feature**: Implemented a distance-based attenuation system for all 2D sound effects.
+- **Technical Detail**: Leveraged Godot's native `AudioStreamPlayer2D` properties (`MaxDistance` and `Attenuation`) by exposing them in `AudioManager.PlaySound2D`.
+- **Godot Quirk**: Spatial audio attenuation in 2D requires an active `AudioListener2D` node in the scene. One was added to the `Player.tscn` to ensure the player's position is the point of reference for distance calculations.
+- **Entity Integration**: Added `AudioMaxDistance` and `AudioAttenuation` as exported properties to all relevant game entities (NPCs, Resources), allowing per-instance configuration of the "hearing radius" directly in pixels.
+
 ## 2026-05-22 - Refined Audio Unique Identification
 - **Specific Key Overrides**: Implemented unique sound key assignments in enemy subclasses (`Lancer`, `Archer`, `Soldier`) within their `_Ready()` methods. This ensures that while the trigger logic is centralized in the base class, each enemy type can play distinct sounds from the `AudioManager` library.
 - **Pitch Management**: Extended `SoundData` and `RegisterSound` to support a `DefaultPitchScale`, allowing for audio variety (e.g., higher pitch for Archer arrows) without increasing the number of physical audio files.

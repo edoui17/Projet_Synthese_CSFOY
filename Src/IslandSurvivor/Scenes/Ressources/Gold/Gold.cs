@@ -20,7 +20,9 @@ public partial class Gold : Area2D, IOre, IDamageable
     [Export] public string MaterialType { get; set; } = "Gold";
     [Export] public string IconPath { get; set; } = "sera a valider";
 
-
+    [ExportGroup("Audio")]
+    [Export] public float AudioMaxDistance { get; set; } = 2000f;
+    [Export] public float AudioAttenuation { get; set; } = 1f;
 
     private object? m_lastAttacker;
 
@@ -83,7 +85,7 @@ public partial class Gold : Area2D, IOre, IDamageable
         }
 
         // Try to play destroy sound
-        AudioManager.Instance?.PlaySound2D("Resource_Mining_1", GlobalPosition);
+        AudioManager.Instance?.PlaySound2D("Resource_Mining_1", GlobalPosition, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
 
         QueueFree();
     }
@@ -106,7 +108,7 @@ public partial class Gold : Area2D, IOre, IDamageable
         // Try to play impact sound
         if (Stats.GetCurrentValue(StatType.Health) > 0)
         {
-            AudioManager.Instance?.PlaySound2D("Resource_Mining_1", GlobalPosition);
+            AudioManager.Instance?.PlaySound2D("Resource_Mining_1", GlobalPosition, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
         }
     }
 }

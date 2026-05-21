@@ -18,6 +18,9 @@ public partial class AutomnTree : Area2D, ITree, IDamageable
     [Export] public string MaterialType { get; set; } = "Wood";
     [Export] public string IconPath { get; set; } = "res://Assets/TinySwords(FreePack)/TinySwords(FreePack)/Terrain/Resources/Wood/Trees/Tree4.png";
 
+    [ExportGroup("Audio")]
+    [Export] public float AudioMaxDistance { get; set; } = 2000f;
+    [Export] public float AudioAttenuation { get; set; } = 1f;
 
     private object? m_lastAttacker;
 
@@ -79,7 +82,7 @@ public partial class AutomnTree : Area2D, ITree, IDamageable
         }
 
         // Try to play destroy sound 
-        AudioManager.Instance?.PlaySound2D("Resource_Rustling", GlobalPosition);
+        AudioManager.Instance?.PlaySound2D("Resource_Rustling", GlobalPosition, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
 
         QueueFree();
     }
@@ -97,7 +100,7 @@ public partial class AutomnTree : Area2D, ITree, IDamageable
         //Try to play impact sound
         if (Stats.GetCurrentValue(StatType.Health) > 0)
         {
-            AudioManager.Instance?.PlaySound2D("Impact_Wood_Light", GlobalPosition);
+            AudioManager.Instance?.PlaySound2D("Impact_Wood_Light", GlobalPosition, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
         }
     }
 }
