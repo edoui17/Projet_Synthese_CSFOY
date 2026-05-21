@@ -6,74 +6,144 @@ using Core.Managers.Stats;
 using Core.Services;
 using Core.Events;
 using IslandSurvivor.Resources;
+using IslandSurvivor.Enums;
+using System.Linq;
 
 namespace IslandSurvivor.Nodes;
 
-public partial class StatManager : Node
+[Tool]
+public partial class StatManager : Node2D
 {
-    private EntityStats? m_baseStatsResource;
-    private IStatTracker m_statTracker;
-    private IEventBus m_localEventBus;
+    private IStatTracker m_statTracker = null!;
+    private IEventBus m_eventBus = null!;
+
+    [Export]
+    private bool m_isGlobal;
+
+    private EntityType m_entityType = EntityType.NPC;
+
+    [Export]
+    public EntityType EntityType
+    {
+        get => m_entityType;
+        set
+        {
+            m_entityType = value;
+            NotifyPropertyListChanged();
+        }
+    }
+
+    [ExportGroup("Base Values")]
+    [Export] public float MaxHealth { get; set; } = 100f;
+    [Export] public float BaseAttackValue { get; set; } = 10f;
+    [Export] public float BaseSpeedValue { get; set; } = 300f;
+
+    [ExportGroup("Initial Stat Points")]
+    [Export] public float InitialAttackPoints { get; set; } = 0f;
+    [Export] public float InitialSpeedPoints { get; set; } = 0f;
+    [Export] public float InitialLuckPoints { get; set; } = 0f;
 
     [Signal]
     public delegate void LocalStatChangedEventHandler(int p_statType, float p_currentValue, float p_effectiveMaxValue);
 
-    [Export]
-    public EntityStats? BaseStatsResource
+    public override void _ValidateProperty(Godot.Collections.Dictionary p_property)
     {
-        get => m_baseStatsResource;
-        set => m_baseStatsResource = value;
+        if (!Engine.IsEditorHint()) return;
+
+        string name = p_property["name"].AsString();
+
+        if (m_entityType == EntityType.Resource && (name == "BaseAttackValue" || name == "BaseSpeedValue" || name == "InitialAttackPoints" || name == "InitialSpeedPoints" || name == "InitialLuckPoints"))
+        {
+            var usage = p_property["usage"].As<PropertyUsageFlags>();
+            p_property["usage"] = (int)(usage & ~PropertyUsageFlags.Editor);
+            return;
+        }
+
+        if (m_entityType == EntityType.NPC && name == "InitialLuckPoints")
+        {
+            var usage = p_property["usage"].As<PropertyUsageFlags>();
+            p_property["usage"] = (int)(usage & ~PropertyUsageFlags.Editor);
+            return;
+        }
     }
 
     public override void _Ready()
     {
         base._Ready();
+        if (Engine.IsEditorHint()) return;
 
-        m_localEventBus = new EventBus();
-        m_statTracker = new StatTracker(m_localEventBus);
+        if (m_isGlobal)
+        {
+            m_eventBus = Globals.ServiceRegistry.Instance.EventBus;
+            m_statTracker = Globals.ServiceRegistry.Instance.StatTracker;
+            m_eventBus.Subscribe<ProfileLoadedEvent>(OnProfileLoaded);
+        }
+        else
+        {
+            m_eventBus = new EventBus();
+            m_statTracker = new StatTracker(m_eventBus);
+        }
 
-        m_localEventBus.Subscribe<StatChangedEvent>(OnStatChangedEvent);
+        m_eventBus.Subscribe<StatChangedEvent>(OnStatChangedEvent);
 
-        if (m_baseStatsResource is PlayerStats)
+        if (m_isGlobal)
         {
             SignalManager.Instance.StatUpgradePurchased += OnStatUpgradePurchased;
         }
 
-        if (m_baseStatsResource != null)
+        Dictionary<StatType, float> initialStats = new Dictionary<StatType, float>
         {
-            Dictionary<StatType, float> initialStats = new Dictionary<StatType, float>
-            {
-                { StatType.Health, m_baseStatsResource.MaxHealth }
-            };
+            { StatType.Health, MaxHealth }
+        };
 
-            if (m_baseStatsResource is CombatEntityStats combatStats)
-            {
-                initialStats.Add(StatType.Attack, combatStats.Attack);
-                initialStats.Add(StatType.Speed, combatStats.Speed);
-            }
+        if (m_entityType == EntityType.NPC || m_entityType == EntityType.Player)
+        {
+            initialStats.Add(StatType.Attack, InitialAttackPoints);
+            initialStats.Add(StatType.Speed, InitialSpeedPoints);
+        }
 
-            if (m_baseStatsResource is PlayerStats playerStats)
-            {
-                initialStats.Add(StatType.Luck, playerStats.Luck);
-            }
+        if (m_entityType == EntityType.Player)
+        {
+            initialStats.Add(StatType.Luck, InitialLuckPoints);
+        }
 
-            m_statTracker.InitializeStats(initialStats);
+        if (m_isGlobal && m_statTracker.IsInitialized)
+        {
+            GD.Print("[StatManager] Global stats already initialized, skipping reset.");
         }
         else
         {
-            GD.PushWarning("StatManager: BaseStatsResource is not assigned.");
+            m_statTracker.InitializeStats(initialStats);
         }
     }
 
     public override void _Process(double delta)
     {
         base._Process(delta);
-        m_localEventBus?.ProcessEvents();
+        if (Engine.IsEditorHint()) return;
+
+        if (!m_isGlobal)
+        {
+            m_eventBus?.ProcessEvents();
+        }
     }
 
-    private void OnStatChangedEvent(StatChangedEvent e)
+    private void OnProfileLoaded(ProfileLoadedEvent p_event)
     {
-        EmitSignal(SignalName.LocalStatChanged, (int)e.StatType, e.CurrentValue, e.EffectiveMaxValue);
+        var bestStats = p_event.Profile?.GameStats?.OrderByDescending(s => s.Score).FirstOrDefault();
+        if (bestStats != null)
+        {
+            GD.Print("[StatManager] Profile Loaded. Syncing global stats from best session.");
+            SetCurrentValue(StatType.Health, bestStats.Health);
+            SetCurrentValue(StatType.Attack, bestStats.Attack);
+            SetCurrentValue(StatType.Speed, bestStats.Speed);
+            SetCurrentValue(StatType.Luck, bestStats.Luck);
+        }
+    }
+
+    private void OnStatChangedEvent(StatChangedEvent p_event)
+    {
+        EmitSignal(SignalName.LocalStatChanged, (int)p_event.StatType, p_event.CurrentValue, p_event.EffectiveMaxValue);
     }
 
     public float GetCurrentValue(StatType p_statType)
@@ -112,17 +182,26 @@ public partial class StatManager : Node
 
     protected override void Dispose(bool p_disposing)
     {
-        if (p_disposing)
+        if (!p_disposing)
         {
-            if (m_localEventBus != null)
+            base.Dispose(p_disposing);
+            return;
+        }
+
+        if (m_eventBus != null && !Engine.IsEditorHint())
+        {
+            m_eventBus.Unsubscribe<StatChangedEvent>(OnStatChangedEvent);
+            if (m_isGlobal)
             {
-                m_localEventBus.Unsubscribe<StatChangedEvent>(OnStatChangedEvent);
-            }
-            if (SignalManager.Instance != null)
-            {
-                SignalManager.Instance.StatUpgradePurchased -= OnStatUpgradePurchased;
+                m_eventBus.Unsubscribe<ProfileLoadedEvent>(OnProfileLoaded);
             }
         }
+
+        if (SignalManager.Instance != null && !Engine.IsEditorHint())
+        {
+            SignalManager.Instance.StatUpgradePurchased -= OnStatUpgradePurchased;
+        }
+
         base.Dispose(p_disposing);
     }
 }

@@ -6,16 +6,17 @@ using IslandSurvivor.Globals;
 
 public partial class SignalManager : Node
 {
-    private static SignalManager m_instance;
+    private static SignalManager m_instance = null!;
     public static SignalManager Instance => m_instance;
 
-    private IEventBus m_eventBus;
+    private IEventBus m_eventBus = null!;
 
     // --- Native Godot Signals (for Godot UI and scene communication) ---
     [Signal] public delegate void MaterialDestroyedEventHandler(string p_itemId, string p_itemName, string p_itemType, string p_itemIcon, int p_quantity);
     [Signal] public delegate void ResourceSpentEventHandler(string p_resourceId, int p_amount);
     [Signal] public delegate void StatUpgradePurchasedEventHandler(int p_statType);
     [Signal] public delegate void NavigationRequestedEventHandler(string p_islandId, string p_scenePath, string p_biome, int p_difficulty, int p_resourceCost, int p_dangerLevel);
+    [Signal] public delegate void TeleportRequestedEventHandler(string p_islandId, string p_scenePath, string p_biome, int p_difficulty, int p_resourceCost, int p_dangerLevel);
     [Signal] public delegate void BuildingShopToggledEventHandler(bool p_isOpen, string p_buildingId);
     [Signal] public delegate void InventoryChangedEventHandler(string p_resourceId, int p_totalAmount);
 
@@ -41,6 +42,7 @@ public partial class SignalManager : Node
             m_eventBus.Subscribe<ResourceSpentEvent>(OnResourceSpentEvent);
             m_eventBus.Subscribe<StatUpgradePurchasedEvent>(OnStatUpgradePurchasedEvent);
             m_eventBus.Subscribe<NavigationRequestedEvent>(OnNavigationRequestedEvent);
+            m_eventBus.Subscribe<TeleportRequestedEvent>(OnTeleportRequestedEvent);
             m_eventBus.Subscribe<BuildingShopToggledEvent>(OnBuildingShopToggledEvent);
             m_eventBus.Subscribe<InventoryChangedEvent>(OnInventoryChangedEvent);
         }
@@ -53,7 +55,7 @@ public partial class SignalManager : Node
     // --- Core -> Godot Bridge ---
     private void OnMaterialDestroyedEvent(MaterialDestroyedEvent e)
     {
-        EmitSignal(SignalName.MaterialDestroyed, e.Item.Id, e.Item.Name, e.Item.Type, e.Item.IconPath, e.MaterialQuantity);
+        EmitSignal(SignalName.MaterialDestroyed, e.Item.Id, e.Item.Name, e.Item.Type, e.Item.IconPath ?? string.Empty, e.MaterialQuantity);
     }
 
     private void OnResourceSpentEvent(ResourceSpentEvent e)
@@ -64,11 +66,23 @@ public partial class SignalManager : Node
     private void OnStatUpgradePurchasedEvent(StatUpgradePurchasedEvent e)
     {
         EmitSignal(SignalName.StatUpgradePurchased, (int)e.StatType);
+
+        // Play level up sound globally
+        AudioStream upgradeStream = GD.Load<AudioStream>("res://Assets/Sounds/UI/stat_upgrade.wav");
+        if (upgradeStream != null)
+        {
+            AudioManager.Instance?.PlaySound(upgradeStream);
+        }
     }
 
     private void OnNavigationRequestedEvent(NavigationRequestedEvent e)
     {
         EmitSignal(SignalName.NavigationRequested, e.Destination.Id, e.Destination.ScenePath, e.Destination.Biome, e.Destination.Difficulty, e.Destination.ResourceCost, e.Destination.DangerLevel);
+    }
+
+    private void OnTeleportRequestedEvent(TeleportRequestedEvent e)
+    {
+        EmitSignal(SignalName.TeleportRequested, e.Destination.Id, e.Destination.ScenePath, e.Destination.Biome, e.Destination.Difficulty, e.Destination.ResourceCost, e.Destination.DangerLevel);
     }
 
     private void OnBuildingShopToggledEvent(BuildingShopToggledEvent e)
@@ -102,6 +116,11 @@ public partial class SignalManager : Node
         m_eventBus?.Publish(new NavigationRequestedEvent(p_destination));
     }
 
+    public void EmitTeleportRequested(object p_sender, Core.Domain.Models.IslandDestination p_destination)
+    {
+        m_eventBus?.Publish(new TeleportRequestedEvent(p_destination));
+    }
+
     public void EmitBuildingShopToggled(object p_sender, bool p_isOpen, string p_buildingId)
     {
         m_eventBus?.Publish(new BuildingShopToggledEvent(p_isOpen, p_buildingId));
@@ -115,6 +134,7 @@ public partial class SignalManager : Node
             m_eventBus.Unsubscribe<ResourceSpentEvent>(OnResourceSpentEvent);
             m_eventBus.Unsubscribe<StatUpgradePurchasedEvent>(OnStatUpgradePurchasedEvent);
             m_eventBus.Unsubscribe<NavigationRequestedEvent>(OnNavigationRequestedEvent);
+            m_eventBus.Unsubscribe<TeleportRequestedEvent>(OnTeleportRequestedEvent);
             m_eventBus.Unsubscribe<BuildingShopToggledEvent>(OnBuildingShopToggledEvent);
             m_eventBus.Unsubscribe<InventoryChangedEvent>(OnInventoryChangedEvent);
         }

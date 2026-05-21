@@ -3,7 +3,7 @@ using System;
 
 public partial class OptionsMenuManager : Control
 {
-    [Export] public Button _returnToMenuButton;
+    [Export] public Button _returnToMenuButton = null!;
 
     public override void _Ready()
     {

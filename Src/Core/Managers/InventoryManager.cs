@@ -20,6 +20,12 @@ public class InventoryManager : IInventoryManager
         m_eventBus.Subscribe<PurchaseAttemptedEvent>(OnPurchaseAttempted);
         m_eventBus.Subscribe<ResourceHarvestedEvent>(OnResourceHarvested);
         m_eventBus.Subscribe<ResourceSpentEvent>(OnResourceSpent);
+        m_eventBus.Subscribe<ProfileLoadedEvent>(OnProfileLoaded);
+    }
+
+    private void OnProfileLoaded(ProfileLoadedEvent p_event)
+    {
+        InitializeInventory(p_event.Profile.Inventory);
     }
 
     private void OnNavigationRequested(NavigationRequestedEvent p_event)
@@ -36,29 +42,29 @@ public class InventoryManager : IInventoryManager
 
         if (requiredCost > 0)
         {
-            bool hasViande = GetMaterialCount("Viande") >= requiredCost;
-            bool hasBois = GetMaterialCount("Bois") >= requiredCost;
-            bool hasRoche = GetMaterialCount("Roche") >= requiredCost;
-            bool hasOr = GetMaterialCount("Or") >= requiredCost;
+            bool hasMeat = GetMaterialCount("meat_01") >= requiredCost;
+            bool hasWood = GetMaterialCount("wood_01") >= requiredCost;
+            bool hasRock = GetMaterialCount("rock_01") >= requiredCost;
+            bool hasGold = GetMaterialCount("gold_01") >= requiredCost;
 
-            if (!hasViande || !hasBois || !hasRoche || !hasOr)
+            if (!hasMeat || !hasWood || !hasRock || !hasGold)
             {
                 m_eventBus.Publish(new NavigationRejectedEvent(destination, "Insufficient Resources"));
                 return;
             }
 
             // Deduct items and emit spent events
-            RemoveMaterial("Viande", requiredCost);
-            m_eventBus.Publish(new ResourceSpentEvent("Viande", requiredCost));
+            RemoveMaterial("meat_01", requiredCost);
+            m_eventBus.Publish(new ResourceSpentEvent("meat_01", requiredCost));
 
-            RemoveMaterial("Bois", requiredCost);
-            m_eventBus.Publish(new ResourceSpentEvent("Bois", requiredCost));
+            RemoveMaterial("wood_01", requiredCost);
+            m_eventBus.Publish(new ResourceSpentEvent("wood_01", requiredCost));
 
-            RemoveMaterial("Roche", requiredCost);
-            m_eventBus.Publish(new ResourceSpentEvent("Roche", requiredCost));
+            RemoveMaterial("rock_01", requiredCost);
+            m_eventBus.Publish(new ResourceSpentEvent("rock_01", requiredCost));
 
-            RemoveMaterial("Or", requiredCost);
-            m_eventBus.Publish(new ResourceSpentEvent("Or", requiredCost));
+            RemoveMaterial("gold_01", requiredCost);
+            m_eventBus.Publish(new ResourceSpentEvent("gold_01", requiredCost));
         }
 
         m_eventBus.Publish(new NavigationApprovedEvent(destination));
@@ -137,5 +143,21 @@ public class InventoryManager : IInventoryManager
     public IReadOnlyList<InventorySlot> GetAllSlots()
     {
         return m_slots.Values.ToList().AsReadOnly();
+    }
+
+    public void InitializeInventory(IEnumerable<InventoryEntry> p_entries)
+    {
+        if (p_entries == null) return;
+
+        m_slots.Clear();
+
+        foreach (var entry in p_entries)
+        {
+            if (entry.ResourceItem != null)
+            {
+                m_slots[entry.ResourceItemId] = new InventorySlot(entry.ResourceItem, entry.Quantity);
+                m_eventBus.Publish(new InventoryChangedEvent(entry.ResourceItemId, entry.Quantity));
+            }
+        }
     }
 }

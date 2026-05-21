@@ -5,10 +5,10 @@ using Core.Managers.Stats;
 [Tool]
 public partial class HealthBarStatic : Control
 {
-    [Export] public TextureProgressBar ProgressBar;
-    [Export] public Label HealthLabel;
+    [Export] public TextureProgressBar ProgressBar = null!;
+    [Export] public Label HealthLabel = null!;
 
-    private IslandSurvivor.Nodes.StatManager m_playerStats;
+    private IslandSurvivor.Nodes.StatManager m_playerStats = null!;
 
     public override void _Ready()
     {

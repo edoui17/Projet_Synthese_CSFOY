@@ -5,46 +5,21 @@ using Core.Interfaces.Spawning;
 
 namespace IslandSurvivor.Nodes.Zones;
 
-/// <summary>
-/// [Gameplay][Map][Spawning][Procedural]
-/// Defines a zone where resources are randomly spawned within a Polygon2D area.
-/// Supports respawning, water validation, and minimum distance between resources.
-/// </summary>
 public partial class ResourceZone : Node2D, IResourcePopulator
 {
     [Export] public int ResourceCount { get; set; } = 10;
-    [Export] public Polygon2D SpawningArea { get; set; }
+    [Export] public Polygon2D SpawningArea { get; set; } = null!;
 
-    /// <summary>
-    /// List of resource scenes (.tscn) that can be spawned in this zone.
-    /// Drag and drop scenes from the FileSystem into this list in the Inspector.
-    /// </summary>
     [Export] public Godot.Collections.Array<PackedScene> ResourceScenes { get; set; } = new();
 
-    /// <summary>
-    /// Radius around SafeZoneCenter where no resources will spawn.
-    /// </summary>
     [Export] public float SafeZoneRadius { get; set; } = 150f;
-
-    /// <summary>
-    /// Center of the safe zone, in local coordinates.
-    /// </summary>
     [Export] public Vector2 SafeZoneCenter { get; set; } = Vector2.Zero;
 
-    /// <summary>
-    /// Minimum distance between spawned resources in this zone.
-    /// </summary>
     [Export] public float MinDistanceBetweenResources { get; set; } = 50f;
 
-    /// <summary>
-    /// Delay in seconds before attempting to respawn a missing resource.
-    /// </summary>
     [Export] public float RespawnInterval { get; set; } = 30f;
 
-    /// <summary>
-    /// TileMapLayer used to check for water. Resources won't spawn on tiles present in this layer.
-    /// </summary>
-    [Export] public TileMapLayer WaterTileMap { get; set; }
+    [Export] public TileMapLayer WaterTileMap { get; set; } = null!;
 
     private readonly List<Node2D> m_activeResources = new();
     private float m_respawnTimer = 0f;
@@ -74,15 +49,12 @@ public partial class ResourceZone : Node2D, IResourcePopulator
     {
         if (SpawningArea == null || SpawningArea.Polygon.Length < 3) return;
 
-        // Handle respawning
         m_respawnTimer += (float)p_delta;
         if (m_respawnTimer >= RespawnInterval)
         {
             m_respawnTimer = 0f;
             CleanupDestroyedResources();
 
-            // Attempt to spawn multiple missing resources if necessary,
-            // but limit to one successful spawn per interval to spread performance cost
             if (m_activeResources.Count < ResourceCount)
             {
                 TrySpawnOne();
@@ -94,8 +66,8 @@ public partial class ResourceZone : Node2D, IResourcePopulator
     {
         if (ResourceScenes == null || ResourceScenes.Count == 0)
         {
-             GD.PushWarning($"[ResourceZone] No ResourceScenes assigned for {Name}.");
-             return;
+            GD.PushWarning($"[ResourceZone] No ResourceScenes assigned for {Name}.");
+            return;
         }
 
         CleanupDestroyedResources();
@@ -120,39 +92,57 @@ public partial class ResourceZone : Node2D, IResourcePopulator
     {
         if (ResourceScenes == null || ResourceScenes.Count == 0) return false;
 
-        Vector2 randomPoint = new Vector2(
-            (float)m_random.NextDouble() * m_cachedBounds.Size.X + m_cachedBounds.Position.X,
-            (float)m_random.NextDouble() * m_cachedBounds.Size.Y + m_cachedBounds.Position.Y
-        );
+        Vector2 randomPoint = GenerateRandomPointInBounds();
 
-        // Validation 1: Inside Polygon (SpawningArea local space)
-        if (!Geometry2D.IsPointInPolygon(randomPoint, SpawningArea.Polygon)) return false;
+        if (!IsInsideSpawningPolygon(randomPoint)) return false;
 
-        // Convert to local ResourceZone coordinates for further checks
         Vector2 localPos = ToLocal(SpawningArea.ToGlobal(randomPoint));
 
-        // Validation 2: Safe Zone
-        if (localPos.DistanceTo(SafeZoneCenter) < SafeZoneRadius) return false;
-
-        // Validation 3: Water (Global coordinates for TileMap check)
-        if (WaterTileMap != null)
-        {
-            Vector2 globalPos = ToGlobal(localPos);
-            Vector2I tilePos = WaterTileMap.LocalToMap(WaterTileMap.ToLocal(globalPos));
-            if (WaterTileMap.GetCellSourceId(tilePos) != -1) return false;
-        }
-
-        // Validation 4: Minimum Distance to other resources in the same zone
-        foreach (var existing in m_activeResources)
-        {
-            if (IsInstanceValid(existing) && localPos.DistanceTo(existing.Position) < MinDistanceBetweenResources)
-            {
-                return false;
-            }
-        }
+        if (IsInSafeZone(localPos)) return false;
+        if (IsOnWater(localPos)) return false;
+        if (IsTooCloseToOtherResources(localPos)) return false;
 
         SpawnResource(ResourceScenes[m_random.Next(ResourceScenes.Count)], localPos);
         return true;
+    }
+
+    private Vector2 GenerateRandomPointInBounds()
+    {
+        return new Vector2(
+            (float)m_random.NextDouble() * m_cachedBounds.Size.X + m_cachedBounds.Position.X,
+            (float)m_random.NextDouble() * m_cachedBounds.Size.Y + m_cachedBounds.Position.Y
+        );
+    }
+
+    private bool IsInsideSpawningPolygon(Vector2 p_point)
+    {
+        return Geometry2D.IsPointInPolygon(p_point, SpawningArea.Polygon);
+    }
+
+    private bool IsInSafeZone(Vector2 p_localPos)
+    {
+        return p_localPos.DistanceTo(SafeZoneCenter) < SafeZoneRadius;
+    }
+
+    private bool IsOnWater(Vector2 p_localPos)
+    {
+        if (WaterTileMap == null) return false;
+
+        Vector2 globalPos = ToGlobal(p_localPos);
+        Vector2I tilePos = WaterTileMap.LocalToMap(WaterTileMap.ToLocal(globalPos));
+        return WaterTileMap.GetCellSourceId(tilePos) != -1;
+    }
+
+    private bool IsTooCloseToOtherResources(Vector2 p_localPos)
+    {
+        foreach (var existing in m_activeResources)
+        {
+            if (IsInstanceValid(existing) && p_localPos.DistanceTo(existing.Position) < MinDistanceBetweenResources)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void SpawnResource(PackedScene p_scene, Vector2 p_localPos)
@@ -167,12 +157,10 @@ public partial class ResourceZone : Node2D, IResourcePopulator
             resourceNode.Visible = true;
             resourceNode.YSortEnabled = true;
 
-            // Ensure it's on layer 5 (Ressource) - bit 4 (2^4 = 16)
             if (resourceNode is CollisionObject2D collisionObject)
             {
                 collisionObject.CollisionLayer = 16;
             }
-            // Some resources might have an Area2D/StaticBody2D as a child
             else
             {
                 foreach (var child in resourceNode.FindChildren("*", "CollisionObject2D", true))

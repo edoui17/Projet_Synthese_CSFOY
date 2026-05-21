@@ -1,0 +1,20 @@
+[gd_scene format=3 uid="uid://crca7kdilqogk"]
+
+[ext_resource type="Texture2D" uid="uid://bsobcltw3xn7w" path="res://Assets/TinySwords/Sprites/Archer/Black/Arrow.png" id="1_ljjg1"]
+[ext_resource type="Script" uid="uid://ctj00w1v7xxqm" path="res://Scenes/Projectiles/Arrow.cs" id="1_qaq63"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_qaq63"]
+size = Vector2(41, 6)
+
+[node name="Arrow" type="Area2D" unique_id=846892666]
+collision_mask = 15
+script = ExtResource("1_qaq63")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=805121935]
+position = Vector2(-0.5, 0)
+shape = SubResource("RectangleShape2D_qaq63")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=275080306]
+position = Vector2(-1.9073486e-06, -4.7683716e-07)
+scale = Vector2(0.8359375, 0.3984375)
+texture = ExtResource("1_ljjg1")

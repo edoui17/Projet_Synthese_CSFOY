@@ -5,20 +5,22 @@
 [ext_resource type="PackedScene" uid="uid://djv45romp3vxj" path="res://Scenes/HomeMap/PlayerHUD.tscn" id="3_hud"]
 [ext_resource type="PackedScene" uid="uid://c7w3b4h8f6j0a" path="res://Scenes/NavigationMenu/NavigationMenu.tscn" id="4_nav"]
 [ext_resource type="PackedScene" uid="uid://du6mrtfohbxi8" path="res://Scenes/GameMaterialsPlanner/MaterialsMenuPlanner.tscn" id="5_mat"]
+[ext_resource type="PackedScene" uid="uid://cxab32" path="res://Scenes/MainMenu/DefeatMenu/DefeatMenu.tscn" id="6_defeat"]
 
-[node name="Main" type="Node2D"]
+[node name="Main" type="Node2D" unique_id=376045740]
 
-[node name="MapContainer" type="Node2D" parent="."]
+[node name="MapContainer" type="Node2D" parent="." unique_id=179494246]
 
-[node name="Player" parent="." instance=ExtResource("1_player")]
+[node name="Player" parent="." unique_id=108008 instance=ExtResource("1_player")]
 
-[node name="ScoreManager" parent="." instance=ExtResource("2_score")]
+[node name="ScoreManager" parent="." unique_id=1814184591 instance=ExtResource("2_score")]
 
-[node name="CanvasLayer" type="CanvasLayer" parent="."]
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=644654125]
+layer = 3
 
-[node name="PlayerHUD" parent="CanvasLayer" instance=ExtResource("3_hud")]
+[node name="PlayerHUD" parent="CanvasLayer" unique_id=62439025 instance=ExtResource("3_hud")]
 
-[node name="NavigationMenu" parent="CanvasLayer" instance=ExtResource("4_nav")]
+[node name="NavigationMenu" parent="CanvasLayer" unique_id=1387891915 instance=ExtResource("4_nav")]
 anchors_preset = 0
 anchor_right = 0.0
 anchor_bottom = 0.0
@@ -33,7 +35,7 @@ size_flags_horizontal = 4
 size_flags_vertical = 4
 mouse_filter = 2
 
-[node name="GameMaterialControl" parent="CanvasLayer" instance=ExtResource("5_mat")]
+[node name="GameMaterialControl" parent="CanvasLayer" unique_id=695853350 instance=ExtResource("5_mat")]
 anchors_preset = 0
 anchor_right = 0.0
 anchor_bottom = 0.0
@@ -46,3 +48,5 @@ grow_vertical = 1
 scale = Vector2(0.5, 0.5)
 size_flags_horizontal = 4
 size_flags_vertical = 4
+
+[node name="DefeatMenu" parent="CanvasLayer" unique_id=987654321 instance=ExtResource("6_defeat")]

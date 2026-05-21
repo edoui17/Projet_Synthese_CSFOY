@@ -19,15 +19,14 @@ public class RandomSelector<T> : IRandomSelector<T>
     }
 
     /// <inheritdoc />
-    public T SelectRandom(IEnumerable<T> p_items)
+    public T? SelectRandom(IReadOnlyList<T> p_items)
     {
-        if (p_items == null || !p_items.Any())
+        if (p_items == null || p_items.Count == 0)
         {
             return default;
         }
 
-        var list = p_items.ToList();
-        int index = m_random.Next(list.Count);
-        return list[index];
+        int index = m_random.Next(p_items.Count);
+        return p_items[index];
     }
 }

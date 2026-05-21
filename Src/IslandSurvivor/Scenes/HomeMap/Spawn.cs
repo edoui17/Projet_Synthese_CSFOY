@@ -2,8 +2,8 @@ using Godot;
 
 public partial class Spawn : Marker2D
 {
-    [Export] public Marker2D SpawnPoint { get; set; }
-    [Export] public PackedScene PlayerScene { get; set; }
+    [Export] public Marker2D SpawnPoint { get; set; } = null!;
+    [Export] public PackedScene PlayerScene { get; set; } = null!;
 
     public override void _Ready()
     {

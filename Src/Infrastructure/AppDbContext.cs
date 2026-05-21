@@ -12,7 +12,7 @@ public class AppDbContext : DbContext
     public DbSet<PlayerEntity> Players { get; set; }
     public DbSet<ResourceItemEntity> ResourceItems { get; set; }
     public DbSet<InventoryEntity> Inventory { get; set; }
-    public DbSet<StatsEntity> Stats { get; set; }
+    public DbSet<GameStatsEntity> GameStats { get; set; }
     public DbSet<PlayerConfigEntity> PlayerConfigs { get; set; }
 
     protected override void OnModelCreating(ModelBuilder p_modelBuilder)
@@ -24,9 +24,14 @@ public class AppDbContext : DbContext
         {
             entity.ToTable("Players");
             entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.Username).IsUnique();
             entity.Property(e => e.Id).HasDefaultValueSql("NEWID()");
             entity.Property(e => e.Username).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.PasswordHash).IsRequired().HasMaxLength(255).HasDefaultValue("");
+            entity.Property(e => e.SessionToken).HasMaxLength(255);
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETDATE()");
+            entity.Property(e => e.UpdatedAt).HasDefaultValueSql("GETDATE()");
+            entity.Property(e => e.HighScore).HasDefaultValue(0);
         });
 
         // ResourceItem Configuration
@@ -59,15 +64,20 @@ public class AppDbContext : DbContext
                 .OnDelete(DeleteBehavior.Cascade);
         });
 
-        // Stats Configuration (One-to-One)
-        p_modelBuilder.Entity<StatsEntity>(entity =>
+        // GameStats Configuration (One-to-Many)
+        p_modelBuilder.Entity<GameStatsEntity>(entity =>
         {
-            entity.ToTable("Stats");
-            entity.HasKey(e => e.PlayerId);
+            entity.ToTable("GameStats");
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Id).HasDefaultValueSql("NEWID()");
+            entity.Property(e => e.PlayedAt).HasDefaultValueSql("GETDATE()");
+            entity.Property(e => e.Duration).IsRequired();
+            entity.Property(e => e.LevelReached).HasDefaultValue(1);
+            entity.Property(e => e.Score).HasDefaultValue(0);
 
             entity.HasOne(e => e.Player)
-                .WithOne(p => p.Stats)
-                .HasForeignKey<StatsEntity>(e => e.PlayerId)
+                .WithMany(p => p.GameStats)
+                .HasForeignKey(e => e.PlayerId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
 

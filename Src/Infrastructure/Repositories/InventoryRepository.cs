@@ -42,6 +42,11 @@ public class InventoryRepository : IInventoryRepository
 
     public async Task UpdateInventoryAsync(Guid p_playerId, IEnumerable<InventoryEntry> p_entries)
     {
+        if (p_entries == null)
+        {
+            throw new ArgumentNullException(nameof(p_entries), "Inventory entries cannot be null.");
+        }
+
         var existing = await m_context.Inventory.Where(i => i.PlayerId == p_playerId).ToListAsync();
         m_context.Inventory.RemoveRange(existing);
 

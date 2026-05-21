@@ -1,6 +1,8 @@
 using Core.Interfaces.Stats;
 using Core.Managers.Stats;
 using Godot;
+using IslandSurvivor.Extensions;
+using IslandSurvivor.Globals;
 using IslandSurvivor.Enums;
 using IslandSurvivor.Interfaces;
 using IslandSurvivor.Managers;
@@ -13,28 +15,73 @@ using System.Collections.Generic;
 public partial class Player : CharacterBody2D, IDamageable
 {
     [Export] public StatManager? Stats { get; set; }
-    [Export] public float BaseDamage { get; set; } = 10f;
 
     private PlayerState m_currentState = PlayerState.Idle;
+    private PlayerState m_lastDebugState = (PlayerState)(-1);
 
-    [Export] private AnimationPlayer? m_animationPlayer;
-    [Export] private Sprite2D? m_sprite;
+
+    [Export] private AnimatedSprite2D? m_animatedSprite;
     [Export] private Label? m_interactionLabel;
     [Export] private Label? m_debugLabel;
+    [Export] private Label? m_levelLabel;
+    [Export] private Label? m_xpGainLabel;
+    [Export] private Label? m_dashLabel;
+    private Timer? m_xpGainTimer;
     [Export] private Area2D? m_interactionArea;
+
+    [ExportGroup("Attack")]
     [Export] private Area2D? m_weaponAreaRight;
     [Export] private Area2D? m_weaponAreaLeft;
+
+    private IslandSurvivor.Nodes.Combat.AttackController? m_attackController;
 
     private readonly List<IInteractable> m_nearbyInteractables = new();
     private IInteractable? m_bestTarget;
     private readonly IInteractionService m_interactionService = new InteractionService();
     private MovementController? m_movementController;
-    private readonly HashSet<IDamageable> m_hitTargetsThisAttack = new();
+
+    // Cached StringNames to prevent implicit string allocation and GC spikes during engine interop calls
+    private readonly StringName m_animIdle = new StringName("Idle");
+    private readonly StringName m_animRun = new StringName("Run");
+    private readonly StringName m_animAttack = new StringName("Attack");
+    private readonly StringName m_animInteract = new StringName("Interact");
+
+    private bool m_isAttackButtonDown = false;
+
+    // State tracking to prevent per-frame string allocations during Dash UI updates
+    private bool m_isDashReadyUI = false;
+    private int m_lastDashDeciseconds = -1;
+
+    public override void _ExitTree()
+    {
+        base._ExitTree();
+        if (IslandSurvivor.Globals.ServiceRegistry.Instance != null && IslandSurvivor.Globals.ServiceRegistry.Instance.EventBus != null)
+        {
+            IslandSurvivor.Globals.ServiceRegistry.Instance.EventBus.Unsubscribe<Core.Events.LevelChangedEvent>(OnLevelChanged);
+            IslandSurvivor.Globals.ServiceRegistry.Instance.EventBus.Unsubscribe<Core.Events.ExperienceGainedEvent>(OnExperienceGained);
+        }
+    }
 
     public override void _Ready()
     {
         GD.Print("Attaque du joueur : " + Stats?.GetCurrentValue(StatType.Attack));
         if (m_interactionLabel != null) m_interactionLabel.Visible = false;
+
+        if (m_xpGainLabel != null)
+        {
+            m_xpGainLabel.Visible = false;
+        }
+
+        m_xpGainTimer = new Timer();
+        m_xpGainTimer.OneShot = true;
+        m_xpGainTimer.WaitTime = 1.0f;
+        m_xpGainTimer.Timeout += OnXpTimerTimeout;
+        AddChild(m_xpGainTimer);
+
+        IslandSurvivor.Globals.ServiceRegistry.Instance.EventBus.Subscribe<Core.Events.LevelChangedEvent>(OnLevelChanged);
+        IslandSurvivor.Globals.ServiceRegistry.Instance.EventBus.Subscribe<Core.Events.ExperienceGainedEvent>(OnExperienceGained);
+
+        UpdateLevelLabel();
 
         m_movementController = GetNodeOrNull<MovementController>("MovementController");
 
@@ -49,49 +96,159 @@ public partial class Player : CharacterBody2D, IDamageable
             m_interactionArea.AreaExited += OnInteractionAreaExited;
         }
 
-        if (m_weaponAreaRight != null && m_weaponAreaLeft != null)
+        m_attackController = GetNodeOrNull<IslandSurvivor.Nodes.Combat.AttackController>("AttackController");
+        if (m_attackController != null)
         {
-            m_weaponAreaRight.AreaEntered += OnWeaponAreaEntered;
-            m_weaponAreaRight.BodyEntered += OnWeaponBodyEntered;
-            m_weaponAreaLeft.AreaEntered += OnWeaponAreaEntered;
-            m_weaponAreaLeft.BodyEntered += OnWeaponBodyEntered;
+            m_attackController.Stats = Stats;
+            m_attackController.Faction = EntityFaction.Player;
+            m_attackController.AttackSprite = m_animatedSprite;
 
-            // Désactivé par défaut
-            m_weaponAreaRight.Monitoring = false;
-            m_weaponAreaLeft.Monitoring = false;
+            if (m_weaponAreaRight != null) m_attackController.RegisterArea("Right", m_weaponAreaRight);
+            if (m_weaponAreaLeft != null) m_attackController.RegisterArea("Left", m_weaponAreaLeft);
+
+            m_attackController.AttackStarted += OnAttackStarted;
+            m_attackController.AttackFinished += OnAttackFinished;
+        }
+        else
+        {
+            GD.PushWarning("Player: AttackController not found.");
+        }
+    }
+
+    private void OnAttackStarted()
+    {
+        // Play attack swing sound
+        AudioStream swingStream = GD.Load<AudioStream>("res://Assets/Sounds/Combat/weapon_swing.wav");
+        if (swingStream != null)
+        {
+            AudioManager.Instance?.PlaySound2D(swingStream, GlobalPosition);
+        }
+
+        if (m_animatedSprite != null)
+        {
+            if (m_animatedSprite.Animation != m_animAttack)
+                m_animatedSprite.Play(m_animAttack);
+        }
+    }
+
+    private void OnAttackFinished()
+    {
+        if (m_currentState == PlayerState.Attacking)
+        {
+            SetState(PlayerState.Idle);
         }
     }
 
     public override void _PhysicsProcess(double p_delta)
     {
-        if (m_debugLabel != null)
+        if (m_currentState == PlayerState.Dead) return;
+
+        if (m_debugLabel != null && m_currentState != m_lastDebugState)
         {
             m_debugLabel.Text = m_currentState.ToString();
+            m_lastDebugState = m_currentState;
+        }
+
+        UpdateDashUI();
+
+        if (m_movementController != null && m_movementController.IsDashing)
+        {
+            SetState(PlayerState.Dashing);
+            return;
+        }
+        else if (m_currentState == PlayerState.Dashing)
+        {
+            SetState(PlayerState.Idle);
         }
 
         if (m_currentState == PlayerState.Interacting || m_currentState == PlayerState.Attacking)
         {
             Velocity = Vector2.Zero;
             MoveAndSlide();
+            UpdateInteractionLabelPosition();
             return;
         }
 
         ApplyMovement();
+
+
+        // Continue attack if button is held and we can attack
+        // Prevent attack if clicking on UI by checking if any control has focus or mouse is captured by UI.
+        // Actually, the simplest check in Godot 4 for this is `GetViewport().GuiGetFocusOwner() != null`
+        // or just checking `Input.IsActionPressed` and skipping if UI is hovered.
+        if (m_isAttackButtonDown && m_attackController != null && m_attackController.CanAttack)
+        {
+            ExecuteAttack();
+        }
+
         UpdateBestTarget();
+
+        UpdateInteractionLabelPosition();
         UpdateAnimation();
     }
 
-    public override void _Input(InputEvent p_event)
+    public override void _UnhandledInput(InputEvent p_event)
     {
-        if (m_currentState == PlayerState.Interacting || m_currentState == PlayerState.Attacking) return;
+        if (m_currentState == PlayerState.Dead) return;
+
+        if (p_event.IsActionPressed("attack"))
+        {
+            m_isAttackButtonDown = true;
+        }
+        else if (p_event.IsActionReleased("attack"))
+        {
+            m_isAttackButtonDown = false;
+        }
+
+        if (m_currentState == PlayerState.Interacting || m_currentState == PlayerState.Attacking || m_currentState == PlayerState.Dashing) return;
 
         if (p_event.IsActionPressed("interact") && m_bestTarget != null)
         {
             ExecuteInteraction();
         }
-        else if (p_event.IsActionPressed("attack"))
+        else if (p_event.IsActionPressed("dash") && m_movementController != null && !m_movementController.IsDashing)
         {
-            ExecuteAttack();
+            ExecuteDash();
+        }
+    }
+
+    private void UpdateDashUI()
+    {
+        if (m_dashLabel != null && m_movementController != null)
+        {
+            if (m_movementController.TimeSinceLastDash >= m_movementController.DashCooldown)
+            {
+                if (!m_isDashReadyUI)
+                {
+                    m_dashLabel.Text = "Dash: Prêt";
+                    m_isDashReadyUI = true;
+                    m_lastDashDeciseconds = -1;
+                }
+            }
+            else
+            {
+                m_isDashReadyUI = false;
+                int remainingDeciseconds = (int)Math.Ceiling((m_movementController.DashCooldown - m_movementController.TimeSinceLastDash) * 10f);
+                if (remainingDeciseconds != m_lastDashDeciseconds)
+                {
+                    m_dashLabel.Text = $"Dash: {remainingDeciseconds / 10f:F1}s";
+                    m_lastDashDeciseconds = remainingDeciseconds;
+                }
+            }
+        }
+    }
+
+    private void ExecuteDash()
+    {
+        if (m_movementController == null) return;
+
+        Vector2 direction = Input.GetVector("move_left", "move_right", "move_up", "move_down");
+        Vector2 dashDirection = direction != Vector2.Zero ? direction.Normalized() : ((m_animatedSprite != null && m_animatedSprite.FlipH) ? Vector2.Left : Vector2.Right);
+
+        if (m_movementController.TryDash(dashDirection))
+        {
+            SetState(PlayerState.Dashing);
+            UpdateDashUI(); // Force update label immediately
         }
     }
 
@@ -103,9 +260,9 @@ public partial class Player : CharacterBody2D, IDamageable
         {
             m_currentState = PlayerState.Moving;
 
-            if (m_sprite != null)
+            if (m_animatedSprite != null && m_currentState != PlayerState.Attacking)
             {
-                m_sprite.FlipH = direction.X < 0;
+                m_animatedSprite.FlipH = direction.X < 0;
             }
         }
         else
@@ -120,11 +277,24 @@ public partial class Player : CharacterBody2D, IDamageable
         else
         {
             // Fallback
-            float baseSpeed = 300f;
+            float baseSpeed = Stats?.BaseSpeedValue ?? 300f;
             float speedStat = Stats?.GetCurrentValue(StatType.Speed) ?? 0f;
             float finalSpeed = baseSpeed * (1f + (speedStat * 0.05f));
             Velocity = direction * finalSpeed;
             MoveAndSlide();
+        }
+    }
+
+    private void UpdateInteractionLabelPosition()
+    {
+        if (m_interactionLabel != null && m_interactionLabel.Visible)
+        {
+            var viewport = GetViewport();
+            if (viewport != null && m_interactionLabel.GetParent() is CanvasLayer)
+            {
+                var screenPos = GetGlobalTransformWithCanvas().Origin;
+                m_interactionLabel.SetGlobalPosition(new Godot.Vector2(screenPos.X - m_interactionLabel.Size.X / 2, screenPos.Y - 80));
+            }
         }
     }
 
@@ -153,10 +323,11 @@ public partial class Player : CharacterBody2D, IDamageable
         SetState(PlayerState.Interacting);
         m_bestTarget.Interact();
 
-        if (m_animationPlayer != null && m_animationPlayer.HasAnimation("INTERACT"))
+        if (m_animatedSprite != null)
         {
-            m_animationPlayer.Play("INTERACT");
-            await ToSignal(m_animationPlayer, AnimationPlayer.SignalName.AnimationFinished);
+            if (m_animatedSprite.Animation != m_animInteract)
+                m_animatedSprite.Play(m_animInteract);
+            await ToSignal(m_animatedSprite, AnimatedSprite2D.SignalName.AnimationFinished);
         }
         else
         {
@@ -166,47 +337,31 @@ public partial class Player : CharacterBody2D, IDamageable
         SetState(PlayerState.Idle);
     }
 
-    private async void ExecuteAttack()
+    private void ExecuteAttack()
     {
-        GD.Print("[COMBAT] Attack started!");
-        SetState(PlayerState.Attacking);
-        m_hitTargetsThisAttack.Clear();
+        if (m_attackController == null) return;
 
-        // Activation de la zone d'arme selon l'orientation
-        if (m_sprite != null && m_weaponAreaLeft != null && m_weaponAreaRight != null)
+        string direction = (m_animatedSprite != null && m_animatedSprite.FlipH) ? "Left" : "Right";
+
+        if (m_attackController.TryAttack(direction))
         {
-            m_weaponAreaLeft.Monitoring = m_sprite.FlipH;
-            m_weaponAreaRight.Monitoring = !m_sprite.FlipH;
+            SetState(PlayerState.Attacking);
         }
-
-        if (m_animationPlayer != null && m_animationPlayer.HasAnimation("ATTACK"))
-        {
-            m_animationPlayer.Play("ATTACK");
-            await ToSignal(m_animationPlayer, AnimationPlayer.SignalName.AnimationFinished);
-        }
-        else
-        {
-            GD.Print("[COMBAT] No animation found");
-            await ToSignal(GetTree().CreateTimer(0.4f), SceneTreeTimer.SignalName.Timeout);
-        }
-
-        if (m_weaponAreaLeft != null) m_weaponAreaLeft.Monitoring = false;
-        if (m_weaponAreaRight != null) m_weaponAreaRight.Monitoring = false;
-
-        SetState(PlayerState.Idle);
     }
 
     private void UpdateAnimation()
     {
-        if (m_animationPlayer == null) return;
+        if (m_animatedSprite == null) return;
 
         switch (m_currentState)
         {
             case PlayerState.Idle:
-                m_animationPlayer.Play("IDLE");
+                if (m_animatedSprite.Animation != m_animIdle)
+                    m_animatedSprite.Play(m_animIdle);
                 break;
             case PlayerState.Moving:
-                m_animationPlayer.Play("RUN");
+                if (m_animatedSprite.Animation != m_animRun)
+                    m_animatedSprite.Play(m_animRun);
                 break;
         }
     }
@@ -216,43 +371,112 @@ public partial class Player : CharacterBody2D, IDamageable
         m_currentState = p_newState;
     }
 
+    private void UpdateLevelLabel()
+    {
+        if (m_levelLabel != null)
+        {
+            var statTracker = IslandSurvivor.Globals.ServiceRegistry.Instance.StatTracker;
+            float level = statTracker.GetCurrentValue(StatType.Level);
+            float currentXp = statTracker.GetCurrentValue(StatType.Experience);
+            float requiredXp = statTracker.CalculateRequiredXp((int)level);
+
+            m_levelLabel.Text = $"Niveau {level} ({currentXp} / {requiredXp})";
+        }
+    }
+
+    private void OnLevelChanged(Core.Events.LevelChangedEvent p_event)
+    {
+        UpdateLevelLabel();
+
+        if (m_xpGainLabel != null)
+        {
+            m_xpGainLabel.Text = "LEVEL UP!";
+            m_xpGainLabel.Visible = true;
+            m_xpGainTimer.Start();
+        }
+    }
+
+    private void OnExperienceGained(Core.Events.ExperienceGainedEvent p_event)
+    {
+        UpdateLevelLabel();
+
+        if (m_xpGainLabel != null)
+        {
+            m_xpGainLabel.Text = $"+{p_event.Amount} XP";
+            m_xpGainLabel.Visible = true;
+            m_xpGainTimer.Start();
+        }
+    }
+
+    private void OnXpTimerTimeout()
+    {
+        if (m_xpGainLabel != null)
+        {
+            m_xpGainLabel.Visible = false;
+        }
+    }
+
     public void TakeDamage(int p_amount, object p_attacker)
     {
+        if (m_currentState == PlayerState.Dead) return;
+        if (m_movementController != null && m_movementController.IsDashing) return; // Invincible during dash
+
         if (Stats == null) return;
 
         float currentHealth = Stats.GetCurrentValue(StatType.Health);
         if (currentHealth <= 0) return;
 
         Stats.ModifyCurrentValue(StatType.Health, -p_amount);
+
+        currentHealth = Stats.GetCurrentValue(StatType.Health);
+
+        if (currentHealth <= 0)
+        {
+            HandleDeath();
+            return;
+        }
+
+        this.PlayHitFlash();
+        this.PlayShake();
+
+        // Play hurt sound
+        AudioStream hurtStream = GD.Load<AudioStream>("res://Assets/Sounds/Combat/player_hurt.wav");
+        if (hurtStream != null)
+        {
+            AudioManager.Instance?.PlaySound(hurtStream);
+        }
+
+        // Lightweight camera shake
+        Camera2D camera = GetNodeOrNull<Camera2D>("Camera2D");
+        if (camera != null)
+        {
+            camera.PlayShake(0.2f, 8.0f);
+        }
     }
 
-    private void ApplyDamage(IDamageable p_target)
+    private void HandleDeath()
     {
-        if (m_hitTargetsThisAttack.Contains(p_target)) return;
+        SetState(PlayerState.Dead);
+        Velocity = Vector2.Zero;
 
-        m_hitTargetsThisAttack.Add(p_target);
+        // Play death sound (reusing hurt sound or specific death sound if available)
+        AudioStream deathStream = GD.Load<AudioStream>("res://Assets/Sounds/Combat/player_hurt.wav"); // Fallback
+        if (deathStream != null)
+        {
+            AudioManager.Instance?.PlaySound(deathStream);
+        }
 
-        float attackStat = Stats?.GetCurrentValue(StatType.Attack) ?? 0f;
-        float finalDamageFloat = BaseDamage * (1f + (attackStat * 0.05f));
-        int finalDamage = Mathf.RoundToInt(finalDamageFloat);
+        if (m_animatedSprite != null)
+        {
+            // If there's a death animation, play it. Otherwise, stop animation.
+            m_animatedSprite.Stop();
+        }
 
-        GD.Print($"[COMBAT] Hit target! Dealing {finalDamage} damage.");
-        p_target.TakeDamage(finalDamage, this);
-    }
-
-    private void OnWeaponAreaEntered(Area2D p_area)
-    {
-        if (m_currentState != PlayerState.Attacking) return;
-
-        IDamageable? damageable = p_area as IDamageable ?? p_area.GetParent() as IDamageable;
-        if (damageable != null) ApplyDamage(damageable);
-    }
-
-    private void OnWeaponBodyEntered(Node2D p_body)
-    {
-        if (m_currentState != PlayerState.Attacking) return;
-
-        if (p_body is IDamageable damageable) ApplyDamage(damageable);
+        // Emit PlayerDiedEvent
+        if (IslandSurvivor.Globals.ServiceRegistry.Instance != null && IslandSurvivor.Globals.ServiceRegistry.Instance.EventBus != null)
+        {
+            IslandSurvivor.Globals.ServiceRegistry.Instance.EventBus.Publish(new Core.Events.PlayerDiedEvent());
+        }
     }
 
     private void OnInteractionAreaEntered(Area2D p_area)

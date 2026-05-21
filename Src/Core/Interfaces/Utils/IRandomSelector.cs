@@ -13,5 +13,5 @@ public interface IRandomSelector<T>
     /// </summary>
     /// <param name="p_items">The collection of items to choose from.</param>
     /// <returns>A randomly selected item, or the default value if the collection is empty.</returns>
-    T SelectRandom(IEnumerable<T> p_items);
+    T? SelectRandom(IReadOnlyList<T> p_items);
 }

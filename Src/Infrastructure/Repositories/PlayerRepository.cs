@@ -23,7 +23,6 @@ public class PlayerRepository : IPlayerRepository
         if (p_id is Guid guidId)
         {
             var entity = await m_context.Players
-                .Include(p => p.Stats)
                 .Include(p => p.Config)
                 .FirstOrDefaultAsync(p => p.Id == guidId);
 
@@ -35,7 +34,6 @@ public class PlayerRepository : IPlayerRepository
     public async Task<IEnumerable<Player>> GetAllAsync()
     {
         var entities = await m_context.Players
-            .Include(p => p.Stats)
             .Include(p => p.Config)
             .ToListAsync();
         return entities.Select(MapToDomain).Where(p => p != null)!;
@@ -47,7 +45,9 @@ public class PlayerRepository : IPlayerRepository
         {
             Id = p_entity.Id,
             Username = p_entity.Username,
-            CreatedAt = p_entity.CreatedAt
+            CreatedAt = p_entity.CreatedAt,
+            UpdatedAt = p_entity.UpdatedAt,
+            HighScore = p_entity.HighScore
         };
         await m_context.Players.AddAsync(entity);
     }
@@ -58,6 +58,8 @@ public class PlayerRepository : IPlayerRepository
         if (entity != null)
         {
             entity.Username = p_entity.Username;
+            entity.UpdatedAt = DateTime.UtcNow;
+            entity.HighScore = p_entity.HighScore;
             m_context.Players.Update(entity);
         }
     }
@@ -79,7 +81,6 @@ public class PlayerRepository : IPlayerRepository
     public async Task<Player?> GetByUsernameAsync(string p_username)
     {
         var entity = await m_context.Players
-            .Include(p => p.Stats)
             .Include(p => p.Config)
             .FirstOrDefaultAsync(p => p.Username == p_username);
 
@@ -95,15 +96,26 @@ public class PlayerRepository : IPlayerRepository
             Id = p_entity.Id,
             Username = p_entity.Username,
             CreatedAt = p_entity.CreatedAt,
-            Stats = p_entity.Stats == null ? null : new PlayerStats
+            UpdatedAt = p_entity.UpdatedAt,
+            HighScore = p_entity.HighScore,
+            GameStats = p_entity.GameStats.Select(s => new GameStats
             {
-                PlayerId = p_entity.Stats.PlayerId,
-                Health = p_entity.Stats.Health,
-                Attack = p_entity.Stats.Attack,
-                Speed = p_entity.Stats.Speed,
-                Luck = p_entity.Stats.Luck,
-                ExtraStats = p_entity.Stats.ExtraStats
-            },
+                Id = s.Id,
+                PlayerId = s.PlayerId,
+                PlayedAt = s.PlayedAt,
+                Duration = s.Duration,
+                LevelReached = s.LevelReached,
+                Score = s.Score,
+                Health = s.Health,
+                Attack = s.Attack,
+                Speed = s.Speed,
+                Luck = s.Luck,
+                BonusHealth = s.BonusHealth,
+                BonusAttack = s.BonusAttack,
+                BonusSpeed = s.BonusSpeed,
+                BonusLuck = s.BonusLuck,
+                ExtraStats = s.ExtraStats
+            }).ToList(),
             Config = p_entity.Config == null ? null : new PlayerConfig
             {
                 PlayerId = p_entity.Config.PlayerId,

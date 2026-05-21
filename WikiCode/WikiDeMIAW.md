@@ -8,17 +8,21 @@
 5. Antoine Masson
 
 ## **Énumération des besoins exprimés par le client**
-- [ ] Mise en place d’un personnage principal **- À faire**
-- [ ] Mise en place d’un systeme de navigation (changement) d'îles **- À faire**
-- [ ] Mise en place d’un systeme de stats pour les entités **- À faire**
-- [ ] Mise en place d’un systeme de collection de resosurces **- À faire**
-- [ ] Mise en place d’un systeme de d'enemie NPC **- À faire**
+- [X] Mise en place d’un personnage principal **- Complété**
+- [X] Mise en place d’un systeme de navigation (changement) d'îles **- Complété**
+- [X] Mise en place d’un systeme de stats pour les entités **- Complété**
+- [X] Mise en place d’un systeme de collection de resosurces **- Complété**
+- [X] Mise en place d’un systeme de d'enemie NPC **- Complété**
 - [ ] Mise en place d’un systeme de gestion du temps de jeu (effet en jeu) **- À faire**
-- [ ] Mise en place d’un systeme d'un système d'utilisation de ressources **- À faire**
+<<<<<<< HEAD
+- [ ] Mise en place d’un systeme d'utilisation de ressources **- À faire**
+=======
+- [ ] Mise en place d’un systeme d'un système d'utilisation de ressources **- En cours**
+>>>>>>> 70b8fe7d2906492a553c1c5871b0636a19b2a24a
 - [ ] Mise en place d’un systeme d'une fin de partie (victoire / mort) **- À faire**
-- [ ] Mise en place d’un système de calcul de score en jeu **- À faire**
-- [ ] Transmission des scores vers un service web **- À faire**
-- [ ] Intégration d’un tableau des scores (scoreboard) accessible depuis un site web **- À faire**
+- [ ] Mise en place d’un système de calcul de score en jeu **- En cours**
+- [ ] Transmission des scores vers un service web **- En cours**
+- [ ] Intégration d’un tableau des scores (scoreboard) accessible depuis un site web **- En cours**
 ## **Technologies utilisées.**
 
 - #En production 
@@ -75,26 +79,22 @@ Total 28,61$ CAD
 
 #Gestion des Sources (Git)
 
-  
-
 ### Branches principales
 
 * **`master` (ou `main`) :** Branche de production. Code stable et testé.
 
 * `dev` : Branche d'intégration. Regroupe les fonctionnalités terminées avant le passage en production.
 
-  
-
 ### Procédures de fusion (Merge Requests)
 
 L'équipe applique des règles de révision strictes pour garantir la qualité du code :
 
 1. **Création de branche par récit :**
-    * Chaque récitt nécessite une branch individuel basé sur `dev`
+    * Chaque récit nécessite une branch individuel basé sur `dev`
 
-    * Effectuer un commit par tache complèter
+    * Effectuer un commit par tâche complétée
 
-    * Fournir une description brève du contenu modifier
+    * Fournir une description brève du contenu modifié
 
 2.  **Vers la branche `dev` :**
 
@@ -128,6 +128,8 @@ L'équipe applique des règles de révision strictes pour garantir la qualité d
     1. Ce qui est fonctionnel en production: Rien n'est fonctionnel en production nous commençons un nouveau projet de zéros.
     2. Ce qui est en développement: Rien n'est fonctionnel en développement nous commençons un nouveau projet de zéros.
     3. Ce qui est en déploiement ou près du déploiement: Rien n'est fonctionnel en déploiement nous commençons un nouveau projet de zéros.
+
+La partie ci-dessous n'est pas tenue à jour depuis sa création
 
 ## **Création et Attribution des récits utilisateurs et tâches**
 - Delphine Martin :

@@ -8,13 +8,20 @@
 [ext_resource type="PackedScene" uid="uid://rtx0k5qfaymn" path="res://Scenes/Ressources/Tree/ConiferTree.tscn" id="6_raikn"]
 [ext_resource type="PackedScene" uid="uid://cs7lisiu7vc7y" path="res://Scenes/Ressources/Rock/Rock.tscn" id="7_lmf3a"]
 [ext_resource type="PackedScene" uid="uid://cxftj0qybs1cs" path="res://Scenes/Ressources/Gold/Gold.tscn" id="8_krscx"]
+[ext_resource type="PackedScene" uid="uid://mqagd60eodos" path="res://Scenes/NPC/Passive/Sheep/Sheep.tscn" id="8_me4ow"]
+[ext_resource type="Script" uid="uid://b2pgcq5bf17ym" path="res://Nodes/Zones/EnemySpawnZone.cs" id="9_mixyp"]
+[ext_resource type="Script" uid="uid://cbbphk4jiuhm5" path="res://Nodes/Zones/EnemySpawnConfig.cs" id="10_fp86d"]
+[ext_resource type="Resource" uid="uid://d1e2f3g4h5i6j" path="res://Scenes/NPC/Aggressive/Normal/Soldier/SoldierConfig.tres" id="11_bgy4g"]
+[ext_resource type="Resource" uid="uid://dbscgytmkqyn7" path="res://Scenes/NPC/Aggressive/Normal/Archer/ArcherConfig.tres" id="12_q4mu0"]
+[ext_resource type="Resource" uid="uid://cxq9oiy51w9h7" path="res://Scenes/NPC/Aggressive/Normal/Lancer/LancerConfig.tres" id="13_lancer"]
+
 
 [node name="Main" unique_id=956225192 instance=ExtResource("1_base")]
 
-[node name="Map5" parent="MapContainer" index="0" unique_id=888819281 instance=ExtResource("2_map")]
+[node name="Map5" parent="MapContainer" parent_id_path=PackedInt32Array(179494246) index="0" unique_id=888819281 instance=ExtResource("2_map")]
 position = Vector2(-1, 0)
 
-[node name="Player" parent="." index="1"]
+[node name="Player" parent="." index="1" unique_id=108008]
 position = Vector2(409, -226)
 
 [node name="ResourceZone" type="Node2D" parent="." index="2" unique_id=800104028 node_paths=PackedStringArray("SpawningArea")]
@@ -22,7 +29,7 @@ position = Vector2(0, 1)
 script = ExtResource("4_ntub1")
 ResourceCount = 100
 SpawningArea = NodePath("SpawningArea")
-ResourceScenes = Array[PackedScene]([ExtResource("5_me4ow"), ExtResource("6_raikn"), ExtResource("7_lmf3a"), ExtResource("8_krscx")])
+ResourceScenes = Array[PackedScene]([ExtResource("5_me4ow"), ExtResource("6_raikn"), ExtResource("7_lmf3a"), ExtResource("8_krscx"), ExtResource("8_me4ow")])
 
 [node name="SpawningArea" type="Polygon2D" parent="ResourceZone" index="0" unique_id=797527424]
 light_mask = 0
@@ -32,8 +39,20 @@ scale = Vector2(1.045625, 1)
 polygon = PackedVector2Array(-538.9122, -1221, -318.948, -1214, -319.90436, -938, 205.14047, -940, 657.5015, -1296, 640.2869, -1025, 841.1237, -1047, 932.9349, -1171, 1018.0514, -1107, 1265.7501, -911, 1305.9175, -707, 1326.9575, -522, 1067.7825, -63, 1033.3533, 72, 928.153, 218, 875.5529, 274, 793.3054, 155, 766.5272, 66, 932.9349, -163, 1099.3425, -544, 1019.9642, -779, 843.0365, -1049, 633.59235, -1017, 683.32336, -889, 671.847, -810, 770.35266, -540, 783.74176, -286, 665.1524, 8, 648.8942, 446, 824.86554, 516, 646.0251, 700, 241.48236, 587, 162.104, 600, -31.08189, 869, 64.554695, 833, 159.23491, 748, 225.22415, 724, 336.1626, 774, 373.46085, 825, 343.8135, 886, 273.04245, 900, 214.70412, 834, 172.62402, 771, 63.598328, 833, -29.169155, 872, 148.71489, 1052, 336.1626, 1088, 222.35506, 1155, 154.45308, 1245, 51.165573, 1153, -67.4238, 849, 134.3694, 570, 176.4495, 262, 298.86432, 204, 360.07172, 66, 437.53735, -74, 439.4501, -152, 417.45367, -192, 355.2899, -236, 201.315, -704, 201.315, -940, -321.8171, -938, -266.3479, -769, -268.26062, -662, -399.28275, -516, -405.9773, -178, -388.76273, -18, -273.04245, 110, -296.9516, 265, -361.98447, 411, -421.27914, 525, -447.101, 639, -385.89362, 710, -383.9809, 838, -412.67184, 710, -449.97012, 648, -467.18472, 632, -434.66827, 509, -373.46085, 390, -429.88644, 292, -554.214, 340, -552.3013, 180, -639.33057, 116, -781.82904, 123, -822.9528, 52, -1122.2953, 36, -965.4513, 266, -865.98926, 407, -746.44354, 523, -704.3634, 630, -596.29407, 751, -547.5194, 813, -560.90857, 338, -431.79916, 288, -401.19547, 246, -419.36642, 71, -647.93787, -116, -794.26184, -137, -1080.2152, -199, -1200.7173, -290, -1294.4412, -445, -1294.4412, -667, -1217.9319, -824, -1110.8188, -856, -574.29767, -1089, -720.62164, -1155, -834.4292, -1113, -889.8984, -1064, -1144.2917, -996, -1182.5464, -1060, -1011.3568, -1230, -773.2218, -1436, -543.694, -1436, -555.17035, -1353, -648.8942, -1315, -798.0873, -1168, -830.6037, -1117, -724.44714, -1157)
 uv = PackedVector2Array(-277.30957, 36.86975)
 
-[node name="Portal" parent="." index="3" unique_id=2065766671 instance=ExtResource("3_portal")]
-position = Vector2(353, -109)
+[node name="EnemieZone" type="Node2D" parent="." index="3" unique_id=2010878527 node_paths=PackedStringArray("SpawningArea")]
+position = Vector2(0, 2)
+script = ExtResource("9_mixyp")
+EnemyConfigs = Array[ExtResource("10_fp86d")]([ExtResource("11_bgy4g"), ExtResource("12_q4mu0"), ExtResource("13_lancer")])
+SpawningArea = NodePath("EnemySpawningArea")
+RespawnInterval = 30.0
 
-[node name="CanvasLayer" parent="." index="5"]
-visible = false
+[node name="EnemySpawningArea" type="Polygon2D" parent="EnemieZone" index="0" unique_id=1878277209]
+light_mask = 0
+visibility_layer = 0
+position = Vector2(-36.5, 0)
+scale = Vector2(1.045625, 1)
+polygon = PackedVector2Array(-538.9122, -1221, -318.948, -1214, -319.90436, -938, 205.14047, -940, 657.5015, -1296, 640.2869, -1025, 841.1237, -1047, 932.9349, -1171, 1018.0514, -1107, 1265.7501, -911, 1305.9175, -707, 1326.9575, -522, 1067.7825, -63, 1033.3533, 72, 928.153, 218, 875.5529, 274, 793.3054, 155, 766.5272, 66, 932.9349, -163, 1099.3425, -544, 1019.9642, -779, 843.0365, -1049, 633.59235, -1017, 683.32336, -889, 671.847, -810, 770.35266, -540, 783.74176, -286, 665.1524, 8, 648.8942, 446, 824.86554, 516, 646.0251, 700, 241.48236, 587, 162.104, 600, -31.08189, 869, 64.554695, 833, 159.23491, 748, 225.22415, 724, 336.1626, 774, 373.46085, 825, 343.8135, 886, 273.04245, 900, 214.70412, 834, 172.62402, 771, 63.598328, 833, -29.169155, 872, 148.71489, 1052, 336.1626, 1088, 222.35506, 1155, 154.45308, 1245, 51.165573, 1153, -67.4238, 849, 134.3694, 570, 176.4495, 262, 298.86432, 204, 360.07172, 66, 437.53735, -74, 439.4501, -152, 417.45367, -192, 355.2899, -236, 201.315, -704, 201.315, -940, -321.8171, -938, -266.3479, -769, -268.26062, -662, -399.28275, -516, -405.9773, -178, -388.76273, -18, -273.04245, 110, -296.9516, 265, -361.98447, 411, -421.27914, 525, -447.101, 639, -385.89362, 710, -383.9809, 838, -412.67184, 710, -449.97012, 648, -467.18472, 632, -434.66827, 509, -373.46085, 390, -429.88644, 292, -554.214, 340, -552.3013, 180, -639.33057, 116, -781.82904, 123, -822.9528, 52, -1122.2953, 36, -965.4513, 266, -865.98926, 407, -746.44354, 523, -704.3634, 630, -596.29407, 751, -547.5194, 813, -560.90857, 338, -431.79916, 288, -401.19547, 246, -419.36642, 71, -647.93787, -116, -794.26184, -137, -1080.2152, -199, -1200.7173, -290, -1294.4412, -445, -1294.4412, -667, -1217.9319, -824, -1110.8188, -856, -574.29767, -1089, -720.62164, -1155, -834.4292, -1113, -889.8984, -1064, -1144.2917, -996, -1182.5464, -1060, -1011.3568, -1230, -773.2218, -1436, -543.694, -1436, -555.17035, -1353, -648.8942, -1315, -798.0873, -1168, -830.6037, -1117, -724.44714, -1157)
+uv = PackedVector2Array(-277.30957, 36.86975)
+
+[node name="Portal" parent="." index="4" unique_id=2065766671 instance=ExtResource("3_portal")]
+position = Vector2(353, -109)

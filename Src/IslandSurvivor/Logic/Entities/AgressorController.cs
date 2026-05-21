@@ -1,20 +1,19 @@
 namespace IslandSurvivor.Logic.Entities;
 
 using System;
-using Godot;
+using Godot; // Vector2
+using IslandSurvivor.Logic.Entities;
 
-public class AgressorController
+public class AgressorController : IAgressorController
 {
-    private string m_currentState;
-    private float m_idleTimer;
-    private float m_disengageTimer;
-    private Vector2 m_currentDirection;
-
-    private readonly Random m_random = new Random();
+    protected string m_currentState;
+    protected float m_idleTimer;
+    protected float m_disengageTimer;
+    protected Vector2 m_currentDirection;
+    protected readonly Random m_random = new Random();
 
     public string CurrentState => m_currentState;
     public Vector2 CurrentDirection => m_currentDirection;
-
     public const float IDLE_DIRECTION_CHANGE_INTERVAL = 2.0f;
     public const float DISENGAGE_TIME = 3.0f;
 
@@ -24,13 +23,16 @@ public class AgressorController
         PickNewRandomDirection();
     }
 
-    public void Update(float p_delta, bool p_hasTarget, bool p_hasLineOfSight)
+    public virtual void Update(float p_delta, bool p_hasTarget, bool p_hasLineOfSight)
     {
         if (m_currentState == NpcStates.DEAD) return;
 
         if (p_hasTarget && p_hasLineOfSight)
         {
-            m_currentState = NpcStates.CHASE;
+            if (m_currentState != NpcStates.CHASE)
+            {
+                m_currentState = NpcStates.CHASE;
+            }
             m_disengageTimer = DISENGAGE_TIME; // Reset the timer while we have line of sight
         }
         else if (m_currentState == NpcStates.CHASE)
@@ -56,24 +58,23 @@ public class AgressorController
         }
     }
 
-    public void UpdateChaseDirection(Vector2 p_agressorPosition, Vector2 p_targetPosition)
+    public virtual void UpdateChaseDirection(Vector2 p_agressorPosition, Vector2 p_targetPosition)
     {
-        if (m_currentState != NpcStates.CHASE) return;
-
         Vector2 direction = p_targetPosition - p_agressorPosition;
         if (direction.LengthSquared() > 0)
         {
-            m_currentDirection = direction.Normalized();
+            float length = (float)Math.Sqrt(direction.X * direction.X + direction.Y * direction.Y);
+            m_currentDirection = new Vector2(direction.X / length, direction.Y / length);
         }
     }
 
-    public void SetDead()
+    public virtual void SetDead()
     {
         m_currentState = NpcStates.DEAD;
         m_currentDirection = Vector2.Zero;
     }
 
-    private void PickNewRandomDirection()
+    protected virtual void PickNewRandomDirection()
     {
         m_idleTimer = IDLE_DIRECTION_CHANGE_INTERVAL + (float)(m_random.NextDouble() * 2.0 - 1.0); // 1 to 3 seconds
 
@@ -81,12 +82,12 @@ public class AgressorController
         m_currentDirection = new Vector2((float)Math.Cos(angle), (float)Math.Sin(angle));
     }
 
-    public void ResetDirectionChangeTimer()
+    public virtual void ResetDirectionChangeTimer()
     {
         m_idleTimer = 0;
     }
 
-    public void ForceNewDirection()
+    public virtual void ForceNewDirection()
     {
         if (m_currentState == NpcStates.IDLE)
         {

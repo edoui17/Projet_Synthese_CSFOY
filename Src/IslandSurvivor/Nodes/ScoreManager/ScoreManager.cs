@@ -9,8 +9,8 @@ namespace IslandSurvivor.Nodes.StatsManager;
 public partial class ScoreManager : Node
 {
     private SessionResource? m_sessionResource;
-    private IScoreTracker m_scoreTracker;
-    private Core.Interfaces.IEventBus m_eventBus;
+    private IScoreTracker m_scoreTracker = null!;
+    private Core.Interfaces.IEventBus m_eventBus = null!;
 
     [Export]
     public SessionResource? SessionResource
@@ -73,6 +73,7 @@ public partial class ScoreManager : Node
 
     private void OnCoreScoreChanged(ScoreChangedEvent p_event)
     {
+        GD.Print($"[ScoreManager] Score updated visually (console): {p_event.PreviousScore} -> {p_event.NewScore}");
         EmitSignal(SignalName.ScoreChanged, p_event.PreviousScore, p_event.NewScore);
     }
 

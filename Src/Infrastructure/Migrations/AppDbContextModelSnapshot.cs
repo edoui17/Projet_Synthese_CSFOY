@@ -22,6 +22,68 @@ namespace Infrastructure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("Infrastructure.Entities.GameStatsEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
+
+                    b.Property<float>("Attack")
+                        .HasColumnType("real");
+
+                    b.Property<float>("BonusAttack")
+                        .HasColumnType("real");
+
+                    b.Property<float>("BonusHealth")
+                        .HasColumnType("real");
+
+                    b.Property<float>("BonusLuck")
+                        .HasColumnType("real");
+
+                    b.Property<float>("BonusSpeed")
+                        .HasColumnType("real");
+
+                    b.Property<TimeSpan>("Duration")
+                        .HasColumnType("time");
+
+                    b.Property<string>("ExtraStats")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<float>("Health")
+                        .HasColumnType("real");
+
+                    b.Property<int>("LevelReached")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
+
+                    b.Property<float>("Luck")
+                        .HasColumnType("real");
+
+                    b.Property<DateTime>("PlayedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
+
+                    b.Property<Guid>("PlayerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Score")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<float>("Speed")
+                        .HasColumnType("real");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PlayerId");
+
+                    b.ToTable("GameStats", (string)null);
+                });
+
             modelBuilder.Entity("Infrastructure.Entities.InventoryEntity", b =>
                 {
                     b.Property<Guid>("PlayerId")
@@ -72,12 +134,36 @@ namespace Infrastructure.Migrations
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("GETDATE()");
 
+                    b.Property<int>("HighScore")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasDefaultValue("");
+
+                    b.Property<string>("SessionToken")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
+
                     b.Property<string>("Username")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Username")
+                        .IsUnique();
 
                     b.ToTable("Players", (string)null);
                 });
@@ -107,29 +193,15 @@ namespace Infrastructure.Migrations
                     b.ToTable("ResourceItems", (string)null);
                 });
 
-            modelBuilder.Entity("Infrastructure.Entities.StatsEntity", b =>
+            modelBuilder.Entity("Infrastructure.Entities.GameStatsEntity", b =>
                 {
-                    b.Property<Guid>("PlayerId")
-                        .HasColumnType("uniqueidentifier");
+                    b.HasOne("Infrastructure.Entities.PlayerEntity", "Player")
+                        .WithMany("GameStats")
+                        .HasForeignKey("PlayerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Property<float>("Attack")
-                        .HasColumnType("real");
-
-                    b.Property<string>("ExtraStats")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<float>("Health")
-                        .HasColumnType("real");
-
-                    b.Property<float>("Luck")
-                        .HasColumnType("real");
-
-                    b.Property<float>("Speed")
-                        .HasColumnType("real");
-
-                    b.HasKey("PlayerId");
-
-                    b.ToTable("Stats", (string)null);
+                    b.Navigation("Player");
                 });
 
             modelBuilder.Entity("Infrastructure.Entities.InventoryEntity", b =>
@@ -162,24 +234,13 @@ namespace Infrastructure.Migrations
                     b.Navigation("Player");
                 });
 
-            modelBuilder.Entity("Infrastructure.Entities.StatsEntity", b =>
-                {
-                    b.HasOne("Infrastructure.Entities.PlayerEntity", "Player")
-                        .WithOne("Stats")
-                        .HasForeignKey("Infrastructure.Entities.StatsEntity", "PlayerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Player");
-                });
-
             modelBuilder.Entity("Infrastructure.Entities.PlayerEntity", b =>
                 {
                     b.Navigation("Config");
 
-                    b.Navigation("Inventory");
+                    b.Navigation("GameStats");
 
-                    b.Navigation("Stats");
+                    b.Navigation("Inventory");
                 });
 
             modelBuilder.Entity("Infrastructure.Entities.ResourceItemEntity", b =>

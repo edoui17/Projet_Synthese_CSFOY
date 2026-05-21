@@ -15,53 +15,57 @@ public class PlayerController : ControllerBase
     private readonly IPlayerRepository m_playerRepository;
     private readonly IInventoryRepository m_inventoryRepository;
     private readonly IStatsRepository m_statsRepository;
-    private readonly IAuthRepository m_authRepository;
+    private readonly IProgressionService m_progressionService;
 
     public PlayerController(
         IPlayerRepository p_playerRepository,
         IInventoryRepository p_inventoryRepository,
         IStatsRepository p_statsRepository,
-        IAuthRepository p_authRepository)
+        IProgressionService p_progressionService)
     {
         m_playerRepository = p_playerRepository;
         m_inventoryRepository = p_inventoryRepository;
         m_statsRepository = p_statsRepository;
-        m_authRepository = p_authRepository;
+        m_progressionService = p_progressionService;
     }
 
     [HttpGet("profile")]
-    public async Task<IActionResult> GetProfile([FromHeader(Name = "X-Session-Token")] string p_token)
+    public async Task<IActionResult> GetProfile()
     {
-        if (string.IsNullOrEmpty(p_token)) return Unauthorized();
-
-        Player? player = await m_authRepository.GetBySessionTokenAsync(p_token);
+        Player? player = HttpContext.Items["Player"] as Player;
         if (player == null) return Unauthorized();
 
         IEnumerable<InventoryEntry> inventory = await m_inventoryRepository.GetByPlayerIdAsync(player.Id);
+        IEnumerable<GameStats> gameStats = await m_statsRepository.GetTopStatsByPlayerIdAsync(player.Id);
 
-        PlayerProfile profile = new PlayerProfile
+        ProfileResponse response = new ProfileResponse
         {
-            Player = player,
-            Inventory = inventory,
-            Stats = player.Stats,
-            Config = player.Config
+            Username = player.Username,
+            HighScore = player.HighScore,
+            // US 20.0.2: Explicitly force UTC for the ISO 8601 'Z' suffix in JSON
+            UpdatedAt = DateTime.SpecifyKind(player.UpdatedAt, DateTimeKind.Utc),
+            LastSessions = gameStats,
+            Config = player.Config,
+            Inventory = inventory
         };
 
-        return Ok(profile);
+        return Ok(response);
     }
 
     [HttpPost("sync")]
     public async Task<IActionResult> Sync([FromBody] SyncRequest p_request)
     {
-        if (string.IsNullOrEmpty(p_request.SessionToken)) return Unauthorized();
-
-        Player? player = await m_authRepository.GetBySessionTokenAsync(p_request.SessionToken);
+        Player? player = HttpContext.Items["Player"] as Player;
         if (player == null) return Unauthorized();
 
         if (p_request.Stats != null)
         {
             p_request.Stats.PlayerId = player.Id;
-            await m_statsRepository.UpdateStatsAsync(p_request.Stats);
+            p_request.Stats.LevelReached = m_progressionService.CalculateLevel(p_request.Stats.Score);
+
+            m_progressionService.CheckAndUpdateHighScore(player, p_request.Stats.Score);
+
+            await m_statsRepository.AddGameStatsAsync(p_request.Stats);
         }
 
         if (p_request.Inventory != null)
@@ -71,55 +75,85 @@ public class PlayerController : ControllerBase
 
         return Ok();
     }
-/*
-    [HttpGet("leaderboard")]
-    public async Task<IActionResult> GetLeaderboard()
-    {
-        var players = await m_playerRepository.GetAllAsync();
-
-        var leaderboard = players.Select(p => new PlayerLeaderboardEntry
-        {
-            Id = p.Id,
-            Username = p.Username,
-            Health = p.Stats?.Health ?? 0,
-            Attack = p.Stats?.Attack ?? 0,
-            Speed = p.Stats?.Speed ?? 0,
-            Luck = p.Stats?.Luck ?? 0,
-            Level = CalculateLevel(p.Stats)
-        });
-
-        return Ok(leaderboard);
-    }*/
 
     [HttpGet("leaderboard")]
-    public async Task<IActionResult> GetLeaderboard()
+    public async Task<IActionResult> GetLeaderboard(
+        [FromQuery] string? p_sortBy = "score",
+        [FromQuery] string? p_order = "desc",
+        [FromQuery] string? p_search = null)
     {
-        // Ligne temporaire pour tester
-        var leaderboard = new List<PlayerLeaderboardEntry>
+        IEnumerable<Player> players = await m_playerRepository.GetAllAsync();
+
+        if (!string.IsNullOrWhiteSpace(p_search))
         {
-            new PlayerLeaderboardEntry { Id = Guid.NewGuid(), Username = "SuperGamer", Level = 50, Health = 500, Speed = 20 },
-            new PlayerLeaderboardEntry { Id = Guid.NewGuid(), Username = "Marcorse", Level = -2, Health = 20, Speed = 1 },
-            new PlayerLeaderboardEntry { Id = Guid.NewGuid(), Username = "SpeedRunner", Level = 45, Health = 100, Speed = 99 },
-            new PlayerLeaderboardEntry { Id = Guid.NewGuid(), Username = "JoueurTest", Level = 4, Health = 3, Speed = 12 },
-            new PlayerLeaderboardEntry { Id = Guid.NewGuid(), Username = "SuperGamer1", Level = 50, Health = 500, Speed = 20 },
-            new PlayerLeaderboardEntry { Id = Guid.NewGuid(), Username = "Marcorse1", Level = -2, Health = 20, Speed = 1 },
-            new PlayerLeaderboardEntry { Id = Guid.NewGuid(), Username = "SpeedRunner1", Level = 45, Health = 100, Speed = 99 },
-            new PlayerLeaderboardEntry { Id = Guid.NewGuid(), Username = "JoueurTest1", Level = 4, Health = 3, Speed = 12 },
-            new PlayerLeaderboardEntry { Id = Guid.NewGuid(), Username = "SuperGamer2", Level = 50, Health = 500, Speed = 20 },
-            new PlayerLeaderboardEntry { Id = Guid.NewGuid(), Username = "Marcorse2", Level = -2, Health = 20, Speed = 1 },
-            new PlayerLeaderboardEntry { Id = Guid.NewGuid(), Username = "SpeedRunner2", Level = 45, Health = 100, Speed = 99 },
-            new PlayerLeaderboardEntry { Id = Guid.NewGuid(), Username = "JoueurTest2", Level = 4, Health = 3, Speed = 12 }
-            
-        };
+            players = players.Where(p => p.Username.Contains(p_search, StringComparison.OrdinalIgnoreCase));
+        }
+
+        bool isDescending = p_order?.ToLower() != "asc";
+
+        switch (p_sortBy?.ToLower())
+        {
+            case "duration":
+                players = isDescending
+                    ? players.OrderByDescending(p => p.GameStats.Any() ? p.GameStats.Max(s => s.Duration) : TimeSpan.Zero)
+                    : players.OrderBy(p => p.GameStats.Any() ? p.GameStats.Max(s => s.Duration) : TimeSpan.Zero);
+                break;
+            case "level":
+                players = isDescending
+                    ? players.OrderByDescending(p => p.GameStats.Any() ? p.GameStats.Max(s => s.LevelReached) : 0)
+                    : players.OrderBy(p => p.GameStats.Any() ? p.GameStats.Max(s => s.LevelReached) : 0);
+                break;
+            case "health":
+                players = isDescending
+                    ? players.OrderByDescending(p => p.GameStats.Any() ? p.GameStats.Max(s => s.BonusHealth) : 0)
+                    : players.OrderBy(p => p.GameStats.Any() ? p.GameStats.Max(s => s.BonusHealth) : 0);
+                break;
+            case "attack":
+                players = isDescending
+                    ? players.OrderByDescending(p => p.GameStats.Any() ? p.GameStats.Max(s => s.BonusAttack) : 0)
+                    : players.OrderBy(p => p.GameStats.Any() ? p.GameStats.Max(s => s.BonusAttack) : 0);
+                break;
+            case "speed":
+                players = isDescending
+                    ? players.OrderByDescending(p => p.GameStats.Any() ? p.GameStats.Max(s => s.BonusSpeed) : 0)
+                    : players.OrderBy(p => p.GameStats.Any() ? p.GameStats.Max(s => s.BonusSpeed) : 0);
+                break;
+            case "luck":
+                players = isDescending
+                    ? players.OrderByDescending(p => p.GameStats.Any() ? p.GameStats.Max(s => s.BonusLuck) : 0)
+                    : players.OrderBy(p => p.GameStats.Any() ? p.GameStats.Max(s => s.BonusLuck) : 0);
+                break;
+            case "score":
+            default:
+                players = isDescending
+                    ? players.OrderByDescending(p => p.HighScore)
+                    : players.OrderBy(p => p.HighScore);
+                break;
+        }
+
+        IEnumerable<PlayerLeaderboardEntry> leaderboard = players
+            .Take(50)
+            .Select(p =>
+            {
+                var bestSession = p.GameStats.OrderByDescending(s => s.Score).FirstOrDefault();
+                return new PlayerLeaderboardEntry
+                {
+                    Id = p.Id,
+                    Username = p.Username,
+                    Health = bestSession?.Health ?? 0,
+                    Attack = bestSession?.Attack ?? 0,
+                    Speed = bestSession?.Speed ?? 0,
+                    Luck = bestSession?.Luck ?? 0,
+                    BonusHealth = bestSession?.BonusHealth ?? 0,
+                    BonusAttack = bestSession?.BonusAttack ?? 0,
+                    BonusSpeed = bestSession?.BonusSpeed ?? 0,
+                    BonusLuck = bestSession?.BonusLuck ?? 0,
+                    Level = bestSession?.LevelReached ?? 1,
+                    Score = p.HighScore,
+                    Duration = bestSession?.Duration ?? TimeSpan.Zero
+                };
+            });
 
         return Ok(leaderboard);
-    }
-
-    private int CalculateLevel(PlayerStats? stats)
-    {
-        if (stats == null) return 1;
-        // Basic calculation based on total stats. Adjust as needed for specific game logic.
-        float totalStats = stats.Health + stats.Attack + stats.Speed + stats.Luck;
-        return Math.Max(1, (int)(totalStats / 10)); // Example: 1 level per 10 stat points
     }
 }
