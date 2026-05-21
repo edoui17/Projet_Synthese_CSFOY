@@ -167,14 +167,14 @@ public partial class BossBase : AggressiveNpcBase
             }
 
             // Play corresponding animation based on current phase (could be more complex)
-            if (m_bossController.CurrentPhase == BossPhase.Ranged)
+            string animName = m_bossController.CurrentPhase == BossPhase.Ranged ? "Attack_Ranged" : "Attack_Melee";
+
+            if (m_attackController != null)
             {
-                m_animatedSprite.Play("Attack_Ranged");
+                m_attackController.SetAttackAnimation(animName);
             }
-            else
-            {
-                m_animatedSprite.Play("Attack_Melee");
-            }
+
+            m_animatedSprite.Play(animName);
             m_animatedSprite.Frame = 0;
         }
     }

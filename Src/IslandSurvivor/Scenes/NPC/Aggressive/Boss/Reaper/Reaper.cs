@@ -175,14 +175,14 @@ public partial class Reaper : BossBase
             }
 
             // Reaper specific attack animations based on phase
-            if (m_bossController.CurrentPhase == IslandSurvivor.Logic.Entities.BossPhase.Enraged)
+            string animName = m_bossController.CurrentPhase == IslandSurvivor.Logic.Entities.BossPhase.Enraged ? "MeleeAttackEnraged" : "MeleeAttackNormal";
+
+            if (m_attackController != null)
             {
-                m_animatedSprite.Play("MeleeAttackEnraged");
+                m_attackController.SetAttackAnimation(animName);
             }
-            else
-            {
-                m_animatedSprite.Play("MeleeAttackNormal");
-            }
+
+            m_animatedSprite.Play(animName);
             m_animatedSprite.Frame = 0;
         }
     }
