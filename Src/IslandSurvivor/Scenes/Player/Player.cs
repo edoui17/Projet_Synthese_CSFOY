@@ -267,6 +267,13 @@ public partial class Player : CharacterBody2D, IDamageable
     {
         if (m_hitTargetsThisAttack.Contains(p_target)) return;
 
+        // Verify line of sight before applying damage (layer 1 = walls)
+        if (p_target is Node2D targetNode && !this.HasLineOfSightTo(targetNode, 1))
+        {
+            GD.Print($"[COMBAT] Attack blocked by wall against {targetNode.Name}");
+            return;
+        }
+
         m_hitTargetsThisAttack.Add(p_target);
 
         float attackStat = Stats?.GetCurrentValue(StatType.Attack) ?? 0f;

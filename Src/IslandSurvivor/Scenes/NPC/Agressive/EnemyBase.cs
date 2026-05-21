@@ -232,23 +232,10 @@ public abstract partial class EnemyBase : CharacterBody2D, INpc, IEnemy, IDamage
 
     protected virtual bool CheckLineOfSight()
     {
-        if (m_targetPlayer == null || m_lineOfSightRay == null)
+        if (m_targetPlayer == null)
             return false;
 
-        Vector2 targetLocalPosition = ToLocal(m_targetPlayer.GlobalPosition);
-        m_lineOfSightRay.TargetPosition = targetLocalPosition;
-        m_lineOfSightRay.ForceRaycastUpdate();
-
-        if (m_lineOfSightRay.IsColliding())
-        {
-            GodotObject collider = m_lineOfSightRay.GetCollider();
-            if (collider is Node2D node && (node.IsInGroup("Player") || node.Name == "Player"))
-            {
-                return true;
-            }
-            return false;
-        }
-        return true;
+        return this.HasLineOfSightTo(m_targetPlayer, 1);
     }
 
     protected virtual void OnDetectionAreaBodyEntered(Node2D p_body)
