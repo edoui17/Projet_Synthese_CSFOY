@@ -21,5 +21,5 @@ public interface IWeightedRandomSelector<T> where T : IWeightedItem
     /// </summary>
     /// <param name="p_items">The collection of weighted items to choose from.</param>
     /// <returns>A randomly selected item, or the default value if the collection is empty.</returns>
-    T? SelectRandom(IEnumerable<T> p_items);
+    T? SelectRandom(IReadOnlyList<T> p_items);
 }

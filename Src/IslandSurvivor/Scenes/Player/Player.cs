@@ -45,7 +45,17 @@ public partial class Player : CharacterBody2D, IDamageable
     private readonly IInteractionService m_interactionService = new InteractionService();
     private MovementController? m_movementController;
 
+    // Cached StringNames to prevent implicit string allocation and GC spikes during engine interop calls
+    private readonly StringName m_animIdle = new StringName("Idle");
+    private readonly StringName m_animRun = new StringName("Run");
+    private readonly StringName m_animAttack = new StringName("Attack");
+    private readonly StringName m_animInteract = new StringName("Interact");
+
     private bool m_isAttackButtonDown = false;
+
+    // State tracking to prevent per-frame string allocations during Dash UI updates
+    private bool m_isDashReadyUI = false;
+    private int m_lastDashDeciseconds = -1;
 
     public override void _ExitTree()
     {
@@ -121,7 +131,8 @@ public partial class Player : CharacterBody2D, IDamageable
 
         if (m_animatedSprite != null)
         {
-            m_animatedSprite.Play("Attack");
+            if (m_animatedSprite.Animation != m_animAttack)
+                m_animatedSprite.Play(m_animAttack);
         }
     }
 
@@ -212,11 +223,22 @@ public partial class Player : CharacterBody2D, IDamageable
         {
             if (m_movementController.TimeSinceLastDash >= m_movementController.DashCooldown)
             {
-                m_dashLabel.Text = "Dash: Prêt";
+                if (!m_isDashReadyUI)
+                {
+                    m_dashLabel.Text = "Dash: Prêt";
+                    m_isDashReadyUI = true;
+                    m_lastDashDeciseconds = -1;
+                }
             }
             else
             {
-                m_dashLabel.Text = $"Dash: {(m_movementController.DashCooldown - m_movementController.TimeSinceLastDash):F1}s";
+                m_isDashReadyUI = false;
+                int remainingDeciseconds = (int)Math.Ceiling((m_movementController.DashCooldown - m_movementController.TimeSinceLastDash) * 10f);
+                if (remainingDeciseconds != m_lastDashDeciseconds)
+                {
+                    m_dashLabel.Text = $"Dash: {remainingDeciseconds / 10f:F1}s";
+                    m_lastDashDeciseconds = remainingDeciseconds;
+                }
             }
         }
     }
@@ -308,7 +330,8 @@ public partial class Player : CharacterBody2D, IDamageable
 
         if (m_animatedSprite != null)
         {
-            m_animatedSprite.Play("Interact");
+            if (m_animatedSprite.Animation != m_animInteract)
+                m_animatedSprite.Play(m_animInteract);
             await ToSignal(m_animatedSprite, AnimatedSprite2D.SignalName.AnimationFinished);
         }
         else
@@ -338,10 +361,12 @@ public partial class Player : CharacterBody2D, IDamageable
         switch (m_currentState)
         {
             case PlayerState.Idle:
-                m_animatedSprite.Play("Idle");
+                if (m_animatedSprite.Animation != m_animIdle)
+                    m_animatedSprite.Play(m_animIdle);
                 break;
             case PlayerState.Moving:
-                m_animatedSprite.Play("Run");
+                if (m_animatedSprite.Animation != m_animRun)
+                    m_animatedSprite.Play(m_animRun);
                 break;
         }
     }
