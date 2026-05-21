@@ -122,6 +122,12 @@
 | :--- | :--- | :--- |
 | **US 20.0.1: Gestion de Session, Initialisation et Accès Jeu.**<br>- Persistance du Jeton (user://).<br>- GameManager (Machine à états).<br>- Scène de Login dédiée.<br>- Pop-up d'erreur et Mode Hors Ligne. | **1. Core Evolution**: Added `AppStatus` enum and enriched `IApiService` with token management.<br>**2. Persistence**: Created `SessionProvider` using Godot's `ConfigFile` for OS-agnostic session storage in `user://`.<br>**3. Orchestration**: Implemented `GameManager` (Autoload) to handle the startup sequence (Validation -> Redirect).<br>**4. UI/UX**: Created `Login.tscn` and `ErrorPopup.tscn` to handle authentication and API connection failures. | **Separation of Responsibilities**: Decoupling service initialization (`ServiceRegistry`) from the application lifecycle (`GameManager`) ensures a cleaner boot sequence. **Deployment Readiness**: Using `user://` is the only way to guarantee persistent data storage across all platforms when the game is exported. |
 
+### 2026-05-21 - [US 20.0.2 : Point d'accès de Synchronisation et Validation Backend]
+
+| **Request** | **AI Contribution** | **Decision Reasoning** |
+| :--- | :--- | :--- |
+| **US 20.0.2: Consolidation et Sécurisation API.**<br>- Standardiser les erreurs 401 et 503.<br>- Forcer le format UTC (Z) pour UpdatedAt.<br>- Refactoriser la gestion des erreurs en Middleware. | **1. Centralization**: Created `ErrorResponseHelper` to eliminate duplication in error JSON generation.<br>**2. Middleware Refinement**: Updated `SessionAuthMiddleware` and `ApiKeyMiddleware` to use the helper and improved URL whitelisting.<br>**3. UTC Fix**: Injected `DateTime.SpecifyKind` in the profile endpoint to guarantee ISO 8601 compliance.<br>**4. Resilience**: Extended `ExceptionHandlingMiddleware` to return 503 for all database connectivity issues. | **Contractual Robustness**: Ensuring a standardized error format across all middlewares simplifies client-side error handling in Godot. **Time Synchronization**: Explicitly forcing the 'Z' suffix in JSON is the most reliable way to handle cross-platform time parsing between .NET and Godot's C++ core. |
+
 ### 2026-05-20 - [US 17.0.2 : Point d'accès de Synchronisation et Audit Backend]
 
 | **Request** | **AI Contribution** | **Decision Reasoning** |

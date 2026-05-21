@@ -20,7 +20,8 @@ public class SessionAuthMiddleware
     {
         // Skip authentication for specific endpoints
         var path = p_context.Request.Path.Value?.ToLower();
-        if (path != null && (path.Contains("/auth/login") || path.Contains("/player/leaderboard")))
+        // Whitelist login, leaderboard and swagger
+        if (path != null && (path.StartsWith("/api/auth/login") || path.StartsWith("/api/player/leaderboard") || path.StartsWith("/swagger")))
         {
             await m_next(p_context);
             return;
@@ -28,19 +29,20 @@ public class SessionAuthMiddleware
 
         if (!p_context.Request.Headers.TryGetValue(SESSION_TOKEN_HEADER_NAME, out var extractedToken))
         {
-            // Allow processing but specific controllers will handle 401 if they need the player
-            await m_next(p_context);
+            await API.Utils.ErrorResponseHelper.WriteErrorResponseAsync(p_context, System.Net.HttpStatusCode.Unauthorized, "Unauthorized", "Session token is missing.");
             return;
         }
 
         var authRepository = p_context.RequestServices.GetRequiredService<IAuthRepository>();
         var player = await authRepository.GetBySessionTokenAsync(extractedToken.ToString());
 
-        if (player != null)
+        if (player == null)
         {
-            p_context.Items["Player"] = player;
+            await API.Utils.ErrorResponseHelper.WriteErrorResponseAsync(p_context, System.Net.HttpStatusCode.Unauthorized, "Unauthorized", "Invalid or expired session token.");
+            return;
         }
 
+        p_context.Items["Player"] = player;
         await m_next(p_context);
     }
 }
