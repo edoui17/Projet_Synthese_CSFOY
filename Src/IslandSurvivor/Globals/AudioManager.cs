@@ -72,7 +72,7 @@ public partial class AudioManager : Node
         RegisterSound("Level_Up", "res://Assets/Audio/kenney_impact-sounds/Audio/floraphonic-cute-level-up-2-189851.mp3");
 
         // UI Sounds
-        RegisterSound("Stat_Upgrade", "res://Assets/Audio/kenney_impact-sounds/Audio/floraphonic-cute-level-up-2-189851.mp3");
+        RegisterSound("Stat_Upgrade", "res://Assets/Audio/kenney_impact-sounds/Audio/impactBell_heavy_001.ogg");
 
         // Resource Sounds
         RegisterSound("Resource_Mining_1", "res://Assets/Audio/kenney_impact-sounds/Audio/impactMining_001.ogg");
@@ -83,7 +83,7 @@ public partial class AudioManager : Node
 
         // NPC Sounds
         RegisterSound("Sheep_Hurt", "res://Assets/Audio/kenney_impact-sounds/Audio/scottishperson-sound-effect-woman-scream-236488.mp3");
-        RegisterSound("Sheep_Idle", "res://Assets/Audio/kenney_impact-sounds/Audio/impactGlass_light_000.ogg"); // Fallback "baaa"
+        RegisterSound("Sheep_Idle", "res://Assets/Audio/kenney_impact-sounds/Audio/stu9-monsheep-352819.mp3"); 
     }
 
     private void RegisterSound(string p_key, string p_path, float p_defaultVolumeDb = 0f, float p_defaultPitchScale = 1f)

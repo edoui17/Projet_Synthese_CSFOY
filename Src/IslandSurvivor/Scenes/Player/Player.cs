@@ -33,7 +33,7 @@ public partial class Player : CharacterBody2D, IDamageable
     [Export] public string AttackSoundKey { get; set; } = "Player_Swing";
     [Export] public float AttackSoundVolume { get; set; } = 0f;
     [Export] public string HurtSoundKey { get; set; } = "Player_Hurt";
-    [Export] public float HurtSoundVolume { get; set; } = 0f;
+    [Export] public float HurtSoundVolume { get; set; } = -5f;
     [Export] public string DeathSoundKey { get; set; } = "Player_Death";
     [Export] public float DeathSoundVolume { get; set; } = 0f;
 

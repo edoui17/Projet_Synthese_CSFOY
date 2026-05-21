@@ -29,7 +29,7 @@ public partial class Sheep : PassiveNpcBase
         IdleSpeed = 30.0f;
 
         m_idleSoundTimer = new Timer();
-        m_idleSoundTimer.WaitTime = new Random().Next(5, 15);
+        m_idleSoundTimer.WaitTime = new Random().Next(5, 30);
         m_idleSoundTimer.OneShot = false;
         m_idleSoundTimer.Timeout += OnIdleSoundTimeout;
         AddChild(m_idleSoundTimer);
