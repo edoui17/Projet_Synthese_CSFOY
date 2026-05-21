@@ -136,6 +136,11 @@ When triggering updates (e.g., UI upgrades emitting events to a decoupled compon
   - **Cleanup**: Redundant/commented-out code in `PlayerController.cs` was removed to maintain API cleanliness.
 - **Technical Detail**: In Godot C#, using `ProjectSettings.GetSetting("path").AsString()` is the standard way to access custom configuration defined in the `project.godot` file, allowing for environment-specific overrides during export.
 
+## 2026-05-27 - Audio Bus Integration & Distance Calibration
+- **Feature**: Connected the `AudioManager` pooling system to the Godot "SFX" bus.
+- **Technical Detail**: Set the `Bus` property of both `AudioStreamPlayer` and `AudioStreamPlayer2D` instances to "SFX" during their initialization in the pool. This ensures all pooled sound effects are subject to the volume and mute settings of the SFX bus, which is controlled by the `AudioOptions` menu.
+- **Quirk/Discovery**: When using `AudioStreamPlayer2D` with very small `MaxDistance` values (e.g., 10 units), the sound drops off extremely quickly. This is intended for entities like Sheep to avoid audio clutter in dense maps, but requires precise placement of the `AudioListener2D` (attached to the Player).
+
 ## 2024-05-24 - Architecture Changes
 - **Spawning Logic:** Clarified that the procedural spawning algorithms (e.g., `ResourceZone`) must reside within the Godot client (`IslandSurvivor`) as they are tightly coupled to the engine's 2D math (`Vector2`, `Geometry2D`, `TileMapLayer`) and do not impact Core backends. Refactored `ResourceZone` to adhere to DRY principles by extracting validation logic into discrete methods.
 - **Dead Code Elimination:** Removed all orphaned procedural generation files (`MapManager`, `GodotIslandGenerator`, `SpawnLocator`, `MapRenderer`, etc.) as the project transitioned entirely to hand-crafted maps.
