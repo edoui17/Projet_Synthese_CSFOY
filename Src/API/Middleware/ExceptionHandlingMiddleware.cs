@@ -38,17 +38,20 @@ public class ExceptionHandlingMiddleware
         // SECURITY FIX: Secure error masking (Logs details locally, hides system internals from player UI)
         p_logger.LogError(p_exception, "An unhandled exception occurred during the request pipeline.");
 
-        p_context.Response.ContentType = "application/json";
-        p_context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+        var statusCode = HttpStatusCode.InternalServerError;
+        var error = "Internal Server Error";
+        var message = "An unexpected error occurred while processing your request.";
 
-        var errorResponse = new
+        // US 20.0.2: Map infrastructure/database failures to 503 Service Unavailable
+        if (p_exception is SqlException ||
+            p_exception is Microsoft.EntityFrameworkCore.DbUpdateException ||
+            p_exception.InnerException is SqlException)
         {
-            error = "Internal Server Error",
-            message = "An unexpected error occurred while processing your request.",
-            timestamp = DateTime.UtcNow.ToString("O")
-        };
+            statusCode = HttpStatusCode.ServiceUnavailable;
+            error = "Service Unavailable";
+            message = "The game server is currently unable to reach the database. Please try again later.";
+        }
 
-        var result = JsonSerializer.Serialize(errorResponse);
-        return p_context.Response.WriteAsync(result);
+        return API.Utils.ErrorResponseHelper.WriteErrorResponseAsync(p_context, statusCode, error, message);
     }
 }

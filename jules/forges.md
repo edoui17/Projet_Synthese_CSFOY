@@ -229,3 +229,24 @@ When triggering updates (e.g., UI upgrades emitting events to a decoupled compon
 - **Visual State Management**: Implemented a tri-state UI (Loading, Error, Success) using boolean flags (`m_isLoading`) and error message strings. This ensures Scénarios 2 and 5 are handled gracefully.
 - **Data Binding & Null Safety**: Used null-conditional operators (`?.`) and fallback values (e.g., `?? "0.0"`) when binding `ProfileResponse` to the UI. This prevents runtime exceptions if the player has no session history.
 - **UI Architecture**: Leveraged Bootstrap 5 for a responsive dashboard, including a fixed-top style header and a scrollable session history table.
+
+## 2026-05-21 - API Error Standardization & UTC Synchronization (US 20.0.2)
+- **Centralized Error Handling**: Created `ErrorResponseHelper` in `Src/API/Utils` to unify the `{ error, message, timestamp }` JSON format. This reduces duplication across `ApiKeyMiddleware`, `SessionAuthMiddleware`, and `ExceptionHandlingMiddleware`.
+- **Infrastructure Mapping (503)**: Refined `ExceptionHandlingMiddleware` to catch `SqlException` and `DbUpdateException`, returning a `503 Service Unavailable` status. This informs the Godot client that the failure is at the persistence layer rather than a logic error.
+- **ISO 8601 / UTC Compliance**: In `PlayerController.GetProfile`, used `DateTime.SpecifyKind(player.UpdatedAt, DateTimeKind.Utc)` before assignment. This ensures the .NET JSON serializer appends the `Z` suffix, which is critical for Godot's `Time.get_datetime_dict_from_datetime_string()` parser.
+- **Security & Whitelisting**: Tightened `SessionAuthMiddleware` by switching from `Contains` to `StartsWith` for path whitelisting (e.g., `/api/auth/login`, `/swagger`) to prevent bypasses via crafted query parameters.
+
+## 2026-05-24 - Game Session Management & Persistence (US 20.0.1)
+- **State Machine**: Implemented a global `GameManager` (Autoload) using the `AppStatus` enum (Loading, Ready, Error). This decouples application lifecycle from service initialization (`ServiceRegistry`).
+- **Persistence (user://)**: Introduced `SessionProvider` using Godot's `ConfigFile` specifically for `user://session.cfg`. This ensures the session token remains persistent and OS-compliant in exported builds, unlike project-root relative paths.
+- **Access Control**: The `GameManager` validates the stored token at launch. If invalid or missing, it forces redirection to `Login.tscn`.
+- **Offline Fallback**: The `ErrorPopup` handles API unreachable states by offering a "Play Offline" mode, which sets the `GameManager` to `Ready` state with a "Guest" flag, bypassing mandatory authentication for local play.
+
+## 2026-05-24 - API Data Mapping and Injection (US 20.0.3)
+- **Profile Synchronization Architecture**: Implemented 'ProfileResponse' as the network source of truth, refactoring 'IApiService.GetProfileAsync' to use it.
+- **Mapping & Domain Integrity**: Introduced 'ProfileMapper' (Core.Utils) to convert 'ProfileResponse' DTOs into the 'PlayerProfile' aggregate. This maintains a strict N-Tier separation while allowing the Godot engine to remain agnostic of API DTO structures.
+- **Null-Safe Deserialization**: Ensured that 'ProfileMapper' and 'ApiService' provide safe fallback collections ('new List<T>()') if JSON fields are missing or null, preventing 'ArgumentNullException' during initialization.
+- **Event-Driven Initialization**: Hooked 'GameManager' into the 'ProfileLoadedEvent'. Upon successful profile fetch (from network or cache), the 'GameManager' publishes this event to the 'EventBus'.
+- **Inventory & Stat Sync**: 'InventoryManager' and 'StatManager' were updated to subscribe to 'ProfileLoadedEvent'. This triggers an idempotent 'InitializeInventory' call and a full stat override respectively, ensuring the player character reflects their remote progression immediately upon loading.
+- **Service Resilience**: Updated 'IApiService' to expose 'GetCachedProfile()', allowing the 'GameManager' to retrieve last-known data without violating N-Tier constraints via implementation casting.
+- **Namespace Management**: A naming conflict exists between 'Core.Domain.Player' (Domain model) and 'IslandSurvivor.Scenes.Player.Player' (Godot CharacterBody2D). Code in the Godot project must use fully qualified names (e.g., 'Core.Domain.Player') to avoid build errors (CS0117).
