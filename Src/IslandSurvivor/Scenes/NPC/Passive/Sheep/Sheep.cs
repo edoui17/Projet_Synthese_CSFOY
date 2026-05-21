@@ -26,7 +26,7 @@ public partial class Sheep : PassiveNpcBase
     [Export] public string IdleSoundKey { get; set; } = "Sheep_Idle";
     [Export] public float IdleSoundVolume { get; set; } = 0f;
 
-    [Export] public float AudioMaxDistance { get; set; } = 10f;
+    [Export] public float AudioMaxDistance { get; set; } = 200f;
     [Export] public float AudioAttenuation { get; set; } = 1f;
 
     private Timer? m_idleSoundTimer;
