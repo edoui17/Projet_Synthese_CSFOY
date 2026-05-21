@@ -9,4 +9,5 @@ public interface IInventoryManager
     void RemoveMaterial(string p_itemId, int p_amount);
     int GetMaterialCount(string p_itemId);
     IReadOnlyList<InventorySlot> GetAllSlots();
+    void InitializeInventory(IEnumerable<InventoryEntry> p_entries);
 }

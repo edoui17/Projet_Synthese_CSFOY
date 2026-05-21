@@ -274,3 +274,12 @@ When triggering updates (e.g., UI upgrades emitting events to a decoupled compon
 - **Persistence (user://)**: Introduced `SessionProvider` using Godot's `ConfigFile` specifically for `user://session.cfg`. This ensures the session token remains persistent and OS-compliant in exported builds, unlike project-root relative paths.
 - **Access Control**: The `GameManager` validates the stored token at launch. If invalid or missing, it forces redirection to `Login.tscn`.
 - **Offline Fallback**: The `ErrorPopup` handles API unreachable states by offering a "Play Offline" mode, which sets the `GameManager` to `Ready` state with a "Guest" flag, bypassing mandatory authentication for local play.
+
+## 2026-05-24 - API Data Mapping and Injection (US 20.0.3)
+- **Profile Synchronization Architecture**: Implemented 'ProfileResponse' as the network source of truth, refactoring 'IApiService.GetProfileAsync' to use it.
+- **Mapping & Domain Integrity**: Introduced 'ProfileMapper' (Core.Utils) to convert 'ProfileResponse' DTOs into the 'PlayerProfile' aggregate. This maintains a strict N-Tier separation while allowing the Godot engine to remain agnostic of API DTO structures.
+- **Null-Safe Deserialization**: Ensured that 'ProfileMapper' and 'ApiService' provide safe fallback collections ('new List<T>()') if JSON fields are missing or null, preventing 'ArgumentNullException' during initialization.
+- **Event-Driven Initialization**: Hooked 'GameManager' into the 'ProfileLoadedEvent'. Upon successful profile fetch (from network or cache), the 'GameManager' publishes this event to the 'EventBus'.
+- **Inventory & Stat Sync**: 'InventoryManager' and 'StatManager' were updated to subscribe to 'ProfileLoadedEvent'. This triggers an idempotent 'InitializeInventory' call and a full stat override respectively, ensuring the player character reflects their remote progression immediately upon loading.
+- **Service Resilience**: Updated 'IApiService' to expose 'GetCachedProfile()', allowing the 'GameManager' to retrieve last-known data without violating N-Tier constraints via implementation casting.
+- **Namespace Management**: A naming conflict exists between 'Core.Domain.Player' (Domain model) and 'IslandSurvivor.Scenes.Player.Player' (Godot CharacterBody2D). Code in the Godot project must use fully qualified names (e.g., 'Core.Domain.Player') to avoid build errors (CS0117).

@@ -73,7 +73,7 @@ public class ApiService : IApiService
         return null;
     }
 
-    public async Task<PlayerProfile?> GetProfileAsync()
+    public async Task<ProfileResponse?> GetProfileAsync()
     {
         if (!string.IsNullOrEmpty(m_sessionToken))
         {
@@ -83,7 +83,7 @@ public class ApiService : IApiService
 
                 if (response.IsSuccessStatusCode)
                 {
-                    PlayerProfile? profile = await response.Content.ReadFromJsonAsync<PlayerProfile>(m_jsonOptions);
+                    ProfileResponse? profile = await response.Content.ReadFromJsonAsync<ProfileResponse>(m_jsonOptions);
                     if (profile != null)
                     {
                         CacheProfileLocally(profile);
@@ -124,20 +124,20 @@ public class ApiService : IApiService
         }
     }
 
-    private void CacheProfileLocally(PlayerProfile p_profile)
+    private void CacheProfileLocally(ProfileResponse p_profile)
     {
         string jsonData = JsonSerializer.Serialize(p_profile, m_jsonOptions);
         m_saveService.SaveData(CACHE_FILE, jsonData);
     }
 
-    private PlayerProfile? GetCachedProfile()
+    public ProfileResponse? GetCachedProfile()
     {
         string jsonData = m_saveService.LoadData(CACHE_FILE);
         if (string.IsNullOrEmpty(jsonData)) return null;
 
         try
         {
-            return JsonSerializer.Deserialize<PlayerProfile>(jsonData, m_jsonOptions);
+            return JsonSerializer.Deserialize<ProfileResponse>(jsonData, m_jsonOptions);
         }
         catch
         {
@@ -147,11 +147,18 @@ public class ApiService : IApiService
 
     private void UpdateLocalCache(SyncRequest p_request)
     {
-        PlayerProfile profile = GetCachedProfile() ?? new PlayerProfile();
+        ProfileResponse profile = GetCachedProfile() ?? new ProfileResponse();
 
         if (p_request.Stats != null)
         {
-            profile.GameStats.Add(p_request.Stats);
+            var sessions = (profile.LastSessions ?? new List<GameStats>()).ToList();
+            sessions.Add(p_request.Stats);
+            profile.LastSessions = sessions;
+
+            if (p_request.Stats.Score > profile.HighScore)
+            {
+                profile.HighScore = p_request.Stats.Score;
+            }
         }
 
         if (p_request.Config != null)
@@ -161,7 +168,7 @@ public class ApiService : IApiService
 
         if (p_request.Inventory != null)
         {
-            profile.Inventory = p_request.Inventory.ToList();
+            profile.Inventory = p_request.Inventory?.ToList() ?? new List<InventoryEntry>();
         }
 
         CacheProfileLocally(profile);
