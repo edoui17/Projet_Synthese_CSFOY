@@ -213,3 +213,19 @@ When triggering updates (e.g., UI upgrades emitting events to a decoupled compon
     1. Pour exposer des tableaux dans l'Inspecteur Godot via l'attribut `[Export]`.
     2. Pour appeler des méthodes de l'API Godot qui requièrent explicitement ces types de retour.
 - Cette ségrégation garantit que le projet `Core` reste totalement agnostique et hautement performant.
+
+## 2026-05-18 - Blazor Authentication & Navigation Guards
+ - **Quirk/Discovery:** In a Blazor Web setup using `AddAuthorizationCore()` without full ASP.NET Identity, the `AuthorizeRouteView` component enables the use of `[Authorize]` attributes and `<AuthorizeView>` tags, but it does not automatically perform redirects for unauthorized access.
+ - **Solution:** Manual navigation guards within the `OnInitializedAsync` method (by checking `GetAuthenticationStateAsync`) are necessary to enforce redirects to `/login`.
+ - **API Interception:** Implementing a `DelegatingHandler` for the `HttpClient` is the most efficient way to centralize the injection of the `x-Session-Token` header and to handle global `401 Unauthorized` responses (e.g., by clearing LocalStorage and redirecting the user).
+
+## 2026-05-20 - API Resilience and Audit Synchronization (US 17.0.2)
+- **Standardized Error Handling**: Enhanced `ExceptionHandlingMiddleware` to intercept infrastructure failures (e.g., `SqlException`). It now returns a structured JSON response: `{ "error": "...", "message": "...", "timestamp": "..." }` with a `503 Service Unavailable` status. This prevents the Blazor client from receiving HTML error pages and allows for clean UI alerts.
+- **Audit Traceability**: Added the `UpdatedAt` timestamp to the `ProfileResponse` POCO. This value is mapped from the `Player` entity (updated via SQL trigger) to allow the dashboard to display the "Last Synchronization" time.
+- **Eager Loading Optimization**: Removed `.Include(p => p.GameStats)` from generic repository methods in `PlayerRepository` and `AuthRepository`. Since session history can grow indefinitely, loading the entire collection during every profile fetch or authentication check is inefficient. The API now relies on `StatsRepository.GetTopStatsByPlayerIdAsync(p_count: 10)` for targeted loading, maintaining performance without sacrificing data availability.
+
+## 2026-05-21 - Blazor Lifecycle and API Integration (US 17.0.3)
+- **Lifecycle Management**: Integrated `OnInitializedAsync` in `Dashboard.razor` to handle data fetching during the Blazor component's initialization.
+- **Visual State Management**: Implemented a tri-state UI (Loading, Error, Success) using boolean flags (`m_isLoading`) and error message strings. This ensures Scénarios 2 and 5 are handled gracefully.
+- **Data Binding & Null Safety**: Used null-conditional operators (`?.`) and fallback values (e.g., `?? "0.0"`) when binding `ProfileResponse` to the UI. This prevents runtime exceptions if the player has no session history.
+- **UI Architecture**: Leveraged Bootstrap 5 for a responsive dashboard, including a fixed-top style header and a scrollable session history table.

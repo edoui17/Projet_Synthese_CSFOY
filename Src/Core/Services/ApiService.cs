@@ -141,9 +141,7 @@ public class ApiService : IApiService
 
         if (p_request.Stats != null)
         {
-            var statsList = profile.GameStats.ToList();
-            statsList.Add(p_request.Stats);
-            profile.GameStats = statsList;
+            profile.GameStats.Add(p_request.Stats);
         }
 
         if (p_request.Config != null)
@@ -153,7 +151,7 @@ public class ApiService : IApiService
 
         if (p_request.Inventory != null)
         {
-            profile.Inventory = p_request.Inventory;
+            profile.Inventory = p_request.Inventory.ToList();
         }
 
         CacheProfileLocally(profile);

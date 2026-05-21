@@ -13,6 +13,7 @@
 [ext_resource type="Script" uid="uid://cbbphk4jiuhm5" path="res://Nodes/Zones/EnemySpawnConfig.cs" id="10_wyksf"]
 [ext_resource type="Resource" uid="uid://d1e2f3g4h5i6j" path="res://Scenes/NPC/Aggressive/Normal/Soldier/SoldierConfig.tres" id="11_pylbn"]
 [ext_resource type="Resource" uid="uid://dbscgytmkqyn7" path="res://Scenes/NPC/Aggressive/Normal/Archer/ArcherConfig.tres" id="12_wyksf"]
+[ext_resource type="Resource" uid="uid://cxq9oiy51w9h7" path="res://Scenes/NPC/Aggressive/Normal/Lancer/LancerConfig.tres" id="13_lancer"]
 
 
 
@@ -44,7 +45,7 @@ light_mask = 9
 visibility_layer = 17
 position = Vector2(0, 1)
 script = ExtResource("9_35vrn")
-EnemyConfigs = Array[ExtResource("10_wyksf")]([ExtResource("11_pylbn"), ExtResource("12_wyksf")])
+EnemyConfigs = Array[ExtResource("10_wyksf")]([ExtResource("11_pylbn"), ExtResource("12_wyksf"), ExtResource("13_lancer")])
 SpawningArea = NodePath("EnemySpawningArea")
 
 [node name="EnemySpawningArea" type="Polygon2D" parent="EnemyZone" index="0" unique_id=214035602]

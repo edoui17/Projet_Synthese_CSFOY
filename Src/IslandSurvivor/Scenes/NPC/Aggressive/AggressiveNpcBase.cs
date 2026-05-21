@@ -29,6 +29,10 @@ public partial class AggressiveNpcBase : NpcBase, IEnemy
     protected RayCast2D m_lineOfSightRay;
     protected Node2D m_targetPlayer;
 
+    protected StringName m_animAttack = new StringName("Attack");
+    protected StringName m_animMoving = new StringName("Moving");
+    protected StringName m_animIdle = new StringName("Idle");
+
     public override string CurrentState => m_agressorController?.CurrentState ?? NpcStates.IDLE;
     public string EnemyType => "GenericEnemy";
 
@@ -108,8 +112,6 @@ public partial class AggressiveNpcBase : NpcBase, IEnemy
 
         HandleAttackState();
 
-        UpdateAnimation(new Vector2(m_agressorController.CurrentDirection.X, m_agressorController.CurrentDirection.Y));
-
         Vector2 direction = new Vector2(m_agressorController.CurrentDirection.X, m_agressorController.CurrentDirection.Y);
         float targetSpeed = IdleSpeed;
 
@@ -150,6 +152,8 @@ public partial class AggressiveNpcBase : NpcBase, IEnemy
         {
             m_agressorController.ForceNewDirection();
         }
+
+        UpdateAnimation(new Vector2(m_agressorController.CurrentDirection.X, m_agressorController.CurrentDirection.Y));
     }
 
     protected virtual void HandleAttackState()
@@ -164,9 +168,9 @@ public partial class AggressiveNpcBase : NpcBase, IEnemy
 
         if (isAttacking)
         {
-            if (m_animatedSprite.Animation != "Attack")
+            if (m_animatedSprite.Animation != m_animAttack)
             {
-                m_animatedSprite.Play("Attack");
+                m_animatedSprite.Play(m_animAttack);
                 m_animatedSprite.Frame = 0;
             }
             return;
@@ -174,11 +178,17 @@ public partial class AggressiveNpcBase : NpcBase, IEnemy
 
         if (Velocity.LengthSquared() > 0)
         {
-            m_animatedSprite.Play("Moving");
+            if (m_animatedSprite.Animation != m_animMoving)
+            {
+                m_animatedSprite.Play(m_animMoving);
+            }
         }
         else
         {
-            m_animatedSprite.Play("Idle");
+            if (m_animatedSprite.Animation != m_animIdle)
+            {
+                m_animatedSprite.Play(m_animIdle);
+            }
         }
 
         if (p_direction.X != 0 && !isAttacking)

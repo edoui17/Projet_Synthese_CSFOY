@@ -59,7 +59,6 @@ public partial class EnemySpawnZone : Node2D, IEnemySpawnZone
         if (m_respawnTimer >= RespawnInterval)
         {
             m_respawnTimer = 0f;
-            CleanupDestroyedEnemies();
             CheckAndRespawn();
         }
     }
@@ -74,8 +73,6 @@ public partial class EnemySpawnZone : Node2D, IEnemySpawnZone
             GD.PushWarning($"[EnemySpawnZone] No EnemyConfigs assigned for {Name}.");
             return;
         }
-
-        CleanupDestroyedEnemies();
 
         int toSpawn = MaxEnemies - m_activeEnemies.Count;
 
@@ -166,6 +163,8 @@ public partial class EnemySpawnZone : Node2D, IEnemySpawnZone
             enemyInstance.YSortEnabled = true;
 
 
+            enemyInstance.TreeExited += () => m_activeEnemies.Remove(enemyInstance);
+
             m_activeEnemies.Add(enemyInstance);
         }
         else
@@ -173,11 +172,6 @@ public partial class EnemySpawnZone : Node2D, IEnemySpawnZone
             instance.QueueFree();
             GD.PushError($"[EnemySpawnZone] Instantiated scene is not an AggressiveNpcBase: {p_scene.ResourcePath}");
         }
-    }
-
-    private void CleanupDestroyedEnemies()
-    {
-        m_activeEnemies.RemoveAll(e => !IsInstanceValid(e));
     }
 
     private Rect2 GetPolygonBounds(Vector2[] p_points)
