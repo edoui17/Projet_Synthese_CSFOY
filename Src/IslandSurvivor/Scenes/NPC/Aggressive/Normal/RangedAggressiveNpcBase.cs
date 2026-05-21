@@ -57,8 +57,6 @@ public partial class RangedAggressiveNpcBase : AggressiveNpcBase
 
     protected virtual void OnAttackStarted()
     {
-        PlayAttackSound();
-
         if (m_animatedSprite != null)
         {
             if (m_targetPlayer != null)

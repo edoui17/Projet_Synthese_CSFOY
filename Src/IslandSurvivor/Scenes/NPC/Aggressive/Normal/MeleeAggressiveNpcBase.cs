@@ -49,8 +49,6 @@ public partial class MeleeAggressiveNpcBase : AggressiveNpcBase
 
     protected virtual void OnAttackStarted()
     {
-        PlayAttackSound();
-
         if (m_animatedSprite != null)
         {
             m_animatedSprite.Play("Attack");

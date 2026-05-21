@@ -262,8 +262,6 @@ public partial class Lancer : MeleeAggressiveNpcBase
 
     protected override void OnAttackStarted()
     {
-        PlayAttackSound();
-
         if (m_animatedSprite != null && m_attackController != null)
         {
             m_animatedSprite.Play(m_attackController.AttackAnimationName);
