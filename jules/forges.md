@@ -89,6 +89,9 @@
 - **Event-Driven Architecture**: Used `ProfileLoadedEvent` to trigger inventory and stat initialization across decoupled Godot systems.
 - **Idempotent Initialization**: Hardened `InventoryManager` to allow multiple initializations (e.g., Logout/Login) without data duplication.
 
+## 2026-05-24 - Namespace Management & Godot Conflict Resolution
+- **Namespace Conflict**: Resolved naming collision between `Core.Domain.Player` and `IslandSurvivor.Scenes.Player.Player`. Established standard of using fully qualified names for the domain model in Godot scripts.
+
 ## 2026-05-10 - US 20.0.4 : Architecture de l'Écran de Chargement et UX de Synchronisation
 
 ### Découvertes Architecturales
