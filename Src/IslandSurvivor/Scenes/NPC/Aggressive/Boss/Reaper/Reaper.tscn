@@ -422,10 +422,9 @@ radius = 602.0407
 [node name="AnimatedSprite2D" parent="." index="0"]
 scale = Vector2(8, 8)
 sprite_frames = SubResource("SpriteFrames_t3tbm")
-animation = &"LosingShield"
+animation = &"Dying"
 autoplay = "Idle"
-frame = 5
-frame_progress = 1.0
+frame_progress = 0.28872833
 
 [node name="CollisionShape2D" parent="." index="1"]
 visible = false
