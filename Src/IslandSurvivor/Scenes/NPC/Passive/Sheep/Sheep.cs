@@ -50,7 +50,7 @@ public partial class Sheep : PassiveNpcBase
             else if (!string.IsNullOrEmpty(IdleSoundKey))
                 AudioManager.Instance?.PlaySound2D(IdleSoundKey, GlobalPosition, IdleSoundVolume);
 
-            m_idleSoundTimer!.WaitTime = new Random().Next(10, 30);
+            m_idleSoundTimer!.WaitTime = new Random().Next(5, 30);
         }
     }
 
