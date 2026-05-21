@@ -262,3 +262,9 @@ When triggering updates (e.g., UI upgrades emitting events to a decoupled compon
 - **Visual State Management**: Implemented a tri-state UI (Loading, Error, Success) using boolean flags (`m_isLoading`) and error message strings. This ensures Scénarios 2 and 5 are handled gracefully.
 - **Data Binding & Null Safety**: Used null-conditional operators (`?.`) and fallback values (e.g., `?? "0.0"`) when binding `ProfileResponse` to the UI. This prevents runtime exceptions if the player has no session history.
 - **UI Architecture**: Leveraged Bootstrap 5 for a responsive dashboard, including a fixed-top style header and a scrollable session history table.
+
+## 2026-05-24 - Game Session Management & Persistence (US 20.0.1)
+- **State Machine**: Implemented a global `GameManager` (Autoload) using the `AppStatus` enum (Loading, Ready, Error). This decouples application lifecycle from service initialization (`ServiceRegistry`).
+- **Persistence (user://)**: Introduced `SessionProvider` using Godot's `ConfigFile` specifically for `user://session.cfg`. This ensures the session token remains persistent and OS-compliant in exported builds, unlike project-root relative paths.
+- **Access Control**: The `GameManager` validates the stored token at launch. If invalid or missing, it forces redirection to `Login.tscn`.
+- **Offline Fallback**: The `ErrorPopup` handles API unreachable states by offering a "Play Offline" mode, which sets the `GameManager` to `Ready` state with a "Guest" flag, bypassing mandatory authentication for local play.
