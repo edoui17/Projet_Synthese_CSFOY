@@ -1,0 +1,14 @@
+[remap]
+
+importer="aseprite_wizard.plugin.noop"
+type="PackedDataContainer"
+uid="uid://c6701owf5prvq"
+path="res://.godot/imported/Rubber Duck.aseprite-eab626b7b36b904d51b5d40cbc342508.res"
+
+[deps]
+
+source_file="res://Assets/TinySwords/Terrain/Rubber Duck/Rubber Duck.aseprite"
+dest_files=["res://.godot/imported/Rubber Duck.aseprite-eab626b7b36b904d51b5d40cbc342508.res"]
+
+[params]
+

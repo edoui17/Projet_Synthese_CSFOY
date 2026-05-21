@@ -1,0 +1,14 @@
+[remap]
+
+importer="aseprite_wizard.plugin.noop"
+type="PackedDataContainer"
+uid="uid://bm1sc3q4oyf3k"
+path="res://.godot/imported/TNT_Yellow.aseprite-a54e72d68203135cd407fe54ecdea71a.res"
+
+[deps]
+
+source_file="res://Assets/TinySwords/Sprites/TNT/Yellow/TNT_Yellow.aseprite"
+dest_files=["res://.godot/imported/TNT_Yellow.aseprite-a54e72d68203135cd407fe54ecdea71a.res"]
+
+[params]
+
