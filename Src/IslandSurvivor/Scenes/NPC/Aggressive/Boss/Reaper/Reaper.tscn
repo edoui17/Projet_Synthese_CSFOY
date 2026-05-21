@@ -172,26 +172,6 @@ region = Rect2(384, 96, 48, 48)
 atlas = ExtResource("2_dp46e")
 region = Rect2(432, 96, 48, 48)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_b8dll"]
-atlas = ExtResource("2_dp46e")
-region = Rect2(0, 240, 48, 48)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_hmgg7"]
-atlas = ExtResource("2_dp46e")
-region = Rect2(48, 240, 48, 48)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_wmhdh"]
-atlas = ExtResource("2_dp46e")
-region = Rect2(96, 240, 48, 48)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_pewun"]
-atlas = ExtResource("2_dp46e")
-region = Rect2(144, 240, 48, 48)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_t3b2b"]
-atlas = ExtResource("2_dp46e")
-region = Rect2(192, 240, 48, 48)
-
 [sub_resource type="AtlasTexture" id="AtlasTexture_dp46e"]
 atlas = ExtResource("2_dp46e")
 region = Rect2(0, 48, 48, 48)
@@ -211,6 +191,26 @@ region = Rect2(144, 48, 48, 48)
 [sub_resource type="AtlasTexture" id="AtlasTexture_mvu4d"]
 atlas = ExtResource("2_dp46e")
 region = Rect2(192, 48, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_b8dll"]
+atlas = ExtResource("2_dp46e")
+region = Rect2(0, 240, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_hmgg7"]
+atlas = ExtResource("2_dp46e")
+region = Rect2(48, 240, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wmhdh"]
+atlas = ExtResource("2_dp46e")
+region = Rect2(96, 240, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_pewun"]
+atlas = ExtResource("2_dp46e")
+region = Rect2(144, 240, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_t3b2b"]
+atlas = ExtResource("2_dp46e")
+region = Rect2(192, 240, 48, 48)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_t3tbm"]
 animations = [{
@@ -372,26 +372,6 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_b8dll")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_hmgg7")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_wmhdh")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_pewun")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_t3b2b")
-}],
-"loop": false,
-"name": &"Shielding",
-"speed": 5.0
-}, {
-"frames": [{
-"duration": 1.0,
 "texture": SubResource("AtlasTexture_dp46e")
 }, {
 "duration": 1.0,
@@ -409,27 +389,50 @@ animations = [{
 "loop": true,
 "name": &"Moving",
 "speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_b8dll")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_hmgg7")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_wmhdh")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_pewun")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_t3b2b")
+}],
+"loop": false,
+"name": &"Shielding",
+"speed": 5.0
 }]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_dp46e"]
-radius = 51.0
-height = 206.0
+radius = 37.0
+height = 128.0
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_dp46e"]
 radius = 602.0407
 
 [node name="Reaper" unique_id=495261644 instance=ExtResource("1_t3tbm")]
 script = ExtResource("3_reaper_script")
+NormalAttackAnimationName = "MeleeAttackNormal"
+EnragedAttackAnimationName = "MeleeAttackEnraged"
+MeleeAttackAnimationName = "Attack_Melee"
+RangedAttackAnimationName = "Attack_Ranged"
 
 [node name="AnimatedSprite2D" parent="." index="0"]
 scale = Vector2(5, 5)
 sprite_frames = SubResource("SpriteFrames_t3tbm")
-animation = &"Dying"
+animation = &"MeleeAttackEnraged"
 autoplay = "Idle"
 
 [node name="CollisionShape2D" parent="." index="1"]
-visible = false
-position = Vector2(-3, -7)
+position = Vector2(-4, -6)
 shape = SubResource("CapsuleShape2D_dp46e")
 
 [node name="DetectionArea" parent="." index="5"]

@@ -3,6 +3,7 @@
 [ext_resource type="PackedScene" uid="uid://rbase12345" path="res://Scenes/NPC/Aggressive/Normal/RangedAggressiveNpcBase.tscn" id="1_scene"]
 [ext_resource type="Script" uid="uid://dgynmagnnb7ih" path="res://Scenes/NPC/Aggressive/Normal/Archer/Archer.cs" id="2_script"]
 [ext_resource type="Texture2D" uid="uid://b8o63a2wvjr7y" path="res://Assets/TinySwords/Sprites/Archer/Black/Archer_Shoot.png" id="3_shoot"]
+[ext_resource type="PackedScene" uid="uid://crca7kdilqogk" path="res://Scenes/Projectiles/Arrow/Arrow.tscn" id="3_yftsu"]
 [ext_resource type="Texture2D" uid="uid://b0b511y7uqtly" path="res://Assets/TinySwords/Sprites/Archer/Black/Archer_Idle.png" id="4_idle"]
 [ext_resource type="Texture2D" uid="uid://yig1smlirjfp" path="res://Assets/TinySwords/Sprites/Archer/Black/Archer_Run.png" id="5_run"]
 
@@ -155,6 +156,8 @@ radius = 300.0
 
 [node name="Archer" unique_id=61408674 instance=ExtResource("1_scene")]
 script = ExtResource("2_script")
+ProjectileScene = ExtResource("3_yftsu")
+AttackAnimationName = "Attack"
 ChaseSpeed = 100.0
 StoppingDistance = 40.0
 LevelIndex = 1
