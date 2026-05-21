@@ -14,9 +14,12 @@ using IslandSurvivor.Globals;
 public partial class Sheep : PassiveNpcBase
 {
     [ExportGroup("Audio")]
-    [Export] public AudioStream? HurtSound { get; set; }
-    [Export] public AudioStream? DeathSound { get; set; }
-    [Export] public AudioStream? IdleSound { get; set; }
+    [Export] public string HurtSoundKey { get; set; } = "Sheep_Hurt";
+    [Export] public float HurtSoundVolume { get; set; } = 0f;
+    [Export] public string DeathSoundKey { get; set; } = "Resource_Mining_1";
+    [Export] public float DeathSoundVolume { get; set; } = 0f;
+    [Export] public string IdleSoundKey { get; set; } = "Sheep_Idle";
+    [Export] public float IdleSoundVolume { get; set; } = 0f;
 
     private Timer? m_idleSoundTimer;
 
@@ -35,9 +38,9 @@ public partial class Sheep : PassiveNpcBase
 
     private void OnIdleSoundTimeout()
     {
-        if (IdleSound != null && CurrentState != NpcStates.DEAD)
+        if (!string.IsNullOrEmpty(IdleSoundKey) && CurrentState != NpcStates.DEAD)
         {
-            AudioManager.Instance?.PlaySound2D(IdleSound, GlobalPosition);
+            AudioManager.Instance?.PlaySound2D(IdleSoundKey, GlobalPosition, IdleSoundVolume);
             m_idleSoundTimer!.WaitTime = new Random().Next(10, 30);
         }
     }
@@ -69,7 +72,7 @@ public partial class Sheep : PassiveNpcBase
             }
         }
 
-        AudioManager.Instance?.PlaySound2D("Resource_Mining_1", GlobalPosition);
+        AudioManager.Instance?.PlaySound2D(DeathSoundKey, GlobalPosition, DeathSoundVolume);
 
 
         QueueFree();
@@ -80,7 +83,7 @@ public partial class Sheep : PassiveNpcBase
 
         if (Stats.GetCurrentValue(StatType.Health) > 0)
         {
-            AudioManager.Instance?.PlaySound2D("Sheep_Hurt", GlobalPosition);
+            AudioManager.Instance?.PlaySound2D(HurtSoundKey, GlobalPosition, HurtSoundVolume);
         }
     }
 }

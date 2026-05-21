@@ -83,6 +83,7 @@ public partial class AudioManager : Node
 
         // NPC Sounds
         RegisterSound("Sheep_Hurt", "res://Assets/Audio/kenney_impact-sounds/Audio/scottishperson-sound-effect-woman-scream-236488.mp3");
+        RegisterSound("Sheep_Idle", "res://Assets/Audio/kenney_impact-sounds/Audio/impactGlass_light_000.ogg"); // Fallback "baaa"
     }
 
     private void RegisterSound(string p_key, string p_path, float p_defaultVolumeDb = 0f, float p_defaultPitchScale = 1f)
