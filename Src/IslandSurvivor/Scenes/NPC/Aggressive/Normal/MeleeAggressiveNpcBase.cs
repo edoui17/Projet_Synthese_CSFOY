@@ -10,7 +10,6 @@ public partial class MeleeAggressiveNpcBase : AggressiveNpcBase
 
     public override void _Ready()
     {
-        AttackSoundKey = "Soldier_Attack";
         base._Ready();
 
         m_hitboxAreaRight = GetNodeOrNull<Area2D>("HitboxAreaRight");
