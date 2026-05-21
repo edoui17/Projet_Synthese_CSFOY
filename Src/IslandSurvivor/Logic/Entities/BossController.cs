@@ -30,6 +30,11 @@ public class BossController : RangedController, IBossController
             m_currentPhase = BossPhase.Enraged;
             UpdateStoppingDistance(60.0f); // Enraged is Melee focused
         }
+        else if (p_healthRatio <= 0.66f)
+        {
+            m_currentPhase = BossPhase.Shielded;
+            UpdateStoppingDistance(60.0f); // Shielded acts like melee
+        }
         else
         {
             // Toggle between Melee and Ranged every 10 seconds
