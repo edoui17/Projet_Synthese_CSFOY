@@ -26,7 +26,7 @@ public partial class Sheep : PassiveNpcBase
     [Export] public string IdleSoundKey { get; set; } = "Sheep_Idle";
     [Export] public float IdleSoundVolume { get; set; } = 0f;
 
-    [Export] public float AudioMaxDistance { get; set; } = 200f;
+    [Export] public float AudioMaxDistance { get; set; } = 275f;
     [Export] public float AudioAttenuation { get; set; } = 1f;
 
     private Timer? m_idleSoundTimer;
@@ -37,7 +37,7 @@ public partial class Sheep : PassiveNpcBase
         IdleSpeed = 30.0f;
 
         m_idleSoundTimer = new Timer();
-        m_idleSoundTimer.WaitTime = new Random().Next(5, 30);
+        m_idleSoundTimer.WaitTime = new Random().Next(5, 20);
         m_idleSoundTimer.OneShot = false;
         m_idleSoundTimer.Timeout += OnIdleSoundTimeout;
         AddChild(m_idleSoundTimer);
@@ -53,7 +53,7 @@ public partial class Sheep : PassiveNpcBase
             else if (!string.IsNullOrEmpty(IdleSoundKey))
                 AudioManager.Instance?.PlaySound2D(IdleSoundKey, GlobalPosition, IdleSoundVolume, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
 
-            m_idleSoundTimer!.WaitTime = new Random().Next(5, 30);
+            m_idleSoundTimer!.WaitTime = new Random().Next(5, 20);
         }
     }
 
