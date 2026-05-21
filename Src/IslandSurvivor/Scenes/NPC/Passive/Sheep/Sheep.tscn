@@ -3,9 +3,9 @@
 [ext_resource type="PackedScene" uid="uid://df6gel801af1s" path="res://Scenes/NPC/Passive/PassiveNpcBase.tscn" id="1_scene"]
 [ext_resource type="Script" uid="uid://fvn22w5rptq7" path="res://Scenes/NPC/Passive/Sheep/Sheep.cs" id="2_script"]
 [ext_resource type="SpriteFrames" uid="uid://ondukel2hk2a" path="res://Scenes/NPC/Passive/Sheep/SheepFrames.tres" id="3_frames"]
-[ext_resource type="AudioStream" uid="uid://cxw3eunh7g4id" path="res://Assets/Audio/kenney_impact-sounds/Audio/scottishperson-sound-effect-woman-scream-236488.mp3" id="hurt_stream"]
-[ext_resource type="AudioStream" uid="uid://p4l7o66y0e6k" path="res://Assets/Audio/kenney_impact-sounds/Audio/impactMining_001.ogg" id="death_stream"]
-[ext_resource type="AudioStream" uid="uid://be08a1ivx05s5" path="res://Assets/Audio/kenney_impact-sounds/Audio/stu9-monsheep-352819.mp3" id="idle_stream"]
+[ext_resource type="AudioStream" uid="uid://dyptmqwmpqavj" path="res://Assets/Audio/kenney_impact-sounds/Audio/impactMining_001.ogg" id="death_stream"]
+[ext_resource type="AudioStream" uid="uid://bcfiumkcvg6e8" path="res://Assets/Audio/kenney_impact-sounds/Audio/scottishperson-sound-effect-woman-scream-236488.mp3" id="hurt_stream"]
+[ext_resource type="AudioStream" uid="uid://bqwy8igx2da3j" path="res://Assets/Audio/kenney_impact-sounds/Audio/stu9-monsheep-352819.mp3" id="idle_stream"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ifvjj"]
 size = Vector2(43, 33)
@@ -15,8 +15,16 @@ collision_layer = 4
 collision_mask = 1
 script = ExtResource("2_script")
 HurtSound = ExtResource("hurt_stream")
+HurtSoundKey = "Sheep_Hurt"
+HurtSoundVolume = 0.0
 DeathSound = ExtResource("death_stream")
+DeathSoundKey = "Resource_Mining_1"
+DeathSoundVolume = 0.0
 IdleSound = ExtResource("idle_stream")
+IdleSoundKey = "Sheep_Idle"
+IdleSoundVolume = 0.0
+AudioMaxDistance = 2000.0
+AudioAttenuation = 1.0
 
 [node name="AnimatedSprite2D" parent="." index="0"]
 sprite_frames = ExtResource("3_frames")
