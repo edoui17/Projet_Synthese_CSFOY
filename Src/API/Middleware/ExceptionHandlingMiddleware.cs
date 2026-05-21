@@ -25,19 +25,18 @@ public class ExceptionHandlingMiddleware
         {
             await m_next(p_context);
         }
-        catch (SqlException p_ex)
+        // SECURITY FIX: Catch all exceptions to prevent unhandled exceptions from leaking native framework
+        // stack traces and infrastructure details directly to the player HUD.
+        catch (Exception p_ex)
         {
-            await HandleDatabaseExceptionAsync(p_context, p_ex, m_logger);
-        }
-        catch (InvalidOperationException p_ex) when (p_ex.Message.Contains("database", StringComparison.OrdinalIgnoreCase))
-        {
-            await HandleDatabaseExceptionAsync(p_context, p_ex, m_logger);
+            await HandleExceptionAsync(p_context, p_ex, m_logger);
         }
     }
 
-    private static Task HandleDatabaseExceptionAsync(HttpContext p_context, Exception p_exception, ILogger p_logger)
+    private static Task HandleExceptionAsync(HttpContext p_context, Exception p_exception, ILogger p_logger)
     {
-        p_logger.LogError(p_exception, "Database operation failed raw message");
+        // SECURITY FIX: Secure error masking (Logs details locally, hides system internals from player UI)
+        p_logger.LogError(p_exception, "An unhandled exception occurred during the request pipeline.");
 
         p_context.Response.ContentType = "application/json";
         p_context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
