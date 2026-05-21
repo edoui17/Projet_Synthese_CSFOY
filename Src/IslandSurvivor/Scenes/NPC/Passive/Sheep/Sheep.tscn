@@ -23,7 +23,7 @@ DeathSoundVolume = 0.0
 IdleSound = ExtResource("idle_stream")
 IdleSoundKey = "Sheep_Idle"
 IdleSoundVolume = 0.0
-AudioMaxDistance = 2000.0
+AudioMaxDistance = 10.0
 AudioAttenuation = 1.0
 
 [node name="AnimatedSprite2D" parent="." index="0"]

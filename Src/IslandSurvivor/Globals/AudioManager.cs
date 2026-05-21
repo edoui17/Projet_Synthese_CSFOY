@@ -36,6 +36,7 @@ public partial class AudioManager : Node
         for (int i = 0; i < POOL_SIZE; i++)
         {
             var player = new AudioStreamPlayer();
+            player.Bus = "SFX";
             AddChild(player);
             m_availablePlayers.Add(player);
             player.Finished += () => OnPlayerFinished(player);
@@ -45,6 +46,7 @@ public partial class AudioManager : Node
         for (int i = 0; i < POOL_SIZE_2D; i++)
         {
             var player2D = new AudioStreamPlayer2D();
+            player2D.Bus = "SFX";
             AddChild(player2D);
             m_availablePlayers2D.Add(player2D);
             player2D.Finished += () => OnPlayer2DFinished(player2D);
