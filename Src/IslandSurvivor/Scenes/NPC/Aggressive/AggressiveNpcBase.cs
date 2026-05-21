@@ -24,9 +24,17 @@ public partial class AggressiveNpcBase : NpcBase, IEnemy
     [Export] public float XpMultiplier { get; set; } = 0.2f;
 
     [ExportGroup("Audio")]
+    [Export] public AudioStream? AttackSound { get; set; }
     [Export] public string AttackSoundKey { get; set; } = "Enemy_Swing_Default";
+    [Export] public float AttackSoundVolume { get; set; } = 0f;
+
+    [Export] public AudioStream? HurtSound { get; set; }
     [Export] public string HurtSoundKey { get; set; } = "Enemy_Hurt_Default";
+    [Export] public float HurtSoundVolume { get; set; } = 0f;
+
+    [Export] public AudioStream? DeathSound { get; set; }
     [Export] public string DeathSoundKey { get; set; } = "Enemy_Death_Default";
+    [Export] public float DeathSoundVolume { get; set; } = 0f;
 
     protected IAgressorController m_agressorController;
     protected AttackController? m_attackController;
@@ -244,7 +252,10 @@ public partial class AggressiveNpcBase : NpcBase, IEnemy
 
     protected void PlayAttackSound()
     {
-        AudioManager.Instance?.PlaySound2D(AttackSoundKey, GlobalPosition);
+        if (AttackSound != null)
+            AudioManager.Instance?.PlaySound2D(AttackSound, GlobalPosition, AttackSoundVolume);
+        else
+            AudioManager.Instance?.PlaySound2D(AttackSoundKey, GlobalPosition, AttackSoundVolume);
     }
 
     protected override void OnDamageTaken(Node2D p_attacker)
@@ -252,14 +263,20 @@ public partial class AggressiveNpcBase : NpcBase, IEnemy
         base.OnDamageTaken(p_attacker);
         m_targetPlayer = p_attacker;
         
-        AudioManager.Instance?.PlaySound2D(HurtSoundKey, GlobalPosition);
+        if (HurtSound != null)
+            AudioManager.Instance?.PlaySound2D(HurtSound, GlobalPosition, HurtSoundVolume);
+        else
+            AudioManager.Instance?.PlaySound2D(HurtSoundKey, GlobalPosition, HurtSoundVolume);
     }
 
     protected override void HandleDeath(object? p_attacker = null)
     {
         m_agressorController.SetDead();
-        //avoir si on veut vraiment un dead sound
-        //AudioManager.Instance?.PlaySound2D(DeathSoundKey, GlobalPosition);
+
+        if (DeathSound != null)
+            AudioManager.Instance?.PlaySound2D(DeathSound, GlobalPosition, DeathSoundVolume);
+        else if (!string.IsNullOrEmpty(DeathSoundKey))
+            AudioManager.Instance?.PlaySound2D(DeathSoundKey, GlobalPosition, DeathSoundVolume);
 
         if (ServiceRegistry.Instance != null)
         {
