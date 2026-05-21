@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://cqo7rlgy61vfa"]
 
 [ext_resource type="Script" uid="uid://1jvbx52ea810" path="res://Scenes/Player/Player.cs" id="1_s0eop"]
+[ext_resource type="AudioStream" uid="uid://cmilf37rvjwh4" path="res://Assets/Audio/kenney_impact-sounds/Audio/freesound_community-alphascream001-98301.mp3" id="6_4wape"]
 [ext_resource type="PackedScene" uid="uid://biqhbrp7fjfyj" path="res://Nodes/StatsManager/StatsManager.tscn" id="7_stat"]
 [ext_resource type="SpriteFrames" uid="uid://dd8xwmbmwbofx" path="res://Scenes/Player/PlayerFrames.tres" id="8_frames"]
 [ext_resource type="PackedScene" path="res://Nodes/Movement/MovementController.tscn" id="9_mov"]
@@ -135,3 +136,8 @@ offset_bottom = 112.0
 text = "Dash: Prêt"
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer2D" parent="." unique_id=1839441231]
+stream = ExtResource("6_4wape")
+volume_db = -35.351
+max_distance = 15.0
