@@ -72,7 +72,7 @@ public partial class AudioManager : Node
         RegisterSound("Level_Up", "res://Assets/Audio/kenney_impact-sounds/Audio/floraphonic-cute-level-up-2-189851.mp3");
 
         // UI Sounds
-        RegisterSound("Stat_Upgrade", "res://Assets/Sounds/UI/stat_upgrade.wav");
+        RegisterSound("Stat_Upgrade", "res://Assets/Audio/kenney_impact-sounds/Audio/floraphonic-cute-level-up-2-189851.mp3");
 
         // Resource Sounds
         RegisterSound("Resource_Mining_1", "res://Assets/Audio/kenney_impact-sounds/Audio/impactMining_001.ogg");
