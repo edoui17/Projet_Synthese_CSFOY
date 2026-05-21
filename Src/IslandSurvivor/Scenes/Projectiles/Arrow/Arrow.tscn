@@ -1,7 +1,8 @@
 [gd_scene format=3 uid="uid://crca7kdilqogk"]
 
 [ext_resource type="Texture2D" uid="uid://bsobcltw3xn7w" path="res://Assets/TinySwords/Sprites/Archer/Black/Arrow.png" id="1_ljjg1"]
-[ext_resource type="Script" uid="uid://ctj00w1v7xxqm" path="res://Scenes/Projectiles/Arrow.cs" id="1_qaq63"]
+[ext_resource type="Script" uid="uid://ctj00w1v7xxqm" path="res://Scenes/Projectiles/Arrow/Arrow.cs" id="1_qaq63"]
+
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_qaq63"]
 size = Vector2(41, 6)
