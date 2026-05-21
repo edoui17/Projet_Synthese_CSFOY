@@ -69,11 +69,7 @@ public partial class Sheep : PassiveNpcBase
             }
         }
 
-        AudioStream? deathStream = DeathSound ?? GD.Load<AudioStream>("res://Assets/Audio/kenney_impact-sounds/Audio/impactMining_001.ogg");
-        if (deathStream != null)
-        {
-            AudioManager.Instance?.PlaySound2D(deathStream, GlobalPosition);
-        }
+        AudioManager.Instance?.PlaySound2D("Resource_Mining_1", GlobalPosition);
 
 
         QueueFree();
@@ -84,11 +80,7 @@ public partial class Sheep : PassiveNpcBase
 
         if (Stats.GetCurrentValue(StatType.Health) > 0)
         {
-            AudioStream? hurtStream = HurtSound ?? GD.Load<AudioStream>("res://Assets/Audio/kenney_impact-sounds/Audio/scottishperson-sound-effect-woman-scream-236488.mp3");
-            if (hurtStream != null)
-            {
-                AudioManager.Instance?.PlaySound2D(hurtStream, GlobalPosition);
-            }
+            AudioManager.Instance?.PlaySound2D("Sheep_Hurt", GlobalPosition);
         }
     }
 }

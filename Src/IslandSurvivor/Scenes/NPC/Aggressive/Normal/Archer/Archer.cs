@@ -6,6 +6,7 @@ public partial class Archer : RangedAggressiveNpcBase
 {
     public override void _Ready()
     {
+        AttackSoundKey = "Archer_Attack";
         Stats = GetNodeOrNull<IslandSurvivor.Nodes.StatManager>("StatManager");
         if (Stats == null)
         {

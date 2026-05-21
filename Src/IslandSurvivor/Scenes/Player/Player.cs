@@ -30,9 +30,9 @@ public partial class Player : CharacterBody2D, IDamageable
     [Export] private Area2D? m_interactionArea;
 
     [ExportGroup("Audio")]
-    [Export] public AudioStream? AttackSound { get; set; }
-    [Export] public AudioStream? HurtSound { get; set; }
-    [Export] public AudioStream? DeathSound { get; set; }
+    [Export] public string AttackSoundKey { get; set; } = "Player_Swing";
+    [Export] public string HurtSoundKey { get; set; } = "Player_Hurt";
+    [Export] public string DeathSoundKey { get; set; } = "Player_Death";
 
     [ExportGroup("Attack")]
     [Export] private Area2D? m_weaponAreaRight;
@@ -123,11 +123,7 @@ public partial class Player : CharacterBody2D, IDamageable
     private void OnAttackStarted()
     {
         // Play attack swing sound
-        AudioStream? swingStream = AttackSound ?? GD.Load<AudioStream>("res://Assets/Audio/kenney_impact-sounds/Audio/jofae-swing-whoosh-110410.mp3");
-        if (swingStream != null)
-        {
-            AudioManager.Instance?.PlaySound2D(swingStream, GlobalPosition);
-        }
+        AudioManager.Instance?.PlaySound2D(AttackSoundKey, GlobalPosition);
 
         if (m_animatedSprite != null)
         {
@@ -398,11 +394,7 @@ public partial class Player : CharacterBody2D, IDamageable
             m_xpGainLabel.Text = "LEVEL UP!";
             m_xpGainLabel.Visible = true;
             m_xpGainTimer.Start();
-            AudioStream? levelUpStream = GD.Load<AudioStream>("res://Assets/Audio/kenney_impact-sounds/Audio/floraphonic-cute-level-up-2-189851.mp3");
-            if (levelUpStream != null)
-            {
-                AudioManager.Instance?.PlaySound2D(levelUpStream, GlobalPosition);
-            }
+            AudioManager.Instance?.PlaySound2D("Level_Up", GlobalPosition);
         }
     }
 
@@ -450,11 +442,7 @@ public partial class Player : CharacterBody2D, IDamageable
         this.PlayShake();
 
         // Play hurt sound
-        AudioStream? hurtStream = HurtSound ?? GD.Load<AudioStream>("res://Assets/Audio/kenney_impact-sounds/Audio/freesound_community-alphascream001-98301.mp3");
-        if (hurtStream != null)
-        {
-            AudioManager.Instance?.PlaySound(hurtStream);
-        }
+        AudioManager.Instance?.PlaySound(HurtSoundKey);
 
         // Lightweight camera shake
         Camera2D camera = GetNodeOrNull<Camera2D>("Camera2D");
@@ -469,12 +457,8 @@ public partial class Player : CharacterBody2D, IDamageable
         SetState(PlayerState.Dead);
         Velocity = Vector2.Zero;
 
-        // Play death sound (reusing hurt sound or specific death sound if available)
-        AudioStream? deathStream = DeathSound ?? GD.Load<AudioStream>("res://Assets/Audio/kenney_impact-sounds/Audio/stickypix7996-bell-toll-407826.mp3");
-        if (deathStream != null)
-        {
-            AudioManager.Instance?.PlaySound(deathStream);
-        }
+        // Play death sound
+        AudioManager.Instance?.PlaySound(DeathSoundKey);
 
         if (m_animatedSprite != null)
         {

@@ -24,9 +24,9 @@ public partial class AggressiveNpcBase : NpcBase, IEnemy
     [Export] public float XpMultiplier { get; set; } = 0.2f;
 
     [ExportGroup("Audio")]
-    [Export] public AudioStream? AttackSound { get; set; }
-    [Export] public AudioStream? HurtSound { get; set; }
-    [Export] public AudioStream? DeathSound { get; set; }
+    [Export] public string AttackSoundKey { get; set; } = "Enemy_Swing_Default";
+    [Export] public string HurtSoundKey { get; set; } = "Enemy_Hurt_Default";
+    [Export] public string DeathSoundKey { get; set; } = "Enemy_Death_Default";
 
     protected IAgressorController m_agressorController;
     protected AttackController? m_attackController;
@@ -48,9 +48,13 @@ public partial class AggressiveNpcBase : NpcBase, IEnemy
         InitializeController();
 
         m_attackController = GetNodeOrNull<AttackController>("AttackController");
-        if (m_animatedSprite != null && m_attackController != null && m_attackController.AttackSprite == null)
+        if (m_animatedSprite != null && m_attackController != null)
         {
-            m_attackController.AttackSprite = m_animatedSprite;
+            if (m_attackController.AttackSprite == null)
+            {
+                m_attackController.AttackSprite = m_animatedSprite;
+            }
+            m_attackController.AttackActionTriggered += PlayAttackSound;
         }
 
         m_detectionArea = GetNodeOrNull<Area2D>("DetectionArea");
@@ -240,11 +244,7 @@ public partial class AggressiveNpcBase : NpcBase, IEnemy
 
     protected void PlayAttackSound()
     {
-        AudioStream? swingStream = AttackSound ?? GD.Load<AudioStream>("res://Assets/Audio/kenney_impact-sounds/Audio/jofae-swing-whoosh-110410.mp3");
-        if (swingStream != null)
-        {
-            AudioManager.Instance?.PlaySound2D(swingStream, GlobalPosition);
-        }
+        AudioManager.Instance?.PlaySound2D(AttackSoundKey, GlobalPosition);
     }
 
     protected override void OnDamageTaken(Node2D p_attacker)
@@ -252,22 +252,14 @@ public partial class AggressiveNpcBase : NpcBase, IEnemy
         base.OnDamageTaken(p_attacker);
         m_targetPlayer = p_attacker;
         
-        AudioStream? hurtStream = HurtSound ?? GD.Load<AudioStream>("res://Assets/Audio/kenney_impact-sounds/Audio/impactGlass_medium_003.ogg");
-        if (hurtStream != null)
-        {
-            AudioManager.Instance?.PlaySound2D(hurtStream, GlobalPosition);
-        }
+        AudioManager.Instance?.PlaySound2D(HurtSoundKey, GlobalPosition);
     }
 
     protected override void HandleDeath(object? p_attacker = null)
     {
         m_agressorController.SetDead();
         //avoir si on veut vraiment un dead sound
-        AudioStream? deathStream = DeathSound ?? GD.Load<AudioStream>("res://Assets/Sounds/Combat/enemy_death.wav");
-        //if (deathStream != null)
-        //{
-        //    AudioManager.Instance?.PlaySound2D(deathStream, GlobalPosition);
-        //}
+        //AudioManager.Instance?.PlaySound2D(DeathSoundKey, GlobalPosition);
 
         if (ServiceRegistry.Instance != null)
         {

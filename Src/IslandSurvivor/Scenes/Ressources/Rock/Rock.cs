@@ -81,11 +81,7 @@ public partial class Rock : Area2D, IOre, IDamageable
         }
 
         // Try to play destroy sound impactMining_002
-        AudioStream destroyStream = GD.Load<AudioStream>("res://Assets/Audio/kenney_impact-sounds/Audio/impactMining_002.ogg");
-        if (destroyStream != null)
-        {
-            AudioManager.Instance?.PlaySound2D(destroyStream, GlobalPosition);
-        }
+        AudioManager.Instance?.PlaySound2D("Resource_Mining_2", GlobalPosition);
 
         QueueFree();
     }
@@ -106,15 +102,9 @@ public partial class Rock : Area2D, IOre, IDamageable
         this.PlayShake();
 
         // Try to play impact sound
-        AudioStream impactStream = null;
         if (Stats.GetCurrentValue(StatType.Health) > 0)
         {
-            impactStream = GD.Load<AudioStream>("res://Assets/Audio/kenney_impact-sounds/Audio/impactMining_002.ogg");
-
-        }
-        if (impactStream != null)
-        {
-            AudioManager.Instance?.PlaySound2D(impactStream, GlobalPosition);
+            AudioManager.Instance?.PlaySound2D("Resource_Mining_2", GlobalPosition);
         }
     }
 }
