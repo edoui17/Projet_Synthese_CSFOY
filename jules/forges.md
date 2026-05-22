@@ -283,3 +283,6 @@ When triggering updates (e.g., UI upgrades emitting events to a decoupled compon
 - **Validation des Credentials** : Le flux de Login du jeu valide systématiquement les identifiants (Username/Password) auprès de l'endpoint d'authentification de l'API (`/api/auth/login`) avant d'autoriser l'accès aux fonctionnalités en ligne.
 - **Dépendance SQL Server** : Le serveur de base de données (SQL Server) doit être actif et accessible par l'API pour permettre l'authentification initiale et l'obtention du `SessionToken`.
 - **Gestion de l'Indisponibilité (503)** : Si la base de données est arrêtée ou inaccessible, l'API renvoie une erreur 503 (via `ExceptionHandlingMiddleware`). Le client intercepte cette erreur, lève une alerte visuelle et propose le basculement vers le mode hors ligne basé sur le cache local (`user://session.cfg` et `profile_cache.json`).
+
+## Godot Quirks & Line-of-Sight
+For instant line-of-sight validation (e.g., preventing melee attacks or detection through walls), prefer using `PhysicsRayQueryParameters2D` querying the `DirectSpaceState` against the map collision mask (Layer 1), rather than relying on `RayCast2D` nodes to avoid node-update and local-coordinate complexities.
