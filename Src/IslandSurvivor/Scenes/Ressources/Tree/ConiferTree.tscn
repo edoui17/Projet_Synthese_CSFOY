@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://tvjivvqe0caf" path="res://Scenes/Ressources/Tree/ConiferTree.cs" id="1_dkrse"]
 [ext_resource type="Texture2D" uid="uid://pr42it55tc3f" path="res://Assets/TinySwords/Decorations/Trees/Tree.png" id="2_ttmo2"]
 [ext_resource type="PackedScene" uid="uid://biqhbrp7fjfyj" path="res://Nodes/StatsManager/StatsManager.tscn" id="3_5a382"]
+[ext_resource type="AudioStream" uid="uid://c6js0c6dsjfh4" path="res://Assets/Audio/kenney_impact-sounds/Audio/floraphonic-rustling-bushes-dried-leaves-2-230202.mp3" id="4_5a382"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ybac0"]
 size = Vector2(45, 40)
@@ -82,3 +83,9 @@ frame_progress = 0.5379155
 [node name="StatManager" parent="." unique_id=1475410971 instance=ExtResource("3_5a382")]
 EntityType = 2
 MaxHealth = 30.0
+
+[node name="AudioStreamConiferTree" type="AudioStreamPlayer2D" parent="." unique_id=378467358]
+stream = ExtResource("4_5a382")
+pitch_scale = 0.7
+max_distance = 15.0
+bus = &"SFX"

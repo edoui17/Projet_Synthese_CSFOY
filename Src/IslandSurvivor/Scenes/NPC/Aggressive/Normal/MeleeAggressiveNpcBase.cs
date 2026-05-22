@@ -1,6 +1,7 @@
 namespace IslandSurvivor.Scenes.NPC.Aggressive;
 
 using Godot;
+using IslandSurvivor.Globals;
 
 public partial class MeleeAggressiveNpcBase : AggressiveNpcBase
 {

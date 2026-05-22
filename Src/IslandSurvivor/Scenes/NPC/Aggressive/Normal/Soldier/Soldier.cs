@@ -9,6 +9,7 @@ public partial class Soldier : MeleeAggressiveNpcBase
 
     public override void _Ready()
     {
+        AttackSoundKey = "Soldier_Attack";
         Stats = GetNodeOrNull<IslandSurvivor.Nodes.StatManager>("StatManager");
         if (Stats == null)
         {
