@@ -13,8 +13,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "Src\Core\Core.cspro
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "Src\Infrastructure\Infrastructure.csproj", "{3D745DFE-AF9A-E111-755D-FD3FFF280728}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IslandSurvivor", "Src\IslandSurvivor\IslandSurvivor.csproj", "{CC95926A-F5E5-C6E6-A5B5-A66A4DF42657}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Web", "Src\Web\Web.csproj", "{E5706BEE-C3FB-E7BE-641A-413C1A61D716}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
@@ -45,10 +43,6 @@ Global
 		{3D745DFE-AF9A-E111-755D-FD3FFF280728}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3D745DFE-AF9A-E111-755D-FD3FFF280728}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3D745DFE-AF9A-E111-755D-FD3FFF280728}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CC95926A-F5E5-C6E6-A5B5-A66A4DF42657}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CC95926A-F5E5-C6E6-A5B5-A66A4DF42657}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CC95926A-F5E5-C6E6-A5B5-A66A4DF42657}.Release|Any CPU.ActiveCfg = ExportDebug|Any CPU
-		{CC95926A-F5E5-C6E6-A5B5-A66A4DF42657}.Release|Any CPU.Build.0 = ExportDebug|Any CPU
 		{E5706BEE-C3FB-E7BE-641A-413C1A61D716}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E5706BEE-C3FB-E7BE-641A-413C1A61D716}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E5706BEE-C3FB-E7BE-641A-413C1A61D716}.Release|Any CPU.ActiveCfg = Release|Any CPU

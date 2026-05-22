@@ -21,7 +21,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Src\Core\Core.csproj" />
-    <ProjectReference Include="..\..\Src\IslandSurvivor\IslandSurvivor.csproj" />
-  </ItemGroup>
+    </ItemGroup>
 
 </Project>
