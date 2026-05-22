@@ -15,6 +15,7 @@ using System.Collections.Generic;
 public partial class Player : CharacterBody2D, IDamageable
 {
     [Export] public StatManager? Stats { get; set; }
+    public string NpcType { get; set; } = "Player";
 
     private PlayerState m_currentState = PlayerState.Idle;
     private PlayerState m_lastDebugState = (PlayerState)(-1);

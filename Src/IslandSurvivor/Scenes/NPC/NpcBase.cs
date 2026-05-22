@@ -20,7 +20,6 @@ public partial class NpcBase : CharacterBody2D, INpc, IDamageable
     protected object? m_lastAttacker = null;
     protected bool m_wasKilledByPlayer = false;
 
-    // Abstract state to be defined by subclasses
     public virtual string CurrentState { get; } = "";
 
     public override void _Ready()
@@ -87,7 +86,6 @@ public partial class NpcBase : CharacterBody2D, INpc, IDamageable
 
     protected virtual void OnDamageTaken(Node2D p_attacker)
     {
-        // To be overridden by subclasses (e.g. Sheep flees, Aggressive targets player)
     }
 
     protected virtual void HandleDeath(object? p_attacker = null) { }

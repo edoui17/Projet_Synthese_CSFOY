@@ -19,8 +19,7 @@ public partial class Gold : Area2D, IOre, IDamageable
     [Export] public string MaterialName { get; set; } = "Or";
     [Export] public string MaterialType { get; set; } = "Gold";
     [Export] public string IconPath { get; set; } = "res://Assets/TinySwords/Terrain/Gold Resource/Gold_Resource.png";
-
-
+    public string NpcType { get; set; } = "Gold";
 
     private object? m_lastAttacker;
 
