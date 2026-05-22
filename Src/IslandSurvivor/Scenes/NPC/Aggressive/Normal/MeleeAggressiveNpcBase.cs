@@ -47,7 +47,7 @@ public partial class MeleeAggressiveNpcBase : AggressiveNpcBase
                 string direction = (m_animatedSprite != null && m_animatedSprite.FlipH) ? "Left" : "Right";
 
                 // Si la gestion du son n'est pas incluse dans TryAttack, vous pouvez la mettre ici :
-                AudioStream attackStream = GD.Load<AudioStream>("res://Assets/Sounds/Combat/enemy_attack.wav");
+                AudioStream attackStream = GD.Load<AudioStream>("res://Assets/Audio/kenney_impact-sounds/Audio/jofae-swing-whoosh-110410.mp3");
                 if (attackStream != null)
                 {
                     IslandSurvivor.Globals.AudioManager.Instance?.PlaySound2D(attackStream, GlobalPosition);

@@ -10,6 +10,7 @@ namespace UnitTests.Core.Stats
         public int Health { get; private set; }
         public bool IsDead => Health <= 0;
         public object? LastAttacker { get; private set; }
+        public string NpcType { get; set; } = "FakeNpc";
 
         public FakeDamageableEntity(int initialHealth)
         {

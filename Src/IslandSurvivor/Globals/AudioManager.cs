@@ -60,7 +60,7 @@ public partial class AudioManager : Node
         // Enemy Sounds
         RegisterSound("Enemy_Swing_Default", "res://Assets/Audio/kenney_impact-sounds/Audio/jofae-swing-whoosh-110410.mp3");
         RegisterSound("Enemy_Hurt_Default", "res://Assets/Audio/kenney_impact-sounds/Audio/impactGlass_medium_003.ogg");
-        RegisterSound("Enemy_Death_Default", "res://Assets/Sounds/Combat/enemy_death.wav");
+        RegisterSound("Enemy_Death_Default", "res://Assets/Audio/kenney_impact-sounds/Audio/001_we-lost.wav");
 
         // Specific Enemy Sounds (demonstrating separation)
         RegisterSound("Lancer_Attack", "res://Assets/Audio/kenney_impact-sounds/Audio/jofae-swing-whoosh-110410.mp3", -2f); // Slightly quieter

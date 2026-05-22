@@ -2,8 +2,8 @@
 
 [ext_resource type="PackedScene" uid="uid://npcbase12345" path="res://Scenes/NPC/NpcBase.tscn" id="1_scene"]
 [ext_resource type="Script" uid="uid://c6hbk85k2al80" path="res://Scenes/NPC/Aggressive/AggressiveNpcBase.cs" id="2_script"]
-[ext_resource type="AudioStream" uid="uid://p2h5of6j816k" path="res://Assets/Audio/kenney_impact-sounds/Audio/jofae-swing-whoosh-110410.mp3" id="attack_stream"]
-[ext_resource type="AudioStream" uid="uid://cx4x6l0u0r3v" path="res://Assets/Audio/kenney_impact-sounds/Audio/impactGlass_medium_003.ogg" id="hurt_stream"]
+[ext_resource type="AudioStream" uid="uid://c3jjna55qsax6" path="res://Assets/Audio/kenney_impact-sounds/Audio/jofae-swing-whoosh-110410.mp3" id="attack_stream"]
+[ext_resource type="AudioStream" uid="uid://b2l1i3sytynb8" path="res://Assets/Audio/kenney_impact-sounds/Audio/impactGlass_medium_003.ogg" id="hurt_stream"]
 [ext_resource type="Script" uid="uid://bhrvrxhl1h86p" path="res://Nodes/Combat/AttackController.cs" id="4_attack"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_base"]
