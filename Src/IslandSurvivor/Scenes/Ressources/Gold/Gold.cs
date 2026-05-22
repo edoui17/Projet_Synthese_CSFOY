@@ -18,7 +18,13 @@ public partial class Gold : Area2D, IOre, IDamageable
 
     [Export] public string MaterialName { get; set; } = "Or";
     [Export] public string MaterialType { get; set; } = "Gold";
-    [Export] public string IconPath { get; set; } = "res://Assets/TinySwords/Terrain/Gold Resource/Gold_Resource.png";
+    [Export] public string IconPath { get; set; } = "sera a valider";
+
+    [ExportGroup("Audio")]
+    [Export] public float AudioMaxDistance { get; set; } = 2000f;
+    [Export] public float AudioAttenuation { get; set; } = 1f;
+    [Export] public float ImpactVolume { get; set; } = 1.0f;
+    [Export] public float DestroyVolume { get; set; } = 1.0f;
     public string NpcType { get; set; } = "Gold";
 
     private object? m_lastAttacker;
@@ -105,11 +111,7 @@ public partial class Gold : Area2D, IOre, IDamageable
         }
 
         // Try to play destroy sound
-        AudioStream destroyStream = GD.Load<AudioStream>("res://Assets/Sounds/Combat/rock_destroy.wav");
-        if (destroyStream != null)
-        {
-            AudioManager.Instance?.PlaySound2D(destroyStream, GlobalPosition);
-        }
+        AudioManager.Instance?.PlaySound2D("Resource_Mining_1", GlobalPosition, p_volumeLinear: DestroyVolume, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
 
         QueueFree();
     }
@@ -130,10 +132,9 @@ public partial class Gold : Area2D, IOre, IDamageable
         this.PlayShake();
 
         // Try to play impact sound
-        AudioStream impactStream = GD.Load<AudioStream>("res://Assets/Sounds/Combat/rock_impact.wav");
-        if (impactStream != null)
+        if (Stats.GetCurrentValue(StatType.Health) > 0)
         {
-            AudioManager.Instance?.PlaySound2D(impactStream, GlobalPosition);
+            AudioManager.Instance?.PlaySound2D("Resource_Mining_1", GlobalPosition, p_volumeLinear: ImpactVolume, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
         }
     }
 }

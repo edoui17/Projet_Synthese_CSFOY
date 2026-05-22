@@ -105,3 +105,14 @@ frame_progress = 0.18821257
 [node name="StatManager" parent="." unique_id=1475410971 instance=ExtResource("3_2xutj")]
 EntityType = 2
 MaxHealth = 20.0
+
+[node name="DestructionParticles" type="GPUParticles2D" parent="." unique_id=459622565]
+position = Vector2(1, 1)
+emitting = false
+texture = ExtResource("4_2xutj")
+one_shot = true
+process_material = SubResource("ParticleProcessMaterial_j008p")
+
+[node name="AudioStreamAutomnTree" type="AudioStreamPlayer2D" parent="." unique_id=233106588]
+max_distance = 15.0
+bus = &"SFX"

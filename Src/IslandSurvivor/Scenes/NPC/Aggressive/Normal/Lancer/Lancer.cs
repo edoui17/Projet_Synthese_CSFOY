@@ -3,6 +3,7 @@ namespace IslandSurvivor.Scenes.NPC.Aggressive;
 using Godot;
 using IslandSurvivor.Logic.Entities;
 using Core.Managers.Stats;
+using IslandSurvivor.Globals;
 
 public partial class Lancer : MeleeAggressiveNpcBase
 {
@@ -22,6 +23,7 @@ public partial class Lancer : MeleeAggressiveNpcBase
 
     public override void _Ready()
     {
+        AttackSoundKey = "Lancer_Attack";
         Stats = GetNodeOrNull<IslandSurvivor.Nodes.StatManager>("StatManager");
         if (Stats == null)
         {

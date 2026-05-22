@@ -40,3 +40,7 @@ texture = ExtResource("2_av1go")
 [node name="StatManager" parent="." unique_id=1475410971 instance=ExtResource("3_g4wyb")]
 EntityType = 2
 MaxHealth = 30.0
+
+[node name="AudioStreamGold" type="AudioStreamPlayer2D" parent="." unique_id=1547532638]
+max_distance = 15.0
+bus = &"SFX"

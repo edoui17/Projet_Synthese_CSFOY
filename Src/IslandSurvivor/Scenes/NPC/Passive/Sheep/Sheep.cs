@@ -1,5 +1,6 @@
 namespace IslandSurvivor.Scenes.NPC.Passive;
 
+using IslandSurvivor.Logic.Entities;
 using Core.Domain;
 using Core.Managers.Stats;
 using Godot;
@@ -9,23 +10,43 @@ using System;
 
 public partial class Sheep : PassiveNpcBase
 {
+    [ExportGroup("Audio Override")]
+    [Export] public AudioStream? IdleSound { get; set; }
+    [Export] public string IdleSoundKey { get; set; } = "Sheep_Idle";
+    [Export] public float IdleVolume { get; set; } = 1.0f;
+
+    private Timer? m_idleSoundTimer;
+
     public override void _Ready()
     {
         base._Ready();
         IdleSpeed = 30.0f;
+
+        // Initialize default keys if not set
+        if (string.IsNullOrEmpty(HurtSoundKey)) HurtSoundKey = "Sheep_Hurt";
+        if (string.IsNullOrEmpty(DeathSoundKey)) DeathSoundKey = "Resource_Mining_1";
+        if (AudioMaxDistance >= 2000f) AudioMaxDistance = 275f; // Sheep specific default
+
+        m_idleSoundTimer = new Timer();
+        m_idleSoundTimer.WaitTime = new Random().Next(5, 20);
+        m_idleSoundTimer.OneShot = false;
+        m_idleSoundTimer.Timeout += OnIdleSoundTimeout;
+        AddChild(m_idleSoundTimer);
+        m_idleSoundTimer.Start();
     }
 
-    protected override void OnDamageTaken(Node2D p_attacker)
+    private void OnIdleSoundTimeout()
     {
-        base.OnDamageTaken(p_attacker);
-
-        AudioStream hurtStream = GD.Load<AudioStream>("res://Assets/Sounds/Combat/animal_hurt.wav");
-        if (hurtStream != null)
+        if (CurrentState != NpcStates.DEAD)
         {
-            AudioManager.Instance?.PlaySound2D(hurtStream, GlobalPosition);
+            if (IdleSound != null)
+                AudioManager.Instance?.PlaySound2D(IdleSound, GlobalPosition, p_volumeLinear: IdleVolume, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
+            else if (!string.IsNullOrEmpty(IdleSoundKey))
+                AudioManager.Instance?.PlaySound2D(IdleSoundKey, GlobalPosition, p_volumeLinear: IdleVolume, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
+
+            m_idleSoundTimer!.WaitTime = new Random().Next(5, 20);
         }
     }
-
     protected override void HandleDeath(object? p_attacker = null)
     {
         m_passiveController.SetDead();
@@ -92,12 +113,24 @@ public partial class Sheep : PassiveNpcBase
             }
         }
 
-        AudioStream deathStream = GD.Load<AudioStream>("res://Assets/Sounds/Combat/animal_death.wav");
-        if (deathStream != null)
-        {
-            AudioManager.Instance?.PlaySound2D(deathStream, GlobalPosition);
-        }
+        if (DeathSound != null)
+            AudioManager.Instance?.PlaySound2D(DeathSound, GlobalPosition, p_volumeLinear: DeathVolume, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
+        else if (!string.IsNullOrEmpty(DeathSoundKey))
+            AudioManager.Instance?.PlaySound2D(DeathSoundKey, GlobalPosition, p_volumeLinear: DeathVolume, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
+
 
         QueueFree();
+    }
+    protected override void OnDamageTaken(Node2D p_attacker)
+    {
+        base.OnDamageTaken(p_attacker);
+
+        if (Stats.GetCurrentValue(StatType.Health) > 0)
+        {
+            if (HurtSound != null)
+                AudioManager.Instance?.PlaySound2D(HurtSound, GlobalPosition, p_volumeLinear: HurtVolume, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
+            else if (!string.IsNullOrEmpty(HurtSoundKey))
+                AudioManager.Instance?.PlaySound2D(HurtSoundKey, GlobalPosition, p_volumeLinear: HurtVolume, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
+        }
     }
 }

@@ -14,6 +14,18 @@ public partial class NpcBase : CharacterBody2D, INpc, IDamageable
 
     [Export] public StatManager Stats { get; set; } = null!;
 
+    [ExportGroup("Audio")]
+    [Export] public AudioStream? HurtSound { get; set; }
+    [Export] public string HurtSoundKey { get; set; } = string.Empty;
+    [Export] public float HurtVolume { get; set; } = 1.0f;
+
+    [Export] public AudioStream? DeathSound { get; set; }
+    [Export] public string DeathSoundKey { get; set; } = string.Empty;
+    [Export] public float DeathVolume { get; set; } = 1.0f;
+
+    [Export] public float AudioMaxDistance { get; set; } = 2000f;
+    [Export] public float AudioAttenuation { get; set; } = 1f;
+
     protected MovementController? m_movementController;
     protected AnimatedSprite2D? m_animatedSprite;
 
