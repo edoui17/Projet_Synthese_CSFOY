@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://base_beam_attack_uid"]
 
-[ext_resource type="Script" uid="uid://base_beam_script_uid" path="res://Scenes/Projectiles/BaseBeamAttack.cs" id="1_base_beam"]
+[ext_resource type="Script" uid="uid://6hyod756yom6" path="res://Scenes/Projectiles/BaseBeamAttack.cs" id="1_base_beam"]
 
 [node name="BaseBeamAttack" type="Node2D"]
 script = ExtResource("1_base_beam")

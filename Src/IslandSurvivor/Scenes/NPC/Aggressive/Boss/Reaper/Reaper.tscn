@@ -4,6 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://dp5xwdfvc4aoi" path="res://Assets/Corrupted/Reaper/Reaper.png" id="2_dp46e"]
 [ext_resource type="Script" uid="uid://drd3hylg8xmy3" path="res://Scenes/NPC/Aggressive/Boss/Reaper/Reaper.cs" id="3_reaper_script"]
 [ext_resource type="Texture2D" uid="uid://cntam4kvbein5" path="res://Assets/Corrupted/Reaper/PerSyn.png" id="4_qlfne"]
+[ext_resource type="PackedScene" uid="uid://c3qpgtamtdyll" path="res://Scenes/Projectiles/DarkScythe/DarkScythe.tscn" id="5_scythe"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_c0sqb"]
 atlas = ExtResource("2_dp46e")
@@ -688,8 +689,9 @@ radius = 602.0407
 script = ExtResource("3_reaper_script")
 NormalAttackAnimationName = "MeleeAttackNormal"
 EnragedAttackAnimationName = "MeleeAttackEnraged"
+ProjectileScene = ExtResource("5_scythe")
 MeleeAttackAnimationName = "Attack_Melee"
-RangedAttackAnimationName = "Attack_Ranged"
+RangedAttackAnimationName = "ScytheThrow"
 
 [node name="AnimatedSprite2D" parent="." index="0"]
 scale = Vector2(5, 5)
