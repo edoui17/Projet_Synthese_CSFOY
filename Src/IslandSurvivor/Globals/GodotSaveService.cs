@@ -1,3 +1,6 @@
+using System;
+using System.Security.Cryptography;
+using System.Text;
 using Godot;
 using Core.Interfaces;
 
@@ -79,6 +82,15 @@ public class GodotSaveService : ISaveService
 
         file.StoreString(p_jsonData);
         file.Close();
+
+        // SECURITY ENHANCEMENT: Implement SHA256 integrity checksum verification to flag file tampering.
+        string checksumPath = path + ".sig";
+        using FileAccess sigFile = FileAccess.Open(checksumPath, FileAccess.ModeFlags.Write);
+        if (sigFile != null)
+        {
+            sigFile.StoreString(ComputeChecksum(p_jsonData));
+            sigFile.Close();
+        }
     }
 
     public string LoadData(string p_fileName)
@@ -103,6 +115,44 @@ public class GodotSaveService : ISaveService
         string content = file.GetAsText();
         file.Close();
 
+        // SECURITY ENHANCEMENT: Verify SHA256 integrity checksum to prevent data tampering.
+        string checksumPath = path + ".sig";
+        if (FileAccess.FileExists(checksumPath))
+        {
+            using FileAccess sigFile = FileAccess.Open(checksumPath, FileAccess.ModeFlags.Read);
+            if (sigFile != null)
+            {
+                string expectedChecksum = sigFile.GetAsText().Trim();
+                sigFile.Close();
+
+                if (expectedChecksum != ComputeChecksum(content))
+                {
+                    GD.PrintErr($"[SECURITY LOG] GodotSaveService: Checksum validation failed for '{path}'. Data may have been tampered with.");
+                    return string.Empty;
+                }
+            }
+        }
+        else
+        {
+            // If signature doesn't exist, we fallback to returning the content (e.g., old saves)
+            // Or log a warning.
+            GD.Print($"GodotSaveService: No signature found for '{path}'. Proceeding without validation.");
+        }
+
         return content;
+    }
+
+    private static string ComputeChecksum(string p_data)
+    {
+        using (SHA256 sha256 = SHA256.Create())
+        {
+            byte[] hashBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(p_data));
+            StringBuilder sb = new StringBuilder();
+            foreach (byte b in hashBytes)
+            {
+                sb.Append(b.ToString("x2"));
+            }
+            return sb.ToString();
+        }
     }
 }
