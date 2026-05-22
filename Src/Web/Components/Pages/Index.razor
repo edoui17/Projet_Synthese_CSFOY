@@ -59,8 +59,8 @@
                 var entry = playersList[0];
                 <div class="solo">
                     <img src="images/solobar.png" alt="rank bar">
-                    <h3>@entry.Rank. @entry.Player.Username.ToUpper()</h3>
-                    <h2>@GetStatDisplay(entry.Player)</h2>
+                    <h3>@entry.Rank. @entry.Entry.Username.ToUpper()</h3>
+                    <h2>@GetStatDisplay(entry.Entry)</h2>
                 </div>
             }
             else
@@ -76,8 +76,8 @@
 
                     <div class="@cssClass">
                         <img src="@barImage" alt="rank bar">
-                        <h3>@entry.Rank. @entry.Player.Username.ToUpper()</h3>
-                        <h2>@GetStatDisplay(entry.Player)</h2>
+                        <h3>@entry.Rank. @entry.Entry.Username.ToUpper()</h3>
+                        <h2>@GetStatDisplay(entry.Entry)</h2>
                     </div>
                 }
             }
@@ -110,7 +110,7 @@
         }
     }
 
-    private IEnumerable<(int Rank, PlayerLeaderboardEntry Player)> FilteredAndSortedPlayers
+    private IEnumerable<(int Rank, PlayerLeaderboardEntry Entry)> FilteredAndSortedPlayers
     {
         get
         {
