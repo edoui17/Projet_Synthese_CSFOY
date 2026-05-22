@@ -303,3 +303,25 @@ When triggering updates (e.g., UI upgrades emitting events to a decoupled compon
 ### Quirks Godot/C#
 - **Rotation Procédurale** : La rotation du spinner dans `_Process` doit utiliser `delta` pour assurer une fluidité constante indépendamment du framerate.
 - **Transition de Scène et ProcessMode** : Lors de l'appel à `ChangeSceneToFile`, la nouvelle scène est chargée avec son propre `ProcessMode` (généralement `Inherit`), ce qui réactive implicitement le traitement du jeu après la disparition de l'écran de chargement.
+
+## 2026-05-25 - US 20.0.5 : Sécurité, Résilience et Validation Anti-Cheat
+
+### Architecture de Validation et Anti-Cheat
+- **Validation Défensive** : Introduction de `ProfileValidator` (Core.Utils) pour intercepter les données de profil aberrantes avant leur injection dans le moteur.
+- **Seuils de Sécurité** :
+  - Santé (Health) : doit être > 0 et <= 100.
+  - Attaque, Vitesse, Chance (Attack, Speed, Luck) : doivent être >= 0 et < 999.
+- **Comportement sur Échec** : En cas de détection de valeurs invalides, le client journalise une alerte d'intégrité et bascule automatiquement sur le profil "Guest" par défaut pour protéger l'expérience de jeu.
+
+### Résilience et Protection contre le Spam (Backoff)
+- **Retry Backoff** : Implémentation d'un mécanisme de temporisation linéaire sur le bouton de tentative de reconnexion (`RetryRequested`).
+- **Formule de Délai** : `Délai = min(3 * m_retryAttempt, 15)`. Le compteur est réinitialisé lors d'une synchronisation réussie.
+- **Feedback UX** : Le bouton Retry est désactivé durant le cooldown et affiche un compte à rebours dynamique : "Réessayer ({0}s)".
+
+### Transition Hors Ligne Transparente
+- **Feedback de Chargement** : L'utilisation de "Continuer Hors Ligne" déclenche un message d'information temporaire ("Connexion impossible. Lancement en mode hors ligne avec les données locales...") pendant 1.5 seconde via `ToSignal(GetTree().CreateTimer(1.5f), "timeout")`, assurant une UX fluide et transparente.
+
+### Standardisation de l'Authentification et Infrastructure
+- **Validation des Credentials** : Le flux de Login du jeu valide systématiquement les identifiants (Username/Password) auprès de l'endpoint d'authentification de l'API (`/api/auth/login`) avant d'autoriser l'accès aux fonctionnalités en ligne.
+- **Dépendance SQL Server** : Le serveur de base de données (SQL Server) doit être actif et accessible par l'API pour permettre l'authentification initiale et l'obtention du `SessionToken`.
+- **Gestion de l'Indisponibilité (503)** : Si la base de données est arrêtée ou inaccessible, l'API renvoie une erreur 503 (via `ExceptionHandlingMiddleware`). Le client intercepte cette erreur, lève une alerte visuelle et propose le basculement vers le mode hors ligne basé sur le cache local (`user://session.cfg` et `profile_cache.json`).
