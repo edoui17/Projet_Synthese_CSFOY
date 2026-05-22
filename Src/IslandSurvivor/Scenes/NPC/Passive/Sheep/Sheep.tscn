@@ -18,6 +18,7 @@ IdleSound = ExtResource("idle_stream")
 IdleSoundKey = "Sheep_Idle"
 IdleVolume = 1.0
 HurtSound = ExtResource("hurt_stream")
+HurtVolume = 0.3
 DeathSound = ExtResource("death_stream")
 AudioMaxDistance = 275.0
 
