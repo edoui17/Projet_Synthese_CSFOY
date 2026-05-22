@@ -42,7 +42,6 @@ public partial class PassiveNpcBase : NpcBase
             MoveAndSlide();
         }
 
-        // Obstacle avoidance in IDLE state
         if (m_passiveController.CurrentState == NpcStates.IDLE && GetSlideCollisionCount() > 0)
         {
             m_passiveController.ForceNewDirection();

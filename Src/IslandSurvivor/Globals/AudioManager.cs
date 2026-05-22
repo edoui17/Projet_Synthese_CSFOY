@@ -69,7 +69,7 @@ public partial class AudioManager : Node
 
         // Player Sounds
         RegisterSound("Player_Swing", "res://Assets/Audio/kenney_impact-sounds/Audio/jofae-swing-whoosh-110410.mp3");
-        RegisterSound("Player_Hurt", "res://Assets/Audio/kenney_impact-sounds/Audio/freesound_community-alphascream001-98301.mp3");
+        RegisterSound("Player_Hurt", "res://Assets/Audio/kenney_impact-sounds/Audio/002_meow.wav");
         RegisterSound("Player_Death", "res://Assets/Audio/kenney_impact-sounds/Audio/stickypix7996-bell-toll-407826.mp3");
         RegisterSound("Level_Up", "res://Assets/Audio/kenney_impact-sounds/Audio/floraphonic-cute-level-up-2-189851.mp3");
 
