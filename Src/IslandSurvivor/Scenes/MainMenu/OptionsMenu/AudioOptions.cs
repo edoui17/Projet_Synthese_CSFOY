@@ -20,19 +20,25 @@ public partial class AudioOptions : Control
 
     public void _on_master_soudn_h_slider_value_changed(double p_value)
     {
-        AudioServer.SetBusVolumeDb(masterBusIndex, Mathf.LinearToDb((float)p_value));
+        float volumeDb = Mathf.LinearToDb((float)p_value);
+        AudioServer.SetBusVolumeDb(masterBusIndex, volumeDb);
+        AudioServer.SetBusMute(masterBusIndex, p_value <= 0.0001);
         GD.Print("Slider master Modifié");
     }
 
     public void _on_musicslider_value_changed(double p_value)
     {
-        AudioServer.SetBusVolumeDb(musicBusIndex, Mathf.LinearToDb((float)p_value));
+        float volumeDb = Mathf.LinearToDb((float)p_value);
+        AudioServer.SetBusVolumeDb(musicBusIndex, volumeDb);
+        AudioServer.SetBusMute(musicBusIndex, p_value <= 0.0001);
         GD.Print("Slider music Modifié");
     }
 
     public void _on_sfx_slider_value_changed(double p_value)
     {
-        AudioServer.SetBusVolumeDb(sfxBusIndex, Mathf.LinearToDb((float)p_value));
+        float volumeDb = Mathf.LinearToDb((float)p_value);
+        AudioServer.SetBusVolumeDb(sfxBusIndex, volumeDb);
+        AudioServer.SetBusMute(sfxBusIndex, p_value <= 0.0001);
         GD.Print("Slider SFX Modifié");
     }
 }

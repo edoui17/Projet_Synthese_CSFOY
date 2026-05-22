@@ -137,4 +137,5 @@ shape = SubResource("RectangleShape2D_7h8sb")
 
 [node name="AmbientAudio" type="AudioStreamPlayer2D" parent="." unique_id=662136917]
 stream = ExtResource("5_otroc")
+bus = &"SFX"
 max_distance = 250.0

@@ -1,6 +1,9 @@
 [gd_scene format=3 uid="uid://cqo7rlgy61vfa"]
 
 [ext_resource type="Script" uid="uid://1jvbx52ea810" path="res://Scenes/Player/Player.cs" id="1_s0eop"]
+[ext_resource type="AudioStream" uid="uid://cmilf37rvjwh4" path="res://Assets/Audio/kenney_impact-sounds/Audio/freesound_community-alphascream001-98301.mp3" id="6_4wape"]
+[ext_resource type="AudioStream" uid="uid://p2h5of6j816k" path="res://Assets/Audio/kenney_impact-sounds/Audio/jofae-swing-whoosh-110410.mp3" id="attack_stream"]
+[ext_resource type="AudioStream" uid="uid://cax20y5isv3i6" path="res://Assets/Audio/kenney_impact-sounds/Audio/stickypix7996-bell-toll-407826.mp3" id="death_stream"]
 [ext_resource type="PackedScene" uid="uid://biqhbrp7fjfyj" path="res://Nodes/StatsManager/StatsManager.tscn" id="7_stat"]
 [ext_resource type="SpriteFrames" uid="uid://dd8xwmbmwbofx" path="res://Scenes/Player/PlayerFrames.tres" id="8_frames"]
 [ext_resource type="PackedScene" path="res://Nodes/Movement/MovementController.tscn" id="9_mov"]
@@ -26,6 +29,9 @@ collision_layer = 4
 collision_mask = 17
 motion_mode = 1
 script = ExtResource("1_s0eop")
+AttackSound = ExtResource("attack_stream")
+HurtSound = ExtResource("6_4wape")
+DeathSound = ExtResource("death_stream")
 Stats = NodePath("StatManager")
 m_animatedSprite = NodePath("AnimatedSprite2D")
 m_interactionLabel = NodePath("CanvasLayer/InteractionLabel")
@@ -74,6 +80,9 @@ monitorable = false
 shape = SubResource("CircleShape2D_jmcll")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=24708510]
+
+[node name="AudioListener2D" type="AudioListener2D" parent="." unique_id=24708511]
+enabled = true
 
 [node name="MovementController" parent="." unique_id=779695224 node_paths=PackedStringArray("Stats") instance=ExtResource("9_mov")]
 Stats = NodePath("../StatManager")
