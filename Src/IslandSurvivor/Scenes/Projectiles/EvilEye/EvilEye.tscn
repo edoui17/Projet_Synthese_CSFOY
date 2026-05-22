@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://b7ubpucf0500k"]
 
 [ext_resource type="Texture2D" uid="uid://uyptg4g3v3pk" path="res://Assets/Corrupted/MagicAttacks/DarkEyes.png" id="1_6aqnk"]
+[ext_resource type="Script" uid="uid://base_proj_script_uid_ee" path="res://Scenes/Projectiles/EvilEye/EvilEye.cs" id="1_base_ee"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_bttpn"]
 atlas = ExtResource("1_6aqnk")
@@ -235,13 +236,10 @@ animations = [{
 }]
 
 [node name="EvilEye" type="Node2D" unique_id=461922181]
+script = ExtResource("1_base_ee")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=2042434467]
 sprite_frames = SubResource("SpriteFrames_83pnv")
 animation = &"Attack"
 frame = 12
 frame_progress = 0.28532127
-
-[node name="RayCast2D" type="RayCast2D" parent="." unique_id=561150191]
-position = Vector2(-32, -13)
-target_position = Vector2(83, 60)

@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://df74p1t2jmqx6"]
 
-[ext_resource type="Script" uid="uid://base_proj_script_uid" path="res://Logic/Projectiles/BaseProjectile.cs" id="1_base"]
+[ext_resource type="Script" uid="uid://base_proj_script_uid" path="res://Scenes/Projectiles/BaseProjectile.cs" id="1_base"]
 
 [node name="BaseProjectile" type="Area2D"]
 script = ExtResource("1_base")
