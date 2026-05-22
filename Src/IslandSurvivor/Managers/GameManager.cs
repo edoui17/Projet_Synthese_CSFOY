@@ -20,6 +20,7 @@ public partial class GameManager : Node
     private bool m_isGuest = false;
     public bool IsGuest => m_isGuest;
 
+    private int m_retryAttempt = 0;
     private LoadingScreen? m_loadingScreen = null;
 
     public override void _EnterTree()
@@ -59,7 +60,15 @@ public partial class GameManager : Node
                 ProfileResponse? profileResponse = await apiService.GetProfileAsync();
                 if (profileResponse != null)
                 {
+                    if (!ProfileValidator.IsValid(profileResponse))
+                    {
+                        GD.PrintErr("[GameManager] INTEGRITY ALERT: Received corrupted or abnormal profile data. Reverting to Guest mode.");
+                        SetGuestMode();
+                        return;
+                    }
+
                     GD.Print("[GameManager] Session validated successfully. Mapping profile...");
+                    m_retryAttempt = 0; // Reset retry counter on success
                     m_loadingScreen?.ShowLoading("Synchronisation du profil...");
                     PlayerProfile profile = ProfileMapper.MapToDomain(profileResponse);
 
@@ -154,6 +163,9 @@ public partial class GameManager : Node
         GD.Print("[GameManager] Entering Guest Mode.");
         m_isGuest = true;
 
+        m_loadingScreen?.ShowLoading("Connexion impossible. Lancement en mode hors ligne avec les données locales...");
+        await ToSignal(GetTree().CreateTimer(1.5f), SceneTreeTimer.SignalName.Timeout);
+
         IApiService apiService = ServiceRegistry.Instance.ApiService;
         ProfileResponse? cachedProfile = apiService.GetCachedProfile();
 
@@ -178,7 +190,11 @@ public partial class GameManager : Node
 
     public void RetryInitialization()
     {
-        GD.Print("[GameManager] Retrying initialization...");
+        m_retryAttempt++;
+        int cooldown = Mathf.Min(3 * m_retryAttempt, 15);
+        GD.Print($"[GameManager] Retrying initialization (Attempt {m_retryAttempt}, Cooldown: {cooldown}s)...");
+
+        m_loadingScreen?.StartRetryCooldown(cooldown);
         InitializeGameAsync();
     }
 }
