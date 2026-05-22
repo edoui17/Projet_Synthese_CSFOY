@@ -214,7 +214,7 @@ When triggering updates (e.g., UI upgrades emitting events to a decoupled compon
 - **Constat Technique :** Le marshalling des données entre le domaine managé de C# (.NET) et le cœur natif en C++ de Godot a un coût de performance non négligeable.
 - **Règle d'Architecture :**
   - **`System.Collections.Generic` (List, Dictionary, etc.) :** Doit être le standard absolu pour 100% de la logique interne, des calculs du `Core`, et de la gestion de l'état (inventaires, statistiques). Cela permet de conserver des performances natives C# et un accès complet à LINQ.
-  - **`Godot.Collections.Array<T>` / `Dictionary` :** Strictement réservés à la couche d'orchestration (`IslandSurvivor`) et uniquement dans deux scénarios précis : 
+  - **`Godot.Collections.Array<T>` / `Dictionary` :** Strictement réservés à la couche d'orchestration (`IslandSurvivor`) et uniquement dans deux scénarios précis :
     1. Pour exposer des tableaux dans l'Inspecteur Godot via l'attribut `[Export]`.
     2. Pour appeler des méthodes de l'API Godot qui requièrent explicitement ces types de retour.
 - Cette ségrégation garantit que le projet `Core` reste totalement agnostique et hautement performant.
@@ -293,3 +293,13 @@ When triggering updates (e.g., UI upgrades emitting events to a decoupled compon
 - **Linear Volume Standard**: Refactored the entire audio system to use linear volume (0.0 to 1.0) in the Godot Inspector instead of decibels (dB). This provides a more intuitive experience for designers. The `AudioManager` now handles the conversion to dB internally.
 - **N-Tier Audio Inheritance**: Moved shared audio properties (`HurtSound`, `DeathSound`, `AudioMaxDistance`, etc.) to the `NpcBase` class. This enforces architectural consistency across all NPCs (Passive and Aggressive) and simplifies subclass logic.
 - **Desynchronization Fix**: Resolved an issue where inspector changes to `AudioMaxDistance` were seemingly ignored. By uniformizing all `PlaySound2D` calls to explicitly pass the exported properties and ensuring the `AudioManager` correctly applies them to the pooled players, full synchronization between the IDE and runtime was achieved.
+## 2026-05-25 - US 20.0.4 : Architecture de l'Écran de Chargement et UX de Synchronisation
+
+### Découvertes Architecturales
+- **Gestion du ProcessMode au Démarrage** : Pour bloquer efficacement les entrées avant le chargement de la première scène de gameplay, le `GameManager` (Autoload) doit appliquer `ProcessModeEnum.Disabled` sur la `CurrentScene` du `SceneTree`.
+- **Découplage UI/Logique via Signaux** : L'utilisation de signaux personnalisés (`RetryRequested`, `OfflineModeRequested`) dans `LoadingScreen.cs` permet d'éviter un couplage fort avec le `GameManager`, facilitant la maintenance et les tests.
+- **Blocage des Inputs via CanvasLayer** : Un `CanvasLayer` avec une couche élevée (e.g., 128) et un `ColorRect` ayant `MouseFilter = Stop` est la méthode la plus robuste pour intercepter tous les événements d'entrée dans Godot 4.
+
+### Quirks Godot/C#
+- **Rotation Procédurale** : La rotation du spinner dans `_Process` doit utiliser `delta` pour assurer une fluidité constante indépendamment du framerate.
+- **Transition de Scène et ProcessMode** : Lors de l'appel à `ChangeSceneToFile`, la nouvelle scène est chargée avec son propre `ProcessMode` (généralement `Inherit`), ce qui réactive implicitement le traitement du jeu après la disparition de l'écran de chargement.

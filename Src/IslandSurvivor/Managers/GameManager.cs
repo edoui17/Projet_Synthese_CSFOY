@@ -6,6 +6,7 @@ using Core.Events;
 using Core.Utils;
 using IslandSurvivor.Globals;
 using IslandSurvivor.Utils;
+using IslandSurvivor.Scenes.UI.LoadingScreen;
 
 namespace IslandSurvivor.Managers;
 
@@ -18,6 +19,8 @@ public partial class GameManager : Node
 
     private bool m_isGuest = false;
     public bool IsGuest => m_isGuest;
+
+    private LoadingScreen? m_loadingScreen = null;
 
     public override void _EnterTree()
     {
@@ -40,12 +43,15 @@ public partial class GameManager : Node
         m_status = AppStatus.Loading;
         GD.Print("[GameManager] Initializing game...");
 
+        ShowLoadingScreen();
+
         IApiService apiService = ServiceRegistry.Instance.ApiService;
         string? storedToken = SessionProvider.GetStoredToken();
 
         if (!string.IsNullOrEmpty(storedToken))
         {
             GD.Print("[GameManager] Found stored token, validating...");
+            m_loadingScreen?.ShowLoading("Validation de la session...");
             apiService.SetSessionToken(storedToken);
 
             try
@@ -54,13 +60,13 @@ public partial class GameManager : Node
                 if (profileResponse != null)
                 {
                     GD.Print("[GameManager] Session validated successfully. Mapping profile...");
+                    m_loadingScreen?.ShowLoading("Synchronisation du profil...");
                     PlayerProfile profile = ProfileMapper.MapToDomain(profileResponse);
 
                     GD.Print("[GameManager] Publishing ProfileLoadedEvent.");
                     ServiceRegistry.Instance.EventBus.Publish(new ProfileLoadedEvent(profile));
 
-                    m_status = AppStatus.Ready;
-                    GetTree().ChangeSceneToFile("res://Scenes/MainMenu/MainMenu/MainMenu.tscn");
+                    await CompleteInitialization("res://Scenes/MainMenu/MainMenu/MainMenu.tscn");
                     return;
                 }
                 else
@@ -74,17 +80,76 @@ public partial class GameManager : Node
             {
                 GD.PrintErr($"[GameManager] Network error during validation: {ex.Message}");
                 m_status = AppStatus.Error;
-                ShowErrorPopup();
+                HandleInitializationError(ex);
                 return;
             }
         }
 
         GD.Print("[GameManager] No valid session. Redirecting to Login.");
-        m_status = AppStatus.Ready;
-        GetTree().ChangeSceneToFile("res://Scenes/Login/Login.tscn");
+        await CompleteInitialization("res://Scenes/Login/Login.tscn");
     }
 
-    public void SetGuestMode()
+    private void ShowLoadingScreen()
+    {
+        if (m_loadingScreen != null) return;
+
+        PackedScene loadingScene = GD.Load<PackedScene>("res://Scenes/UI/LoadingScreen/LoadingScreen.tscn");
+        m_loadingScreen = loadingScene.Instantiate<LoadingScreen>();
+
+        m_loadingScreen.RetryRequested += RetryInitialization;
+        m_loadingScreen.OfflineModeRequested += SetGuestMode;
+
+        AddChild(m_loadingScreen);
+
+        // Lock current scene input/process
+        Node activeScene = GetTree().CurrentScene;
+        if (activeScene != null)
+        {
+            activeScene.ProcessMode = ProcessModeEnum.Disabled;
+        }
+    }
+
+    private async Task CompleteInitialization(string p_targetScene)
+    {
+        m_status = AppStatus.Ready;
+        m_loadingScreen?.ShowLoading("Données chargées");
+
+        // Brief delay for user feedback
+        await Task.Delay(500);
+
+        GetTree().ChangeSceneToFile(p_targetScene);
+
+        // We don't restore ProcessMode here because ChangeSceneToFile will load a new scene
+        // with its default ProcessMode (Inherit).
+        // If we were staying on the same scene, we would restore it.
+
+        HideLoadingScreen();
+    }
+
+    private void HideLoadingScreen()
+    {
+        if (m_loadingScreen != null)
+        {
+            m_loadingScreen.QueueFree();
+            m_loadingScreen = null;
+        }
+    }
+
+    private void HandleInitializationError(System.Exception p_ex)
+    {
+        string message = "Serveur indisponible ou problème de connexion.";
+
+        // In a real scenario, we'd check the exception type or status code.
+        // Assuming we have a way to detect 401:
+        if (p_ex.Message.Contains("401") || p_ex.Message.Contains("Unauthorized"))
+        {
+            message = "Session expirée ou invalide. Veuillez vous reconnecter.";
+        }
+
+        m_loadingScreen?.ShowError(message);
+    }
+
+    public async void SetGuestMode()
     {
         GD.Print("[GameManager] Entering Guest Mode.");
         m_isGuest = true;
@@ -108,20 +173,12 @@ public partial class GameManager : Node
             ServiceRegistry.Instance.EventBus.Publish(new ProfileLoadedEvent(defaultProfile));
         }
 
-        m_status = AppStatus.Ready;
-        GetTree().ChangeSceneToFile("res://Scenes/MainMenu/MainMenu/MainMenu.tscn");
+        await CompleteInitialization("res://Scenes/MainMenu/MainMenu/MainMenu.tscn");
     }
 
     public void RetryInitialization()
     {
+        GD.Print("[GameManager] Retrying initialization...");
         InitializeGameAsync();
-    }
-
-    private void ShowErrorPopup()
-    {
-        GD.PrintErr("[GameManager] ERROR: API inaccessible.");
-        var popupScene = GD.Load<PackedScene>("res://Scenes/UI/ErrorPopup/ErrorPopup.tscn");
-        var popup = popupScene.Instantiate();
-        AddChild(popup);
     }
 }
