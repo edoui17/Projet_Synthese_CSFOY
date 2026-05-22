@@ -21,6 +21,8 @@ public partial class ConiferTree : Area2D, ITree, IDamageable
     [ExportGroup("Audio")]
     [Export] public float AudioMaxDistance { get; set; } = 2000f;
     [Export] public float AudioAttenuation { get; set; } = 1f;
+    [Export] public float ImpactVolume { get; set; } = 1.0f;
+    [Export] public float DestroyVolume { get; set; } = 1.0f;
 
     private object? m_lastAttacker;
 
@@ -66,7 +68,7 @@ public partial class ConiferTree : Area2D, ITree, IDamageable
         var item = new Core.Domain.ResourceItem(EntityId, MaterialName, MaterialType, IconPath);
         SignalManager.Instance.EmitMaterialDestroyed(this, item, quantity);
         
-        AudioManager.Instance?.PlaySound2D("Resource_Rustling", GlobalPosition, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
+        AudioManager.Instance?.PlaySound2D("Resource_Rustling", GlobalPosition, p_volumeLinear: DestroyVolume, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
 
         QueueFree();
     }
@@ -80,7 +82,7 @@ public partial class ConiferTree : Area2D, ITree, IDamageable
 
         if (Stats.GetCurrentValue(StatType.Health) > 0)
         {
-            AudioManager.Instance?.PlaySound2D("Impact_Wood_Heavy", GlobalPosition, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
+            AudioManager.Instance?.PlaySound2D("Impact_Wood_Heavy", GlobalPosition, p_volumeLinear: ImpactVolume, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
         }
 
         this.PlayHitFlash();

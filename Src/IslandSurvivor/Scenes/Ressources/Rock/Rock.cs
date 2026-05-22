@@ -23,6 +23,8 @@ public partial class Rock : Area2D, IOre, IDamageable
     [ExportGroup("Audio")]
     [Export] public float AudioMaxDistance { get; set; } = 2000f;
     [Export] public float AudioAttenuation { get; set; } = 1f;
+    [Export] public float ImpactVolume { get; set; } = 1.0f;
+    [Export] public float DestroyVolume { get; set; } = 1.0f;
 
     private object? m_lastAttacker;
 
@@ -85,7 +87,7 @@ public partial class Rock : Area2D, IOre, IDamageable
         }
 
         // Try to play destroy sound impactMining_002
-        AudioManager.Instance?.PlaySound2D("Resource_Mining_2", GlobalPosition, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
+        AudioManager.Instance?.PlaySound2D("Resource_Mining_2", GlobalPosition, p_volumeLinear: DestroyVolume, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
 
         QueueFree();
     }
@@ -108,7 +110,7 @@ public partial class Rock : Area2D, IOre, IDamageable
         // Try to play impact sound
         if (Stats.GetCurrentValue(StatType.Health) > 0)
         {
-            AudioManager.Instance?.PlaySound2D("Resource_Mining_2", GlobalPosition, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
+            AudioManager.Instance?.PlaySound2D("Resource_Mining_2", GlobalPosition, p_volumeLinear: ImpactVolume, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
         }
     }
 }

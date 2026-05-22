@@ -23,21 +23,10 @@ public partial class AggressiveNpcBase : NpcBase, IEnemy
     [Export] public float BaseXp { get; set; } = 30.0f;
     [Export] public float XpMultiplier { get; set; } = 0.2f;
 
-    [ExportGroup("Audio")]
+    [ExportGroup("Audio Override")]
     [Export] public AudioStream? AttackSound { get; set; }
     [Export] public string AttackSoundKey { get; set; } = "Enemy_Swing_Default";
-    [Export] public float AttackSoundVolume { get; set; } = 0f;
-
-    [Export] public AudioStream? HurtSound { get; set; }
-    [Export] public string HurtSoundKey { get; set; } = "Enemy_Hurt_Default";
-    [Export] public float HurtSoundVolume { get; set; } = 0f;
-
-    [Export] public AudioStream? DeathSound { get; set; }
-    [Export] public string DeathSoundKey { get; set; } = "Enemy_Death_Default";
-    [Export] public float DeathSoundVolume { get; set; } = 0f;
-
-    [Export] public float AudioMaxDistance { get; set; } = 2000f;
-    [Export] public float AudioAttenuation { get; set; } = 1f;
+    [Export] public float AttackVolume { get; set; } = 1.0f;
 
     protected IAgressorController m_agressorController;
     protected AttackController? m_attackController;
@@ -55,6 +44,10 @@ public partial class AggressiveNpcBase : NpcBase, IEnemy
     public override void _Ready()
     {
         base._Ready();
+
+        // Initialize default keys if not set
+        if (string.IsNullOrEmpty(HurtSoundKey)) HurtSoundKey = "Enemy_Hurt_Default";
+        if (string.IsNullOrEmpty(DeathSoundKey)) DeathSoundKey = "Enemy_Death_Default";
 
         InitializeController();
 
@@ -256,9 +249,9 @@ public partial class AggressiveNpcBase : NpcBase, IEnemy
     protected void PlayAttackSound()
     {
         if (AttackSound != null)
-            AudioManager.Instance?.PlaySound2D(AttackSound, GlobalPosition, AttackSoundVolume, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
-        else
-            AudioManager.Instance?.PlaySound2D(AttackSoundKey, GlobalPosition, AttackSoundVolume, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
+            AudioManager.Instance?.PlaySound2D(AttackSound, GlobalPosition, p_volumeLinear: AttackVolume, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
+        else if (!string.IsNullOrEmpty(AttackSoundKey))
+            AudioManager.Instance?.PlaySound2D(AttackSoundKey, GlobalPosition, p_volumeLinear: AttackVolume, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
     }
 
     protected override void OnDamageTaken(Node2D p_attacker)
@@ -267,9 +260,9 @@ public partial class AggressiveNpcBase : NpcBase, IEnemy
         m_targetPlayer = p_attacker;
         
         if (HurtSound != null)
-            AudioManager.Instance?.PlaySound2D(HurtSound, GlobalPosition, HurtSoundVolume, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
-        else
-            AudioManager.Instance?.PlaySound2D(HurtSoundKey, GlobalPosition, HurtSoundVolume, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
+            AudioManager.Instance?.PlaySound2D(HurtSound, GlobalPosition, p_volumeLinear: HurtVolume, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
+        else if (!string.IsNullOrEmpty(HurtSoundKey))
+            AudioManager.Instance?.PlaySound2D(HurtSoundKey, GlobalPosition, p_volumeLinear: HurtVolume, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
     }
 
     protected override void HandleDeath(object? p_attacker = null)
@@ -277,9 +270,9 @@ public partial class AggressiveNpcBase : NpcBase, IEnemy
         m_agressorController.SetDead();
 
         if (DeathSound != null)
-            AudioManager.Instance?.PlaySound2D(DeathSound, GlobalPosition, DeathSoundVolume, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
+            AudioManager.Instance?.PlaySound2D(DeathSound, GlobalPosition, p_volumeLinear: DeathVolume, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
         else if (!string.IsNullOrEmpty(DeathSoundKey))
-            AudioManager.Instance?.PlaySound2D(DeathSoundKey, GlobalPosition, DeathSoundVolume, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
+            AudioManager.Instance?.PlaySound2D(DeathSoundKey, GlobalPosition, p_volumeLinear: DeathVolume, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
 
         if (ServiceRegistry.Instance != null)
         {

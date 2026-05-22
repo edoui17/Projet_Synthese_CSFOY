@@ -32,15 +32,15 @@ public partial class Player : CharacterBody2D, IDamageable
     [ExportGroup("Audio")]
     [Export] public AudioStream? AttackSound { get; set; }
     [Export] public string AttackSoundKey { get; set; } = "Player_Swing";
-    [Export] public float AttackSoundVolume { get; set; } = 0f;
+    [Export] public float AttackVolume { get; set; } = 1.0f;
 
     [Export] public AudioStream? HurtSound { get; set; }
     [Export] public string HurtSoundKey { get; set; } = "Player_Hurt";
-    [Export] public float HurtSoundVolume { get; set; } = -10f;
+    [Export] public float HurtVolume { get; set; } = 0.3f; // Default was -10dB which is roughly 0.316 linear
 
     [Export] public AudioStream? DeathSound { get; set; }
     [Export] public string DeathSoundKey { get; set; } = "Player_Death";
-    [Export] public float DeathSoundVolume { get; set; } = 0f;
+    [Export] public float DeathVolume { get; set; } = 1.0f;
 
     [ExportGroup("Attack")]
     [Export] private Area2D? m_weaponAreaRight;
@@ -132,9 +132,9 @@ public partial class Player : CharacterBody2D, IDamageable
     {
         // Play attack swing sound
         if (AttackSound != null)
-            AudioManager.Instance?.PlaySound2D(AttackSound, GlobalPosition, AttackSoundVolume);
-        else
-            AudioManager.Instance?.PlaySound2D(AttackSoundKey, GlobalPosition, AttackSoundVolume);
+            AudioManager.Instance?.PlaySound2D(AttackSound, GlobalPosition, p_volumeLinear: AttackVolume);
+        else if (!string.IsNullOrEmpty(AttackSoundKey))
+            AudioManager.Instance?.PlaySound2D(AttackSoundKey, GlobalPosition, p_volumeLinear: AttackVolume);
 
         if (m_animatedSprite != null)
         {
@@ -454,9 +454,9 @@ public partial class Player : CharacterBody2D, IDamageable
 
         // Play hurt sound
         if (HurtSound != null)
-            AudioManager.Instance?.PlaySound2D(HurtSound, GlobalPosition, HurtSoundVolume);
-        else
-            AudioManager.Instance?.PlaySound(HurtSoundKey, HurtSoundVolume);
+            AudioManager.Instance?.PlaySound2D(HurtSound, GlobalPosition, p_volumeLinear: HurtVolume);
+        else if (!string.IsNullOrEmpty(HurtSoundKey))
+            AudioManager.Instance?.PlaySound(HurtSoundKey, p_volumeLinear: HurtVolume);
 
         // Lightweight camera shake
         Camera2D camera = GetNodeOrNull<Camera2D>("Camera2D");
@@ -473,9 +473,9 @@ public partial class Player : CharacterBody2D, IDamageable
 
         // Play death sound
         if (DeathSound != null)
-            AudioManager.Instance?.PlaySound2D(DeathSound, GlobalPosition, DeathSoundVolume);
-        else
-            AudioManager.Instance?.PlaySound(DeathSoundKey, DeathSoundVolume);
+            AudioManager.Instance?.PlaySound2D(DeathSound, GlobalPosition, p_volumeLinear: DeathVolume);
+        else if (!string.IsNullOrEmpty(DeathSoundKey))
+            AudioManager.Instance?.PlaySound(DeathSoundKey, p_volumeLinear: DeathVolume);
 
         if (m_animatedSprite != null)
         {
