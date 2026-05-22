@@ -110,15 +110,16 @@ radius = 4.5
 scale = Vector2(2.5, 2.5)
 script = ExtResource("2_byklq")
 ReturnTime = 1.5
+SpinSpeed = 15.0
 MaxScaleMultiplier = 5.0
 DestroyOnImpact = false
 
 [node name="AnimatedSprite2D" parent="." index="0"]
 sprite_frames = SubResource("SpriteFrames_j8jeg")
 animation = &"Attack"
-frame = 6
-frame_progress = 0.22328918
+frame = 12
+frame_progress = 1.0
 
 [node name="CollisionShape2D" parent="." index="1"]
-position = Vector2(-4.800001, 6.8)
+position = Vector2(-4.7683716e-07, 6.7999997)
 shape = SubResource("CircleShape2D_s5lsp")
