@@ -1,15 +1,32 @@
+namespace IslandSurvivor.Scenes.Projectiles;
+
 using Godot;
-using System;
+using IslandSurvivor.Logic.Projectiles;
 
-public partial class DarkScythe : Area2D
+public partial class DarkScythe : BaseProjectile
 {
-    // Called when the node enters the scene tree for the first time.
-    public override void _Ready()
-    {
-    }
+    private bool m_isReturning = false;
+    private float m_flightTime = 0.0f;
+    [Export] public float ReturnTime { get; set; } = 1.5f;
 
-    // Called every frame. 'delta' is the elapsed time since the previous frame.
-    public override void _Process(double delta)
+    public override void _PhysicsProcess(double p_delta)
     {
+        if (!m_isFired) return;
+
+        m_flightTime += (float)p_delta;
+
+        if (m_flightTime >= ReturnTime && !m_isReturning)
+        {
+            m_isReturning = true;
+            m_velocity = -m_velocity; // Reverse direction
+        }
+
+        Position += m_velocity * (float)p_delta;
+
+        m_lifeTimer -= (float)p_delta;
+        if (m_lifeTimer <= 0)
+        {
+            QueueFree();
+        }
     }
 }

@@ -1,13 +1,11 @@
-[gd_scene format=3 uid="uid://crca7kdilqogk"]
+[gd_scene load_steps=7 format=3 uid="uid://crca7kdilqogk"]
 
-[ext_resource type="Script" uid="uid://ctj00w1v7xxqm" path="res://Scenes/Projectiles/Arrow/Arrow.cs" id="1_qaq63"]
-[ext_resource type="Texture2D" uid="uid://bxj0m434jlpco" path="res://Assets/TinySwords/Sprites/Archer/Arrow/Arrow.png" id="2_aqxaj"]
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_qaq63"]
-size = Vector2(37, 6)
+[ext_resource type="PackedScene" uid="uid://df74p1t2jmqx6" path="res://Logic/Projectiles/BaseProjectile.tscn" id="1_base"]
+[ext_resource type="Script" uid="uid://ctj00w1v7xxqm" path="res://Scenes/Projectiles/Arrow/Arrow.cs" id="2_qaq63"]
+[ext_resource type="Texture2D" uid="uid://bxj0m434jlpco" path="res://Assets/TinySwords/Sprites/Archer/Arrow/Arrow.png" id="3_aqxaj"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_wgjhf"]
-atlas = ExtResource("2_aqxaj")
+atlas = ExtResource("3_aqxaj")
 region = Rect2(0, 0, 64, 64)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_70wij"]
@@ -21,16 +19,19 @@ animations = [{
 "speed": 1.0
 }]
 
-[node name="Arrow" type="Area2D" unique_id=846892666]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_qaq63"]
+size = Vector2(37, 6)
+
+[node name="Arrow" instance=ExtResource("1_base")]
 collision_mask = 15
-script = ExtResource("1_qaq63")
+script = ExtResource("2_qaq63")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=805121935]
-position = Vector2(2.5, 0)
-shape = SubResource("RectangleShape2D_qaq63")
-
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1296619776]
+[node name="AnimatedSprite2D" parent="." index="0"]
 position = Vector2(1, -2)
 scale = Vector2(0.6, 0.6)
 sprite_frames = SubResource("SpriteFrames_70wij")
 animation = &"Attack"
+
+[node name="CollisionShape2D" parent="." index="1"]
+position = Vector2(2.5, 0)
+shape = SubResource("RectangleShape2D_qaq63")
