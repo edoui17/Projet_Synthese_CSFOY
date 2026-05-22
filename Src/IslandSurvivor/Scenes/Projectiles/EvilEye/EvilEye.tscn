@@ -1,8 +1,8 @@
 [gd_scene format=3 uid="uid://b7ubpucf0500k"]
 
 [ext_resource type="Texture2D" uid="uid://uyptg4g3v3pk" path="res://Assets/Corrupted/MagicAttacks/DarkEyes.png" id="1_6aqnk"]
-[ext_resource type="Script" uid="uid://base_proj_script_uid_ee" path="res://Scenes/Projectiles/EvilEye/EvilEye.cs" id="1_base_ee"]
-[ext_resource type="PackedScene" uid="uid://base_beam_attack_uid" path="res://Scenes/Projectiles/BaseBeamAttack.tscn" id="2_base_beam"]
+[ext_resource type="Script" uid="uid://13lre5tyi6ni" path="res://Scenes/Projectiles/EvilEye/EvilEye.cs" id="1_base_ee"]
+[ext_resource type="PackedScene" path="res://Scenes/Projectiles/BaseBeamAttack.tscn" id="2_base_beam"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_bttpn"]
 atlas = ExtResource("1_6aqnk")
@@ -236,10 +236,15 @@ animations = [{
 "speed": 10.0
 }]
 
-[node name="EvilEye" instance=ExtResource("2_base_beam") unique_id=461922181]
+[node name="EvilEye" unique_id=461922181 instance=ExtResource("2_base_beam")]
+scale = Vector2(3, 3)
 script = ExtResource("1_base_ee")
+LaserHitGroundFrame = 10
+SweepStartFrame = 13
+SweepEndFrame = 18
+ClosingEyeFrame = 21
 
-[node name="AnimatedSprite2D" parent="." unique_id=2042434467]
+[node name="AnimatedSprite2D" parent="." index="0"]
 sprite_frames = SubResource("SpriteFrames_83pnv")
 animation = &"Attack"
 frame = 12

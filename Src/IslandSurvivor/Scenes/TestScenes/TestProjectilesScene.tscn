@@ -1,7 +1,8 @@
-[gd_scene format=3 uid="uid://test_projectiles_uid"]
+[gd_scene format=3]
 
 [ext_resource type="PackedScene" uid="uid://cqo7rlgy61vfa" path="res://Scenes/Player/Player.tscn" id="1_player"]
-[ext_resource type="Script" uid="uid://test_projectiles_script_uid" path="res://Scenes/TestProjectilesScene.cs" id="4_script"]
+[ext_resource type="Script" uid="uid://cjfmsf5xpuue1" path="res://Scenes/TestScenes/TestProjectilesScene.cs" id="4_script"]
+
 
 [node name="TestProjectilesScene" type="Node2D"]
 script = ExtResource("4_script")

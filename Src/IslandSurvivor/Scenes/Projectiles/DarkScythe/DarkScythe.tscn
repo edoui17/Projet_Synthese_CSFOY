@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=3 uid="uid://c3qpgtamtdyll"]
+[gd_scene format=3 uid="uid://c3qpgtamtdyll"]
 
 [ext_resource type="PackedScene" uid="uid://df74p1t2jmqx6" path="res://Scenes/Projectiles/BaseProjectile.tscn" id="1_base"]
 [ext_resource type="Script" uid="uid://bqnic7m1npy33" path="res://Scenes/Projectiles/DarkScythe/DarkScythe.cs" id="2_byklq"]
@@ -118,9 +118,12 @@ animations = [{
 }]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_s5lsp"]
+radius = 4.5
 
-[node name="DarkScythe" instance=ExtResource("1_base")]
+[node name="DarkScythe" unique_id=307395803 instance=ExtResource("1_base")]
+scale = Vector2(2.5, 2.5)
 script = ExtResource("2_byklq")
+ReturnTime = 1.5
 DestroyOnImpact = false
 
 [node name="AnimatedSprite2D" parent="." index="0"]
@@ -130,5 +133,5 @@ frame = 14
 frame_progress = 1.0
 
 [node name="CollisionShape2D" parent="." index="1"]
-position = Vector2(-6, 3)
+position = Vector2(-17, 6)
 shape = SubResource("CircleShape2D_s5lsp")
