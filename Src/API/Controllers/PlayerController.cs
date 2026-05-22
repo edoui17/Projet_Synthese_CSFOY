@@ -51,6 +51,28 @@ public class PlayerController : ControllerBase
         return Ok(response);
     }
 
+    [HttpGet("profile/{p_pseudonyme}")]
+    public async Task<IActionResult> GetProfileByUsername(string p_pseudonyme)
+    {
+        Player? player = await m_playerRepository.GetByUsernameAsync(p_pseudonyme);
+        if (player == null) return NotFound();
+
+        IEnumerable<InventoryEntry> inventory = await m_inventoryRepository.GetByPlayerIdAsync(player.Id);
+        IEnumerable<GameStats> gameStats = await m_statsRepository.GetTopStatsByPlayerIdAsync(player.Id);
+
+        ProfileResponse response = new ProfileResponse
+        {
+            Username = player.Username,
+            HighScore = player.HighScore,
+            UpdatedAt = player.UpdatedAt,
+            LastSessions = gameStats,
+            Config = player.Config,
+            Inventory = inventory
+        };
+
+        return Ok(response);
+    }
+
     [HttpPost("sync")]
     public async Task<IActionResult> Sync([FromBody] SyncRequest p_request)
     {
