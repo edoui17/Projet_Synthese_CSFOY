@@ -29,6 +29,9 @@ public partial class AggressiveNpcBase : NpcBase, IEnemy
     protected RayCast2D m_lineOfSightRay;
     protected Node2D m_targetPlayer;
 
+    protected StringName m_animMoving = new StringName("Moving");
+    protected StringName m_animIdle = new StringName("Idle");
+
     public override string CurrentState => m_agressorController?.CurrentState ?? NpcStates.IDLE;
     public string EnemyType => "GenericEnemy";
 
@@ -108,8 +111,6 @@ public partial class AggressiveNpcBase : NpcBase, IEnemy
 
         HandleAttackState();
 
-        UpdateAnimation(new Vector2(m_agressorController.CurrentDirection.X, m_agressorController.CurrentDirection.Y));
-
         Vector2 direction = new Vector2(m_agressorController.CurrentDirection.X, m_agressorController.CurrentDirection.Y);
         float targetSpeed = IdleSpeed;
 
@@ -120,8 +121,9 @@ public partial class AggressiveNpcBase : NpcBase, IEnemy
         }
         else if (m_agressorController.CurrentState == NpcStates.CHASE && m_targetPlayer != null)
         {
-            float distanceToPlayer = GlobalPosition.DistanceTo(m_targetPlayer.GlobalPosition);
-            if (distanceToPlayer <= StoppingDistance)
+            float distanceSquaredToPlayer = GlobalPosition.DistanceSquaredTo(m_targetPlayer.GlobalPosition);
+            // Replaced DistanceTo with DistanceSquaredTo to eliminate square root calculation in hot path (_PhysicsProcess)
+            if (distanceSquaredToPlayer <= StoppingDistance * StoppingDistance)
             {
                 targetSpeed = 0f;
                 direction = Vector2.Zero;
@@ -150,10 +152,30 @@ public partial class AggressiveNpcBase : NpcBase, IEnemy
         {
             m_agressorController.ForceNewDirection();
         }
+
+        UpdateAnimation(new Vector2(m_agressorController.CurrentDirection.X, m_agressorController.CurrentDirection.Y));
     }
 
     protected virtual void HandleAttackState()
     {
+    }
+
+    protected virtual void PlayAttackAnimation(string p_animName)
+    {
+        if (m_animatedSprite == null) return;
+
+        if (m_targetPlayer != null)
+        {
+            m_animatedSprite.FlipH = m_targetPlayer.GlobalPosition.X < GlobalPosition.X;
+        }
+
+        if (m_attackController != null)
+        {
+            m_attackController.SetAttackAnimation(p_animName);
+        }
+
+        m_animatedSprite.Play(p_animName);
+        m_animatedSprite.Frame = 0;
     }
 
     protected virtual void UpdateAnimation(Vector2 p_direction)
@@ -164,21 +186,24 @@ public partial class AggressiveNpcBase : NpcBase, IEnemy
 
         if (isAttacking)
         {
-            if (m_animatedSprite.Animation != "Attack")
-            {
-                m_animatedSprite.Play("Attack");
-                m_animatedSprite.Frame = 0;
-            }
+            // Attack animation playback is handled directly via PlayAttackAnimation in OnAttackStarted.
+            // We just skip standard directional animation logic here.
             return;
         }
 
         if (Velocity.LengthSquared() > 0)
         {
-            m_animatedSprite.Play("Moving");
+            if (m_animatedSprite.Animation != m_animMoving)
+            {
+                m_animatedSprite.Play(m_animMoving);
+            }
         }
         else
         {
-            m_animatedSprite.Play("Idle");
+            if (m_animatedSprite.Animation != m_animIdle)
+            {
+                m_animatedSprite.Play(m_animIdle);
+            }
         }
 
         if (p_direction.X != 0 && !isAttacking)

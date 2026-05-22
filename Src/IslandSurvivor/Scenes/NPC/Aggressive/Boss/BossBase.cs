@@ -7,6 +7,10 @@ public partial class BossBase : AggressiveNpcBase
 {
     [Export] public PackedScene ProjectileScene { get; set; }
 
+    [ExportGroup("Animations")]
+    [Export] public string MeleeAttackAnimationName { get; set; } = "Attack_Melee";
+    [Export] public string RangedAttackAnimationName { get; set; } = "Attack_Ranged";
+
     protected Area2D m_hitboxAreaRight;
     protected Area2D m_hitboxAreaLeft;
     protected IBossController m_bossController;
@@ -77,8 +81,6 @@ public partial class BossBase : AggressiveNpcBase
         // Always check if we can attack
         HandleAttackState();
 
-        UpdateAnimation(new Vector2(m_agressorController.CurrentDirection.X, m_agressorController.CurrentDirection.Y));
-
         Vector2 direction = new Vector2(m_agressorController.CurrentDirection.X, m_agressorController.CurrentDirection.Y);
         float targetSpeed = IdleSpeed;
 
@@ -89,8 +91,9 @@ public partial class BossBase : AggressiveNpcBase
         }
         else if (m_agressorController.CurrentState == NpcStates.CHASE && m_targetPlayer != null)
         {
-            float distanceToPlayer = GlobalPosition.DistanceTo(m_targetPlayer.GlobalPosition);
-            if (distanceToPlayer <= StoppingDistance)
+            float distanceSquaredToPlayer = GlobalPosition.DistanceSquaredTo(m_targetPlayer.GlobalPosition);
+            // Replaced DistanceTo with DistanceSquaredTo to eliminate square root calculation in hot path (_PhysicsProcess)
+            if (distanceSquaredToPlayer <= StoppingDistance * StoppingDistance)
             {
                 targetSpeed = 0f;
                 direction = Vector2.Zero;
@@ -119,19 +122,21 @@ public partial class BossBase : AggressiveNpcBase
         {
             m_agressorController.ForceNewDirection();
         }
+
+        UpdateAnimation(new Vector2(m_agressorController.CurrentDirection.X, m_agressorController.CurrentDirection.Y));
     }
 
     protected override void HandleAttackState()
     {
         if (m_attackController != null && m_attackController.CanAttack && m_targetPlayer != null)
         {
-            float distanceToPlayer = GlobalPosition.DistanceTo(m_targetPlayer.GlobalPosition);
+            float distanceSquaredToPlayer = GlobalPosition.DistanceSquaredTo(m_targetPlayer.GlobalPosition);
 
             // Phase logic to decide between Melee and Ranged
             if (m_bossController.CurrentPhase == BossPhase.Ranged)
             {
                 // Ranged attack if in sight and within a reasonable distance
-                if (distanceToPlayer <= 400f && CheckLineOfSight())
+                if (distanceSquaredToPlayer <= 400f * 400f && CheckLineOfSight())
                 {
                     TryTriggerAttack("Ranged");
                 }
@@ -139,7 +144,7 @@ public partial class BossBase : AggressiveNpcBase
             else
             {
                 // Melee attack if close enough
-                if (distanceToPlayer <= 80f)
+                if (distanceSquaredToPlayer <= 80f * 80f)
                 {
                     TryTriggerAttack("Melee");
                 }
@@ -159,24 +164,8 @@ public partial class BossBase : AggressiveNpcBase
 
     protected virtual void OnAttackStarted()
     {
-        if (m_animatedSprite != null)
-        {
-            if (m_targetPlayer != null)
-            {
-                m_animatedSprite.FlipH = m_targetPlayer.GlobalPosition.X < GlobalPosition.X;
-            }
-
-            // Play corresponding animation based on current phase (could be more complex)
-            if (m_bossController.CurrentPhase == BossPhase.Ranged)
-            {
-                m_animatedSprite.Play("Attack_Ranged");
-            }
-            else
-            {
-                m_animatedSprite.Play("Attack_Melee");
-            }
-            m_animatedSprite.Frame = 0;
-        }
+        string animName = m_bossController.CurrentPhase == BossPhase.Ranged ? RangedAttackAnimationName : MeleeAttackAnimationName;
+        PlayAttackAnimation(animName);
     }
 
     protected virtual void OnAttackActionTriggered()

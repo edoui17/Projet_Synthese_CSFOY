@@ -32,6 +32,22 @@ public partial class PassiveNpcBase : NpcBase
             targetSpeed = FleeSpeed;
         }
 
+        if (m_movementController != null)
+        {
+            m_movementController.Move(direction, targetSpeed);
+        }
+        else
+        {
+            Velocity = direction * targetSpeed;
+            MoveAndSlide();
+        }
+
+        // Obstacle avoidance in IDLE state
+        if (m_passiveController.CurrentState == NpcStates.IDLE && GetSlideCollisionCount() > 0)
+        {
+            m_passiveController.ForceNewDirection();
+        }
+
         if (m_animatedSprite != null)
         {
             if (direction.X != 0)
@@ -54,22 +70,6 @@ public partial class PassiveNpcBase : NpcBase
                     if (m_animatedSprite.Animation != "IDLE") m_animatedSprite.Play("IDLE");
                 }
             }
-        }
-
-        if (m_movementController != null)
-        {
-            m_movementController.Move(direction, targetSpeed);
-        }
-        else
-        {
-            Velocity = direction * targetSpeed;
-            MoveAndSlide();
-        }
-
-        // Obstacle avoidance in IDLE state
-        if (m_passiveController.CurrentState == NpcStates.IDLE && GetSlideCollisionCount() > 0)
-        {
-            m_passiveController.ForceNewDirection();
         }
     }
 

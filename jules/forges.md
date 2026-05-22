@@ -209,7 +209,7 @@ When triggering updates (e.g., UI upgrades emitting events to a decoupled compon
 - **Constat Technique :** Le marshalling des données entre le domaine managé de C# (.NET) et le cœur natif en C++ de Godot a un coût de performance non négligeable.
 - **Règle d'Architecture :**
   - **`System.Collections.Generic` (List, Dictionary, etc.) :** Doit être le standard absolu pour 100% de la logique interne, des calculs du `Core`, et de la gestion de l'état (inventaires, statistiques). Cela permet de conserver des performances natives C# et un accès complet à LINQ.
-  - **`Godot.Collections.Array<T>` / `Dictionary` :** Strictement réservés à la couche d'orchestration (`IslandSurvivor`) et uniquement dans deux scénarios précis : 
+  - **`Godot.Collections.Array<T>` / `Dictionary` :** Strictement réservés à la couche d'orchestration (`IslandSurvivor`) et uniquement dans deux scénarios précis :
     1. Pour exposer des tableaux dans l'Inspecteur Godot via l'attribut `[Export]`.
     2. Pour appeler des méthodes de l'API Godot qui requièrent explicitement ces types de retour.
 - Cette ségrégation garantit que le projet `Core` reste totalement agnostique et hautement performant.
@@ -218,3 +218,68 @@ When triggering updates (e.g., UI upgrades emitting events to a decoupled compon
  - **Quirk/Discovery:** In a Blazor Web setup using `AddAuthorizationCore()` without full ASP.NET Identity, the `AuthorizeRouteView` component enables the use of `[Authorize]` attributes and `<AuthorizeView>` tags, but it does not automatically perform redirects for unauthorized access.
  - **Solution:** Manual navigation guards within the `OnInitializedAsync` method (by checking `GetAuthenticationStateAsync`) are necessary to enforce redirects to `/login`.
  - **API Interception:** Implementing a `DelegatingHandler` for the `HttpClient` is the most efficient way to centralize the injection of the `x-Session-Token` header and to handle global `401 Unauthorized` responses (e.g., by clearing LocalStorage and redirecting the user).
+
+## 2026-05-20 - API Resilience and Audit Synchronization (US 17.0.2)
+- **Standardized Error Handling**: Enhanced `ExceptionHandlingMiddleware` to intercept infrastructure failures (e.g., `SqlException`). It now returns a structured JSON response: `{ "error": "...", "message": "...", "timestamp": "..." }` with a `503 Service Unavailable` status. This prevents the Blazor client from receiving HTML error pages and allows for clean UI alerts.
+- **Audit Traceability**: Added the `UpdatedAt` timestamp to the `ProfileResponse` POCO. This value is mapped from the `Player` entity (updated via SQL trigger) to allow the dashboard to display the "Last Synchronization" time.
+- **Eager Loading Optimization**: Removed `.Include(p => p.GameStats)` from generic repository methods in `PlayerRepository` and `AuthRepository`. Since session history can grow indefinitely, loading the entire collection during every profile fetch or authentication check is inefficient. The API now relies on `StatsRepository.GetTopStatsByPlayerIdAsync(p_count: 10)` for targeted loading, maintaining performance without sacrificing data availability.
+
+## 2026-05-21 - Blazor Lifecycle and API Integration (US 17.0.3)
+- **Lifecycle Management**: Integrated `OnInitializedAsync` in `Dashboard.razor` to handle data fetching during the Blazor component's initialization.
+- **Visual State Management**: Implemented a tri-state UI (Loading, Error, Success) using boolean flags (`m_isLoading`) and error message strings. This ensures Scénarios 2 and 5 are handled gracefully.
+- **Data Binding & Null Safety**: Used null-conditional operators (`?.`) and fallback values (e.g., `?? "0.0"`) when binding `ProfileResponse` to the UI. This prevents runtime exceptions if the player has no session history.
+- **UI Architecture**: Leveraged Bootstrap 5 for a responsive dashboard, including a fixed-top style header and a scrollable session history table.
+
+## 2026-05-21 - API Error Standardization & UTC Synchronization (US 20.0.2)
+- **Centralized Error Handling**: Created `ErrorResponseHelper` in `Src/API/Utils` to unify the `{ error, message, timestamp }` JSON format. This reduces duplication across `ApiKeyMiddleware`, `SessionAuthMiddleware`, and `ExceptionHandlingMiddleware`.
+- **Infrastructure Mapping (503)**: Refined `ExceptionHandlingMiddleware` to catch `SqlException` and `DbUpdateException`, returning a `503 Service Unavailable` status. This informs the Godot client that the failure is at the persistence layer rather than a logic error.
+- **ISO 8601 / UTC Compliance**: In `PlayerController.GetProfile`, used `DateTime.SpecifyKind(player.UpdatedAt, DateTimeKind.Utc)` before assignment. This ensures the .NET JSON serializer appends the `Z` suffix, which is critical for Godot's `Time.get_datetime_dict_from_datetime_string()` parser.
+- **Security & Whitelisting**: Tightened `SessionAuthMiddleware` by switching from `Contains` to `StartsWith` for path whitelisting (e.g., `/api/auth/login`, `/swagger`) to prevent bypasses via crafted query parameters.
+
+## 2026-05-24 - Game Session Management & Persistence (US 20.0.1)
+- **State Machine**: Implemented a global `GameManager` (Autoload) using the `AppStatus` enum (Loading, Ready, Error). This decouples application lifecycle from service initialization (`ServiceRegistry`).
+- **Persistence (user://)**: Introduced `SessionProvider` using Godot's `ConfigFile` specifically for `user://session.cfg`. This ensures the session token remains persistent and OS-compliant in exported builds, unlike project-root relative paths.
+- **Access Control**: The `GameManager` validates the stored token at launch. If invalid or missing, it forces redirection to `Login.tscn`.
+- **Offline Fallback**: The `ErrorPopup` handles API unreachable states by offering a "Play Offline" mode, which sets the `GameManager` to `Ready` state with a "Guest" flag, bypassing mandatory authentication for local play.
+
+## 2026-05-24 - API Data Mapping and Injection (US 20.0.3)
+- **Profile Synchronization Architecture**: Implemented 'ProfileResponse' as the network source of truth, refactoring 'IApiService.GetProfileAsync' to use it.
+- **Mapping & Domain Integrity**: Introduced 'ProfileMapper' (Core.Utils) to convert 'ProfileResponse' DTOs into the 'PlayerProfile' aggregate. This maintains a strict N-Tier separation while allowing the Godot engine to remain agnostic of API DTO structures.
+- **Null-Safe Deserialization**: Ensured that 'ProfileMapper' and 'ApiService' provide safe fallback collections ('new List<T>()') if JSON fields are missing or null, preventing 'ArgumentNullException' during initialization.
+- **Event-Driven Initialization**: Hooked 'GameManager' into the 'ProfileLoadedEvent'. Upon successful profile fetch (from network or cache), the 'GameManager' publishes this event to the 'EventBus'.
+- **Inventory & Stat Sync**: 'InventoryManager' and 'StatManager' were updated to subscribe to 'ProfileLoadedEvent'. This triggers an idempotent 'InitializeInventory' call and a full stat override respectively, ensuring the player character reflects their remote progression immediately upon loading.
+- **Service Resilience**: Updated 'IApiService' to expose 'GetCachedProfile()', allowing the 'GameManager' to retrieve last-known data without violating N-Tier constraints via implementation casting.
+- **Namespace Management**: A naming conflict exists between 'Core.Domain.Player' (Domain model) and 'IslandSurvivor.Scenes.Player.Player' (Godot CharacterBody2D). Code in the Godot project must use fully qualified names (e.g., 'Core.Domain.Player') to avoid build errors (CS0117).
+
+## 2026-05-25 - US 20.0.4 : Architecture de l'Écran de Chargement et UX de Synchronisation
+
+### Découvertes Architecturales
+- **Gestion du ProcessMode au Démarrage** : Pour bloquer efficacement les entrées avant le chargement de la première scène de gameplay, le `GameManager` (Autoload) doit appliquer `ProcessModeEnum.Disabled` sur la `CurrentScene` du `SceneTree`.
+- **Découplage UI/Logique via Signaux** : L'utilisation de signaux personnalisés (`RetryRequested`, `OfflineModeRequested`) dans `LoadingScreen.cs` permet d'éviter un couplage fort avec le `GameManager`, facilitant la maintenance et les tests.
+- **Blocage des Inputs via CanvasLayer** : Un `CanvasLayer` avec une couche élevée (e.g., 128) et un `ColorRect` ayant `MouseFilter = Stop` est la méthode la plus robuste pour intercepter tous les événements d'entrée dans Godot 4.
+
+### Quirks Godot/C#
+- **Rotation Procédurale** : La rotation du spinner dans `_Process` doit utiliser `delta` pour assurer une fluidité constante indépendamment du framerate.
+- **Transition de Scène et ProcessMode** : Lors de l'appel à `ChangeSceneToFile`, la nouvelle scène est chargée avec son propre `ProcessMode` (généralement `Inherit`), ce qui réactive implicitement le traitement du jeu après la disparition de l'écran de chargement.
+
+## 2026-05-25 - US 20.0.5 : Sécurité, Résilience et Validation Anti-Cheat
+
+### Architecture de Validation et Anti-Cheat
+- **Validation Défensive** : Introduction de `ProfileValidator` (Core.Utils) pour intercepter les données de profil aberrantes avant leur injection dans le moteur.
+- **Seuils de Sécurité** :
+  - Santé (Health) : doit être > 0 et <= 100.
+  - Attaque, Vitesse, Chance (Attack, Speed, Luck) : doivent être >= 0 et < 999.
+- **Comportement sur Échec** : En cas de détection de valeurs invalides, le client journalise une alerte d'intégrité et bascule automatiquement sur le profil "Guest" par défaut pour protéger l'expérience de jeu.
+
+### Résilience et Protection contre le Spam (Backoff)
+- **Retry Backoff** : Implémentation d'un mécanisme de temporisation linéaire sur le bouton de tentative de reconnexion (`RetryRequested`).
+- **Formule de Délai** : `Délai = min(3 * m_retryAttempt, 15)`. Le compteur est réinitialisé lors d'une synchronisation réussie.
+- **Feedback UX** : Le bouton Retry est désactivé durant le cooldown et affiche un compte à rebours dynamique : "Réessayer ({0}s)".
+
+### Transition Hors Ligne Transparente
+- **Feedback de Chargement** : L'utilisation de "Continuer Hors Ligne" déclenche un message d'information temporaire ("Connexion impossible. Lancement en mode hors ligne avec les données locales...") pendant 1.5 seconde via `ToSignal(GetTree().CreateTimer(1.5f), "timeout")`, assurant une UX fluide et transparente.
+
+### Standardisation de l'Authentification et Infrastructure
+- **Validation des Credentials** : Le flux de Login du jeu valide systématiquement les identifiants (Username/Password) auprès de l'endpoint d'authentification de l'API (`/api/auth/login`) avant d'autoriser l'accès aux fonctionnalités en ligne.
+- **Dépendance SQL Server** : Le serveur de base de données (SQL Server) doit être actif et accessible par l'API pour permettre l'authentification initiale et l'obtention du `SessionToken`.
+- **Gestion de l'Indisponibilité (503)** : Si la base de données est arrêtée ou inaccessible, l'API renvoie une erreur 503 (via `ExceptionHandlingMiddleware`). Le client intercepte cette erreur, lève une alerte visuelle et propose le basculement vers le mode hors ligne basé sur le cache local (`user://session.cfg` et `profile_cache.json`).

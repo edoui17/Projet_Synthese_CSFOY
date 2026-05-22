@@ -64,14 +64,15 @@ public partial class Sheep : CharacterBody2D, INpc, IDamageable
 
         if (m_sprite != null)
         {
-            if (direction.X != 0)
-            {
-                m_sprite.FlipH = direction.X < 0;
-            }
+            int baseMeatAmount = (int)(GD.Randi() % 3) + 1; // 1 to 3 meat
+            int meatAmount = IslandSurvivor.Logic.ResourceUtils.CalculateYield(baseMeatAmount, p_attacker);
 
-            if (m_passiveController.CurrentState == NpcStates.FLEE)
+            ResourceItem meatResource = new ResourceItem("meat_01", "Viande", "Meat", "res://Assets/TinySwords/TinySwords(Update010)/Deco/17.png");
+
+            if (SignalManager.Instance != null)
             {
-                if (m_sprite.Animation != "FLEE") m_sprite.Play("FLEE");
+                SignalManager.Instance.EmitMaterialDestroyed(this, meatResource, meatAmount);
+                GD.Print($"Sheep died. Sent {meatAmount} meat to inventory.");
             }
             else
             {

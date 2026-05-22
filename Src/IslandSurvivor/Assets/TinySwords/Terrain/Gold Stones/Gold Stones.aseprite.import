@@ -1,0 +1,14 @@
+[remap]
+
+importer="aseprite_wizard.plugin.noop"
+type="PackedDataContainer"
+uid="uid://cd4or8hwnajhc"
+path="res://.godot/imported/Gold Stones.aseprite-16ccc16e37f7693912bb66afb044c8a2.res"
+
+[deps]
+
+source_file="res://Assets/TinySwords/Terrain/Gold Stones/Gold Stones.aseprite"
+dest_files=["res://.godot/imported/Gold Stones.aseprite-16ccc16e37f7693912bb66afb044c8a2.res"]
+
+[params]
+

@@ -1,0 +1,14 @@
+[remap]
+
+importer="aseprite_wizard.plugin.noop"
+type="PackedDataContainer"
+uid="uid://bo4rs33ji3onm"
+path="res://.godot/imported/Barrel_Yellow.aseprite-d2d6613f1c285de50f3ffc7ba100756d.res"
+
+[deps]
+
+source_file="res://Assets/TinySwords/Sprites/Barrel/Yellow/Barrel_Yellow.aseprite"
+dest_files=["res://.godot/imported/Barrel_Yellow.aseprite-d2d6613f1c285de50f3ffc7ba100756d.res"]
+
+[params]
+

@@ -1,0 +1,14 @@
+[remap]
+
+importer="aseprite_wizard.plugin.noop"
+type="PackedDataContainer"
+uid="uid://bls14xprlo8xp"
+path="res://.godot/imported/TNT_Blue.aseprite-3bd7b03964cdb5e3b25650790d106f49.res"
+
+[deps]
+
+source_file="res://Assets/TinySwords/Sprites/TNT/Blue/TNT_Blue.aseprite"
+dest_files=["res://.godot/imported/TNT_Blue.aseprite-3bd7b03964cdb5e3b25650790d106f49.res"]
+
+[params]
+

@@ -20,6 +20,12 @@ public class InventoryManager : IInventoryManager
         m_eventBus.Subscribe<PurchaseAttemptedEvent>(OnPurchaseAttempted);
         m_eventBus.Subscribe<ResourceHarvestedEvent>(OnResourceHarvested);
         m_eventBus.Subscribe<ResourceSpentEvent>(OnResourceSpent);
+        m_eventBus.Subscribe<ProfileLoadedEvent>(OnProfileLoaded);
+    }
+
+    private void OnProfileLoaded(ProfileLoadedEvent p_event)
+    {
+        InitializeInventory(p_event.Profile.Inventory);
     }
 
     private void OnNavigationRequested(NavigationRequestedEvent p_event)
@@ -137,5 +143,21 @@ public class InventoryManager : IInventoryManager
     public IReadOnlyList<InventorySlot> GetAllSlots()
     {
         return m_slots.Values.ToList().AsReadOnly();
+    }
+
+    public void InitializeInventory(IEnumerable<InventoryEntry> p_entries)
+    {
+        if (p_entries == null) return;
+
+        m_slots.Clear();
+
+        foreach (var entry in p_entries)
+        {
+            if (entry.ResourceItem != null)
+            {
+                m_slots[entry.ResourceItemId] = new InventorySlot(entry.ResourceItem, entry.Quantity);
+                m_eventBus.Publish(new InventoryChangedEvent(entry.ResourceItemId, entry.Quantity));
+            }
+        }
     }
 }

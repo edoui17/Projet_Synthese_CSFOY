@@ -23,8 +23,10 @@ public class PlayerRepository : IPlayerRepository
         if (p_id is Guid guidId)
         {
             var entity = await m_context.Players
-                .Include(p => p.GameStats)
                 .Include(p => p.Config)
+                //AJOUT DU INCLUDE POUR PERMETTRE L'AFFICHAGE SUR LE CLASSEMENT
+                .Include(p => p.GameStats)
+                //===========================================================================
                 .FirstOrDefaultAsync(p => p.Id == guidId);
 
             return MapToDomain(entity);
@@ -35,8 +37,10 @@ public class PlayerRepository : IPlayerRepository
     public async Task<IEnumerable<Player>> GetAllAsync()
     {
         var entities = await m_context.Players
-            .Include(p => p.GameStats)
             .Include(p => p.Config)
+            //AJOUT DU INCLUDE POUR PERMETTRE L'AFFICHAGE SUR LE CLASSEMENT
+            .Include(p => p.GameStats)
+            //==========================================================
             .ToListAsync();
         return entities.Select(MapToDomain).Where(p => p != null)!;
     }
@@ -83,8 +87,10 @@ public class PlayerRepository : IPlayerRepository
     public async Task<Player?> GetByUsernameAsync(string p_username)
     {
         var entity = await m_context.Players
-            .Include(p => p.GameStats)
             .Include(p => p.Config)
+            //AJOUT DU INCLUDE POUR PERMETTRE L'AFFICHAGE SUR LE CLASSEMENT
+            .Include(p => p.GameStats)
+            //==================================================================
             .FirstOrDefaultAsync(p => p.Username == p_username);
 
         return MapToDomain(entity);

@@ -1,0 +1,14 @@
+[remap]
+
+importer="aseprite_wizard.plugin.noop"
+type="PackedDataContainer"
+uid="uid://bxmdtsoybimil"
+path="res://.godot/imported/Lancer.aseprite-7a81f81a5f56fce7f16d8fa5a44d6e62.res"
+
+[deps]
+
+source_file="res://Assets/TinySwords/Sprites/Lancer/Blue/Lancer.aseprite"
+dest_files=["res://.godot/imported/Lancer.aseprite-7a81f81a5f56fce7f16d8fa5a44d6e62.res"]
+
+[params]
+

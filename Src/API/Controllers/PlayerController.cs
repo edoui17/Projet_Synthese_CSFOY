@@ -42,6 +42,8 @@ public class PlayerController : ControllerBase
         {
             Username = player.Username,
             HighScore = player.HighScore,
+            // US 20.0.2: Explicitly force UTC for the ISO 8601 'Z' suffix in JSON
+            UpdatedAt = DateTime.SpecifyKind(player.UpdatedAt, DateTimeKind.Utc),
             LastSessions = gameStats,
             Config = player.Config,
             Inventory = inventory

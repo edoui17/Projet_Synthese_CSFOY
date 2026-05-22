@@ -59,8 +59,7 @@ public partial class Rock : Area2D, IOre, IDamageable
 
     public void DestroyResource(object? p_attacker = null)
     {
-        Random random = new();
-        int baseQuantity = random.Next(1, 5);
+        int baseQuantity = (int)(GD.Randi() % 4) + 1;
         int quantity = IslandSurvivor.Logic.ResourceUtils.CalculateYield(baseQuantity, p_attacker);
 
         var item = new Core.Domain.ResourceItem(EntityId, MaterialName, MaterialType, IconPath);
