@@ -28,7 +28,7 @@ public partial class Sheep : PassiveNpcBase
         // Initialize default keys if not set
         if (string.IsNullOrEmpty(HurtSoundKey)) HurtSoundKey = "Sheep_Hurt";
         if (string.IsNullOrEmpty(DeathSoundKey)) DeathSoundKey = "Resource_Mining_1";
-        if (AudioMaxDistance == 2000f) AudioMaxDistance = 275f; // Sheep specific default
+        if (AudioMaxDistance >= 2000f) AudioMaxDistance = 275f; // Sheep specific default
 
         m_idleSoundTimer = new Timer();
         m_idleSoundTimer.WaitTime = new Random().Next(5, 20);

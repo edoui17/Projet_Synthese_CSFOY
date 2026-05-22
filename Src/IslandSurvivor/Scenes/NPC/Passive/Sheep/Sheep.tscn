@@ -14,17 +14,12 @@ size = Vector2(43, 33)
 collision_layer = 4
 collision_mask = 1
 script = ExtResource("2_script")
-HurtSound = ExtResource("hurt_stream")
-HurtSoundKey = "Sheep_Hurt"
-HurtSoundVolume = 0.0
-DeathSound = ExtResource("death_stream")
-DeathSoundKey = "Resource_Mining_1"
-DeathSoundVolume = 0.0
 IdleSound = ExtResource("idle_stream")
 IdleSoundKey = "Sheep_Idle"
-IdleSoundVolume = 0.0
-AudioMaxDistance = 70.0
-AudioAttenuation = 1.0
+IdleVolume = 1.0
+HurtSound = ExtResource("hurt_stream")
+DeathSound = ExtResource("death_stream")
+AudioMaxDistance = 275.0
 
 [node name="AnimatedSprite2D" parent="." index="0"]
 sprite_frames = ExtResource("3_frames")
