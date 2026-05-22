@@ -10,22 +10,12 @@ public partial class DarkScythe : BaseProjectile
 
     [Export] public float ReturnTime { get; set; } = 1.5f;
     [Export] public float SpinSpeed { get; set; } = 15.0f;
-    [Export] public float MaxScaleMultiplier { get; set; } = 5.0f;
 
-    private Vector2 m_baseScale;
     private Vector2 m_originalPosition;
-    private CollisionShape2D m_collisionShape;
-    private Vector2 m_baseCollisionScale;
 
     public override void _Ready()
     {
         base._Ready();
-        m_baseScale = Scale;
-        m_collisionShape = GetNodeOrNull<CollisionShape2D>("CollisionShape2D");
-        if (m_collisionShape != null)
-        {
-            m_baseCollisionScale = m_collisionShape.Scale;
-        }
     }
 
     public override void Initialize(Vector2 p_startPosition, Vector2 p_direction, float p_damage, object p_shooter)
@@ -49,22 +39,6 @@ public partial class DarkScythe : BaseProjectile
 
         // Spin the scythe
         Rotation += SpinSpeed * (float)p_delta;
-
-        // Note: The scale multiplier is determined by flight time / return time.
-        // 0.0 means start, 1.0 means max size.
-        float scaleProgress = Mathf.Clamp(m_flightTime / ReturnTime, 0.0f, 1.0f);
-        if (m_isReturning)
-        {
-            scaleProgress = 1.0f - scaleProgress;
-        }
-
-        float currentMultiplier = Mathf.Lerp(1.0f, MaxScaleMultiplier, scaleProgress);
-
-        // We scale ONLY the CollisionShape2D, leaving the root node scale intact
-        if (m_collisionShape != null)
-        {
-            m_collisionShape.Scale = m_baseCollisionScale * currentMultiplier;
-        }
 
         if (m_flightTime >= ReturnTime && !m_isReturning)
         {

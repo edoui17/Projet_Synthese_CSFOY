@@ -103,16 +103,15 @@ animations = [{
 "speed": 7.0
 }]
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_s5lsp"]
-radius = 4.5
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_04kyy"]
+size = Vector2(3.2000008, 26.100681)
 
 [node name="DarkScythe" unique_id=307395803 instance=ExtResource("1_base")]
-collision_mask = 15
 scale = Vector2(2.5, 2.5)
+collision_mask = 15
 script = ExtResource("2_byklq")
 ReturnTime = 1.5
 SpinSpeed = 15.0
-MaxScaleMultiplier = 5.0
 DestroyOnImpact = false
 
 [node name="AnimatedSprite2D" parent="." index="0"]
@@ -122,5 +121,7 @@ frame = 12
 frame_progress = 1.0
 
 [node name="CollisionShape2D" parent="." index="1"]
-position = Vector2(-4.7683716e-07, 6.7999997)
-shape = SubResource("CircleShape2D_s5lsp")
+position = Vector2(-5.6, -5.999999)
+rotation = -0.43915084
+scale = Vector2(0.99999976, 0.99999976)
+shape = SubResource("RectangleShape2D_04kyy")
