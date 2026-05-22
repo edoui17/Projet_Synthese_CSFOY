@@ -9,11 +9,11 @@ namespace IslandSurvivor.Scenes.NavigationMenu;
 
 public partial class NavigationMenu : Control
 {
-    private VBoxContainer m_destinationsContainer;
-    private INavigationService m_navigationService;
-    private IReadOnlyList<IslandDestination> m_currentOptions;
+    private VBoxContainer m_destinationsContainer = null!;
+    private INavigationService m_navigationService = null!;
+    private IReadOnlyList<IslandDestination> m_currentOptions = null!;
 
-    private Node2D FindPlayer(Node parent)
+    private Node2D? FindPlayer(Node? parent)
     {
         if (parent == null) return null;
         if (parent is Node2D node && node.Name == "Player") return node;
@@ -70,6 +70,33 @@ public partial class NavigationMenu : Control
 
         if (isHome)
         {
+            // Add Boss Island Option
+            bool isBossReady = Managers.ProgressionManager.Instance.IsBossReady();
+            var bossBtn = new Button();
+
+            if (isBossReady)
+            {
+                bossBtn.Text = "Boss Island (Level 4) [Danger: Extreme]";
+                bossBtn.Modulate = new Color(1, 0, 0); // Red for danger
+
+                var bossDestination = new IslandDestination(
+                    Id: "boss_island",
+                    ScenePath: "res://Scenes/Level/Level4/Level4.tscn",
+                    Biome: "Boss",
+                    Difficulty: 10,
+                    ResourceCost: 0,
+                    DangerLevel: 10
+                );
+
+                bossBtn.Pressed += () => OnDestinationSelected(bossDestination);
+            }
+            else
+            {
+                bossBtn.Text = "Boss Island (Locked - Level 10 required)";
+                bossBtn.Disabled = true;
+            }
+            m_destinationsContainer.AddChild(bossBtn);
+
             // Generate 5 random islands
             m_currentOptions = m_navigationService.GenerateDestinations(5);
 
@@ -82,7 +109,7 @@ public partial class NavigationMenu : Control
                 }
                 else
                 {
-                    btn.Text = $"Island {destination.Id.Substring(0, 5)} (Cost: {destination.ResourceCost}, Type: {destination.Biome})";
+                    btn.Text = $"Island {destination.Id.Substring(0, 5)} (Cost: {destination.ResourceCost} Wood, {destination.ResourceCost} Stone, {destination.ResourceCost} Meat, {destination.ResourceCost} Gold | Type: {destination.Biome})";
                 }
 
                 // Local copy for the closure

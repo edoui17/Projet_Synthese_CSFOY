@@ -6,15 +6,15 @@ using Core.Interfaces;
 
 public partial class InventoryUi : Godot.Control
 {
-    [Export] public RessourceSlot WoodSlot;
-    [Export] public RessourceSlot StoneSlot;
-    [Export] public RessourceSlot FoodSlot;
-    [Export] public RessourceSlot GoldSlot;
+    [Export] public RessourceSlot WoodSlot = null!;
+    [Export] public RessourceSlot StoneSlot = null!;
+    [Export] public RessourceSlot FoodSlot = null!;
+    [Export] public RessourceSlot GoldSlot = null!;
 
-    [Export] public Texture2D WoodTexture;
-    [Export] public Texture2D StoneTexture;
-    [Export] public Texture2D FoodTexture;
-    [Export] public Texture2D GoldTexture;
+    [Export] public Texture2D WoodTexture = null!;
+    [Export] public Texture2D StoneTexture = null!;
+    [Export] public Texture2D FoodTexture = null!;
+    [Export] public Texture2D GoldTexture = null!;
 
     public override void _Ready()
     {
@@ -38,14 +38,14 @@ public partial class InventoryUi : Godot.Control
         IInventoryManager manager = InventoryNode.Instance.Manager;
 
         // Ensure these IDs match the EntityId exported in the Resource scripts
-        // e.g. "tree_conifer_01" and "tree_automn_01" -> we can track them individually or you might have a generic type
-        // The current implementation in resources uses EntityId: "tree_conifer_01", "rock_01", "meat_01", "gold_01"
+        // e.g. "wood_01" -> we can track them individually or you might have a generic type
+        // The current implementation in resources uses EntityId: "wood_01", "rock_01", "meat_01", "gold_01"
         // Update: Let's fetch all slots and update based on type or ID
 
-        int woodCount = manager.GetMaterialCount("tree_conifer_01") + manager.GetMaterialCount("tree_automn_01") + manager.GetMaterialCount("Bois"); // Adding "Bois" in case that ID is used
-        int stoneCount = manager.GetMaterialCount("rock_01") + manager.GetMaterialCount("Roche");
-        int foodCount = manager.GetMaterialCount("meat_01") + manager.GetMaterialCount("Viande");
-        int goldCount = manager.GetMaterialCount("gold_01") + manager.GetMaterialCount("gold_coin") + manager.GetMaterialCount("Or");
+        int woodCount = manager.GetMaterialCount("wood_01");
+        int stoneCount = manager.GetMaterialCount("rock_01");
+        int foodCount = manager.GetMaterialCount("meat_01");
+        int goldCount = manager.GetMaterialCount("gold_01");
 
         WoodSlot.SetAmount(woodCount);
         StoneSlot.SetAmount(stoneCount);

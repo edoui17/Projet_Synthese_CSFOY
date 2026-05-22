@@ -136,7 +136,192 @@ When triggering updates (e.g., UI upgrades emitting events to a decoupled compon
   - **Cleanup**: Redundant/commented-out code in `PlayerController.cs` was removed to maintain API cleanliness.
 - **Technical Detail**: In Godot C#, using `ProjectSettings.GetSetting("path").AsString()` is the standard way to access custom configuration defined in the `project.godot` file, allowing for environment-specific overrides during export.
 
+## 2026-05-27 - Audio Bus Integration & Distance Calibration
+- **Feature**: Connected the `AudioManager` pooling system to the Godot "SFX" bus.
+- **Technical Detail**: Set the `Bus` property of both `AudioStreamPlayer` and `AudioStreamPlayer2D` instances to "SFX" during their initialization in the pool. This ensures all pooled sound effects are subject to the volume and mute settings of the SFX bus, which is controlled by the `AudioOptions` menu.
+- **Quirk/Discovery**: When using `AudioStreamPlayer2D` with very small `MaxDistance` values (e.g., 10 units), the sound drops off extremely quickly. This is intended for entities like Sheep to avoid audio clutter in dense maps, but requires precise placement of the `AudioListener2D` (attached to the Player).
+
 ## 2024-05-24 - Architecture Changes
 - **Spawning Logic:** Clarified that the procedural spawning algorithms (e.g., `ResourceZone`) must reside within the Godot client (`IslandSurvivor`) as they are tightly coupled to the engine's 2D math (`Vector2`, `Geometry2D`, `TileMapLayer`) and do not impact Core backends. Refactored `ResourceZone` to adhere to DRY principles by extracting validation logic into discrete methods.
 - **Dead Code Elimination:** Removed all orphaned procedural generation files (`MapManager`, `GodotIslandGenerator`, `SpawnLocator`, `MapRenderer`, etc.) as the project transitioned entirely to hand-crafted maps.
 - **Event Architecture Enforcement:** Completely removed `WeakEvent` implementations from the Core layer. Classes like `AttributeStat` and `PoolStat` now strictly communicate via the global `IEventBus` using POCO `IEvent`s (`StatChangedEvent`).
+
+### Architect Log - Implementing Enemy Hitboxes and Delays
+- **Hitbox Implementation**: In `EnemyBase.cs`, replacing a single static `HitboxArea` with `HitboxAreaRight` and `HitboxAreaLeft` allows directional attacking based on the enemy sprite's `FlipH` property.
+- **Asynchronous Attacks**: Introduced an asynchronous `HandleAttackState()` using `await ToSignal(GetTree().CreateTimer(0.4f), SceneTreeTimer.SignalName.Timeout)` to simulate attack wind-up. Caution: Always check if the entity died (`CurrentState == NpcStates.DEAD`) during the await period before applying damage to prevent null reference exceptions or ghost attacks.
+
+### Architect Log - N-Tier Inheritance Refactoring
+- **EnemyBase Refactoring**: To follow best architecture practices, `EnemyBase` was abstracted. It now only contains common entity behavior (movement, scaling, stats, line of sight).
+- **Subclasses (`MeleeEnemyBase` & `RangedEnemyBase`)**:
+  - Melee behaviors (like multiple `HitboxArea` monitoring and `m_playersInHitbox` tracking) are now exclusively inside `MeleeEnemyBase` (inherited by `Soldier`).
+  - Ranged behaviors (projectile instantiating, distance checking) are exclusively inside `RangedEnemyBase` (inherited by `Archer`).
+## Technical Log - Enemy State Machine & Movement Quirks
+
+- **Catch-22 in State Evaluation**: When using custom logic controllers (like `IAgressorController`), avoid wrapping state transition triggers (like checking if the player is in the hitbox to start an attack) inside an `if` statement that checks if the enemy is *already* in the target state. In `EnemyBase.cs`, `HandleAttackState()` was locked behind `if (CurrentState == ATTACK)`, making it impossible to enter the attack state from the CHASE state.
+
+- **Physics Frame Continuity**: When interrupting movement to perform an action (like attacking), it's generally better to set the target speed and direction vector to zero and let the script flow down to `MoveAndSlide()` rather than using an early `return;`. This ensures that Godot's physics engine still processes the frame and resolves external collisions (e.g., being pushed by another entity) even while the character is seemingly standing still.
+
+## Audio and Visual Feedback Architecture
+- **Audio Global/Spatial Handling**: Created `AudioManager` singleton attached to the root, pooling `AudioStreamPlayer` (Global/UI) and `AudioStreamPlayer2D` (Spatial) to decouple sounds from node lifetimes. Prevents sounds cutting off prematurely when entities (like resources or enemies) queue free upon death.
+- **Node Tweening Extensions**: Added `PlayShake` extending `Node2D` using Godot's `Tween` API to systematically implement camera shakes and entity impact hits without polluting entity logic.
+## 2026-05-14 - Meta-Progression & HighScore Refactoring (US 18.0)
+- **Database Evolution**: Migrated the `Stats` table from a 1-to-1 relationship with `Players` to a 1-to-many relationship under the new name `GameStats`.
+- **Relationship Quirk**: Moving from 1-to-1 to 1-to-many required updating the `PlayerEntity` navigation property to `ICollection<GameStatsEntity>`. This allows tracking full session history.
+- **SQL Trigger Logic**: Implemented `TR_GameStats_AfterInsert` directly in the EF Core migration. The trigger automatically updates the `HighScore` in the `Players` table and prunes the `GameStats` history to keep only the top 10 sessions per player.
+- **Mapping Duration**: Mapped the SQL `TIME` type to C# `TimeSpan`. Note: EF Core handles this natively, but Ensure the column is defined as `TimeSpan` in the Entity for proper mapping to the `TIME` SQL type.
+- **Data Strategy**: Opted for a 'Clean Slate' approach for the database deployment. The migration was simplified to directly create the new structure, and SQL scripts (`schema.sql`, `data.sql`) were updated accordingly.
+- **API Strategy**: Updated `Sync` endpoint to append new sessions to `GameStats` rather than overwriting a single record. The `Profile` endpoint now returns the `HighScore` and the list of best sessions.
+
+## 2026-05-14 - Progression Intelligence & API Refactoring (Task 18.0.2)
+- **Architectural Shift**: Introduced `IProgressionService` in the `Core` layer to centralize game logic (level calculation, high score validation). This removes business logic from Controllers, adhering to strict N-Tier principles.
+- **Level Progression**: Implemented a threshold-based level system (Level 1: 0-999, Level 2: 1000-2499, Level 3: 2500-4999, Level 4+: +5000 per level). Centralizing this in a service allows for easy future balancing.
+- **Consistency Strategy**: While a SQL trigger handles DB-level HighScore integrity, the `ProgressionService` updates the `Player` object in memory during the request. This ensures the API response (e.g., during `Sync`) contains the most up-to-date HighScore immediately.
+- **Leaderboard Performance**: Refactored `GetLeaderboard` to sort by the `HighScore` column in the `Players` table. This is O(1) or O(log N) with indexes, compared to the previous O(N*M) approach of scanning all session history.
+
+## 2026-05-15 - Leaderboard Filtering & Sorting (US 10.1.5)
+- **POCO Enrichment**: Updated `PlayerLeaderboardEntry` to include `Duration`, `BonusHealth`, `BonusAttack`, `BonusSpeed`, and `BonusLuck`. This allows the frontend to display detailed performance metrics regardless of the active filter.
+- **Dynamic Sorting Logic**: Implemented a `switch` based sorting mechanism in `PlayerController.GetLeaderboard`.
+  - Sorting criteria include: `score`, `duration`, `level`, and bonus stats (`health`, `attack`, `speed`, `luck`).
+  - For session-based metrics (duration, level, bonuses), the API calculates the `Max()` value across the player's `GameStats` collection to determine their ranking.
+- **Search Functionality**: Added a `p_search` parameter for "Contains" (case-insensitive) filtering on `Username`, anticipating Scénario 3.
+- **Data Integrity**: Maintained the "Best Session" projection. Even when sorting by a specific stat (e.g., Speed), the returned entry displays the full stats from the player's highest-scoring session to ensure a coherent "Master Profile" view.
+## 2026-05-16 - Attack Cooldowns and Action Mechanics (US Gameplay Loop)
+- **Continuous Actions**: Godot's `_Input(InputEvent)` is strictly event-driven (e.g. key pressed/released). For continuous actions (like holding down the mouse button to attack), logic must evaluate `Input.IsActionPressed()` every frame inside `_PhysicsProcess` or `_Process`.
+- **Stat-Bound Cooldown Strategy**: Action cooldowns (e.g., Attack cooldowns) should scale down based on progression stats (like `Speed`) using the asymptotic formula: `Cooldown = BaseCooldown / (1 + (Speed * 0.05))`. This ensures the cooldown never mathematically hits 0, preventing infinite DPS loops regardless of the stat ceiling.
+
+## 2026-05-17 - Architecture N-Tiers, Règles Globales & CI/CD Unifié (Audit)
+- **Frontières N-Tiers Strictes** :
+  - **Core** : Couche "Comptable". Doit être 100% agnostique. Interdiction stricte de référencer Godot (`Godot.*`) ou Entity Framework. C'est ici que résident l'isolation mathématique (`CombatMath`, formules XP) et les abstractions (`IEventBus`, interfaces de services).
+  - **IslandSurvivor (Godot)** : Couche "Orchestrateur". Interdiction d'accès direct à l'infrastructure (DB). Elle gère le moteur, les noeuds (`Nodes`), la boucle de jeu locale, le visuel et notifie le Core via des événements.
+  - **API** : Couche d'Exposition. N'altère aucune logique métier. Sert de pont sécurisé entre le Client et la Base de données.
+  - **Infrastructure** : Couche Persistance. Seule autorisée à manipuler Entity Framework et le SQL. Dépend du Core pour les définitions métiers.
+  - **Web** : Couche Dashboard. Dépend du Core. Ne communique jamais avec la base de données directement ; consomme l'API.
+- **Règles Globales de Gameplay** :
+  - **Combat & Factions** : La logique temporelle (cooldowns), les hitboxes et le ciblage par `EntityFaction` (Joueur vs Ennemi) sont strictement isolés dans le Godot client (`AttackController`). L'animation (`AnimatedSprite2D`) pilote l'état visuel de l'attaque.
+  - **Projectiles** : Entrent en collision physique avec le décor, mais n'appliquent des dégâts logiques qu'aux cibles correspondant à leur `EntityFaction`.
+  - **Dash & Interruptions** : Recevoir des dégâts d'un projectile pendant un Dash l'interrompt immédiatement et applique un statut *Stun* via le `MovementController`.
+  - **Cooldowns** : Le scaling se fait via une formule asymptotique (ex: `Cooldown = BaseCooldown / (1 + (Speed * 0.05))`) centralisée en C# pour éviter les boucles infinies.
+- **CI/CD Unifié (Pipeline YAML)** :
+  - Le pipeline doit obligatoirement inclure un Stage de **Validation** (restauration, compilation globale `ProjetJeu.sln`, et `dotnet test` sur `Tests/`) avant de permettre le Stage de **Build & Export** Godot.
+  - Une tolérance d'erreur est requise sur l'étape de pré-importation headless de Godot (`exit 0` forcé) pour permettre la génération du `.godot/` sans échouer prématurément sur les erreurs C# initiales.
+
+## 2026-05-18 - Inspection Symétrique & Extraction du Couplage Gameplay
+- **Constat Critique :** L'inspection du `Core` a révélé que des interfaces actives de gameplay (`IAgressorController`, `IRangedController`, `IProjectile`), utilisant `System.Numerics.Vector2` pour contourner la restriction `Godot.*`, s'étaient infiltrées dans le projet. Ces interfaces encapsulaient de la logique spatio-temporelle (direction, poursuite, calcul de trajectoire).
+- **Correction Architecturale :** Le `Core` étant un "noyau mathématique pure", toute interface ou classe pilotant activement le temps (`_Process`), l'espace (`Vector2`) ou les cycles de vie des entités moteurs a été expulsée. Elles résident désormais légitimement dans `IslandSurvivor/Logic/Entities/` et consomment le vrai `Godot.Vector2`.
+- **Règle d'or :** Si un algorithme a besoin de connaître un vecteur (`X, Y`) pour interpoler un mouvement en temps réel, ou s'il dépend du `DeltaTime`, il **n'a pas sa place** dans le projet `Core`.
+
+## 2026-05-18 - Stratégie d'Optimisation des Collections (C# vs Godot)
+- **Constat Technique :** Le marshalling des données entre le domaine managé de C# (.NET) et le cœur natif en C++ de Godot a un coût de performance non négligeable.
+- **Règle d'Architecture :**
+  - **`System.Collections.Generic` (List, Dictionary, etc.) :** Doit être le standard absolu pour 100% de la logique interne, des calculs du `Core`, et de la gestion de l'état (inventaires, statistiques). Cela permet de conserver des performances natives C# et un accès complet à LINQ.
+  - **`Godot.Collections.Array<T>` / `Dictionary` :** Strictement réservés à la couche d'orchestration (`IslandSurvivor`) et uniquement dans deux scénarios précis :
+    1. Pour exposer des tableaux dans l'Inspecteur Godot via l'attribut `[Export]`.
+    2. Pour appeler des méthodes de l'API Godot qui requièrent explicitement ces types de retour.
+- Cette ségrégation garantit que le projet `Core` reste totalement agnostique et hautement performant.
+
+## 2026-05-18 - Blazor Authentication & Navigation Guards
+ - **Quirk/Discovery:** In a Blazor Web setup using `AddAuthorizationCore()` without full ASP.NET Identity, the `AuthorizeRouteView` component enables the use of `[Authorize]` attributes and `<AuthorizeView>` tags, but it does not automatically perform redirects for unauthorized access.
+ - **Solution:** Manual navigation guards within the `OnInitializedAsync` method (by checking `GetAuthenticationStateAsync`) are necessary to enforce redirects to `/login`.
+ - **API Interception:** Implementing a `DelegatingHandler` for the `HttpClient` is the most efficient way to centralize the injection of the `x-Session-Token` header and to handle global `401 Unauthorized` responses (e.g., by clearing LocalStorage and redirecting the user).
+
+## 2026-05-20 - API Resilience and Audit Synchronization (US 17.0.2)
+- **Standardized Error Handling**: Enhanced `ExceptionHandlingMiddleware` to intercept infrastructure failures (e.g., `SqlException`). It now returns a structured JSON response: `{ "error": "...", "message": "...", "timestamp": "..." }` with a `503 Service Unavailable` status. This prevents the Blazor client from receiving HTML error pages and allows for clean UI alerts.
+- **Audit Traceability**: Added the `UpdatedAt` timestamp to the `ProfileResponse` POCO. This value is mapped from the `Player` entity (updated via SQL trigger) to allow the dashboard to display the "Last Synchronization" time.
+- **Eager Loading Optimization**: Removed `.Include(p => p.GameStats)` from generic repository methods in `PlayerRepository` and `AuthRepository`. Since session history can grow indefinitely, loading the entire collection during every profile fetch or authentication check is inefficient. The API now relies on `StatsRepository.GetTopStatsByPlayerIdAsync(p_count: 10)` for targeted loading, maintaining performance without sacrificing data availability.
+
+## 2026-05-21 - Standardized Audio Architecture
+- **Flexible Audio Property Injection**: Standardized audio feedback across all characters (Player, Aggressive NPCs, Sheep) by introducing `[Export] AudioStream?` properties (`AttackSound`, `HurtSound`, `DeathSound`). This allows individual sound overrides per entity in the Godot Inspector while maintaining a shared code structure.
+- **Fallback Logic**: Implemented a "Fallback first, Inspector second" pattern using the null-coalescing operator (`Sound ?? GD.Load<AudioStream>("res://...")`). This ensures audio logic remains functional even if resources aren't explicitly assigned in the scene.
+- **Topological Audio Separation (Sheep)**: Fixed a bug where Sheep played multiple conflicting sounds (human scream + mining impact) on damage. Refactored `Sheep.cs` to explicitly separate `OnDamageTaken` (Hurt) and `HandleDeath` (Death), ensuring the mining sound is only played when the entity is truly destroyed.
+
+## 2026-05-22 - Centralized Audio Library & Animation Synchronization
+- **Centralized Sound Management**: Refactored `AudioManager` to include a `m_soundLibrary` dictionary. This decouples the audio playback logic from hardcoded resource paths. Sounds are now identified by unique string keys (e.g., "Enemy_Swing_Default").
+- **Volume & Decibel Control**: Introduced a `SoundData` structure to store both the `AudioStream` and a `DefaultVolumeDb`. This allows for fine-tuning sound levels at the source (the dictionary) and provides a `p_volumeOffsetDb` parameter in play methods for dynamic adjustments.
+- **Perfect Attack Synchronization**: Moved the `PlayAttackSound` trigger from the "Attack Start" event (Frame 0) to the `AttackActionTriggered` signal emitted by `AttackController`. This ensures the audio effect is perfectly synchronized with the animation's impact/release frame (defined by `ActionFrame`).
+- **Resource Migration**: Successfully migrated Player, NPCs (Passive & Aggressive), and Environmental Resources to the centralized system, eliminating scattered `GD.Load<AudioStream>` calls and redundant `[Export] AudioStream` properties in favor of key-based identification.
+
+## 2026-05-25 - Hybrid Audio System & Centralization (US Audio Refactor)
+- **Hybrid Assignment Pattern**: Refactored entities (`Player`, `Sheep`, `AggressiveNpcBase`) to support a hybrid audio system.
+  - They now feature `[Export] AudioStream?` properties (e.g., `HurtSound`) alongside their existing `string` keys.
+  - Logic: If a sound is assigned in the Godot Inspector, it is used directly. Otherwise, the system falls back to the `AudioManager`'s centralized library via the string key.
+  - This satisfies the need for easy IDE-based modification while preserving the robustness of a centralized system.
+- **Volume Fine-Tuning**: Each exported sound property is accompanied by an `[Export] float` volume offset, allowing developers to balance sounds (like the Player's damage sound) directly in the editor.
+- **Cleanup**: Removed unused `AudioStreamPlayer2D` nodes from entity scenes (like `Player.tscn`) to prevent developer confusion between scene-bound players and the global `AudioManager` pool.
+
+### 2026-05-24 - Per-Instance Volume Control & Sheep Audio Uniformization
+- **Feature**: Added `[Export]` volume properties (in dB) to `Player` and `Sheep` to allow fine-tuning of audio levels directly from the Godot Inspector.
+- **Architectural Shift**: Uniformized `Sheep.cs` to use the key-based audio system (consistent with `Player` and Enemies) instead of direct `AudioStream` references, facilitating centralized management in `AudioManager`.
+- **Gameplay**: Re-implemented the Sheep's idle sound ("baaa") using a randomized timer and the centralized `AudioManager.PlaySound2D` with the new volume offset support.
+
+## 2026-05-26 - Spatial Audio & Distance Attenuation (US Audio Radius)
+- **Feature**: Implemented a distance-based attenuation system for all 2D sound effects.
+- **Technical Detail**: Leveraged Godot's native `AudioStreamPlayer2D` properties (`MaxDistance` and `Attenuation`) by exposing them in `AudioManager.PlaySound2D`.
+- **Godot Quirk**: Spatial audio attenuation in 2D requires an active `AudioListener2D` node in the scene. One was added to the `Player.tscn` to ensure the player's position is the point of reference for distance calculations.
+- **Entity Integration**: Added `AudioMaxDistance` and `AudioAttenuation` as exported properties to all relevant game entities (NPCs, Resources), allowing per-instance configuration of the "hearing radius" directly in pixels.
+
+## 2026-05-22 - Refined Audio Unique Identification
+- **Specific Key Overrides**: Implemented unique sound key assignments in enemy subclasses (`Lancer`, `Archer`, `Soldier`) within their `_Ready()` methods. This ensures that while the trigger logic is centralized in the base class, each enemy type can play distinct sounds from the `AudioManager` library.
+- **Pitch Management**: Extended `SoundData` and `RegisterSound` to support a `DefaultPitchScale`, allowing for audio variety (e.g., higher pitch for Archer arrows) without increasing the number of physical audio files.
+## 2026-05-21 - Blazor Lifecycle and API Integration (US 17.0.3)
+- **Lifecycle Management**: Integrated `OnInitializedAsync` in `Dashboard.razor` to handle data fetching during the Blazor component's initialization.
+- **Visual State Management**: Implemented a tri-state UI (Loading, Error, Success) using boolean flags (`m_isLoading`) and error message strings. This ensures Scénarios 2 and 5 are handled gracefully.
+- **Data Binding & Null Safety**: Used null-conditional operators (`?.`) and fallback values (e.g., `?? "0.0"`) when binding `ProfileResponse` to the UI. This prevents runtime exceptions if the player has no session history.
+- **UI Architecture**: Leveraged Bootstrap 5 for a responsive dashboard, including a fixed-top style header and a scrollable session history table.
+
+## 2026-05-21 - API Error Standardization & UTC Synchronization (US 20.0.2)
+- **Centralized Error Handling**: Created `ErrorResponseHelper` in `Src/API/Utils` to unify the `{ error, message, timestamp }` JSON format. This reduces duplication across `ApiKeyMiddleware`, `SessionAuthMiddleware`, and `ExceptionHandlingMiddleware`.
+- **Infrastructure Mapping (503)**: Refined `ExceptionHandlingMiddleware` to catch `SqlException` and `DbUpdateException`, returning a `503 Service Unavailable` status. This informs the Godot client that the failure is at the persistence layer rather than a logic error.
+- **ISO 8601 / UTC Compliance**: In `PlayerController.GetProfile`, used `DateTime.SpecifyKind(player.UpdatedAt, DateTimeKind.Utc)` before assignment. This ensures the .NET JSON serializer appends the `Z` suffix, which is critical for Godot's `Time.get_datetime_dict_from_datetime_string()` parser.
+- **Security & Whitelisting**: Tightened `SessionAuthMiddleware` by switching from `Contains` to `StartsWith` for path whitelisting (e.g., `/api/auth/login`, `/swagger`) to prevent bypasses via crafted query parameters.
+
+## 2026-05-24 - Game Session Management & Persistence (US 20.0.1)
+- **State Machine**: Implemented a global `GameManager` (Autoload) using the `AppStatus` enum (Loading, Ready, Error). This decouples application lifecycle from service initialization (`ServiceRegistry`).
+- **Persistence (user://)**: Introduced `SessionProvider` using Godot's `ConfigFile` specifically for `user://session.cfg`. This ensures the session token remains persistent and OS-compliant in exported builds, unlike project-root relative paths.
+- **Access Control**: The `GameManager` validates the stored token at launch. If invalid or missing, it forces redirection to `Login.tscn`.
+- **Offline Fallback**: The `ErrorPopup` handles API unreachable states by offering a "Play Offline" mode, which sets the `GameManager` to `Ready` state with a "Guest" flag, bypassing mandatory authentication for local play.
+
+## 2026-05-24 - API Data Mapping and Injection (US 20.0.3)
+- **Profile Synchronization Architecture**: Implemented 'ProfileResponse' as the network source of truth, refactoring 'IApiService.GetProfileAsync' to use it.
+- **Mapping & Domain Integrity**: Introduced 'ProfileMapper' (Core.Utils) to convert 'ProfileResponse' DTOs into the 'PlayerProfile' aggregate. This maintains a strict N-Tier separation while allowing the Godot engine to remain agnostic of API DTO structures.
+- **Null-Safe Deserialization**: Ensured that 'ProfileMapper' and 'ApiService' provide safe fallback collections ('new List<T>()') if JSON fields are missing or null, preventing 'ArgumentNullException' during initialization.
+- **Event-Driven Initialization**: Hooked 'GameManager' into the 'ProfileLoadedEvent'. Upon successful profile fetch (from network or cache), the 'GameManager' publishes this event to the 'EventBus'.
+- **Inventory & Stat Sync**: 'InventoryManager' and 'StatManager' were updated to subscribe to 'ProfileLoadedEvent'. This triggers an idempotent 'InitializeInventory' call and a full stat override respectively, ensuring the player character reflects their remote progression immediately upon loading.
+- **Service Resilience**: Updated 'IApiService' to expose 'GetCachedProfile()', allowing the 'GameManager' to retrieve last-known data without violating N-Tier constraints via implementation casting.
+- **Namespace Management**: A naming conflict exists between 'Core.Domain.Player' (Domain model) and 'IslandSurvivor.Scenes.Player.Player' (Godot CharacterBody2D). Code in the Godot project must use fully qualified names (e.g., 'Core.Domain.Player') to avoid build errors (CS0117).
+
+## 2026-05-29 - Audio Uniformization and Linear Volume Control (US Audio Sync)
+- **Linear Volume Standard**: Refactored the entire audio system to use linear volume (0.0 to 1.0) in the Godot Inspector instead of decibels (dB). This provides a more intuitive experience for designers. The `AudioManager` now handles the conversion to dB internally.
+- **N-Tier Audio Inheritance**: Moved shared audio properties (`HurtSound`, `DeathSound`, `AudioMaxDistance`, etc.) to the `NpcBase` class. This enforces architectural consistency across all NPCs (Passive and Aggressive) and simplifies subclass logic.
+- **Desynchronization Fix**: Resolved an issue where inspector changes to `AudioMaxDistance` were seemingly ignored. By uniformizing all `PlaySound2D` calls to explicitly pass the exported properties and ensuring the `AudioManager` correctly applies them to the pooled players, full synchronization between the IDE and runtime was achieved.
+## 2026-05-25 - US 20.0.4 : Architecture de l'Écran de Chargement et UX de Synchronisation
+
+### Découvertes Architecturales
+- **Gestion du ProcessMode au Démarrage** : Pour bloquer efficacement les entrées avant le chargement de la première scène de gameplay, le `GameManager` (Autoload) doit appliquer `ProcessModeEnum.Disabled` sur la `CurrentScene` du `SceneTree`.
+- **Découplage UI/Logique via Signaux** : L'utilisation de signaux personnalisés (`RetryRequested`, `OfflineModeRequested`) dans `LoadingScreen.cs` permet d'éviter un couplage fort avec le `GameManager`, facilitant la maintenance et les tests.
+- **Blocage des Inputs via CanvasLayer** : Un `CanvasLayer` avec une couche élevée (e.g., 128) et un `ColorRect` ayant `MouseFilter = Stop` est la méthode la plus robuste pour intercepter tous les événements d'entrée dans Godot 4.
+
+### Quirks Godot/C#
+- **Rotation Procédurale** : La rotation du spinner dans `_Process` doit utiliser `delta` pour assurer une fluidité constante indépendamment du framerate.
+- **Transition de Scène et ProcessMode** : Lors de l'appel à `ChangeSceneToFile`, la nouvelle scène est chargée avec son propre `ProcessMode` (généralement `Inherit`), ce qui réactive implicitement le traitement du jeu après la disparition de l'écran de chargement.
+
+## 2026-05-25 - US 20.0.5 : Sécurité, Résilience et Validation Anti-Cheat
+
+### Architecture de Validation et Anti-Cheat
+- **Validation Défensive** : Introduction de `ProfileValidator` (Core.Utils) pour intercepter les données de profil aberrantes avant leur injection dans le moteur.
+- **Seuils de Sécurité** :
+  - Santé (Health) : doit être > 0 et <= 100.
+  - Attaque, Vitesse, Chance (Attack, Speed, Luck) : doivent être >= 0 et < 999.
+- **Comportement sur Échec** : En cas de détection de valeurs invalides, le client journalise une alerte d'intégrité et bascule automatiquement sur le profil "Guest" par défaut pour protéger l'expérience de jeu.
+
+### Résilience et Protection contre le Spam (Backoff)
+- **Retry Backoff** : Implémentation d'un mécanisme de temporisation linéaire sur le bouton de tentative de reconnexion (`RetryRequested`).
+- **Formule de Délai** : `Délai = min(3 * m_retryAttempt, 15)`. Le compteur est réinitialisé lors d'une synchronisation réussie.
+- **Feedback UX** : Le bouton Retry est désactivé durant le cooldown et affiche un compte à rebours dynamique : "Réessayer ({0}s)".
+
+### Transition Hors Ligne Transparente
+- **Feedback de Chargement** : L'utilisation de "Continuer Hors Ligne" déclenche un message d'information temporaire ("Connexion impossible. Lancement en mode hors ligne avec les données locales...") pendant 1.5 seconde via `ToSignal(GetTree().CreateTimer(1.5f), "timeout")`, assurant une UX fluide et transparente.
+
+### Standardisation de l'Authentification et Infrastructure
+- **Validation des Credentials** : Le flux de Login du jeu valide systématiquement les identifiants (Username/Password) auprès de l'endpoint d'authentification de l'API (`/api/auth/login`) avant d'autoriser l'accès aux fonctionnalités en ligne.
+- **Dépendance SQL Server** : Le serveur de base de données (SQL Server) doit être actif et accessible par l'API pour permettre l'authentification initiale et l'obtention du `SessionToken`.
+- **Gestion de l'Indisponibilité (503)** : Si la base de données est arrêtée ou inaccessible, l'API renvoie une erreur 503 (via `ExceptionHandlingMiddleware`). Le client intercepte cette erreur, lève une alerte visuelle et propose le basculement vers le mode hors ligne basé sur le cache local (`user://session.cfg` et `profile_cache.json`).

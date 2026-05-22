@@ -11,7 +11,7 @@ namespace IslandSurvivor.Globals.Navigation;
 
 public partial class NavigationManager : Node
 {
-    public static NavigationManager Instance { get; private set; }
+    public static NavigationManager Instance { get; private set; } = null!;
 
     public override void _EnterTree()
     {
@@ -33,6 +33,15 @@ public partial class NavigationManager : Node
     private async void OnTeleportRequested(string p_islandId, string p_scenePath, string p_biome, int p_difficulty, int p_resourceCost, int p_dangerLevel)
     {
         GD.Print($"[Navigation] Changing scene to {p_scenePath} (Island ID: {p_islandId})");
+
+        // Use SceneLoadingManager if available
+        Managers.SceneLoadingManager slm = GetNodeOrNull<Managers.SceneLoadingManager>("/root/SceneLoadingManager");
+        if (slm != null)
+        {
+            slm.ShowLoading();
+            await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
+            await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
+        }
 
         // Sync Data using ApiService
         if (ServiceRegistry.Instance?.ApiService != null)
@@ -75,8 +84,6 @@ public partial class NavigationManager : Node
         }
 
         // Perform transition
-        // Use SceneLoadingManager if available
-        Managers.SceneLoadingManager slm = GetNodeOrNull<Managers.SceneLoadingManager>("/root/SceneLoadingManager");
         if (slm != null)
         {
             slm.LoadScene(p_scenePath);
