@@ -6,7 +6,9 @@
 [ext_resource type="Texture2D" uid="uid://btfwfp0sry5xw" path="res://Assets/TinySwords/Sprites/Lancer/Blue/Lancer_Right_Attack.png" id="2_qp1c1"]
 [ext_resource type="Texture2D" uid="uid://c8m0cy55dalkf" path="res://Assets/TinySwords/Sprites/Lancer/Blue/Lancer_Right_Defence.png" id="3_4t0e8"]
 [ext_resource type="Texture2D" uid="uid://xjppjsnbf28b" path="res://Assets/TinySwords/Sprites/Lancer/Blue/Lancer_Run.png" id="3_qp1c1"]
+[ext_resource type="AudioStream" uid="uid://bng0g5vtfxg8b" path="res://Assets/Audio/kenney_impact-sounds/Audio/hurtSound.mp3" id="3_u3wq2"]
 [ext_resource type="Texture2D" uid="uid://b1cvhtd4ckvmc" path="res://Assets/TinySwords/Sprites/Lancer/Blue/Lancer_Down_Attack.png" id="3_vdtxd"]
+[ext_resource type="AudioStream" uid="uid://d3mi5a68pa0l5" path="res://Assets/Audio/kenney_impact-sounds/Audio/001_we-lost.wav" id="4_hesqx"]
 [ext_resource type="Texture2D" uid="uid://d2tfksdwjadim" path="res://Assets/TinySwords/Sprites/Lancer/Blue/Lancer_Up_Attack.png" id="4_mcrgq"]
 [ext_resource type="Texture2D" uid="uid://yjijwkud0pup" path="res://Assets/TinySwords/Sprites/Lancer/Blue/Lancer_Down_Defence.png" id="6_3eliq"]
 [ext_resource type="Texture2D" uid="uid://3t7pvqcjthlb" path="res://Assets/TinySwords/Sprites/Lancer/Blue/Lancer_Up_Defence.png" id="8_k4iku"]
@@ -477,11 +479,16 @@ height = 120.0
 script = ExtResource("1_x8y9z")
 DashSpeedMultiplier = 4.0
 MinDashDistance = 175.0
+AttackAnimationName = "Attack"
 ChaseSpeed = 100.0
 StoppingDistance = 40.0
 LevelIndex = 1
 BaseXp = 30.0
 XpMultiplier = 0.2
+AttackSoundKey = "Enemy_Swing_Default"
+AttackVolume = 1.0
+HurtSound = ExtResource("3_u3wq2")
+DeathSound = ExtResource("4_hesqx")
 
 [node name="AnimatedSprite2D" parent="." index="0"]
 sprite_frames = SubResource("SpriteFrames_twomw")
