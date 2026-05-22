@@ -1,0 +1,14 @@
+[remap]
+
+importer="aseprite_wizard.plugin.noop"
+type="PackedDataContainer"
+uid="uid://dbv5r15msefy1"
+path="res://.godot/imported/Sheep.aseprite-63188ea0b90652056ebd28a6ebb296c8.res"
+
+[deps]
+
+source_file="res://Assets/TinySwords/Terrain/Sheep/Sheep.aseprite"
+dest_files=["res://.godot/imported/Sheep.aseprite-63188ea0b90652056ebd28a6ebb296c8.res"]
+
+[params]
+

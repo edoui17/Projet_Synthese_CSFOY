@@ -13,7 +13,6 @@ public partial class Archer : RangedAggressiveNpcBase
         }
 
         // Load the Arrow scene
-        ProjectileScene = GD.Load<PackedScene>("res://Scenes/Projectiles/Arrow.tscn");
         if (ProjectileScene == null)
         {
             GD.PrintErr("Archer failed to load Arrow.tscn!");

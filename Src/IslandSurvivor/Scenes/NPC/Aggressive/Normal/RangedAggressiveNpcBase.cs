@@ -7,6 +7,9 @@ public partial class RangedAggressiveNpcBase : AggressiveNpcBase
 {
     [Export] public PackedScene ProjectileScene { get; set; } = null!;
 
+    [ExportGroup("Animations")]
+    [Export] public string AttackAnimationName { get; set; } = "Attack";
+
     public override void _Ready()
     {
         base._Ready();
@@ -37,9 +40,9 @@ public partial class RangedAggressiveNpcBase : AggressiveNpcBase
     {
         if (m_targetPlayer != null && m_attackController != null && m_attackController.CanAttack)
         {
-            float distanceToPlayer = GlobalPosition.DistanceTo(m_targetPlayer.GlobalPosition);
+            float distanceSquaredToPlayer = GlobalPosition.DistanceSquaredTo(m_targetPlayer.GlobalPosition);
 
-            if (distanceToPlayer <= StoppingDistance)
+            if (distanceSquaredToPlayer <= StoppingDistance * StoppingDistance)
             {
                 if (CheckLineOfSight())
                 {
@@ -56,15 +59,7 @@ public partial class RangedAggressiveNpcBase : AggressiveNpcBase
 
     protected virtual void OnAttackStarted()
     {
-        if (m_animatedSprite != null)
-        {
-            if (m_targetPlayer != null)
-            {
-                m_animatedSprite.FlipH = m_targetPlayer.GlobalPosition.X < GlobalPosition.X;
-            }
-            m_animatedSprite.Play("Attack");
-            m_animatedSprite.Frame = 0;
-        }
+        PlayAttackAnimation(AttackAnimationName);
     }
 
     protected virtual void ShootProjectile()

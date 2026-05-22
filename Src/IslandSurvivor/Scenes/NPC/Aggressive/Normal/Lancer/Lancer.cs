@@ -63,15 +63,15 @@ public partial class Lancer : MeleeAggressiveNpcBase
         if (m_lancerController.CurrentState == NpcStates.DEAD) return;
 
         bool hasLineOfSight = CheckLineOfSight();
-        float distanceToPlayer = float.MaxValue;
+        float distanceSquaredToPlayer = float.MaxValue;
 
         if (m_targetPlayer != null)
         {
-            distanceToPlayer = GlobalPosition.DistanceTo(m_targetPlayer.GlobalPosition);
+            distanceSquaredToPlayer = GlobalPosition.DistanceSquaredTo(m_targetPlayer.GlobalPosition);
             m_lancerController.UpdateTargetPositions(GlobalPosition, m_targetPlayer.GlobalPosition);
         }
 
-        m_lancerController.UpdateDistanceToTarget(distanceToPlayer);
+        m_lancerController.UpdateDistanceToTarget(distanceSquaredToPlayer);
         m_lancerController.Update((float)p_delta, m_targetPlayer != null, hasLineOfSight);
 
         Vector2 direction = new Vector2(m_lancerController.CurrentDirection.X, m_lancerController.CurrentDirection.Y);

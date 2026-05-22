@@ -1,0 +1,14 @@
+[remap]
+
+importer="aseprite_wizard.plugin.noop"
+type="PackedDataContainer"
+uid="uid://df8suxqy0mnxf"
+path="res://.godot/imported/Tree_v2.aseprite-780a2f0a87af67c93b7a862ca2321bdf.res"
+
+[deps]
+
+source_file="res://Assets/TinySwords/Decorations/Trees/Tree_v2.aseprite"
+dest_files=["res://.godot/imported/Tree_v2.aseprite-780a2f0a87af67c93b7a862ca2321bdf.res"]
+
+[params]
+
