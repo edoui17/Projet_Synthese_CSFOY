@@ -40,9 +40,9 @@ public partial class RangedAggressiveNpcBase : AggressiveNpcBase
     {
         if (m_targetPlayer != null && m_attackController != null && m_attackController.CanAttack)
         {
-            float distanceToPlayer = GlobalPosition.DistanceTo(m_targetPlayer.GlobalPosition);
+            float distanceSquaredToPlayer = GlobalPosition.DistanceSquaredTo(m_targetPlayer.GlobalPosition);
 
-            if (distanceToPlayer <= StoppingDistance)
+            if (distanceSquaredToPlayer <= StoppingDistance * StoppingDistance)
             {
                 if (CheckLineOfSight())
                 {

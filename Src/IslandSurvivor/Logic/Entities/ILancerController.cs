@@ -6,7 +6,7 @@ public interface ILancerController : IAgressorController
 {
     float MinDashDistance { get; set; }
     float MeleeDistance { get; }
-    void UpdateDistanceToTarget(float p_distance);
+    void UpdateDistanceToTarget(float p_distanceSquared);
     void UpdateTargetPositions(Vector2 p_agressorPos, Vector2 p_targetPos);
     void StartMelee();
     void FinishMelee();
