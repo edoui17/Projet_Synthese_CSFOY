@@ -45,6 +45,14 @@ public partial class MeleeAggressiveNpcBase : AggressiveNpcBase
             if (distanceSquaredToPlayer <= 50f * 50f)
             {
                 string direction = (m_animatedSprite != null && m_animatedSprite.FlipH) ? "Left" : "Right";
+
+                // Si la gestion du son n'est pas incluse dans TryAttack, vous pouvez la mettre ici :
+                AudioStream attackStream = GD.Load<AudioStream>("res://Assets/Sounds/Combat/enemy_attack.wav");
+                if (attackStream != null)
+                {
+                    IslandSurvivor.Globals.AudioManager.Instance?.PlaySound2D(attackStream, GlobalPosition);
+                }
+
                 m_attackController.TryAttack(direction);
             }
         }

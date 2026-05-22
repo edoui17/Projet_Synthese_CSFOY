@@ -48,4 +48,36 @@ public static class NodeExtensions
              .SetTrans(Tween.TransitionType.Sine)
              .SetEase(Tween.EaseType.InOut);
     }
+
+    /// <summary>
+    /// Checks if there is a clear line of sight between this node and a target node.
+    /// It uses a raycast to check for collisions against the specified collision mask.
+    /// </summary>
+    public static bool HasLineOfSightTo(this Node2D p_from, Node2D p_to, uint p_collisionMask = 1)
+    {
+        if (!GodotObject.IsInstanceValid(p_from) || !p_from.IsInsideTree() ||
+            !GodotObject.IsInstanceValid(p_to) || !p_to.IsInsideTree())
+            return false;
+
+        var spaceState = p_from.GetWorld2D().DirectSpaceState;
+        var query = PhysicsRayQueryParameters2D.Create(p_from.GlobalPosition, p_to.GlobalPosition, p_collisionMask);
+
+        // Exclude the nodes themselves from the raycast check
+        var excludeArray = new Godot.Collections.Array<Rid>();
+        if (p_from is CollisionObject2D fromCollision)
+        {
+            excludeArray.Add(fromCollision.GetRid());
+        }
+        if (p_to is CollisionObject2D toCollision)
+        {
+            excludeArray.Add(toCollision.GetRid());
+        }
+        query.Exclude = excludeArray;
+
+        var result = spaceState.IntersectRay(query);
+
+        // If the dictionary is empty, it means the ray hit nothing on the specified mask
+        // which means the line of sight is clear.
+        return result.Count == 0;
+    }
 }
