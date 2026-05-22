@@ -39,9 +39,9 @@ public partial class MeleeAggressiveNpcBase : AggressiveNpcBase
     {
         if (m_attackController != null && m_attackController.CanAttack && m_targetPlayer != null)
         {
-            float distanceToPlayer = GlobalPosition.DistanceTo(m_targetPlayer.GlobalPosition);
+            float distanceSquaredToPlayer = GlobalPosition.DistanceSquaredTo(m_targetPlayer.GlobalPosition);
 
-            if (distanceToPlayer <= 50f)
+            if (distanceSquaredToPlayer <= 50f * 50f)
             {
                 string direction = (m_animatedSprite != null && m_animatedSprite.FlipH) ? "Left" : "Right";
                 m_attackController.TryAttack(direction);

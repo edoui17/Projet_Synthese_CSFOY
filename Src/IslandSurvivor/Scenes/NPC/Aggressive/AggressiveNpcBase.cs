@@ -121,8 +121,9 @@ public partial class AggressiveNpcBase : NpcBase, IEnemy
         }
         else if (m_agressorController.CurrentState == NpcStates.CHASE && m_targetPlayer != null)
         {
-            float distanceToPlayer = GlobalPosition.DistanceTo(m_targetPlayer.GlobalPosition);
-            if (distanceToPlayer <= StoppingDistance)
+            float distanceSquaredToPlayer = GlobalPosition.DistanceSquaredTo(m_targetPlayer.GlobalPosition);
+            // Replaced DistanceTo with DistanceSquaredTo to eliminate square root calculation in hot path (_PhysicsProcess)
+            if (distanceSquaredToPlayer <= StoppingDistance * StoppingDistance)
             {
                 targetSpeed = 0f;
                 direction = Vector2.Zero;

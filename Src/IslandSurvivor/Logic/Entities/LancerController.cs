@@ -9,7 +9,7 @@ public class LancerController : AgressorController, ILancerController
     public float MeleeDistance { get; } = 120f;
     public float DashCooldown { get; } = 1.5f; // Seconds between dashes
 
-    private float m_distanceToTarget = float.MaxValue;
+    private float m_distanceSquaredToTarget = float.MaxValue;
     private float m_dashCooldownTimer = 0f;
     private Vector2 m_agressorPos = Vector2.Zero;
     private Vector2 m_targetPos = Vector2.Zero;
@@ -26,9 +26,9 @@ public class LancerController : AgressorController, ILancerController
         m_currentDirection = Vector2.Zero;
     }
 
-    public void UpdateDistanceToTarget(float p_distance)
+    public void UpdateDistanceToTarget(float p_distanceSquared)
     {
-        m_distanceToTarget = p_distance;
+        m_distanceSquaredToTarget = p_distanceSquared;
     }
 
     public void UpdateTargetPositions(Vector2 p_agressorPos, Vector2 p_targetPos)
@@ -56,7 +56,7 @@ public class LancerController : AgressorController, ILancerController
                     m_currentDirection = new Vector2(0f, direction.Y > 0 ? 1f : -1f);
                 }
             }
-            else if (m_currentState == NpcStates.CHASE && m_dashCooldownTimer <= 0f && m_distanceToTarget >= MinDashDistance)
+            else if (m_currentState == NpcStates.CHASE && m_dashCooldownTimer <= 0f && m_distanceSquaredToTarget >= MinDashDistance * MinDashDistance)
             {
                 // Dash is ready, prioritize aligning to the closest axis
                 bool xCloser = Math.Abs(direction.Y) > Math.Abs(direction.X);
@@ -113,7 +113,7 @@ public class LancerController : AgressorController, ILancerController
         if (m_currentState == LancerStates.MELEE)
         {
             // Tactical re-evaluation: if player retreats, finish melee
-            if (!p_hasTarget || !p_hasLineOfSight || m_distanceToTarget > MeleeDistance)
+            if (!p_hasTarget || !p_hasLineOfSight || m_distanceSquaredToTarget > MeleeDistance * MeleeDistance)
             {
                 FinishMelee();
             }
@@ -125,7 +125,7 @@ public class LancerController : AgressorController, ILancerController
 
         if (p_hasTarget && p_hasLineOfSight)
         {
-            if (m_distanceToTarget <= MeleeDistance)
+            if (m_distanceSquaredToTarget <= MeleeDistance * MeleeDistance)
             {
                 // In melee range
                 StartMelee();
@@ -133,7 +133,7 @@ public class LancerController : AgressorController, ILancerController
                 return;
             }
 
-            if (m_distanceToTarget >= MinDashDistance && m_dashCooldownTimer <= 0f)
+            if (m_distanceSquaredToTarget >= MinDashDistance * MinDashDistance && m_dashCooldownTimer <= 0f)
             {
                 // Must be aligned to an axis to dash
                 bool alignedY = Math.Abs(m_targetPos.Y - m_agressorPos.Y) <= DASH_ALIGNMENT_TOLERANCE;
