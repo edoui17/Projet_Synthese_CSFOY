@@ -1,14 +1,15 @@
-[gd_scene format=3 uid="uid://4ry1ef60r6ju"]
+[gd_scene load_steps=8 format=3 uid="uid://4ry1ef60r6ju"]
 
-[ext_resource type="Script" uid="uid://dd153s4oxkqlg" path="res://Scenes/Projectiles/OrbProjectile/OrbProjectile.cs" id="1_o73vl"]
-[ext_resource type="Texture2D" uid="uid://nkyhcbltbf5e" path="res://Assets/Corrupted/Bat/Projectile.png" id="2_ohysu"]
+[ext_resource type="PackedScene" uid="uid://df74p1t2jmqx6" path="res://Logic/Projectiles/BaseProjectile.tscn" id="1_base"]
+[ext_resource type="Script" uid="uid://dd153s4oxkqlg" path="res://Scenes/Projectiles/OrbProjectile/OrbProjectile.cs" id="2_o73vl"]
+[ext_resource type="Texture2D" uid="uid://nkyhcbltbf5e" path="res://Assets/Corrupted/Bat/Projectile.png" id="3_ohysu"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_cdr6x"]
-atlas = ExtResource("2_ohysu")
+atlas = ExtResource("3_ohysu")
 region = Rect2(0, 0, 32, 32)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_gl7d5"]
-atlas = ExtResource("2_ohysu")
+atlas = ExtResource("3_ohysu")
 region = Rect2(32, 0, 32, 32)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_jifwq"]
@@ -28,14 +29,14 @@ animations = [{
 [sub_resource type="CircleShape2D" id="CircleShape2D_ljtnh"]
 radius = 6.0
 
-[node name="EnergyShot" type="Area2D" unique_id=1614758330]
-script = ExtResource("1_o73vl")
+[node name="OrbProjectile" instance=ExtResource("1_base")]
+script = ExtResource("2_o73vl")
 
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1148973359]
+[node name="AnimatedSprite2D" parent="." index="0"]
 rotation = -0.8377581
 sprite_frames = SubResource("SpriteFrames_jifwq")
 animation = &"Attack"
 autoplay = "Attack"
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=367745591]
+[node name="CollisionShape2D" parent="." index="1"]
 shape = SubResource("CircleShape2D_ljtnh")
