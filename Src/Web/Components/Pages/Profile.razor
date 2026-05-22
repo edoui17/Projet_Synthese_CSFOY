@@ -10,7 +10,7 @@
                 <img src="images/profile/Avatars_06.png" alt="profile picture">
             </div>
 
-            <span style="color: white; font-size: 24px; font-weight: bold; font-family: 'Pixelify Sans', sans-serif;">@Pseudonyme.ToUpper()</span>
+            <span class="profile-username">@Pseudonyme.ToUpper()</span>
         </div>
         <a href="/">
             <img src="images/logo.png" alt="Logo Island Survivor" id="logo">
@@ -19,41 +19,51 @@
     </nav>
 </header>
 
-<section>
-    <div style="height:500px;scrollbar-base-color:gold;overflow:auto;" class="rank">
-        @if (m_isLoading)
-        {
-            <p style="color: white; text-align: center;">Chargement du profil...</p>
-        }
-        else if (m_profile == null)
-        {
-            <p style="color: white; text-align: center;">Joueur introuvable.</p>
-        }
-        else if (m_profile.LastSessions == null || !m_profile.LastSessions.Any())
-        {
-            <p style="color: white; text-align: center;">Aucune partie enregistrée.</p>
-        }
-        else
-        {
-            var sessionsList = m_profile.LastSessions.OrderByDescending(s => s.PlayedAt).ToList();
-
-            foreach (var session in sessionsList)
+<section class="profile-section">
+    @if (m_isLoading)
+    {
+        <p style="color: white; text-align: center;">Chargement du profil...</p>
+    }
+    else if (m_profile == null)
+    {
+        <p style="color: white; text-align: center;">Joueur introuvable.</p>
+    }
+    else
+    {
+        <h3 class="history-title">Historique des parties</h3>
+        <div class="history-container">
+            @if (m_profile.LastSessions == null || !m_profile.LastSessions.Any())
             {
-                <div class="solo" style="margin-bottom: 20px;">
-                    <img src="images/solobar.png" alt="rank bar">
-                    <h3>@session.PlayedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm") - Lvl @session.LevelReached</h3>
-                    <h2>
-                        <span style="font-size: 14px; margin-right: 15px;">Temps: @session.Duration.ToString(@"hh\:mm\:ss")</span>
-                        <span style="font-size: 14px; margin-right: 15px;">Score: @session.Score</span>
-                        <span style="font-size: 14px; margin-right: 15px;">Vie: @session.Health</span>
-                        <span style="font-size: 14px; margin-right: 15px;">Attaque: @session.Attack</span>
-                        <span style="font-size: 14px; margin-right: 15px;">Vitesse: @session.Speed</span>
-                        <span style="font-size: 14px;">Chance: @session.Luck</span>
-                    </h2>
-                </div>
+                <p style="color: white; text-align: center;">Aucune partie enregistrée.</p>
             }
-        }
-    </div>
+            else
+            {
+                var sessionsList = m_profile.LastSessions.OrderByDescending(s => s.PlayedAt).ToList();
+
+                @foreach (var session in sessionsList)
+                {
+                    <div class="history-card">
+                        <div class="card-header">
+                            <span class="card-date">@session.PlayedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</span>
+                            <span class="card-duration">Temps: @session.Duration.ToString(@"mm\:ss")</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-main-stats">
+                                <h4>Niveau @session.LevelReached</h4>
+                                <p>Score: @session.Score</p>
+                            </div>
+                            <div class="card-sub-stats">
+                                <div><img src="images/health_icon.png" alt="HP" onerror="this.style.display='none'"/> HP: @session.Health (+@session.BonusHealth)</div>
+                                <div><img src="images/attack_icon.png" alt="ATK" onerror="this.style.display='none'"/> ATK: @session.Attack (+@session.BonusAttack)</div>
+                                <div><img src="images/speed_icon.png" alt="SPD" onerror="this.style.display='none'"/> SPD: @session.Speed (+@session.BonusSpeed)</div>
+                                <div><img src="images/luck_icon.png" alt="LCK" onerror="this.style.display='none'"/> LCK: @session.Luck (+@session.BonusLuck)</div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    }
 </section>
 
 @code {
