@@ -159,3 +159,6 @@ When triggering updates (e.g., UI upgrades emitting events to a decoupled compon
 ## Audio and Visual Feedback Architecture
 - **Audio Global/Spatial Handling**: Created `AudioManager` singleton attached to the root, pooling `AudioStreamPlayer` (Global/UI) and `AudioStreamPlayer2D` (Spatial) to decouple sounds from node lifetimes. Prevents sounds cutting off prematurely when entities (like resources or enemies) queue free upon death.
 - **Node Tweening Extensions**: Added `PlayShake` extending `Node2D` using Godot's `Tween` API to systematically implement camera shakes and entity impact hits without polluting entity logic.
+
+## Godot Quirks & Line-of-Sight
+For instant line-of-sight validation (e.g., preventing melee attacks or detection through walls), prefer using `PhysicsRayQueryParameters2D` querying the `DirectSpaceState` against the map collision mask (Layer 1), rather than relying on `RayCast2D` nodes to avoid node-update and local-coordinate complexities.

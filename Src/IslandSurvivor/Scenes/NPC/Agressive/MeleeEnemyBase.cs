@@ -5,6 +5,7 @@ using Godot;
 using Core.Interfaces.Entities;
 using Core.Interfaces.Stats;
 using IslandSurvivor.Logic.Entities;
+using IslandSurvivor.Extensions;
 
 public abstract partial class MeleeEnemyBase : EnemyBase
 {
@@ -69,6 +70,10 @@ public abstract partial class MeleeEnemyBase : EnemyBase
             var playersToDamage = new List<IDamageable>(m_playersInHitbox);
             foreach (var player in playersToDamage)
             {
+                if (player is Node2D targetNode && !this.HasLineOfSightTo(targetNode, 1))
+                {
+                    continue;
+                }
                 player.TakeDamage(damageAmount, this);
             }
         }
