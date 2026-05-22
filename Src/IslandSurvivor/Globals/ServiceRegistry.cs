@@ -51,30 +51,6 @@ public partial class ServiceRegistry : Node
 
     public override void _Ready()
     {
-        CallDeferred(nameof(InitializeApiData));
-    }
-
-    private async void InitializeApiData()
-    {
-        GD.Print("[ServiceRegistry] Connecting to API...");
-
-        // Use temporary test credentials
-        string? token = await ApiService.LoginAsync("test", "test");
-        if (string.IsNullOrEmpty(token))
-        {
-            GD.Print("[ServiceRegistry] API Login failed, falling back to local cache if available.");
-        }
-        else
-        {
-            GD.Print("[ServiceRegistry] API Login successful.");
-        }
-
-        PlayerProfile? profile = await ApiService.GetProfileAsync();
-        if (profile != null)
-        {
-            GD.Print("[ServiceRegistry] Profile data loaded.");
-            EventBus.Publish(new ProfileLoadedEvent(profile));
-        }
     }
 
     public override void _Process(double delta)

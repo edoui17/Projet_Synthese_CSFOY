@@ -19,8 +19,7 @@ public class ApiKeyMiddleware
     {
         if (!p_context.Request.Headers.TryGetValue(API_KEY_HEADER_NAME, out var extractedApiKey))
         {
-            p_context.Response.StatusCode = 401;
-            await p_context.Response.WriteAsync("API Key was not provided.");
+            await API.Utils.ErrorResponseHelper.WriteErrorResponseAsync(p_context, System.Net.HttpStatusCode.Unauthorized, "Unauthorized", "API Key was not provided.");
             return;
         }
 
@@ -29,8 +28,7 @@ public class ApiKeyMiddleware
 
         if (apiKey == null || extractedApiKey != apiKey)
         {
-            p_context.Response.StatusCode = 401;
-            await p_context.Response.WriteAsync("Unauthorized client.");
+            await API.Utils.ErrorResponseHelper.WriteErrorResponseAsync(p_context, System.Net.HttpStatusCode.Unauthorized, "Unauthorized", "Unauthorized client.");
             return;
         }
 

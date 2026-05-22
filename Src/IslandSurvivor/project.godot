@@ -18,6 +18,7 @@ config/icon="res://icon.svg"
 [autoload]
 
 ServiceRegistry="*res://Globals/ServiceRegistry.cs"
+GameManager="*res://Managers/GameManager.cs"
 MusicPlayer="*uid://cmbtn736rnfhu"
 SignalManager="*res://Globals/SignalManager.cs"
 NavigationManager="*res://Globals/Navigation/NavigationManager.cs"
