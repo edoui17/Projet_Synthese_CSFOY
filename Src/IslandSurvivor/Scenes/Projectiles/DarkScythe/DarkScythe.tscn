@@ -34,35 +34,27 @@ region = Rect2(576, 0, 96, 96)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_et8yx"]
 atlas = ExtResource("3_s5lsp")
-region = Rect2(672, 0, 96, 96)
+region = Rect2(480, 0, 96, 96)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_vjmjv"]
 atlas = ExtResource("3_s5lsp")
-region = Rect2(0, 96, 96, 96)
+region = Rect2(384, 0, 96, 96)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_7elak"]
 atlas = ExtResource("3_s5lsp")
-region = Rect2(96, 96, 96, 96)
+region = Rect2(288, 0, 96, 96)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_g5pdw"]
 atlas = ExtResource("3_s5lsp")
-region = Rect2(192, 96, 96, 96)
+region = Rect2(192, 0, 96, 96)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_t4lbx"]
 atlas = ExtResource("3_s5lsp")
-region = Rect2(288, 96, 96, 96)
+region = Rect2(96, 0, 96, 96)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_k4ssg"]
 atlas = ExtResource("3_s5lsp")
-region = Rect2(384, 96, 96, 96)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_2j446"]
-atlas = ExtResource("3_s5lsp")
-region = Rect2(480, 96, 96, 96)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_oetew"]
-atlas = ExtResource("3_s5lsp")
-region = Rect2(576, 96, 96, 96)
+region = Rect2(0, 0, 96, 96)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_j8jeg"]
 animations = [{
@@ -105,12 +97,6 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_k4ssg")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_2j446")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_oetew")
 }],
 "loop": false,
 "name": &"Attack",
@@ -124,14 +110,16 @@ radius = 4.5
 scale = Vector2(2.5, 2.5)
 script = ExtResource("2_byklq")
 ReturnTime = 1.5
+SpinSpeed = 15.0
+MaxScaleMultiplier = 1.5
 DestroyOnImpact = false
 
 [node name="AnimatedSprite2D" parent="." index="0"]
 sprite_frames = SubResource("SpriteFrames_j8jeg")
 animation = &"Attack"
-frame = 14
-frame_progress = 1.0
+frame = 6
+frame_progress = 0.22328918
 
 [node name="CollisionShape2D" parent="." index="1"]
-position = Vector2(-17, 6)
+position = Vector2(-4.800001, 6.8)
 shape = SubResource("CircleShape2D_s5lsp")
