@@ -107,6 +107,7 @@ animations = [{
 radius = 4.5
 
 [node name="DarkScythe" unique_id=307395803 instance=ExtResource("1_base")]
+collision_mask = 15
 scale = Vector2(2.5, 2.5)
 script = ExtResource("2_byklq")
 ReturnTime = 1.5
