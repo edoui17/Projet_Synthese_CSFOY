@@ -43,22 +43,22 @@ public interface IEventBus
 ## Utilisation de l'EventBus
 
 ### Configuration (Godot Autoload)
-Puisque le `EventBus` utilise une file d'attente concurrente (`ConcurrentQueue<Action>`) pour éviter la récursion infinie ou les blocages de synchronisation (Option B), il **doit** être traité à chaque frame. Un script Autoload dans Godot doit appeler `ProcessEvents()`.
+Puisque le `EventBus` utilise une file d'attente concurrente (`ConcurrentQueue<Action>`) pour éviter la récursion infinie ou les blocages de synchronisation (Option B), il **doit** être traité à chaque frame. Le script Autoload `ServiceRegistry` de Godot se charge d'appeler `ProcessEvents()`.
 
 ```csharp
-public partial class EventBusAutoload : Node
+public partial class ServiceRegistry : Node
 {
-    private IEventBus m_eventBus;
+    public IEventBus EventBus { get; private set; } = null!;
 
-    public override void _Ready()
+    public override void _EnterTree()
     {
-        // Injecter ou récupérer le bus
-        m_eventBus = ServiceRegistry.Get<IEventBus>();
+        // ... initialisation ...
+        EventBus = new EventBus();
     }
 
     public override void _Process(double delta)
     {
-        m_eventBus.ProcessEvents();
+        EventBus?.ProcessEvents();
     }
 }
 ```

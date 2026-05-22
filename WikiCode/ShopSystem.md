@@ -54,8 +54,8 @@ public partial class ShopMenuUI : Control
     public override void _Ready()
     {
         // Récupérer les services du Core
-        m_shopManager = ServiceRegistry.Get<IShopManager>();
-        m_inventoryManager = ServiceRegistry.Get<IInventoryManager>();
+        m_shopManager = ServiceRegistry.Instance.ShopManager;
+        m_inventoryManager = ServiceRegistry.Instance.InventoryManager;
 
         UpdateUI();
     }
