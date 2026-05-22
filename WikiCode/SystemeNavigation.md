@@ -66,7 +66,7 @@ public void Interact()
     {
         GD.Print($"[PortalInteraction] Emitting NavigationRequestedEvent for destination: {m_destination.Biome}");
         // Émission de l'événement sur l'EventBus
-        ServiceRegistry.Get<IEventBus>().Publish(new NavigationRequestedEvent(m_destination));
+        ServiceRegistry.Instance.EventBus.Publish(new NavigationRequestedEvent(m_destination));
     }
 }
 ```
@@ -80,7 +80,7 @@ Le `NavigationManager` en Godot (Autoload) s'abonne au `NavigationRequestedEvent
 public override void _Ready()
 {
     // Abonnement direct à l'EventBus
-    ServiceRegistry.Get<IEventBus>().Subscribe<NavigationRequestedEvent>(OnNavigationRequested);
+    ServiceRegistry.Instance.EventBus.Subscribe<NavigationRequestedEvent>(OnNavigationRequested);
 }
 
 private void OnNavigationRequested(NavigationRequestedEvent p_event)

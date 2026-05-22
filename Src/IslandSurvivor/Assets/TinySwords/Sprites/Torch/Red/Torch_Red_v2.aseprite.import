@@ -1,0 +1,14 @@
+[remap]
+
+importer="aseprite_wizard.plugin.noop"
+type="PackedDataContainer"
+uid="uid://bx3loq8fr80en"
+path="res://.godot/imported/Torch_Red_v2.aseprite-f9707ad0748acaf7e5b765bacbb479dd.res"
+
+[deps]
+
+source_file="res://Assets/TinySwords/Sprites/Torch/Red/Torch_Red_v2.aseprite"
+dest_files=["res://.godot/imported/Torch_Red_v2.aseprite-f9707ad0748acaf7e5b765bacbb479dd.res"]
+
+[params]
+

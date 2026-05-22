@@ -1,0 +1,14 @@
+[remap]
+
+importer="aseprite_wizard.plugin.noop"
+type="PackedDataContainer"
+uid="uid://b182uf12ud84q"
+path="res://.godot/imported/Pawn_Red_v2.aseprite-b47410cf5da9d60f7d9b32b2c5b1e370.res"
+
+[deps]
+
+source_file="res://Assets/TinySwords/Sprites/Pawn/Red/Pawn_Red_v2.aseprite"
+dest_files=["res://.godot/imported/Pawn_Red_v2.aseprite-b47410cf5da9d60f7d9b32b2c5b1e370.res"]
+
+[params]
+
