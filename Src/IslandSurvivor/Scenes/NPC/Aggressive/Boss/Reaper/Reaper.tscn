@@ -3,6 +3,7 @@
 [ext_resource type="PackedScene" uid="uid://bossbase123" path="res://Scenes/NPC/Aggressive/Boss/BossBase.tscn" id="1_t3tbm"]
 [ext_resource type="Texture2D" uid="uid://dp5xwdfvc4aoi" path="res://Assets/Corrupted/Reaper/Reaper.png" id="2_dp46e"]
 [ext_resource type="Script" uid="uid://drd3hylg8xmy3" path="res://Scenes/NPC/Aggressive/Boss/Reaper/Reaper.cs" id="3_reaper_script"]
+[ext_resource type="Texture2D" uid="uid://cntam4kvbein5" path="res://Assets/Corrupted/Reaper/PerSyn.png" id="4_qlfne"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_c0sqb"]
 atlas = ExtResource("2_dp46e")
@@ -296,6 +297,62 @@ region = Rect2(144, 240, 48, 48)
 atlas = ExtResource("2_dp46e")
 region = Rect2(192, 240, 48, 48)
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_0tqii"]
+atlas = ExtResource("4_qlfne")
+region = Rect2(384, 192, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0dbr2"]
+atlas = ExtResource("4_qlfne")
+region = Rect2(384, 192, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_vltgb"]
+atlas = ExtResource("4_qlfne")
+region = Rect2(336, 192, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_av5k0"]
+atlas = ExtResource("4_qlfne")
+region = Rect2(288, 192, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1ji70"]
+atlas = ExtResource("4_qlfne")
+region = Rect2(240, 192, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jmmqe"]
+atlas = ExtResource("4_qlfne")
+region = Rect2(192, 192, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ynadv"]
+atlas = ExtResource("4_qlfne")
+region = Rect2(0, 192, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_lg5we"]
+atlas = ExtResource("4_qlfne")
+region = Rect2(0, 192, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_gi1nx"]
+atlas = ExtResource("4_qlfne")
+region = Rect2(192, 192, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7ul1f"]
+atlas = ExtResource("4_qlfne")
+region = Rect2(240, 192, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_e5d24"]
+atlas = ExtResource("4_qlfne")
+region = Rect2(288, 192, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_opest"]
+atlas = ExtResource("4_qlfne")
+region = Rect2(336, 192, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_gqnq8"]
+atlas = ExtResource("4_qlfne")
+region = Rect2(384, 192, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_lgedi"]
+atlas = ExtResource("4_qlfne")
+region = Rect2(384, 192, 48, 48)
+
 [sub_resource type="SpriteFrames" id="SpriteFrames_t3tbm"]
 animations = [{
 "frames": [{
@@ -566,6 +623,58 @@ animations = [{
 "loop": false,
 "name": &"Shielding",
 "speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0tqii")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0dbr2")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_vltgb")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_av5k0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_1ji70")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_jmmqe")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ynadv")
+}],
+"loop": false,
+"name": &"TeleportIn",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_lg5we")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gi1nx")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_7ul1f")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_e5d24")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_opest")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gqnq8")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_lgedi")
+}],
+"loop": false,
+"name": &"TeleportOut",
+"speed": 8.0
 }]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_dp46e"]
@@ -585,12 +694,13 @@ RangedAttackAnimationName = "Attack_Ranged"
 [node name="AnimatedSprite2D" parent="." index="0"]
 scale = Vector2(5, 5)
 sprite_frames = SubResource("SpriteFrames_t3tbm")
-animation = &"ScytheThrow"
+animation = &"TeleportIn"
 autoplay = "Idle"
-frame = 8
+frame = 6
 frame_progress = 1.0
 
 [node name="CollisionShape2D" parent="." index="1"]
+visible = false
 position = Vector2(-4, -6)
 shape = SubResource("CapsuleShape2D_dp46e")
 
