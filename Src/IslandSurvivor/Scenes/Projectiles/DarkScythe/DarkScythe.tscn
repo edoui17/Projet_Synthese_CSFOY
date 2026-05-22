@@ -124,6 +124,7 @@ radius = 4.5
 scale = Vector2(2.5, 2.5)
 script = ExtResource("2_byklq")
 ReturnTime = 1.5
+MaxScaleMultiplier = 5.0
 DestroyOnImpact = false
 
 [node name="AnimatedSprite2D" parent="." index="0"]
