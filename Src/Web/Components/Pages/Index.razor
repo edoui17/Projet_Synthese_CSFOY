@@ -157,9 +157,19 @@
         };
     }
 
+    /*
     protected override async Task OnInitializedAsync()
     {
         await LoadLeaderboardAsync();
+    }*/
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await LoadLeaderboardAsync();
+            StateHasChanged();
+        }
     }
 
     private async Task RefreshLeaderboard()

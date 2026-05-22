@@ -67,9 +67,18 @@
         ? m_profile.LastSessions.Max(s => s.LevelReached)
         : 1;
 
-    protected override async Task OnInitializedAsync()
+    /*protected override async Task OnInitializedAsync()
     {
         await LoadProfileAsync();
+    }*/
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await LoadProfileAsync();
+            StateHasChanged();
+        }
     }
 
     private async Task LoadProfileAsync()
