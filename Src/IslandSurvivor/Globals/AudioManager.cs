@@ -108,16 +108,18 @@ public partial class AudioManager : Node
     /// <summary>
     /// Plays a global sound (e.g., UI, Upgrades)
     /// </summary>
-    public void PlaySound(AudioStream p_stream, float p_volumeDb = 0f, float p_pitchScale = 1f)
+    public void PlaySound(AudioStream p_stream, float p_volumeDb = 0f, float p_pitchScale = 1f, float p_volumeLinear = -1f)
     {
         if (p_stream == null) return;
+
+        float finalVolumeDb = p_volumeLinear >= 0 ? Mathf.LinearToDb(p_volumeLinear) : p_volumeDb;
 
         foreach (var player in m_availablePlayers)
         {
             if (!player.Playing)
             {
                 player.Stream = p_stream;
-                player.VolumeDb = p_volumeDb;
+                player.VolumeDb = finalVolumeDb;
                 player.PitchScale = p_pitchScale;
                 player.Play();
                 return;
@@ -129,12 +131,22 @@ public partial class AudioManager : Node
     /// <summary>
     /// Plays a global sound by key
     /// </summary>
-    public void PlaySound(string p_soundKey, float p_volumeOffsetDb = 0f, float p_pitchScale = 0f)
+    public void PlaySound(string p_soundKey, float p_volumeOffsetDb = 0f, float p_pitchScale = 0f, float p_volumeLinear = -1f)
     {
         if (m_soundLibrary.TryGetValue(p_soundKey, out var data))
         {
             float finalPitch = p_pitchScale > 0 ? p_pitchScale : data.DefaultPitchScale;
-            PlaySound(data.Stream, data.DefaultVolumeDb + p_volumeOffsetDb, finalPitch);
+            float baseVolumeDb = data.DefaultVolumeDb + p_volumeOffsetDb;
+
+            if (p_volumeLinear >= 0)
+            {
+                // If linear volume is provided, we use it instead of the default DB
+                PlaySound(data.Stream, p_pitchScale: finalPitch, p_volumeLinear: p_volumeLinear);
+            }
+            else
+            {
+                PlaySound(data.Stream, baseVolumeDb, finalPitch);
+            }
         }
         else
         {
@@ -145,9 +157,11 @@ public partial class AudioManager : Node
     /// <summary>
     /// Plays a spatial sound at a specific position (e.g., Impact, Death)
     /// </summary>
-    public void PlaySound2D(AudioStream p_stream, Vector2 p_globalPosition, float p_volumeDb = 0f, float p_pitchScale = 1f, float p_maxDistance = 2000f, float p_attenuation = 1f)
+    public void PlaySound2D(AudioStream p_stream, Vector2 p_globalPosition, float p_volumeDb = 0f, float p_pitchScale = 1f, float p_maxDistance = 2000f, float p_attenuation = 1f, float p_volumeLinear = -1f)
     {
         if (p_stream == null) return;
+
+        float finalVolumeDb = p_volumeLinear >= 0 ? Mathf.LinearToDb(p_volumeLinear) : p_volumeDb;
 
         foreach (var player in m_availablePlayers2D)
         {
@@ -155,7 +169,7 @@ public partial class AudioManager : Node
             {
                 player.Stream = p_stream;
                 player.GlobalPosition = p_globalPosition;
-                player.VolumeDb = p_volumeDb;
+                player.VolumeDb = finalVolumeDb;
                 player.PitchScale = p_pitchScale;
                 player.MaxDistance = p_maxDistance;
                 player.Attenuation = p_attenuation;
@@ -169,12 +183,21 @@ public partial class AudioManager : Node
     /// <summary>
     /// Plays a spatial sound by key
     /// </summary>
-    public void PlaySound2D(string p_soundKey, Vector2 p_globalPosition, float p_volumeOffsetDb = 0f, float p_pitchScale = 0f, float p_maxDistance = 2000f, float p_attenuation = 1f)
+    public void PlaySound2D(string p_soundKey, Vector2 p_globalPosition, float p_volumeOffsetDb = 0f, float p_pitchScale = 0f, float p_maxDistance = 2000f, float p_attenuation = 1f, float p_volumeLinear = -1f)
     {
         if (m_soundLibrary.TryGetValue(p_soundKey, out var data))
         {
             float finalPitch = p_pitchScale > 0 ? p_pitchScale : data.DefaultPitchScale;
-            PlaySound2D(data.Stream, p_globalPosition, data.DefaultVolumeDb + p_volumeOffsetDb, finalPitch, p_maxDistance, p_attenuation);
+            float baseVolumeDb = data.DefaultVolumeDb + p_volumeOffsetDb;
+
+            if (p_volumeLinear >= 0)
+            {
+                PlaySound2D(data.Stream, p_globalPosition, p_pitchScale: finalPitch, p_maxDistance: p_maxDistance, p_attenuation: p_attenuation, p_volumeLinear: p_volumeLinear);
+            }
+            else
+            {
+                PlaySound2D(data.Stream, p_globalPosition, baseVolumeDb, finalPitch, p_maxDistance, p_attenuation);
+            }
         }
         else
         {

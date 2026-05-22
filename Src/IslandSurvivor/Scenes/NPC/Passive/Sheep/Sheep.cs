@@ -13,21 +13,10 @@ using IslandSurvivor.Globals;
 
 public partial class Sheep : PassiveNpcBase
 {
-    [ExportGroup("Audio")]
-    [Export] public AudioStream? HurtSound { get; set; }
-    [Export] public string HurtSoundKey { get; set; } = "Sheep_Hurt";
-    [Export] public float HurtSoundVolume { get; set; } = 0f;
-
-    [Export] public AudioStream? DeathSound { get; set; }
-    [Export] public string DeathSoundKey { get; set; } = "Resource_Mining_1";
-    [Export] public float DeathSoundVolume { get; set; } = 0f;
-
+    [ExportGroup("Audio Override")]
     [Export] public AudioStream? IdleSound { get; set; }
     [Export] public string IdleSoundKey { get; set; } = "Sheep_Idle";
-    [Export] public float IdleSoundVolume { get; set; } = 0f;
-
-    [Export] public float AudioMaxDistance { get; set; } = 275f;
-    [Export] public float AudioAttenuation { get; set; } = 1f;
+    [Export] public float IdleVolume { get; set; } = 1.0f;
 
     private Timer? m_idleSoundTimer;
 
@@ -35,6 +24,11 @@ public partial class Sheep : PassiveNpcBase
     {
         base._Ready();
         IdleSpeed = 30.0f;
+
+        // Initialize default keys if not set
+        if (string.IsNullOrEmpty(HurtSoundKey)) HurtSoundKey = "Sheep_Hurt";
+        if (string.IsNullOrEmpty(DeathSoundKey)) DeathSoundKey = "Resource_Mining_1";
+        if (AudioMaxDistance == 2000f) AudioMaxDistance = 275f; // Sheep specific default
 
         m_idleSoundTimer = new Timer();
         m_idleSoundTimer.WaitTime = new Random().Next(5, 20);
@@ -49,9 +43,9 @@ public partial class Sheep : PassiveNpcBase
         if (CurrentState != NpcStates.DEAD)
         {
             if (IdleSound != null)
-                AudioManager.Instance?.PlaySound2D(IdleSound, GlobalPosition, IdleSoundVolume, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
+                AudioManager.Instance?.PlaySound2D(IdleSound, GlobalPosition, p_volumeLinear: IdleVolume, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
             else if (!string.IsNullOrEmpty(IdleSoundKey))
-                AudioManager.Instance?.PlaySound2D(IdleSoundKey, GlobalPosition, IdleSoundVolume, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
+                AudioManager.Instance?.PlaySound2D(IdleSoundKey, GlobalPosition, p_volumeLinear: IdleVolume, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
 
             m_idleSoundTimer!.WaitTime = new Random().Next(5, 20);
         }
@@ -85,9 +79,9 @@ public partial class Sheep : PassiveNpcBase
         }
 
         if (DeathSound != null)
-            AudioManager.Instance?.PlaySound2D(DeathSound, GlobalPosition, DeathSoundVolume, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
-        else
-            AudioManager.Instance?.PlaySound2D(DeathSoundKey, GlobalPosition, DeathSoundVolume, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
+            AudioManager.Instance?.PlaySound2D(DeathSound, GlobalPosition, p_volumeLinear: DeathVolume, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
+        else if (!string.IsNullOrEmpty(DeathSoundKey))
+            AudioManager.Instance?.PlaySound2D(DeathSoundKey, GlobalPosition, p_volumeLinear: DeathVolume, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
 
 
         QueueFree();
@@ -99,9 +93,9 @@ public partial class Sheep : PassiveNpcBase
         if (Stats.GetCurrentValue(StatType.Health) > 0)
         {
             if (HurtSound != null)
-                AudioManager.Instance?.PlaySound2D(HurtSound, GlobalPosition, HurtSoundVolume, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
-            else
-                AudioManager.Instance?.PlaySound2D(HurtSoundKey, GlobalPosition, HurtSoundVolume, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
+                AudioManager.Instance?.PlaySound2D(HurtSound, GlobalPosition, p_volumeLinear: HurtVolume, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
+            else if (!string.IsNullOrEmpty(HurtSoundKey))
+                AudioManager.Instance?.PlaySound2D(HurtSoundKey, GlobalPosition, p_volumeLinear: HurtVolume, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
         }
     }
 }
