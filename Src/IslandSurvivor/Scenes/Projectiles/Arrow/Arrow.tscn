@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://crca7kdilqogk"]
+[gd_scene format=3 uid="uid://crca7kdilqogk"]
 
 [ext_resource type="PackedScene" uid="uid://df74p1t2jmqx6" path="res://Scenes/Projectiles/BaseProjectile.tscn" id="1_base"]
 [ext_resource type="Script" uid="uid://ctj00w1v7xxqm" path="res://Scenes/Projectiles/Arrow/Arrow.cs" id="2_qaq63"]
@@ -19,19 +19,16 @@ animations = [{
 "speed": 1.0
 }]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_qaq63"]
-size = Vector2(37, 6)
-
-[node name="Arrow" instance=ExtResource("1_base")]
+[node name="Arrow" unique_id=1758547188 instance=ExtResource("1_base")]
 collision_mask = 15
 script = ExtResource("2_qaq63")
 
-[node name="AnimatedSprite2D" parent="." index="0"]
+[node name="AnimatedSprite2D" parent="." index="0" unique_id=1598172784]
 position = Vector2(1, -2)
 scale = Vector2(0.6, 0.6)
 sprite_frames = SubResource("SpriteFrames_70wij")
 animation = &"Attack"
 
-[node name="CollisionShape2D" parent="." index="1"]
+[node name="CollisionShape2D" parent="." index="1" unique_id=1182282185]
 position = Vector2(2.5, 0)
-shape = SubResource("RectangleShape2D_qaq63")
+polygon = PackedVector2Array(-18.5, -1, 13.5, -1, 13.5, 1, -18.5, 1)

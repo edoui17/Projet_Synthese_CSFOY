@@ -2,9 +2,9 @@
 
 [ext_resource type="Script" uid="uid://b2nrmfevb7jhf" path="res://Scenes/Projectiles/BaseProjectile.cs" id="1_base"]
 
-[node name="BaseProjectile" type="Area2D"]
+[node name="BaseProjectile" type="Area2D" unique_id=1219922800]
 script = ExtResource("1_base")
 
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1598172784]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+[node name="CollisionShape2D" type="CollisionPolygon2D" parent="." unique_id=1182282185]

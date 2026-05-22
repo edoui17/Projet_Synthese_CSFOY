@@ -26,18 +26,15 @@ animations = [{
 "speed": 3.0
 }]
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_ljtnh"]
-radius = 6.0
-
 [node name="OrbProjectile" unique_id=595529148 instance=ExtResource("1_base")]
 scale = Vector2(2, 2)
 script = ExtResource("2_o73vl")
 
-[node name="AnimatedSprite2D" parent="." index="0"]
+[node name="AnimatedSprite2D" parent="." index="0" unique_id=1598172784]
 rotation = -0.8377581
 sprite_frames = SubResource("SpriteFrames_jifwq")
 animation = &"Attack"
 autoplay = "Attack"
 
-[node name="CollisionShape2D" parent="." index="1"]
-shape = SubResource("CircleShape2D_ljtnh")
+[node name="CollisionShape2D" parent="." index="1" unique_id=1182282185]
+polygon = PackedVector2Array(-11.5, -0.5, -5, -3.5, -0.5, -6, 3, -3.5, 5, -1.5, 4, 3, 1, 5, -4, 3.5)
