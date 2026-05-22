@@ -1,6 +1,8 @@
-[gd_scene load_steps=2 format=3 uid="uid://c8n8q5q1x3x1"]
+[gd_scene load_steps=5 format=3 uid="uid://c8n8q5q1x3x1"]
 
 [ext_resource type="Script" path="res://Scenes/Login/Login.cs" id="1_login"]
+[ext_resource type="Texture2D" uid="uid://fkmaqlcbhx5f" path="res://Assets/TinySwords/UI/Icons/Regular_01.png" id="2_eye_icon"]
+[ext_resource type="Texture2D" uid="uid://c6r3avqu1d4ej" path="res://Assets/TinySwords/UI/Icons/Pressed_01.png" id="3_eye_icon_pressed"]
 
 [node name="Login" type="Control"]
 layout_mode = 3
@@ -18,59 +20,99 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.12, 0.12, 0.12, 1)
+color = Color(0.121569, 0.121569, 0.121569, 1)
 
-[node name="Panel" type="Panel" parent="."]
-custom_minimum_size = Vector2(400, 300)
+[node name="CenterContainer" type="CenterContainer" parent="."]
 layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -200.0
-offset_top = -150.0
-offset_right = 200.0
-offset_bottom = 150.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Panel"]
+[node name="Panel" type="Panel" parent="CenterContainer"]
+custom_minimum_size = Vector2(450, 420)
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="CenterContainer/Panel"]
 layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -150.0
-offset_top = -100.0
-offset_right = 150.0
-offset_bottom = 100.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_constants/margin_left = 30
+theme_override_constants/margin_top = 30
+theme_override_constants/margin_right = 30
+theme_override_constants/margin_bottom = 30
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer/Panel/MarginContainer"]
+layout_mode = 2
 theme_override_constants/separation = 15
 
-[node name="Title" type="Label" parent="Panel/VBoxContainer"]
+[node name="Title" type="Label" parent="CenterContainer/Panel/MarginContainer/VBoxContainer"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 24
-text = "Login"
+theme_override_font_sizes/font_size = 32
+text = "Island Survivor"
 horizontal_alignment = 1
 
-[node name="UsernameField" type="LineEdit" parent="Panel/VBoxContainer"]
+[node name="Subtitle" type="Label" parent="CenterContainer/Panel/MarginContainer/VBoxContainer"]
 layout_mode = 2
-placeholder_text = "Username"
+theme_override_font_sizes/font_size = 18
+text = "Connexion"
+horizontal_alignment = 1
 
-[node name="PasswordField" type="LineEdit" parent="Panel/VBoxContainer"]
+[node name="HSeparator" type="HSeparator" parent="CenterContainer/Panel/MarginContainer/VBoxContainer"]
 layout_mode = 2
-placeholder_text = "Password"
+
+[node name="UsernameField" type="LineEdit" parent="CenterContainer/Panel/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+placeholder_text = "Identifiant"
+caret_blink = true
+
+[node name="PasswordContainer" type="HBoxContainer" parent="CenterContainer/Panel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="PasswordField" type="LineEdit" parent="CenterContainer/Panel/MarginContainer/VBoxContainer/PasswordContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "Mot de passe"
 secret = true
+caret_blink = true
 
-[node name="LoginBtn" type="Button" parent="Panel/VBoxContainer"]
+[node name="ShowPasswordBtn" type="TextureButton" parent="CenterContainer/Panel/MarginContainer/VBoxContainer/PasswordContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
-text = "Connect"
+toggle_mode = true
+texture_normal = ExtResource("2_eye_icon")
+texture_pressed = ExtResource("3_eye_icon_pressed")
+ignore_texture_size = true
+stretch_mode = 5
 
-[node name="StatusLabel" type="Label" parent="Panel/VBoxContainer"]
+[node name="ErrorLabel" type="Label" parent="CenterContainer/Panel/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+visible = false
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.3, 0.3, 1)
+theme_override_colors/font_color = Color(1, 0.333333, 0.333333, 1)
+text = "Message d'erreur"
 horizontal_alignment = 1
 autowrap_mode = 3
+
+[node name="Spacer" type="Control" parent="CenterContainer/Panel/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 10)
+layout_mode = 2
+
+[node name="LoginBtn" type="Button" parent="CenterContainer/Panel/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 45)
+layout_mode = 2
+text = "Se connecter"
+
+[node name="OfflineBtn" type="Button" parent="CenterContainer/Panel/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+text = "Mode Hors Ligne"

@@ -283,3 +283,18 @@ When triggering updates (e.g., UI upgrades emitting events to a decoupled compon
 - **Validation des Credentials** : Le flux de Login du jeu valide systématiquement les identifiants (Username/Password) auprès de l'endpoint d'authentification de l'API (`/api/auth/login`) avant d'autoriser l'accès aux fonctionnalités en ligne.
 - **Dépendance SQL Server** : Le serveur de base de données (SQL Server) doit être actif et accessible par l'API pour permettre l'authentification initiale et l'obtention du `SessionToken`.
 - **Gestion de l'Indisponibilité (503)** : Si la base de données est arrêtée ou inaccessible, l'API renvoie une erreur 503 (via `ExceptionHandlingMiddleware`). Le client intercepte cette erreur, lève une alerte visuelle et propose le basculement vers le mode hors ligne basé sur le cache local (`user://session.cfg` et `profile_cache.json`).
+
+## 2026-05-25 - US 11.0.1 : Interface Graphique du Formulaire et Validation Locale
+
+### Architecture de Validation Découplée
+- **Validation dans Core** : Extraction de la logique de validation de saisie dans `LoginValidator.cs` (`Core.Utils`). Cela permet de garantir que les règles (ex: identifiant de 3 caractères minimum) sont identiques entre le client Godot et le futur dashboard Blazor, tout en restant testables en .NET pur.
+- **Règles Strictes** :
+  - Identifiant : Non vide et minimum 3 caractères.
+  - Mot de passe : Non vide.
+
+### Ergonomie UI et UX Godot
+- **Navigation par Tabulation** : Configuration manuelle de `FocusNeighborTop` et `FocusNeighborBottom` sur les champs `LineEdit` pour assurer une navigation fluide entre l'identifiant, le mot de passe et les boutons d'action.
+- **Soumission Rapide** : Utilisation du signal `TextSubmitted` sur les `LineEdit` pour déclencher la tentative de connexion lors de l'appui sur la touche Entrée.
+- **Visibilité du Mot de passe** : Implémentation d'un `TextureButton` (icône œil) pilotant la propriété `Secret` du champ mot de passe.
+- **Découplage Hors Ligne** : Émission du signal `OfflineModeRequested` au clic sur le bouton "Mode Hors Ligne", permettant une gestion asynchrone et découplée par le `GameManager`.
+- **Feedback Visuel** : Utilisation d'un `Label` d'erreur dédié, piloté par la validation locale avant tout appel réseau, pour une UX réactive.
