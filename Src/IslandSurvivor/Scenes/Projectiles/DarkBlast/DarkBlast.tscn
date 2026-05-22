@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://c7wrlxx4owbcm"]
 
 [ext_resource type="Script" uid="uid://nj56fevt64pl" path="res://Scenes/Projectiles/DarkBlast/DarkBlast.cs" id="1_a8x8p"]
+[ext_resource type="PackedScene" uid="uid://base_aoe_attack_uid" path="res://Scenes/Projectiles/BaseAoEAttack.tscn" id="2_base_aoe"]
 [ext_resource type="Texture2D" uid="uid://bvmmwuarbvm8k" path="res://Assets/Corrupted/MagicAttacks/DarkBlast.png" id="1_aulx4"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_a8x8p"]
@@ -182,14 +183,15 @@ animations = [{
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_aulx4"]
 size = Vector2(39, 9)
 
-[node name="DarkBlast" type="Area2D" unique_id=669452199]
+[node name="DarkBlast" instance=ExtResource("2_base_aoe") unique_id=669452199]
 script = ExtResource("1_a8x8p")
 
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1560244271]
+
+[node name="AnimatedSprite2D" parent="." unique_id=1560244271]
 sprite_frames = SubResource("SpriteFrames_jsorh")
 animation = &"Attack"
 frame_progress = 0.6864445
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=442766100]
+[node name="CollisionShape2D" parent="." unique_id=442766100]
 position = Vector2(1, 43)
 shape = SubResource("RectangleShape2D_aulx4")

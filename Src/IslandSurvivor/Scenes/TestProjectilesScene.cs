@@ -70,15 +70,17 @@ public partial class TestProjectilesScene : Node2D
             evilEye.Initialize(_player);
         }
 
-        // Spawn Projectiles
-        Vector2 projectileSpawnPoint = new Vector2(500, 100);
-        Vector2 directionToPlayer = (_player.GlobalPosition - projectileSpawnPoint).Normalized();
+        // Spawn Projectiles shooting straight down
+        Vector2 spawnArrow = new Vector2(400, 100);
+        Vector2 spawnOrb = new Vector2(500, 100);
+        Vector2 spawnScythe = new Vector2(600, 100);
+        Vector2 downwardDirection = Vector2.Down;
 
         if (_arrowScene != null)
         {
             var arrow = _arrowScene.Instantiate<BaseProjectile>();
             AddChild(arrow);
-            arrow.Initialize(projectileSpawnPoint, directionToPlayer, 10, this);
+            arrow.Initialize(spawnArrow, downwardDirection, 10, this);
             arrow.Fire();
         }
 
@@ -86,7 +88,7 @@ public partial class TestProjectilesScene : Node2D
         {
             var orb = _orbScene.Instantiate<BaseProjectile>();
             AddChild(orb);
-            orb.Initialize(projectileSpawnPoint + new Vector2(-50, 0), directionToPlayer, 15, this);
+            orb.Initialize(spawnOrb, downwardDirection, 15, this);
             orb.Fire();
         }
 
@@ -94,7 +96,7 @@ public partial class TestProjectilesScene : Node2D
         {
             var scythe = _scytheScene.Instantiate<BaseProjectile>();
             AddChild(scythe);
-            scythe.Initialize(projectileSpawnPoint + new Vector2(50, 0), directionToPlayer, 20, this);
+            scythe.Initialize(spawnScythe, downwardDirection, 20, this);
             scythe.Fire();
         }
     }
