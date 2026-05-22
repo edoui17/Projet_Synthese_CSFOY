@@ -568,7 +568,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_4srct")
 }],
-"loop": true,
+"loop": false,
 "name": &"RangeBlast",
 "speed": 5.0
 }, {
@@ -694,10 +694,9 @@ RangedAttackAnimationName = "Attack_Ranged"
 [node name="AnimatedSprite2D" parent="." index="0"]
 scale = Vector2(5, 5)
 sprite_frames = SubResource("SpriteFrames_t3tbm")
-animation = &"TeleportIn"
+animation = &"RangeBlast"
 autoplay = "Idle"
-frame = 6
-frame_progress = 1.0
+frame_progress = 0.56376874
 
 [node name="CollisionShape2D" parent="." index="1"]
 visible = false
