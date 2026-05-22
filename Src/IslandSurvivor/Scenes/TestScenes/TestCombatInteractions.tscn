@@ -20,12 +20,17 @@ y_sort_enabled = true
 
 [node name="Player" parent="Entities" unique_id=1193818014 instance=ExtResource("1_player")]
 position = Vector2(500, 300)
+AttackSound = null
+HurtSound = null
+DeathSound = null
 
 [node name="Sheep" parent="Entities" unique_id=789769840 instance=ExtResource("4_sheep")]
 position = Vector2(700, 300)
+IdleSound = null
 
 [node name="Gold" parent="Entities" unique_id=669946831 instance=ExtResource("5_gold")]
 position = Vector2(500, 150)
+IconPath = "sera a valider"
 
 [node name="Rock" parent="Entities" unique_id=6638947 instance=ExtResource("6_rock")]
 position = Vector2(350, 450)
@@ -36,6 +41,7 @@ position = Vector2(650, 450)
 [node name="Lancer" parent="Entities" unique_id=1880312545 instance=ExtResource("9_crhun")]
 DashSpeedMultiplier = 5.0
 MinDashDistance = 200.0
+AttackAnimationName = "Attack"
 LevelIndex = 14
 
 [node name="Soldier" parent="Entities" unique_id=666187867 instance=ExtResource("8_gxrs4")]

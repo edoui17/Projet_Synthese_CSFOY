@@ -2,7 +2,9 @@
 
 [ext_resource type="Script" uid="uid://d1eskrq5egat0" path="res://Scenes/NPC/Aggressive/Normal/Soldier/Soldier.cs" id="1_j7env"]
 [ext_resource type="Texture2D" uid="uid://dwsh1gspfwghh" path="res://Assets/TinySwords/Sprites/Warrior/Black/Warrior_Attack1.png" id="2_110m5"]
+[ext_resource type="AudioStream" uid="uid://2i7c17d5xrqb" path="res://Assets/Audio/kenney_impact-sounds/Audio/007_meow.wav" id="2_pxe8l"]
 [ext_resource type="Texture2D" uid="uid://dme25kdxbnqcy" path="res://Assets/TinySwords/Sprites/Warrior/Black/Warrior_Idle.png" id="3_pxe8l"]
+[ext_resource type="AudioStream" uid="uid://d3mi5a68pa0l5" path="res://Assets/Audio/kenney_impact-sounds/Audio/001_we-lost.wav" id="3_xyyhd"]
 [ext_resource type="Texture2D" uid="uid://cy36cydp3xyku" path="res://Assets/TinySwords/Sprites/Warrior/Black/Warrior_Run.png" id="4_xyyhd"]
 [ext_resource type="PackedScene" path="res://Nodes/Movement/MovementController.tscn" id="5_7vwxt"]
 [ext_resource type="PackedScene" uid="uid://biqhbrp7fjfyj" path="res://Nodes/StatsManager/StatsManager.tscn" id="6_miyan"]
@@ -168,6 +170,8 @@ collision_layer = 17
 collision_mask = 9
 motion_mode = 1
 script = ExtResource("1_j7env")
+HurtSound = ExtResource("2_pxe8l")
+DeathSound = ExtResource("3_xyyhd")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=586828728]
 position = Vector2(0, -5.722046e-06)

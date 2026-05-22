@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://c5wdnoymw6mrq"]
+[gd_scene format=3 uid="uid://d24ig3exgmn53"]
 
 [ext_resource type="Texture2D" uid="uid://qljs2tditm8y" path="res://Assets/TinySwords/Terrain/Trees/Tree4.png" id="1_amoml"]
 [ext_resource type="Script" uid="uid://d2sqd5ttge0c1" path="res://Scenes/Ressources/Tree/AutomnTree.cs" id="1_sd2x1"]
@@ -82,7 +82,6 @@ collision_mask = 8
 script = ExtResource("1_sd2x1")
 Stats = NodePath("StatManager")
 Timer = NodePath("Timer")
-IconPath = "res://Assets/TinySwords/Terrain/Wood Resource/Wood Resource.png"
 
 [node name="StaticBody2D" type="StaticBody2D" parent="." unique_id=892363287]
 position = Vector2(1.5, 44.5)
@@ -105,13 +104,6 @@ frame_progress = 0.18821257
 [node name="StatManager" parent="." unique_id=1475410971 instance=ExtResource("3_2xutj")]
 EntityType = 2
 MaxHealth = 20.0
-
-[node name="DestructionParticles" type="GPUParticles2D" parent="." unique_id=459622565]
-position = Vector2(1, 1)
-emitting = false
-texture = ExtResource("4_2xutj")
-one_shot = true
-process_material = SubResource("ParticleProcessMaterial_j008p")
 
 [node name="AudioStreamAutomnTree" type="AudioStreamPlayer2D" parent="." unique_id=233106588]
 max_distance = 15.0

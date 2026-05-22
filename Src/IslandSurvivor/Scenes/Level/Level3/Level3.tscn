@@ -13,7 +13,8 @@
 [ext_resource type="Script" uid="uid://cbbphk4jiuhm5" path="res://Nodes/Zones/EnemySpawnConfig.cs" id="10_ft5ki"]
 [ext_resource type="Resource" uid="uid://dbscgytmkqyn7" path="res://Scenes/NPC/Aggressive/Normal/Archer/ArcherConfig.tres" id="11_1sd6c"]
 [ext_resource type="Resource" uid="uid://d1e2f3g4h5i6j" path="res://Scenes/NPC/Aggressive/Normal/Soldier/SoldierConfig.tres" id="12_3pm31"]
-[ext_resource type="Resource" uid="uid://cxq9oiy51w9h7" path="res://Scenes/NPC/Aggressive/Normal/Lancer/LancerConfig.tres" id="13_lancer"]
+[ext_resource type="Resource" uid="uid://cxraoiy51xah7" path="res://Scenes/NPC/Aggressive/Normal/Lancer/LancerConfig.tres" id="13_lancer"]
+
 
 [node name="Main" unique_id=1086753427 instance=ExtResource("1_base")]
 
