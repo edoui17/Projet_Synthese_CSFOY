@@ -1,0 +1,14 @@
+[remap]
+
+importer="aseprite_wizard.plugin.noop"
+type="PackedDataContainer"
+uid="uid://dnj47mcauj0nk"
+path="res://.godot/imported/Foam.aseprite-4694f1fea8359e1291677969ca2cb5b7.res"
+
+[deps]
+
+source_file="res://Assets/TinySwords/Terrain/Foam/Foam.aseprite"
+dest_files=["res://.godot/imported/Foam.aseprite-4694f1fea8359e1291677969ca2cb5b7.res"]
+
+[params]
+

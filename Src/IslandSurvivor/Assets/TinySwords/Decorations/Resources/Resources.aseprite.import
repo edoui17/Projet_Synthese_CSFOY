@@ -1,0 +1,14 @@
+[remap]
+
+importer="aseprite_wizard.plugin.noop"
+type="PackedDataContainer"
+uid="uid://c26v6klh1hgsl"
+path="res://.godot/imported/Resources.aseprite-9167a275e4ef3c5ab3b090a94b19870d.res"
+
+[deps]
+
+source_file="res://Assets/TinySwords/Decorations/Resources/Resources.aseprite"
+dest_files=["res://.godot/imported/Resources.aseprite-9167a275e4ef3c5ab3b090a94b19870d.res"]
+
+[params]
+

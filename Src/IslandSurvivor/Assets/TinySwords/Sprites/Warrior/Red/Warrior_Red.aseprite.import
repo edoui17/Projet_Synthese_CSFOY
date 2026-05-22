@@ -1,0 +1,14 @@
+[remap]
+
+importer="aseprite_wizard.plugin.noop"
+type="PackedDataContainer"
+uid="uid://ce0j21p5ci5x3"
+path="res://.godot/imported/Warrior_Red.aseprite-65cd3e06bf7d46e16fc44764d8378933.res"
+
+[deps]
+
+source_file="res://Assets/TinySwords/Sprites/Warrior/Red/Warrior_Red.aseprite"
+dest_files=["res://.godot/imported/Warrior_Red.aseprite-65cd3e06bf7d46e16fc44764d8378933.res"]
+
+[params]
+

@@ -1,0 +1,14 @@
+[remap]
+
+importer="aseprite_wizard.plugin.noop"
+type="PackedDataContainer"
+uid="uid://ctt6o84yj2hj5"
+path="res://.godot/imported/Torch_Purple.aseprite-d247bc7b2168ac5ad1f60f04aa3bcadb.res"
+
+[deps]
+
+source_file="res://Assets/TinySwords/Sprites/Torch/Purple/Torch_Purple.aseprite"
+dest_files=["res://.godot/imported/Torch_Purple.aseprite-d247bc7b2168ac5ad1f60f04aa3bcadb.res"]
+
+[params]
+

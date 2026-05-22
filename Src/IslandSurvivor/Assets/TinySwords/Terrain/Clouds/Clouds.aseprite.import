@@ -1,0 +1,14 @@
+[remap]
+
+importer="aseprite_wizard.plugin.noop"
+type="PackedDataContainer"
+uid="uid://63l6l2ynmpxj"
+path="res://.godot/imported/Clouds.aseprite-10b0a098700259ba6ce847ca9c132e71.res"
+
+[deps]
+
+source_file="res://Assets/TinySwords/Terrain/Clouds/Clouds.aseprite"
+dest_files=["res://.godot/imported/Clouds.aseprite-10b0a098700259ba6ce847ca9c132e71.res"]
+
+[params]
+
