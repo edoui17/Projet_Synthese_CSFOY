@@ -1,5 +1,7 @@
 [gd_scene format=3 uid="uid://dyxx1q578y7t0"]
 
+[ext_resource type="PackedScene" uid="uid://mbase12345" path="res://Scenes/NPC/Aggressive/Normal/MeleeAggressiveNpcBase.tscn" id="1_scene"]
+
 [ext_resource type="Script" uid="uid://d1eskrq5egat0" path="res://Scenes/NPC/Aggressive/Normal/Soldier/Soldier.cs" id="1_j7env"]
 [ext_resource type="Texture2D" uid="uid://dwsh1gspfwghh" path="res://Assets/TinySwords/Sprites/Warrior/Black/Warrior_Attack1.png" id="2_110m5"]
 [ext_resource type="AudioStream" uid="uid://bng0g5vtfxg8b" path="res://Assets/Audio/kenney_impact-sounds/Audio/hurtSound.mp3" id="2_pxe8l"]
@@ -164,69 +166,40 @@ radius = 250.0
 radius = 21.986078
 height = 70.16913
 
-[node name="Soldier" type="CharacterBody2D" unique_id=666187867]
-y_sort_enabled = true
-collision_layer = 17
-collision_mask = 9
-motion_mode = 1
+[node name="Soldier" unique_id=666187867 instance=ExtResource("1_scene")]
 script = ExtResource("1_j7env")
 HurtSound = ExtResource("2_pxe8l")
 DeathSound = ExtResource("3_xyyhd")
 
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=586828728]
+[node name="AnimatedSprite2D" parent="."]
 position = Vector2(0, -5.722046e-06)
 scale = Vector2(0.9635416, 0.8975626)
 sprite_frames = SubResource("SpriteFrames_8an0u")
 animation = &"Idle"
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=22620120]
-light_mask = 4
-z_index = 1
-y_sort_enabled = true
+[node name="CollisionShape2D" parent="." index="1"]
 position = Vector2(-2.0000005, 1)
 scale = Vector2(0.99999994, 0.99999994)
 shape = SubResource("CapsuleShape2D_v2bfp")
 
-[node name="MovementController" parent="." unique_id=1324976384 node_paths=PackedStringArray("Stats") instance=ExtResource("5_7vwxt")]
-Stats = NodePath("../StatManager")
-
-[node name="StatManager" parent="." unique_id=1475410971 instance=ExtResource("6_miyan")]
+[node name="StatManager" parent="." index="2"]
 MaxHealth = 50.0
 
-[node name="LineOfSightRay" type="RayCast2D" parent="." unique_id=1704468108]
-collision_mask = 5
-
-[node name="DetectionArea" type="Area2D" parent="." unique_id=1567510452]
-visible = false
-light_mask = 5
-collision_layer = 5
-collision_mask = 5
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="DetectionArea" unique_id=245786031]
+[node name="CollisionShape2D" parent="DetectionArea"]
 position = Vector2(1, 1)
 shape = SubResource("CircleShape2D_e1oyk")
 
-[node name="HitboxAreaRight" type="Area2D" parent="." unique_id=48499246]
-collision_layer = 0
-collision_mask = 4
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxAreaRight" unique_id=364693784]
+[node name="CollisionShape2D" parent="HitboxAreaRight"]
 position = Vector2(30.000004, 6)
 rotation = 1.5352188
 shape = SubResource("CapsuleShape2D_e1oyk")
 
-[node name="HitboxAreaLeft" type="Area2D" parent="." unique_id=310702674]
-position = Vector2(-68, 0)
-collision_layer = 0
-collision_mask = 4
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxAreaLeft" unique_id=1973465669]
+[node name="CollisionShape2D" parent="HitboxAreaLeft"]
 position = Vector2(30.000004, 6)
 rotation = 1.5352188
 shape = SubResource("CapsuleShape2D_e1oyk")
 
-[node name="AttackController" type="Node" parent="." unique_id=56712398 node_paths=PackedStringArray("Stats")]
-script = ExtResource("7_se8nt")
-Stats = NodePath("../StatManager")
-Faction = 2
-BaseAttackCooldown = 2.0
+[node name="IdleState" parent="StateMachine" instance=ExtResource("state_IdleState")]
+[node name="ChaseState" parent="StateMachine" instance=ExtResource("state_ChaseState")]
+[node name="AttackState" parent="StateMachine" instance=ExtResource("state_AttackState")]
+[node name="DeathState" parent="StateMachine" instance=ExtResource("state_DeathState")]
