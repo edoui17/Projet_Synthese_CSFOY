@@ -3,6 +3,7 @@
 [ext_resource type="PackedScene" uid="uid://ebase12345" path="res://Scenes/NPC/Aggressive/AggressiveNpcBase.tscn" id="1_scene"]
 [ext_resource type="Script" uid="uid://b1py08fmiwthv" path="res://Scenes/NPC/Aggressive/Boss/BossBase.cs" id="2_script"]
 [ext_resource type="PackedScene" uid="uid://crca7kdilqogk" path="res://Scenes/Projectiles/Arrow/Arrow.tscn" id="3_arrow"]
+[ext_resource type="Script" path="res://Logic/StateMachine/StateMachine.cs" id="4_statemachine"]
 
 [node name="BossBase" unique_id=1362876555 instance=ExtResource("1_scene")]
 script = ExtResource("2_script")

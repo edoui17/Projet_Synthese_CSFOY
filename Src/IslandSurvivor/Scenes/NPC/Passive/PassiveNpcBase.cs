@@ -47,29 +47,6 @@ public partial class PassiveNpcBase : NpcBase
             m_passiveController.ForceNewDirection();
         }
 
-        if (m_animatedSprite != null)
-        {
-            if (direction.X != 0)
-            {
-                m_animatedSprite.FlipH = direction.X < 0;
-            }
-
-            if (m_passiveController.CurrentState == NpcStates.FLEE)
-            {
-                if (m_animatedSprite.Animation != "FLEE") m_animatedSprite.Play("FLEE");
-            }
-            else
-            {
-                if (Velocity.LengthSquared() > 0 || direction.LengthSquared() > 0)
-                {
-                    if (m_animatedSprite.Animation != "IDLE") m_animatedSprite.Play("IDLE");
-                }
-                else
-                {
-                    if (m_animatedSprite.Animation != "IDLE") m_animatedSprite.Play("IDLE");
-                }
-            }
-        }
     }
 
     protected override void OnDamageTaken(Node2D p_attacker)

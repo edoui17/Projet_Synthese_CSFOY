@@ -28,35 +28,29 @@ public partial class AggressiveNpcBase : NpcBase, IEnemy
     [Export] public string AttackSoundKey { get; set; } = "Enemy_Swing_Default";
     [Export] public float AttackVolume { get; set; } = 1.0f;
 
-    protected IAgressorController m_agressorController;
     protected AttackController? m_attackController;
     protected Area2D m_detectionArea;
     protected RayCast2D m_lineOfSightRay;
     protected Node2D m_targetPlayer;
 
+    public Node2D GetTarget() => m_targetPlayer;
+    public bool HasTargetAndLineOfSight() => m_targetPlayer != null && CheckLineOfSight();
+
     protected StringName m_animMoving = new StringName("Moving");
     protected StringName m_animIdle = new StringName("Idle");
 
-    public override string CurrentState => m_agressorController?.CurrentState ?? NpcStates.IDLE;
     public string EnemyType => "GenericEnemy";
 
     public override void _Ready()
     {
         base._Ready();
 
-        // Initialize default keys if not set
         if (string.IsNullOrEmpty(HurtSoundKey)) HurtSoundKey = "Enemy_Hurt_Default";
         if (string.IsNullOrEmpty(DeathSoundKey)) DeathSoundKey = "Enemy_Death_Default";
 
-        InitializeController();
-
         m_attackController = GetNodeOrNull<AttackController>("AttackController");
-        if (m_animatedSprite != null && m_attackController != null)
+        if (m_attackController != null)
         {
-            if (m_attackController.AttackSprite == null)
-            {
-                m_attackController.AttackSprite = m_animatedSprite;
-            }
             m_attackController.AttackActionTriggered += PlayAttackSound;
         }
 
@@ -83,11 +77,6 @@ public partial class AggressiveNpcBase : NpcBase, IEnemy
         }
     }
 
-    protected virtual void InitializeController()
-    {
-        m_agressorController = new AgressorController();
-    }
-
     protected virtual void ApplyLevelScaling()
     {
         float scalingFactor = 1.0f + 0.2f * (LevelIndex - 1);
@@ -98,7 +87,7 @@ public partial class AggressiveNpcBase : NpcBase, IEnemy
         IdleSpeed *= scalingFactor;
         ChaseSpeed *= scalingFactor;
 
-        if (m_animatedSprite != null)
+        if (m_sprite != null)
         {
             Color modulateColor = Colors.White;
             if (LevelIndex >= 3 && LevelIndex <= 5) modulateColor = Colors.Yellow;
@@ -106,7 +95,7 @@ public partial class AggressiveNpcBase : NpcBase, IEnemy
             else if (LevelIndex > 8 && LevelIndex <= 10) modulateColor = Colors.Purple;
             else if (LevelIndex > 10) modulateColor = Colors.DarkGray;
 
-            m_animatedSprite.SelfModulate = modulateColor;
+            m_sprite.SelfModulate = modulateColor;
         }
 
         Stats.MaxHealth = maxHealth;
@@ -116,112 +105,11 @@ public partial class AggressiveNpcBase : NpcBase, IEnemy
 
     public override void _PhysicsProcess(double p_delta)
     {
-        if (m_agressorController.CurrentState == NpcStates.DEAD) return;
+        base._PhysicsProcess(p_delta);
 
-        bool hasLineOfSight = CheckLineOfSight();
-
-        m_agressorController.Update((float)p_delta, m_targetPlayer != null, hasLineOfSight);
-
-        HandleAttackState();
-
-        Vector2 direction = new Vector2(m_agressorController.CurrentDirection.X, m_agressorController.CurrentDirection.Y);
-        float targetSpeed = IdleSpeed;
-
-        if (m_attackController != null && m_attackController.IsAttacking)
+        if (m_movementController == null && Velocity != Vector2.Zero)
         {
-            targetSpeed = 0f;
-            direction = Vector2.Zero;
-        }
-        else if (m_agressorController.CurrentState == NpcStates.CHASE && m_targetPlayer != null)
-        {
-            float distanceSquaredToPlayer = GlobalPosition.DistanceSquaredTo(m_targetPlayer.GlobalPosition);
-            // Replaced DistanceTo with DistanceSquaredTo to eliminate square root calculation in hot path (_PhysicsProcess)
-            if (distanceSquaredToPlayer <= StoppingDistance * StoppingDistance)
-            {
-                targetSpeed = 0f;
-                direction = Vector2.Zero;
-            }
-            else
-            {
-                targetSpeed = ChaseSpeed;
-                Vector2 globalPositionNumerics = GlobalPosition;
-                Vector2 targetPositionNumerics = m_targetPlayer.GlobalPosition;
-                m_agressorController.UpdateChaseDirection(globalPositionNumerics, targetPositionNumerics);
-                direction = new Vector2(m_agressorController.CurrentDirection.X, m_agressorController.CurrentDirection.Y);
-            }
-        }
-
-        if (m_movementController != null)
-        {
-            m_movementController.Move(direction, targetSpeed);
-        }
-        else
-        {
-            Velocity = direction * targetSpeed;
             MoveAndSlide();
-        }
-
-        if (m_agressorController.CurrentState == NpcStates.IDLE && GetSlideCollisionCount() > 0)
-        {
-            m_agressorController.ForceNewDirection();
-        }
-
-        UpdateAnimation(new Vector2(m_agressorController.CurrentDirection.X, m_agressorController.CurrentDirection.Y));
-    }
-
-    protected virtual void HandleAttackState()
-    {
-    }
-
-    protected virtual void PlayAttackAnimation(string p_animName)
-    {
-        if (m_animatedSprite == null) return;
-
-        if (m_targetPlayer != null)
-        {
-            m_animatedSprite.FlipH = m_targetPlayer.GlobalPosition.X < GlobalPosition.X;
-        }
-
-        if (m_attackController != null)
-        {
-            m_attackController.SetAttackAnimation(p_animName);
-        }
-
-        m_animatedSprite.Play(p_animName);
-        m_animatedSprite.Frame = 0;
-    }
-
-    protected virtual void UpdateAnimation(Vector2 p_direction)
-    {
-        if (m_animatedSprite == null) return;
-
-        bool isAttacking = m_attackController != null && m_attackController.IsAttacking;
-
-        if (isAttacking)
-        {
-            // Attack animation playback is handled directly via PlayAttackAnimation in OnAttackStarted.
-            // We just skip standard directional animation logic here.
-            return;
-        }
-
-        if (Velocity.LengthSquared() > 0)
-        {
-            if (m_animatedSprite.Animation != m_animMoving)
-            {
-                m_animatedSprite.Play(m_animMoving);
-            }
-        }
-        else
-        {
-            if (m_animatedSprite.Animation != m_animIdle)
-            {
-                m_animatedSprite.Play(m_animIdle);
-            }
-        }
-
-        if (p_direction.X != 0 && !isAttacking)
-        {
-            m_animatedSprite.FlipH = p_direction.X < 0;
         }
     }
 
@@ -273,7 +161,7 @@ public partial class AggressiveNpcBase : NpcBase, IEnemy
     {
         base.OnDamageTaken(p_attacker);
         m_targetPlayer = p_attacker;
-        
+
         if (HurtSound != null)
             AudioManager.Instance?.PlaySound2D(HurtSound, GlobalPosition, p_volumeLinear: HurtVolume, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
         else if (!string.IsNullOrEmpty(HurtSoundKey))
@@ -282,7 +170,7 @@ public partial class AggressiveNpcBase : NpcBase, IEnemy
 
     protected override void HandleDeath(object? p_attacker = null)
     {
-        m_agressorController.SetDead();
+        m_stateMachine?.ForceTransition("DeathState");
 
         if (DeathSound != null)
             AudioManager.Instance?.PlaySound2D(DeathSound, GlobalPosition, p_volumeLinear: DeathVolume, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);

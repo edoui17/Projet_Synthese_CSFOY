@@ -7,6 +7,7 @@ namespace IslandSurvivor.Nodes.Movement;
 public partial class MovementController : Node
 {
     [Export] public StatManager? Stats { get; set; }
+    [Export] public Node2D? VisualNodeToFlip { get; set; }
 
     [ExportGroup("Dash Settings")]
     [Export] public float DashCooldown { get; set; } = 3.0f;
@@ -83,6 +84,18 @@ public partial class MovementController : Node
 
         m_parentBody.Velocity = p_direction * finalSpeed;
         m_parentBody.MoveAndSlide();
+
+        if (p_direction.X != 0 && VisualNodeToFlip != null)
+        {
+            if (VisualNodeToFlip is Sprite2D sprite)
+            {
+                sprite.FlipH = p_direction.X < 0;
+            }
+            else if (VisualNodeToFlip is AnimatedSprite2D animSprite)
+            {
+                animSprite.FlipH = p_direction.X < 0;
+            }
+        }
     }
 
     public bool TryDash(Vector2 p_direction)

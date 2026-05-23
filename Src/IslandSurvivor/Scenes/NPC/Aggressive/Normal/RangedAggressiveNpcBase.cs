@@ -19,7 +19,6 @@ public partial class RangedAggressiveNpcBase : AggressiveNpcBase
         {
             m_attackController.Stats = Stats;
             m_attackController.Faction = IslandSurvivor.Enums.EntityFaction.Enemy;
-            m_attackController.AttackSprite = m_animatedSprite;
             m_attackController.ActionFrame = 5; // Arrow release frame
 
             m_attackController.AttackStarted += OnAttackStarted;
@@ -31,36 +30,9 @@ public partial class RangedAggressiveNpcBase : AggressiveNpcBase
         }
     }
 
-    protected override void InitializeController()
-    {
-        StoppingDistance = 250.0f;
-        m_agressorController = new RangedController(StoppingDistance);
-    }
-
-    protected override void HandleAttackState()
-    {
-        if (m_targetPlayer != null && m_attackController != null && m_attackController.CanAttack)
-        {
-            float distanceSquaredToPlayer = GlobalPosition.DistanceSquaredTo(m_targetPlayer.GlobalPosition);
-
-            if (distanceSquaredToPlayer <= StoppingDistance * StoppingDistance)
-            {
-                if (CheckLineOfSight())
-                {
-                    if (m_animatedSprite != null)
-                    {
-                        m_animatedSprite.FlipH = m_targetPlayer.GlobalPosition.X < GlobalPosition.X;
-                    }
-                    string direction = (m_animatedSprite != null && m_animatedSprite.FlipH) ? "Left" : "Right";
-                    m_attackController.TryAttack(direction);
-                }
-            }
-        }
-    }
-
     protected virtual void OnAttackStarted()
     {
-        PlayAttackAnimation(AttackAnimationName);
+        // Handled via State Machine
     }
 
     protected virtual void ShootProjectile()

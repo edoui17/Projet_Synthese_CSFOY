@@ -22,7 +22,6 @@ public partial class MeleeAggressiveNpcBase : AggressiveNpcBase
         {
             m_attackController.Stats = Stats;
             m_attackController.Faction = IslandSurvivor.Enums.EntityFaction.Enemy;
-            m_attackController.AttackSprite = m_animatedSprite;
             m_attackController.ActionFrame = 2; // Impact frame for Melee
 
             if (m_hitboxAreaRight != null) m_attackController.RegisterArea("Right", m_hitboxAreaRight);
@@ -36,30 +35,8 @@ public partial class MeleeAggressiveNpcBase : AggressiveNpcBase
         }
     }
 
-    protected override void HandleAttackState()
-    {
-        if (m_attackController != null && m_attackController.CanAttack && m_targetPlayer != null)
-        {
-            float distanceSquaredToPlayer = GlobalPosition.DistanceSquaredTo(m_targetPlayer.GlobalPosition);
-
-            if (distanceSquaredToPlayer <= 50f * 50f)
-            {
-                string direction = (m_animatedSprite != null && m_animatedSprite.FlipH) ? "Left" : "Right";
-
-                // Si la gestion du son n'est pas incluse dans TryAttack, vous pouvez la mettre ici :
-                AudioStream attackStream = GD.Load<AudioStream>("res://Assets/Audio/kenney_impact-sounds/Audio/jofae-swing-whoosh-110410.mp3");
-                if (attackStream != null)
-                {
-                    IslandSurvivor.Globals.AudioManager.Instance?.PlaySound2D(attackStream, GlobalPosition);
-                }
-
-                m_attackController.TryAttack(direction);
-            }
-        }
-    }
-
     protected virtual void OnAttackStarted()
     {
-        PlayAttackAnimation(AttackAnimationName);
+        // Handled via State Machine
     }
 }

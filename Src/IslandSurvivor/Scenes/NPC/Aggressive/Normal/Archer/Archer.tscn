@@ -7,6 +7,7 @@
 [ext_resource type="AudioStream" uid="uid://d3mi5a68pa0l5" path="res://Assets/Audio/kenney_impact-sounds/Audio/001_we-lost.wav" id="4_12urs"]
 [ext_resource type="Texture2D" uid="uid://b0b511y7uqtly" path="res://Assets/TinySwords/Sprites/Archer/Black/Archer_Idle.png" id="4_idle"]
 [ext_resource type="Texture2D" uid="uid://yig1smlirjfp" path="res://Assets/TinySwords/Sprites/Archer/Black/Archer_Run.png" id="5_run"]
+[ext_resource type="Script" path="res://Logic/StateMachine/StateMachine.cs" id="4_statemachine"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_elk14"]
 atlas = ExtResource("3_shoot")
@@ -168,12 +169,9 @@ AttackVolume = 1.0
 HurtSound = ExtResource("3_febu1")
 DeathSound = ExtResource("4_12urs")
 
-[node name="AnimatedSprite2D" parent="." index="0"]
+[node name="Sprite2D" parent="." index="0"]
 position = Vector2(0, -5.722046e-06)
 scale = Vector2(0.9635416, 0.8975626)
-sprite_frames = SubResource("SpriteFrames_8an0u")
-animation = &"Attack"
-frame_progress = 0.37355852
 
 [node name="CollisionShape2D" parent="." index="1"]
 position = Vector2(-2.0000005, 1)

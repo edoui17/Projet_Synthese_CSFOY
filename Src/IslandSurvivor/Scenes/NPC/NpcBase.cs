@@ -27,23 +27,45 @@ public partial class NpcBase : CharacterBody2D, INpc, IDamageable
     [Export] public float AudioAttenuation { get; set; } = 1f;
 
     protected MovementController? m_movementController;
-    protected AnimatedSprite2D? m_animatedSprite;
+    protected Sprite2D? m_sprite;
+    protected AnimationPlayer? m_animationPlayer;
+    protected IslandSurvivor.Logic.StateMachine.StateMachine? m_stateMachine;
+
+    public MovementController? MovementController => m_movementController;
+    public Sprite2D? Sprite => m_sprite;
+    public AnimationPlayer? AnimPlayer => m_animationPlayer;
 
     protected object? m_lastAttacker = null;
     protected bool m_wasKilledByPlayer = false;
 
-    public virtual string CurrentState { get; } = "";
+    public virtual string CurrentState => m_stateMachine?.CurrentState?.Name ?? "";
 
     public override void _Ready()
     {
         base._Ready();
 
         m_movementController = GetNodeOrNull<MovementController>("MovementController");
-        m_animatedSprite = GetNodeOrNull<AnimatedSprite2D>("AnimatedSprite2D");
+        m_sprite = GetNodeOrNull<Sprite2D>("Sprite2D");
+        m_animationPlayer = GetNodeOrNull<AnimationPlayer>("AnimationPlayer");
 
-        if (m_animatedSprite == null)
+        if (m_sprite == null)
         {
-            GD.PushWarning($"{Name} node is missing an AnimatedSprite2D child node.");
+            GD.PushWarning($"{Name} node is missing a Sprite2D child node.");
+        }
+        if (m_animationPlayer == null)
+        {
+            GD.PushWarning($"{Name} node is missing an AnimationPlayer child node.");
+        }
+
+        if (m_movementController != null && m_sprite != null)
+        {
+            m_movementController.VisualNodeToFlip = m_sprite;
+        }
+
+        m_stateMachine = GetNodeOrNull<IslandSurvivor.Logic.StateMachine.StateMachine>("StateMachine");
+        if (m_stateMachine != null)
+        {
+            m_stateMachine.Initialize(null, this);
         }
 
         if (Stats != null)
@@ -54,6 +76,16 @@ public partial class NpcBase : CharacterBody2D, INpc, IDamageable
         {
             GD.PushWarning($"{Name} node is missing a StatManager node reference.");
         }
+    }
+
+    public override void _Process(double p_delta)
+    {
+        m_stateMachine?.Update(p_delta);
+    }
+
+    public override void _PhysicsProcess(double p_delta)
+    {
+        m_stateMachine?.PhysicsUpdate(p_delta);
     }
 
     protected virtual void OnStatChanged(int p_statType, float p_currentValue, float p_effectiveMaxValue)

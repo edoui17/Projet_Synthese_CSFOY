@@ -9,6 +9,7 @@
 [ext_resource type="PackedScene" path="res://Nodes/Movement/MovementController.tscn" id="5_7vwxt"]
 [ext_resource type="PackedScene" uid="uid://biqhbrp7fjfyj" path="res://Nodes/StatsManager/StatsManager.tscn" id="6_miyan"]
 [ext_resource type="Script" uid="uid://bhrvrxhl1h86p" path="res://Nodes/Combat/AttackController.cs" id="7_se8nt"]
+[ext_resource type="Script" path="res://Logic/StateMachine/StateMachine.cs" id="4_statemachine"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_8hhla"]
 atlas = ExtResource("2_110m5")
@@ -173,11 +174,9 @@ script = ExtResource("1_j7env")
 HurtSound = ExtResource("2_pxe8l")
 DeathSound = ExtResource("3_xyyhd")
 
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=586828728]
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=586828728]
 position = Vector2(0, -5.722046e-06)
 scale = Vector2(0.9635416, 0.8975626)
-sprite_frames = SubResource("SpriteFrames_8an0u")
-animation = &"Idle"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=22620120]
 light_mask = 4
