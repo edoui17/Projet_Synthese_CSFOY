@@ -363,3 +363,18 @@ Pour tester l'écran de login dans l'écosystème complet :
 3. **Comptes de Test (Seed Data)** :
    - **User** : `Admin`, **Password** : `Admin123` (ou selon `data.sql`).
    - **User** : `Player1`, **Password** : `Password123`.
+
+## 2026-05-23 - US 11.0.2 : Network Authentication & Session Lifecycle
+
+### API Integration & UX Flow
+- **Async Authentication**: Integrated `IApiService.LoginAsync` into `LoginScreen.cs`. The UI now provides real-time feedback using a neutral "Connexion en cours..." message and locks all inputs (LineEdit, Buttons) during the request to prevent spam.
+- **Error Handling**: Implemented specialized French error messages for network failures (e.g., "Identifiants invalides", "Serveur API indisponible" for 503 errors). Error messages are displayed in red (#ff5555) for high visibility.
+- **Robustness**: Encapsulated API calls in `try/catch/finally` blocks to ensure UI controls are always re-enabled if the request fails or throws an exception.
+
+### Session Management & Persistence
+- **Auto-Login Persistence**: `GameManager` now automatically checks for a stored token in `user://session.cfg` via `SessionProvider` at startup. If a valid token is found, it bypasses the login screen and proceeds to profile synchronization.
+- **Synchronization Routing**: Upon successful login or auto-login, the game now redirects to `LoadingScreen.tscn`. This allows the `GameManager` to orchestrate the full data synchronization flow (Inventory, Stats, HighScore) before reaching the `MainMenu`.
+- **Global Logout**: Implemented a "Se déconnecter" button in the `MainMenu`. Triggering logout clears the local session token, resets the `GameManager` state (isGuest, status), and redirects the player back to the `LoginScreen`.
+
+### Architectural Decoupling
+- **Signal Bus for Offline Mode**: To maintain strict N-Tier separation, `LoginScreen` communicates guest access requests via a global `OfflineModeRequested` signal in the `SignalManager`. The `GameManager` subscribes to this signal to trigger its internal guest mode initialization, avoiding direct UI-to-Manager coupling.

@@ -60,9 +60,12 @@ public partial class LoginScreen : Control
             return;
         }
 
-        m_errorLabel.Visible = false;
-        m_loginBtn.Disabled = true;
-        m_offlineBtn.Disabled = true;
+        // UX: Show loading state and lock inputs
+        m_errorLabel.Text = "Connexion en cours...";
+        m_errorLabel.Modulate = new Color(1, 1, 1, 1); // Neutral white
+        m_errorLabel.Visible = true;
+
+        SetInputsEnabled(false);
 
         GD.Print($"[LoginScreen] Attempting login for user: {username}");
 
@@ -74,28 +77,50 @@ public partial class LoginScreen : Control
             {
                 GD.Print("[LoginScreen] Login successful. Storing token and redirecting.");
                 SessionProvider.StoreToken(token);
-                GetTree().ChangeSceneToFile("res://Scenes/MainMenu/MainMenu/MainMenu.tscn");
+
+                // Redirecting to LoadingScreen for US 20.0 synchronization flow
+                GetTree().ChangeSceneToFile("res://Scenes/UI/LoadingScreen/LoadingScreen.tscn");
             }
             else
             {
-                ShowError("Échec de la connexion. Vérifiez vos identifiants.");
-                m_loginBtn.Disabled = false;
-                m_offlineBtn.Disabled = false;
+                ShowError("Identifiants invalides.");
             }
         }
         catch (System.Exception ex)
         {
             GD.PrintErr($"[LoginScreen] Network error during login: {ex.Message}");
-            ShowError("Erreur réseau. Serveur indisponible.");
-            m_loginBtn.Disabled = false;
-            m_offlineBtn.Disabled = false;
+
+            if (ex.Message.Contains("503") || ex.Message.Contains("Service Unavailable"))
+            {
+                ShowError("Serveur API indisponible.");
+            }
+            else
+            {
+                ShowError("Erreur réseau. Veuillez réessayer plus tard.");
+            }
         }
+        finally
+        {
+            // Re-enable inputs only if we haven't changed scene (if login failed)
+            if (IsInsideTree())
+            {
+                SetInputsEnabled(true);
+            }
+        }
+    }
+
+    private void SetInputsEnabled(bool p_enabled)
+    {
+        m_usernameField.Editable = p_enabled;
+        m_passwordField.Editable = p_enabled;
+        m_loginBtn.Disabled = !p_enabled;
+        m_offlineBtn.Disabled = !p_enabled;
     }
 
     private void OnOfflinePressed()
     {
         GD.Print("[LoginScreen] Offline mode requested.");
-        EmitSignal(SignalName.OfflineModeRequested);
+        SignalManager.Instance.EmitOfflineModeRequested();
     }
 
     private void OnShowPasswordToggled(bool p_toggledOn)
@@ -106,6 +131,7 @@ public partial class LoginScreen : Control
     private void ShowError(string p_message)
     {
         m_errorLabel.Text = p_message;
+        m_errorLabel.Modulate = new Color(1, 0.333f, 0.333f, 1); // Red #ff5555
         m_errorLabel.Visible = true;
     }
 }
