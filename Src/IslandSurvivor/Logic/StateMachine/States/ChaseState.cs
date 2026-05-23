@@ -16,13 +16,13 @@ public partial class ChaseState : State
     [Export] public string FallbackAnimationName { get; set; } = "Error";
 
     private AnimationPlayer? m_animationPlayer;
-    private AnimatedSprite2D? m_animatedSprite;
+    private Sprite2D? m_sprite;
 
     public override void Initialize(StateMachine p_stateMachine, CharacterBody2D p_npcContext)
     {
         base.Initialize(p_stateMachine, p_npcContext);
         m_animationPlayer = NpcContext.GetNodeOrNull<AnimationPlayer>("AnimationPlayer");
-        m_animatedSprite = NpcContext.GetNodeOrNull<AnimatedSprite2D>("AnimatedSprite2D");
+        m_sprite = NpcContext.GetNodeOrNull<Sprite2D>("Sprite2D");
     }
 
     public override void Enter()
@@ -39,9 +39,9 @@ public partial class ChaseState : State
                 m_animationPlayer.Play(FallbackAnimationName);
             }
         }
-        else if (m_animatedSprite != null)
+        else if (m_sprite != null)
         {
-            m_animatedSprite.Play(AnimationName);
+            // Animation playing is handled by State/AnimationPlayer
         }
     }
 
@@ -79,9 +79,9 @@ public partial class ChaseState : State
                         aggressiveNpc.Velocity = direction * ChaseSpeed;
                         aggressiveNpc.MoveAndSlide();
 
-                        if (m_animatedSprite != null && direction.X != 0)
+                        if (m_sprite != null && direction.X != 0)
                         {
-                            m_animatedSprite.FlipH = direction.X < 0;
+                            m_sprite.FlipH = direction.X < 0;
                         }
                     }
                 }

@@ -27,7 +27,6 @@ public partial class NpcBase : CharacterBody2D, INpc, IDamageable
     [Export] public float AudioAttenuation { get; set; } = 1f;
 
     protected MovementController? m_movementController;
-    protected AnimatedSprite2D? m_animatedSprite;
     protected IslandSurvivor.Logic.StateMachine.StateMachine? m_stateMachine;
 
     public MovementController? MovementController => m_movementController;
@@ -42,7 +41,6 @@ public partial class NpcBase : CharacterBody2D, INpc, IDamageable
         base._Ready();
 
         m_movementController = GetNodeOrNull<MovementController>("MovementController");
-        m_animatedSprite = GetNodeOrNull<AnimatedSprite2D>("AnimatedSprite2D");
 
         m_stateMachine = GetNodeOrNull<IslandSurvivor.Logic.StateMachine.StateMachine>("StateMachine");
         if (m_stateMachine != null)
@@ -50,10 +48,6 @@ public partial class NpcBase : CharacterBody2D, INpc, IDamageable
             m_stateMachine.Initialize(null, this);
         }
 
-        if (m_animatedSprite == null)
-        {
-            GD.PushWarning($"{Name} node is missing an AnimatedSprite2D child node.");
-        }
 
         if (Stats != null)
         {

@@ -15,13 +15,13 @@ public partial class IdleState : State
 
     private float m_timer;
     private AnimationPlayer? m_animationPlayer;
-    private AnimatedSprite2D? m_animatedSprite;
+    private Sprite2D? m_sprite;
 
     public override void Initialize(StateMachine p_stateMachine, CharacterBody2D p_npcContext)
     {
         base.Initialize(p_stateMachine, p_npcContext);
         m_animationPlayer = NpcContext.GetNodeOrNull<AnimationPlayer>("AnimationPlayer");
-        m_animatedSprite = NpcContext.GetNodeOrNull<AnimatedSprite2D>("AnimatedSprite2D");
+        m_sprite = NpcContext.GetNodeOrNull<Sprite2D>("Sprite2D");
     }
 
     public override void Enter()
@@ -40,9 +40,9 @@ public partial class IdleState : State
                 m_animationPlayer.Play(FallbackAnimationName);
             }
         }
-        else if (m_animatedSprite != null)
+        else if (m_sprite != null)
         {
-            m_animatedSprite.Play(AnimationName);
+            // Animation playing is handled by State/AnimationPlayer
         }
 
         if (NpcContext is IslandSurvivor.Scenes.NPC.NpcBase npc)

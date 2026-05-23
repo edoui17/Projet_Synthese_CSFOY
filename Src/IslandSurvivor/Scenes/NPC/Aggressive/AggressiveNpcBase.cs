@@ -15,6 +15,9 @@ using Core.Interfaces;
 
 public partial class AggressiveNpcBase : NpcBase, IEnemy
 {
+    protected Sprite2D? m_sprite;
+    protected AnimationPlayer? m_animationPlayer;
+
     [Export] public float ChaseSpeed { get; set; } = 100.0f;
     [Export] public float StoppingDistance { get; set; } = 40.0f;
     [Export] public int LevelIndex { get; set; } = 1;
@@ -63,6 +66,8 @@ public partial class AggressiveNpcBase : NpcBase, IEnemy
     public override void _Ready()
     {
         base._Ready();
+        m_sprite = GetNodeOrNull<Sprite2D>("Sprite2D");
+        m_animationPlayer = GetNodeOrNull<AnimationPlayer>("AnimationPlayer");
 
         // Initialize default keys if not set
         if (string.IsNullOrEmpty(HurtSoundKey)) HurtSoundKey = "Enemy_Hurt_Default";
@@ -71,11 +76,12 @@ public partial class AggressiveNpcBase : NpcBase, IEnemy
         InitializeController();
 
         m_attackController = GetNodeOrNull<AttackController>("AttackController");
-        if (m_animatedSprite != null && m_attackController != null)
+        if (m_sprite != null && m_attackController != null)
         {
             if (m_attackController.AttackSprite == null)
             {
-                m_attackController.AttackSprite = m_animatedSprite;
+                m_attackController.AttackSprite = m_sprite;
+                m_attackController.AttackAnimationPlayer = m_animationPlayer;
             }
             m_attackController.AttackActionTriggered += PlayAttackSound;
         }
@@ -118,7 +124,7 @@ public partial class AggressiveNpcBase : NpcBase, IEnemy
         IdleSpeed *= scalingFactor;
         ChaseSpeed *= scalingFactor;
 
-        if (m_animatedSprite != null)
+        if (m_sprite != null)
         {
             Color modulateColor = Colors.White;
             if (LevelIndex >= 3 && LevelIndex <= 5) modulateColor = Colors.Yellow;
@@ -126,7 +132,7 @@ public partial class AggressiveNpcBase : NpcBase, IEnemy
             else if (LevelIndex > 8 && LevelIndex <= 10) modulateColor = Colors.Purple;
             else if (LevelIndex > 10) modulateColor = Colors.DarkGray;
 
-            m_animatedSprite.SelfModulate = modulateColor;
+            m_sprite.SelfModulate = modulateColor;
         }
 
         Stats.MaxHealth = maxHealth;
@@ -151,11 +157,11 @@ public partial class AggressiveNpcBase : NpcBase, IEnemy
 
     protected virtual void PlayAttackAnimation(string p_animName)
     {
-        if (m_animatedSprite == null) return;
+        if (m_sprite == null) return;
 
         if (m_targetPlayer != null)
         {
-            m_animatedSprite.FlipH = m_targetPlayer.GlobalPosition.X < GlobalPosition.X;
+            m_sprite.FlipH = m_targetPlayer.GlobalPosition.X < GlobalPosition.X;
         }
 
         if (m_attackController != null)
@@ -163,13 +169,12 @@ public partial class AggressiveNpcBase : NpcBase, IEnemy
             m_attackController.SetAttackAnimation(p_animName);
         }
 
-        m_animatedSprite.Play(p_animName);
-        m_animatedSprite.Frame = 0;
+        m_animationPlayer?.Play(p_animName);
     }
 
     protected virtual void UpdateAnimation(Vector2 p_direction)
     {
-        if (m_animatedSprite == null) return;
+        if (m_sprite == null) return;
 
         bool isAttacking = m_attackController != null && m_attackController.IsAttacking;
 
@@ -182,22 +187,22 @@ public partial class AggressiveNpcBase : NpcBase, IEnemy
 
         if (Velocity.LengthSquared() > 0)
         {
-            if (m_animatedSprite.Animation != m_animMoving)
+            if (m_animationPlayer?.CurrentAnimation != m_animMoving)
             {
-                m_animatedSprite.Play(m_animMoving);
+                m_animationPlayer?.Play(m_animMoving);
             }
         }
         else
         {
-            if (m_animatedSprite.Animation != m_animIdle)
+            if (m_animationPlayer?.CurrentAnimation != m_animIdle)
             {
-                m_animatedSprite.Play(m_animIdle);
+                m_animationPlayer?.Play(m_animIdle);
             }
         }
 
         if (p_direction.X != 0 && !isAttacking)
         {
-            m_animatedSprite.FlipH = p_direction.X < 0;
+            m_sprite.FlipH = p_direction.X < 0;
         }
     }
 
