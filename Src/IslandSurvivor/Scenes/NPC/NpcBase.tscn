@@ -25,8 +25,5 @@ y_sort_enabled = true
 [node name="MovementController" parent="." unique_id=2105972246 node_paths=PackedStringArray("Stats") instance=ExtResource("2_movement")]
 Stats = NodePath("../StatManager")
 
-<<<<<<< HEAD
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1869571986]
-=======
 [node name="StateMachine" parent="." instance=ExtResource("4_state_machine")]
->>>>>>> 38428d36cd41aacc0f576d24094e8dfe280981cd
