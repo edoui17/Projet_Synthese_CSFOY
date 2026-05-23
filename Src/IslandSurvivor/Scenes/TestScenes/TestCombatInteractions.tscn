@@ -7,7 +7,6 @@
 [ext_resource type="PackedScene" uid="uid://cs7lisiu7vc7y" path="res://Scenes/Ressources/Rock/Rock.tscn" id="6_rock"]
 [ext_resource type="PackedScene" uid="uid://rtx0k5qfaymn" path="res://Scenes/Ressources/Tree/ConiferTree.tscn" id="7_tree"]
 [ext_resource type="PackedScene" uid="uid://dyxx1q578y7t0" path="res://Scenes/NPC/Aggressive/Normal/Soldier/Soldier.tscn" id="8_gxrs4"]
-[ext_resource type="PackedScene" uid="uid://bt5vis3qswuxb" path="res://Scenes/NPC/Aggressive/Normal/Lancer/Lancer.tscn" id="9_crhun"]
 
 [node name="TestCombatInteractions" type="Node2D" unique_id=729654025]
 
@@ -37,12 +36,6 @@ position = Vector2(350, 450)
 
 [node name="ConiferTree" parent="Entities" unique_id=1434657654 instance=ExtResource("7_tree")]
 position = Vector2(650, 450)
-
-[node name="Lancer" parent="Entities" unique_id=1880312545 instance=ExtResource("9_crhun")]
-DashSpeedMultiplier = 5.0
-MinDashDistance = 200.0
-AttackAnimationName = "Attack"
-LevelIndex = 14
 
 [node name="Soldier" parent="Entities" unique_id=666187867 instance=ExtResource("8_gxrs4")]
 position = Vector2(634, 227)

@@ -11,9 +11,9 @@
 [ext_resource type="PackedScene" uid="uid://k0ufhgrxaplu" path="res://Nodes/State/Combat/AttackState.tscn" id="state_AttackState"]
 [ext_resource type="PackedScene" uid="uid://6ct74ht3u7xs" path="res://Nodes/State/Movement/ChaseState.tscn" id="state_ChaseState"]
 [ext_resource type="PackedScene" uid="uid://c5fchvpan65ig" path="res://Nodes/State/Core/DeathState.tscn" id="state_DeathState"]
+[ext_resource type="Script" uid="uid://bf0qw7vijbet6" path="res://Logic/StateMachine/States/GuardState.cs" id="state_GuardState"]
 [ext_resource type="PackedScene" uid="uid://dhogbp2sdg1fm" path="res://Nodes/State/Movement/IdleState.tscn" id="state_IdleState"]
-[ext_resource type="Script" path="res://Src/IslandSurvivor/Logic/StateMachine/States/SoldierCombatDecisionState.cs" id="state_SoldierCombatDecisionState"]
-[ext_resource type="Script" path="res://Src/IslandSurvivor/Logic/StateMachine/States/GuardState.cs" id="state_GuardState"]
+[ext_resource type="Script" uid="uid://b37duc21786s4" path="res://Logic/StateMachine/States/SoldierCombatDecisionState.cs" id="state_SoldierCombatDecisionState"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_v2bfp"]
 radius = 15.0
@@ -446,7 +446,6 @@ _data = {
 &"RESET": SubResource("Animation_miyan")
 }
 
-
 [node name="Soldier" unique_id=666187867 instance=ExtResource("1_scene")]
 script = ExtResource("1_j7env")
 AttackAnimationName = "Attack"
@@ -494,17 +493,20 @@ shape = SubResource("CapsuleShape2D_e1oyk")
 [node name="AnimationPlayer" parent="." index="9" unique_id=1869571986]
 libraries/ = SubResource("AnimationLibrary_kuixf")
 
-[node name="IdleState" parent="StateMachine" parent_id_path=PackedInt32Array(402971195) index="0" unique_id=1934142247 instance=ExtResource("state_IdleState")]
+[node name="StateMachine" parent="." index="10" unique_id=402971195 node_paths=PackedStringArray("InitialState")]
+InitialState = NodePath("IdleState")
 
-[node name="ChaseState" parent="StateMachine" parent_id_path=PackedInt32Array(402971195) index="1" unique_id=1630270298 instance=ExtResource("state_ChaseState")]
+[node name="IdleState" parent="StateMachine" index="0" unique_id=1934142247 instance=ExtResource("state_IdleState")]
+
+[node name="ChaseState" parent="StateMachine" index="1" unique_id=1630270298 instance=ExtResource("state_ChaseState")]
 TargetStateOnStop = "SoldierCombatDecisionState"
 
-[node name="AttackState" parent="StateMachine" parent_id_path=PackedInt32Array(402971195) index="2" unique_id=1708810746 instance=ExtResource("state_AttackState")]
+[node name="AttackState" parent="StateMachine" index="2" unique_id=1708810746 instance=ExtResource("state_AttackState")]
 
-[node name="DeathState" parent="StateMachine" parent_id_path=PackedInt32Array(402971195) index="3" unique_id=679989419 instance=ExtResource("state_DeathState")]
+[node name="DeathState" parent="StateMachine" index="3" unique_id=679989419 instance=ExtResource("state_DeathState")]
 
-[node name="GuardState" type="Node" parent="StateMachine" parent_id_path=PackedInt32Array(402971195) index="4" unique_id=987654321]
+[node name="GuardState" type="Node" parent="StateMachine" index="4" unique_id=987654321]
 script = ExtResource("state_GuardState")
 
-[node name="SoldierCombatDecisionState" type="Node" parent="StateMachine" parent_id_path=PackedInt32Array(402971195) index="5" unique_id=987654322]
+[node name="SoldierCombatDecisionState" type="Node" parent="StateMachine" index="5" unique_id=987654322]
 script = ExtResource("state_SoldierCombatDecisionState")

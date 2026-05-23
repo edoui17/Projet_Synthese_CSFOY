@@ -314,8 +314,11 @@ MaxHealth = 30.0
 [node name="AnimationPlayer" parent="." index="4" unique_id=1869571986]
 libraries/ = SubResource("AnimationLibrary_m5ir2")
 
-[node name="IdleState" parent="StateMachine" parent_id_path=PackedInt32Array(402971195) index="0" unique_id=1763813046 instance=ExtResource("state_IdleState")]
+[node name="StateMachine" parent="." index="5" unique_id=402971195 node_paths=PackedStringArray("InitialState")]
+InitialState = NodePath("IdleState")
 
-[node name="FleeState" parent="StateMachine" parent_id_path=PackedInt32Array(402971195) index="1" unique_id=2056017599 instance=ExtResource("state_FleeState")]
+[node name="IdleState" parent="StateMachine" index="0" unique_id=1763813046 instance=ExtResource("state_IdleState")]
 
-[node name="DeathState" parent="StateMachine" parent_id_path=PackedInt32Array(402971195) index="2" unique_id=537135978 instance=ExtResource("state_DeathState")]
+[node name="FleeState" parent="StateMachine" index="1" unique_id=2056017599 instance=ExtResource("state_FleeState")]
+
+[node name="DeathState" parent="StateMachine" index="2" unique_id=537135978 instance=ExtResource("state_DeathState")]
