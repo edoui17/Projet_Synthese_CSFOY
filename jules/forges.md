@@ -136,6 +136,11 @@ When triggering updates (e.g., UI upgrades emitting events to a decoupled compon
   - **Cleanup**: Redundant/commented-out code in `PlayerController.cs` was removed to maintain API cleanliness.
 - **Technical Detail**: In Godot C#, using `ProjectSettings.GetSetting("path").AsString()` is the standard way to access custom configuration defined in the `project.godot` file, allowing for environment-specific overrides during export.
 
+## 2026-05-27 - Audio Bus Integration & Distance Calibration
+- **Feature**: Connected the `AudioManager` pooling system to the Godot "SFX" bus.
+- **Technical Detail**: Set the `Bus` property of both `AudioStreamPlayer` and `AudioStreamPlayer2D` instances to "SFX" during their initialization in the pool. This ensures all pooled sound effects are subject to the volume and mute settings of the SFX bus, which is controlled by the `AudioOptions` menu.
+- **Quirk/Discovery**: When using `AudioStreamPlayer2D` with very small `MaxDistance` values (e.g., 10 units), the sound drops off extremely quickly. This is intended for entities like Sheep to avoid audio clutter in dense maps, but requires precise placement of the `AudioListener2D` (attached to the Player).
+
 ## 2024-05-24 - Architecture Changes
 - **Spawning Logic:** Clarified that the procedural spawning algorithms (e.g., `ResourceZone`) must reside within the Godot client (`IslandSurvivor`) as they are tightly coupled to the engine's 2D math (`Vector2`, `Geometry2D`, `TileMapLayer`) and do not impact Core backends. Refactored `ResourceZone` to adhere to DRY principles by extracting validation logic into discrete methods.
 - **Dead Code Elimination:** Removed all orphaned procedural generation files (`MapManager`, `GodotIslandGenerator`, `SpawnLocator`, `MapRenderer`, etc.) as the project transitioned entirely to hand-crafted maps.
@@ -224,6 +229,39 @@ When triggering updates (e.g., UI upgrades emitting events to a decoupled compon
 - **Audit Traceability**: Added the `UpdatedAt` timestamp to the `ProfileResponse` POCO. This value is mapped from the `Player` entity (updated via SQL trigger) to allow the dashboard to display the "Last Synchronization" time.
 - **Eager Loading Optimization**: Removed `.Include(p => p.GameStats)` from generic repository methods in `PlayerRepository` and `AuthRepository`. Since session history can grow indefinitely, loading the entire collection during every profile fetch or authentication check is inefficient. The API now relies on `StatsRepository.GetTopStatsByPlayerIdAsync(p_count: 10)` for targeted loading, maintaining performance without sacrificing data availability.
 
+## 2026-05-21 - Standardized Audio Architecture
+- **Flexible Audio Property Injection**: Standardized audio feedback across all characters (Player, Aggressive NPCs, Sheep) by introducing `[Export] AudioStream?` properties (`AttackSound`, `HurtSound`, `DeathSound`). This allows individual sound overrides per entity in the Godot Inspector while maintaining a shared code structure.
+- **Fallback Logic**: Implemented a "Fallback first, Inspector second" pattern using the null-coalescing operator (`Sound ?? GD.Load<AudioStream>("res://...")`). This ensures audio logic remains functional even if resources aren't explicitly assigned in the scene.
+- **Topological Audio Separation (Sheep)**: Fixed a bug where Sheep played multiple conflicting sounds (human scream + mining impact) on damage. Refactored `Sheep.cs` to explicitly separate `OnDamageTaken` (Hurt) and `HandleDeath` (Death), ensuring the mining sound is only played when the entity is truly destroyed.
+
+## 2026-05-22 - Centralized Audio Library & Animation Synchronization
+- **Centralized Sound Management**: Refactored `AudioManager` to include a `m_soundLibrary` dictionary. This decouples the audio playback logic from hardcoded resource paths. Sounds are now identified by unique string keys (e.g., "Enemy_Swing_Default").
+- **Volume & Decibel Control**: Introduced a `SoundData` structure to store both the `AudioStream` and a `DefaultVolumeDb`. This allows for fine-tuning sound levels at the source (the dictionary) and provides a `p_volumeOffsetDb` parameter in play methods for dynamic adjustments.
+- **Perfect Attack Synchronization**: Moved the `PlayAttackSound` trigger from the "Attack Start" event (Frame 0) to the `AttackActionTriggered` signal emitted by `AttackController`. This ensures the audio effect is perfectly synchronized with the animation's impact/release frame (defined by `ActionFrame`).
+- **Resource Migration**: Successfully migrated Player, NPCs (Passive & Aggressive), and Environmental Resources to the centralized system, eliminating scattered `GD.Load<AudioStream>` calls and redundant `[Export] AudioStream` properties in favor of key-based identification.
+
+## 2026-05-25 - Hybrid Audio System & Centralization (US Audio Refactor)
+- **Hybrid Assignment Pattern**: Refactored entities (`Player`, `Sheep`, `AggressiveNpcBase`) to support a hybrid audio system.
+  - They now feature `[Export] AudioStream?` properties (e.g., `HurtSound`) alongside their existing `string` keys.
+  - Logic: If a sound is assigned in the Godot Inspector, it is used directly. Otherwise, the system falls back to the `AudioManager`'s centralized library via the string key.
+  - This satisfies the need for easy IDE-based modification while preserving the robustness of a centralized system.
+- **Volume Fine-Tuning**: Each exported sound property is accompanied by an `[Export] float` volume offset, allowing developers to balance sounds (like the Player's damage sound) directly in the editor.
+- **Cleanup**: Removed unused `AudioStreamPlayer2D` nodes from entity scenes (like `Player.tscn`) to prevent developer confusion between scene-bound players and the global `AudioManager` pool.
+
+### 2026-05-24 - Per-Instance Volume Control & Sheep Audio Uniformization
+- **Feature**: Added `[Export]` volume properties (in dB) to `Player` and `Sheep` to allow fine-tuning of audio levels directly from the Godot Inspector.
+- **Architectural Shift**: Uniformized `Sheep.cs` to use the key-based audio system (consistent with `Player` and Enemies) instead of direct `AudioStream` references, facilitating centralized management in `AudioManager`.
+- **Gameplay**: Re-implemented the Sheep's idle sound ("baaa") using a randomized timer and the centralized `AudioManager.PlaySound2D` with the new volume offset support.
+
+## 2026-05-26 - Spatial Audio & Distance Attenuation (US Audio Radius)
+- **Feature**: Implemented a distance-based attenuation system for all 2D sound effects.
+- **Technical Detail**: Leveraged Godot's native `AudioStreamPlayer2D` properties (`MaxDistance` and `Attenuation`) by exposing them in `AudioManager.PlaySound2D`.
+- **Godot Quirk**: Spatial audio attenuation in 2D requires an active `AudioListener2D` node in the scene. One was added to the `Player.tscn` to ensure the player's position is the point of reference for distance calculations.
+- **Entity Integration**: Added `AudioMaxDistance` and `AudioAttenuation` as exported properties to all relevant game entities (NPCs, Resources), allowing per-instance configuration of the "hearing radius" directly in pixels.
+
+## 2026-05-22 - Refined Audio Unique Identification
+- **Specific Key Overrides**: Implemented unique sound key assignments in enemy subclasses (`Lancer`, `Archer`, `Soldier`) within their `_Ready()` methods. This ensures that while the trigger logic is centralized in the base class, each enemy type can play distinct sounds from the `AudioManager` library.
+- **Pitch Management**: Extended `SoundData` and `RegisterSound` to support a `DefaultPitchScale`, allowing for audio variety (e.g., higher pitch for Archer arrows) without increasing the number of physical audio files.
 ## 2026-05-21 - Blazor Lifecycle and API Integration (US 17.0.3)
 - **Lifecycle Management**: Integrated `OnInitializedAsync` in `Dashboard.razor` to handle data fetching during the Blazor component's initialization.
 - **Visual State Management**: Implemented a tri-state UI (Loading, Error, Success) using boolean flags (`m_isLoading`) and error message strings. This ensures Scénarios 2 and 5 are handled gracefully.
@@ -251,6 +289,10 @@ When triggering updates (e.g., UI upgrades emitting events to a decoupled compon
 - **Service Resilience**: Updated 'IApiService' to expose 'GetCachedProfile()', allowing the 'GameManager' to retrieve last-known data without violating N-Tier constraints via implementation casting.
 - **Namespace Management**: A naming conflict exists between 'Core.Domain.Player' (Domain model) and 'IslandSurvivor.Scenes.Player.Player' (Godot CharacterBody2D). Code in the Godot project must use fully qualified names (e.g., 'Core.Domain.Player') to avoid build errors (CS0117).
 
+## 2026-05-29 - Audio Uniformization and Linear Volume Control (US Audio Sync)
+- **Linear Volume Standard**: Refactored the entire audio system to use linear volume (0.0 to 1.0) in the Godot Inspector instead of decibels (dB). This provides a more intuitive experience for designers. The `AudioManager` now handles the conversion to dB internally.
+- **N-Tier Audio Inheritance**: Moved shared audio properties (`HurtSound`, `DeathSound`, `AudioMaxDistance`, etc.) to the `NpcBase` class. This enforces architectural consistency across all NPCs (Passive and Aggressive) and simplifies subclass logic.
+- **Desynchronization Fix**: Resolved an issue where inspector changes to `AudioMaxDistance` were seemingly ignored. By uniformizing all `PlaySound2D` calls to explicitly pass the exported properties and ensuring the `AudioManager` correctly applies them to the pooled players, full synchronization between the IDE and runtime was achieved.
 ## 2026-05-25 - US 20.0.4 : Architecture de l'Écran de Chargement et UX de Synchronisation
 
 ### Découvertes Architecturales
@@ -298,3 +340,5 @@ When triggering updates (e.g., UI upgrades emitting events to a decoupled compon
 - **Visibilité du Mot de passe** : Implémentation d'un `TextureButton` (icône œil) pilotant la propriété `Secret` du champ mot de passe.
 - **Découplage Hors Ligne** : Émission du signal `OfflineModeRequested` au clic sur le bouton "Mode Hors Ligne", permettant une gestion asynchrone et découplée par le `GameManager`.
 - **Feedback Visuel** : Utilisation d'un `Label` d'erreur dédié, piloté par la validation locale avant tout appel réseau, pour une UX réactive.
+## Godot Quirks & Line-of-Sight
+For instant line-of-sight validation (e.g., preventing melee attacks or detection through walls), prefer using `PhysicsRayQueryParameters2D` querying the `DirectSpaceState` against the map collision mask (Layer 1), rather than relying on `RayCast2D` nodes to avoid node-update and local-coordinate complexities.

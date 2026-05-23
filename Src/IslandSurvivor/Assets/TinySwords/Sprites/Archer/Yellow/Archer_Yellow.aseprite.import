@@ -1,0 +1,14 @@
+[remap]
+
+importer="aseprite_wizard.plugin.noop"
+type="PackedDataContainer"
+uid="uid://cr4ex6oq6t1q"
+path="res://.godot/imported/Archer_Yellow.aseprite-abe8069627bbff5e5103fbdb7fae7e22.res"
+
+[deps]
+
+source_file="res://Assets/TinySwords/Sprites/Archer/Yellow/Archer_Yellow.aseprite"
+dest_files=["res://.godot/imported/Archer_Yellow.aseprite-abe8069627bbff5e5103fbdb7fae7e22.res"]
+
+[params]
+

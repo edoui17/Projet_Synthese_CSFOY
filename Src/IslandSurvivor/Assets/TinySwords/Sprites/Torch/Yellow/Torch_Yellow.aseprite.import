@@ -1,0 +1,14 @@
+[remap]
+
+importer="aseprite_wizard.plugin.noop"
+type="PackedDataContainer"
+uid="uid://b40w8olv2qbdi"
+path="res://.godot/imported/Torch_Yellow.aseprite-2c12d2e2fcf5d0d6476b1abb94f227b0.res"
+
+[deps]
+
+source_file="res://Assets/TinySwords/Sprites/Torch/Yellow/Torch_Yellow.aseprite"
+dest_files=["res://.godot/imported/Torch_Yellow.aseprite-2c12d2e2fcf5d0d6476b1abb94f227b0.res"]
+
+[params]
+

@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://ch7wo785y2sxt"]
+
+[ext_resource type="Script" uid="uid://d11mepf8c4sgr" path="res://Scenes/Ressources/ResourceDrop.cs" id="1_82vun"]
+
+[node name="RessourceDrop" type="Node2D" unique_id=1469750194]
+script = ExtResource("1_82vun")

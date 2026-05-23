@@ -18,6 +18,7 @@ collision_mask = 8
 script = ExtResource("1_pv240")
 Stats = NodePath("StatManager")
 Timer = NodePath("Timer")
+IconPath = "res://Assets/TinySwords/Decorations/Deco/06.png"
 
 [node name="StaticBody2D" type="StaticBody2D" parent="." unique_id=2091260846]
 
@@ -38,3 +39,7 @@ texture = ExtResource("2_45lah")
 [node name="StatManager" parent="." unique_id=1475410971 instance=ExtResource("3_tc8id")]
 EntityType = 2
 MaxHealth = 50.0
+
+[node name="AudioStreamRock" type="AudioStreamPlayer2D" parent="." unique_id=2045451186]
+max_distance = 15.0
+bus = &"SFX"

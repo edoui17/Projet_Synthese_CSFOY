@@ -15,6 +15,7 @@ using System.Collections.Generic;
 public partial class Player : CharacterBody2D, IDamageable
 {
     [Export] public StatManager? Stats { get; set; }
+    public string NpcType { get; set; } = "Player";
 
     private PlayerState m_currentState = PlayerState.Idle;
     private PlayerState m_lastDebugState = (PlayerState)(-1);
@@ -28,6 +29,19 @@ public partial class Player : CharacterBody2D, IDamageable
     [Export] private Label? m_dashLabel;
     private Timer? m_xpGainTimer;
     [Export] private Area2D? m_interactionArea;
+
+    [ExportGroup("Audio")]
+    [Export] public AudioStream? AttackSound { get; set; }
+    [Export] public string AttackSoundKey { get; set; } = "Player_Swing";
+    [Export] public float AttackVolume { get; set; } = 1.0f;
+
+    [Export] public AudioStream? HurtSound { get; set; }
+    [Export] public string HurtSoundKey { get; set; } = "Player_Hurt";
+    [Export] public float HurtVolume { get; set; } = 0.3f; // Default was -10dB which is roughly 0.316 linear
+
+    [Export] public AudioStream? DeathSound { get; set; }
+    [Export] public string DeathSoundKey { get; set; } = "Player_Death";
+    [Export] public float DeathVolume { get; set; } = 1.0f;
 
     [ExportGroup("Attack")]
     [Export] private Area2D? m_weaponAreaRight;
@@ -45,6 +59,15 @@ public partial class Player : CharacterBody2D, IDamageable
     private readonly StringName m_animRun = new StringName("Run");
     private readonly StringName m_animAttack = new StringName("Attack");
     private readonly StringName m_animInteract = new StringName("Interact");
+
+    // Input actions
+    private static readonly StringName ACTION_ATTACK = new StringName("attack");
+    private static readonly StringName ACTION_INTERACT = new StringName("interact");
+    private static readonly StringName ACTION_DASH = new StringName("dash");
+    private static readonly StringName ACTION_MOVE_LEFT = new StringName("move_left");
+    private static readonly StringName ACTION_MOVE_RIGHT = new StringName("move_right");
+    private static readonly StringName ACTION_MOVE_UP = new StringName("move_up");
+    private static readonly StringName ACTION_MOVE_DOWN = new StringName("move_down");
 
     private bool m_isAttackButtonDown = false;
 
@@ -118,11 +141,10 @@ public partial class Player : CharacterBody2D, IDamageable
     private void OnAttackStarted()
     {
         // Play attack swing sound
-        AudioStream swingStream = GD.Load<AudioStream>("res://Assets/Sounds/Combat/weapon_swing.wav");
-        if (swingStream != null)
-        {
-            AudioManager.Instance?.PlaySound2D(swingStream, GlobalPosition);
-        }
+        if (AttackSound != null)
+            AudioManager.Instance?.PlaySound2D(AttackSound, GlobalPosition, p_volumeLinear: AttackVolume);
+        else if (!string.IsNullOrEmpty(AttackSoundKey))
+            AudioManager.Instance?.PlaySound2D(AttackSoundKey, GlobalPosition, p_volumeLinear: AttackVolume);
 
         if (m_animatedSprite != null)
         {
@@ -191,22 +213,22 @@ public partial class Player : CharacterBody2D, IDamageable
     {
         if (m_currentState == PlayerState.Dead) return;
 
-        if (p_event.IsActionPressed("attack"))
+        if (p_event.IsActionPressed(ACTION_ATTACK))
         {
             m_isAttackButtonDown = true;
         }
-        else if (p_event.IsActionReleased("attack"))
+        else if (p_event.IsActionReleased(ACTION_ATTACK))
         {
             m_isAttackButtonDown = false;
         }
 
         if (m_currentState == PlayerState.Interacting || m_currentState == PlayerState.Attacking || m_currentState == PlayerState.Dashing) return;
 
-        if (p_event.IsActionPressed("interact") && m_bestTarget != null)
+        if (p_event.IsActionPressed(ACTION_INTERACT) && m_bestTarget != null)
         {
             ExecuteInteraction();
         }
-        else if (p_event.IsActionPressed("dash") && m_movementController != null && !m_movementController.IsDashing)
+        else if (p_event.IsActionPressed(ACTION_DASH) && m_movementController != null && !m_movementController.IsDashing)
         {
             ExecuteDash();
         }
@@ -214,35 +236,32 @@ public partial class Player : CharacterBody2D, IDamageable
 
     private void UpdateDashUI()
     {
-        if (m_dashLabel != null && m_movementController != null)
+        if (m_dashLabel == null || m_movementController == null) return;
+
+        if (m_movementController.TimeSinceLastDash >= m_movementController.DashCooldown)
         {
-            if (m_movementController.TimeSinceLastDash >= m_movementController.DashCooldown)
-            {
-                if (!m_isDashReadyUI)
-                {
-                    m_dashLabel.Text = "Dash: Prêt";
-                    m_isDashReadyUI = true;
-                    m_lastDashDeciseconds = -1;
-                }
-            }
-            else
-            {
-                m_isDashReadyUI = false;
-                int remainingDeciseconds = (int)Math.Ceiling((m_movementController.DashCooldown - m_movementController.TimeSinceLastDash) * 10f);
-                if (remainingDeciseconds != m_lastDashDeciseconds)
-                {
-                    m_dashLabel.Text = $"Dash: {remainingDeciseconds / 10f:F1}s";
-                    m_lastDashDeciseconds = remainingDeciseconds;
-                }
-            }
+            if (m_isDashReadyUI) return;
+
+            m_dashLabel.Text = "Dash: Prêt";
+            m_isDashReadyUI = true;
+            m_lastDashDeciseconds = -1;
+            return;
         }
+
+        m_isDashReadyUI = false;
+        int remainingDeciseconds = (int)Math.Ceiling((m_movementController.DashCooldown - m_movementController.TimeSinceLastDash) * 10f);
+
+        if (remainingDeciseconds == m_lastDashDeciseconds) return;
+
+        m_dashLabel.Text = $"Dash: {remainingDeciseconds / 10f:F1}s";
+        m_lastDashDeciseconds = remainingDeciseconds;
     }
 
     private void ExecuteDash()
     {
         if (m_movementController == null) return;
 
-        Vector2 direction = Input.GetVector("move_left", "move_right", "move_up", "move_down");
+        Vector2 direction = Input.GetVector(ACTION_MOVE_LEFT, ACTION_MOVE_RIGHT, ACTION_MOVE_UP, ACTION_MOVE_DOWN);
         Vector2 dashDirection = direction != Vector2.Zero ? direction.Normalized() : ((m_animatedSprite != null && m_animatedSprite.FlipH) ? Vector2.Left : Vector2.Right);
 
         if (m_movementController.TryDash(dashDirection))
@@ -254,7 +273,7 @@ public partial class Player : CharacterBody2D, IDamageable
 
     private void ApplyMovement()
     {
-        Vector2 direction = Input.GetVector("move_left", "move_right", "move_up", "move_down");
+        Vector2 direction = Input.GetVector(ACTION_MOVE_LEFT, ACTION_MOVE_RIGHT, ACTION_MOVE_UP, ACTION_MOVE_DOWN);
 
         if (direction != Vector2.Zero)
         {
@@ -393,6 +412,7 @@ public partial class Player : CharacterBody2D, IDamageable
             m_xpGainLabel.Text = "LEVEL UP!";
             m_xpGainLabel.Visible = true;
             m_xpGainTimer.Start();
+            AudioManager.Instance?.PlaySound2D("Level_Up", GlobalPosition);
         }
     }
 
@@ -440,11 +460,10 @@ public partial class Player : CharacterBody2D, IDamageable
         this.PlayShake();
 
         // Play hurt sound
-        AudioStream hurtStream = GD.Load<AudioStream>("res://Assets/Sounds/Combat/player_hurt.wav");
-        if (hurtStream != null)
-        {
-            AudioManager.Instance?.PlaySound(hurtStream);
-        }
+        if (HurtSound != null)
+            AudioManager.Instance?.PlaySound2D(HurtSound, GlobalPosition, p_volumeLinear: HurtVolume);
+        else if (!string.IsNullOrEmpty(HurtSoundKey))
+            AudioManager.Instance?.PlaySound(HurtSoundKey, p_volumeLinear: HurtVolume);
 
         // Lightweight camera shake
         Camera2D camera = GetNodeOrNull<Camera2D>("Camera2D");
@@ -459,12 +478,11 @@ public partial class Player : CharacterBody2D, IDamageable
         SetState(PlayerState.Dead);
         Velocity = Vector2.Zero;
 
-        // Play death sound (reusing hurt sound or specific death sound if available)
-        AudioStream deathStream = GD.Load<AudioStream>("res://Assets/Sounds/Combat/player_hurt.wav"); // Fallback
-        if (deathStream != null)
-        {
-            AudioManager.Instance?.PlaySound(deathStream);
-        }
+        // Play death sound
+        if (DeathSound != null)
+            AudioManager.Instance?.PlaySound2D(DeathSound, GlobalPosition, p_volumeLinear: DeathVolume);
+        else if (!string.IsNullOrEmpty(DeathSoundKey))
+            AudioManager.Instance?.PlaySound(DeathSoundKey, p_volumeLinear: DeathVolume);
 
         if (m_animatedSprite != null)
         {

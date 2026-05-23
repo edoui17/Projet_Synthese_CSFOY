@@ -1,9 +1,13 @@
 namespace IslandSurvivor.Scenes.NPC.Aggressive;
 
 using Godot;
+using IslandSurvivor.Globals;
 
 public partial class MeleeAggressiveNpcBase : AggressiveNpcBase
 {
+    [ExportGroup("Animations")]
+    [Export] public string AttackAnimationName { get; set; } = "Attack";
+
     protected Area2D m_hitboxAreaRight;
     protected Area2D m_hitboxAreaLeft;
 
@@ -36,11 +40,19 @@ public partial class MeleeAggressiveNpcBase : AggressiveNpcBase
     {
         if (m_attackController != null && m_attackController.CanAttack && m_targetPlayer != null)
         {
-            float distanceToPlayer = GlobalPosition.DistanceTo(m_targetPlayer.GlobalPosition);
+            float distanceSquaredToPlayer = GlobalPosition.DistanceSquaredTo(m_targetPlayer.GlobalPosition);
 
-            if (distanceToPlayer <= 50f)
+            if (distanceSquaredToPlayer <= 50f * 50f)
             {
                 string direction = (m_animatedSprite != null && m_animatedSprite.FlipH) ? "Left" : "Right";
+
+                // Si la gestion du son n'est pas incluse dans TryAttack, vous pouvez la mettre ici :
+                AudioStream attackStream = GD.Load<AudioStream>("res://Assets/Sounds/Combat/enemy_attack.wav");
+                if (attackStream != null)
+                {
+                    IslandSurvivor.Globals.AudioManager.Instance?.PlaySound2D(attackStream, GlobalPosition);
+                }
+
                 m_attackController.TryAttack(direction);
             }
         }
@@ -48,10 +60,6 @@ public partial class MeleeAggressiveNpcBase : AggressiveNpcBase
 
     protected virtual void OnAttackStarted()
     {
-        if (m_animatedSprite != null)
-        {
-            m_animatedSprite.Play("Attack");
-            m_animatedSprite.Frame = 0;
-        }
+        PlayAttackAnimation(AttackAnimationName);
     }
 }

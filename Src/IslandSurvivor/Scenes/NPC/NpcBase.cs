@@ -14,13 +14,24 @@ public partial class NpcBase : CharacterBody2D, INpc, IDamageable
 
     [Export] public StatManager Stats { get; set; } = null!;
 
+    [ExportGroup("Audio")]
+    [Export] public AudioStream? HurtSound { get; set; }
+    [Export] public string HurtSoundKey { get; set; } = string.Empty;
+    [Export] public float HurtVolume { get; set; } = 1.0f;
+
+    [Export] public AudioStream? DeathSound { get; set; }
+    [Export] public string DeathSoundKey { get; set; } = string.Empty;
+    [Export] public float DeathVolume { get; set; } = 1.0f;
+
+    [Export] public float AudioMaxDistance { get; set; } = 2000f;
+    [Export] public float AudioAttenuation { get; set; } = 1f;
+
     protected MovementController? m_movementController;
     protected AnimatedSprite2D? m_animatedSprite;
 
     protected object? m_lastAttacker = null;
     protected bool m_wasKilledByPlayer = false;
 
-    // Abstract state to be defined by subclasses
     public virtual string CurrentState { get; } = "";
 
     public override void _Ready()
@@ -87,7 +98,6 @@ public partial class NpcBase : CharacterBody2D, INpc, IDamageable
 
     protected virtual void OnDamageTaken(Node2D p_attacker)
     {
-        // To be overridden by subclasses (e.g. Sheep flees, Aggressive targets player)
     }
 
     protected virtual void HandleDeath(object? p_attacker = null) { }

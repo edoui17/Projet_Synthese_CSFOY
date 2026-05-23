@@ -9,3 +9,6 @@
 ## 2024-10-25 - [Throttle UI Updates in Dash Timer]
 **Learning:** Formatting strings with interpolation (`$"Dash: {...}s"`) inside `_PhysicsProcess` allocates heap memory every frame. Even if the visual number on screen doesn't change every frame (e.g., updating every 0.1s), the engine is allocating a new string every frame, causing minor GC stutters.
 **Action:** Always track the discrete integer value (e.g. deciseconds) and only re-format/assign the `Label.Text` property if that tracking value has changed compared to the previous frame.
+## 2024-05-22 - Replacing `DistanceTo` with `DistanceSquaredTo` in Godot Hot Paths
+**Learning:** In Godot C# (and game engines generally), distance checks using `DistanceTo` require computing a square root, which is a relatively expensive operation. When performed inside hot paths like `_PhysicsProcess` across multiple aggressive NPC entities concurrently chasing the player, these CPU cycles add up and can contribute to micro-stutters or frame time variations.
+**Action:** When evaluating distance thresholds (like checking if an NPC is within `StoppingDistance` or `MeleeDistance`), cache the squared distance target (e.g., `MeleeDistance * MeleeDistance`) and compare it against `GlobalPosition.DistanceSquaredTo(target.GlobalPosition)`. Always use `DistanceSquaredTo` in high-frequency loops.

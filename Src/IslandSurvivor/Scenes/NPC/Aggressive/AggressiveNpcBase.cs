@@ -23,13 +23,17 @@ public partial class AggressiveNpcBase : NpcBase, IEnemy
     [Export] public float BaseXp { get; set; } = 30.0f;
     [Export] public float XpMultiplier { get; set; } = 0.2f;
 
+    [ExportGroup("Audio Override")]
+    [Export] public AudioStream? AttackSound { get; set; }
+    [Export] public string AttackSoundKey { get; set; } = "Enemy_Swing_Default";
+    [Export] public float AttackVolume { get; set; } = 1.0f;
+
     protected IAgressorController m_agressorController;
     protected AttackController? m_attackController;
     protected Area2D m_detectionArea;
     protected RayCast2D m_lineOfSightRay;
     protected Node2D m_targetPlayer;
 
-    protected StringName m_animAttack = new StringName("Attack");
     protected StringName m_animMoving = new StringName("Moving");
     protected StringName m_animIdle = new StringName("Idle");
 
@@ -40,12 +44,20 @@ public partial class AggressiveNpcBase : NpcBase, IEnemy
     {
         base._Ready();
 
+        // Initialize default keys if not set
+        if (string.IsNullOrEmpty(HurtSoundKey)) HurtSoundKey = "Enemy_Hurt_Default";
+        if (string.IsNullOrEmpty(DeathSoundKey)) DeathSoundKey = "Enemy_Death_Default";
+
         InitializeController();
 
         m_attackController = GetNodeOrNull<AttackController>("AttackController");
-        if (m_animatedSprite != null && m_attackController != null && m_attackController.AttackSprite == null)
+        if (m_animatedSprite != null && m_attackController != null)
         {
-            m_attackController.AttackSprite = m_animatedSprite;
+            if (m_attackController.AttackSprite == null)
+            {
+                m_attackController.AttackSprite = m_animatedSprite;
+            }
+            m_attackController.AttackActionTriggered += PlayAttackSound;
         }
 
         m_detectionArea = GetNodeOrNull<Area2D>("DetectionArea");
@@ -122,8 +134,9 @@ public partial class AggressiveNpcBase : NpcBase, IEnemy
         }
         else if (m_agressorController.CurrentState == NpcStates.CHASE && m_targetPlayer != null)
         {
-            float distanceToPlayer = GlobalPosition.DistanceTo(m_targetPlayer.GlobalPosition);
-            if (distanceToPlayer <= StoppingDistance)
+            float distanceSquaredToPlayer = GlobalPosition.DistanceSquaredTo(m_targetPlayer.GlobalPosition);
+            // Replaced DistanceTo with DistanceSquaredTo to eliminate square root calculation in hot path (_PhysicsProcess)
+            if (distanceSquaredToPlayer <= StoppingDistance * StoppingDistance)
             {
                 targetSpeed = 0f;
                 direction = Vector2.Zero;
@@ -160,6 +173,24 @@ public partial class AggressiveNpcBase : NpcBase, IEnemy
     {
     }
 
+    protected virtual void PlayAttackAnimation(string p_animName)
+    {
+        if (m_animatedSprite == null) return;
+
+        if (m_targetPlayer != null)
+        {
+            m_animatedSprite.FlipH = m_targetPlayer.GlobalPosition.X < GlobalPosition.X;
+        }
+
+        if (m_attackController != null)
+        {
+            m_attackController.SetAttackAnimation(p_animName);
+        }
+
+        m_animatedSprite.Play(p_animName);
+        m_animatedSprite.Frame = 0;
+    }
+
     protected virtual void UpdateAnimation(Vector2 p_direction)
     {
         if (m_animatedSprite == null) return;
@@ -168,11 +199,8 @@ public partial class AggressiveNpcBase : NpcBase, IEnemy
 
         if (isAttacking)
         {
-            if (m_animatedSprite.Animation != m_animAttack)
-            {
-                m_animatedSprite.Play(m_animAttack);
-                m_animatedSprite.Frame = 0;
-            }
+            // Attack animation playback is handled directly via PlayAttackAnimation in OnAttackStarted.
+            // We just skip standard directional animation logic here.
             return;
         }
 
@@ -233,27 +261,33 @@ public partial class AggressiveNpcBase : NpcBase, IEnemy
         }
     }
 
+    protected void PlayAttackSound()
+    {
+        if (AttackSound != null)
+            AudioManager.Instance?.PlaySound2D(AttackSound, GlobalPosition, p_volumeLinear: AttackVolume, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
+        else if (!string.IsNullOrEmpty(AttackSoundKey))
+            AudioManager.Instance?.PlaySound2D(AttackSoundKey, GlobalPosition, p_volumeLinear: AttackVolume, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
+    }
+
     protected override void OnDamageTaken(Node2D p_attacker)
     {
         base.OnDamageTaken(p_attacker);
         m_targetPlayer = p_attacker;
-
-        AudioStream hurtStream = GD.Load<AudioStream>("res://Assets/Sounds/Combat/enemy_hurt.wav");
-        if (hurtStream != null)
-        {
-            AudioManager.Instance?.PlaySound2D(hurtStream, GlobalPosition);
-        }
+        
+        if (HurtSound != null)
+            AudioManager.Instance?.PlaySound2D(HurtSound, GlobalPosition, p_volumeLinear: HurtVolume, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
+        else if (!string.IsNullOrEmpty(HurtSoundKey))
+            AudioManager.Instance?.PlaySound2D(HurtSoundKey, GlobalPosition, p_volumeLinear: HurtVolume, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
     }
 
     protected override void HandleDeath(object? p_attacker = null)
     {
         m_agressorController.SetDead();
 
-        AudioStream deathStream = GD.Load<AudioStream>("res://Src/IslandSurvivor/Assets/Sounds/Combat/enemy_death.wav");
-        if (deathStream != null)
-        {
-            AudioManager.Instance?.PlaySound2D(deathStream, GlobalPosition);
-        }
+        if (DeathSound != null)
+            AudioManager.Instance?.PlaySound2D(DeathSound, GlobalPosition, p_volumeLinear: DeathVolume, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
+        else if (!string.IsNullOrEmpty(DeathSoundKey))
+            AudioManager.Instance?.PlaySound2D(DeathSoundKey, GlobalPosition, p_volumeLinear: DeathVolume, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
 
         if (ServiceRegistry.Instance != null)
         {

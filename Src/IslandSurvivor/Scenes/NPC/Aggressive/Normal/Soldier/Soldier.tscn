@@ -1,81 +1,85 @@
 [gd_scene format=3 uid="uid://dyxx1q578y7t0"]
 
-[ext_resource type="PackedScene" uid="uid://mbase12345" path="res://Scenes/NPC/Aggressive/Normal/MeleeAggressiveNpcBase.tscn" id="1_scene"]
-[ext_resource type="Script" uid="uid://d1eskrq5egat0" path="res://Scenes/NPC/Aggressive/Normal/Soldier/Soldier.cs" id="2_script"]
-[ext_resource type="Texture2D" uid="uid://dme25kdxbnqcy" path="res://Assets/TinySwords/Sprites/Warrior/Black/Warrior_Idle.png" id="3_idle"]
-[ext_resource type="Texture2D" uid="uid://dwsh1gspfwghh" path="res://Assets/TinySwords/Sprites/Warrior/Black/Warrior_Attack1.png" id="4_attack"]
-[ext_resource type="Texture2D" uid="uid://cy36cydp3xyku" path="res://Assets/TinySwords/Sprites/Warrior/Black/Warrior_Run.png" id="5_run"]
+[ext_resource type="Script" uid="uid://d1eskrq5egat0" path="res://Scenes/NPC/Aggressive/Normal/Soldier/Soldier.cs" id="1_j7env"]
+[ext_resource type="Texture2D" uid="uid://dwsh1gspfwghh" path="res://Assets/TinySwords/Sprites/Warrior/Black/Warrior_Attack1.png" id="2_110m5"]
+[ext_resource type="AudioStream" uid="uid://bng0g5vtfxg8b" path="res://Assets/Audio/kenney_impact-sounds/Audio/hurtSound.mp3" id="2_pxe8l"]
+[ext_resource type="Texture2D" uid="uid://dme25kdxbnqcy" path="res://Assets/TinySwords/Sprites/Warrior/Black/Warrior_Idle.png" id="3_pxe8l"]
+[ext_resource type="AudioStream" uid="uid://d3mi5a68pa0l5" path="res://Assets/Audio/kenney_impact-sounds/Audio/001_we-lost.wav" id="3_xyyhd"]
+[ext_resource type="Texture2D" uid="uid://cy36cydp3xyku" path="res://Assets/TinySwords/Sprites/Warrior/Black/Warrior_Run.png" id="4_xyyhd"]
+[ext_resource type="PackedScene" path="res://Nodes/Movement/MovementController.tscn" id="5_7vwxt"]
+[ext_resource type="PackedScene" uid="uid://biqhbrp7fjfyj" path="res://Nodes/StatsManager/StatsManager.tscn" id="6_miyan"]
+[ext_resource type="Script" uid="uid://bhrvrxhl1h86p" path="res://Nodes/Combat/AttackController.cs" id="7_se8nt"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_8hhla"]
-atlas = ExtResource("4_attack")
+atlas = ExtResource("2_110m5")
 region = Rect2(0, 0, 192, 192)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_m2bff"]
-atlas = ExtResource("4_attack")
+atlas = ExtResource("2_110m5")
 region = Rect2(192, 0, 192, 192)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_c5wu6"]
-atlas = ExtResource("4_attack")
+atlas = ExtResource("2_110m5")
 region = Rect2(384, 0, 192, 192)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_2l22r"]
-atlas = ExtResource("4_attack")
+atlas = ExtResource("2_110m5")
 region = Rect2(576, 0, 192, 192)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_jkuhk"]
-atlas = ExtResource("3_idle")
+atlas = ExtResource("3_pxe8l")
 region = Rect2(0, 0, 192, 192)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_e5iyk"]
-atlas = ExtResource("3_idle")
+atlas = ExtResource("3_pxe8l")
 region = Rect2(192, 0, 192, 192)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_17jve"]
-atlas = ExtResource("3_idle")
+atlas = ExtResource("3_pxe8l")
 region = Rect2(384, 0, 192, 192)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_uqak8"]
-atlas = ExtResource("3_idle")
+atlas = ExtResource("3_pxe8l")
 region = Rect2(576, 0, 192, 192)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_pjw02"]
-atlas = ExtResource("3_idle")
+atlas = ExtResource("3_pxe8l")
 region = Rect2(768, 0, 192, 192)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_2hvqn"]
-atlas = ExtResource("3_idle")
+atlas = ExtResource("3_pxe8l")
 region = Rect2(960, 0, 192, 192)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_nivrv"]
-atlas = ExtResource("3_idle")
+atlas = ExtResource("3_pxe8l")
 region = Rect2(1152, 0, 192, 192)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_v3v3l"]
-atlas = ExtResource("3_idle")
+atlas = ExtResource("3_pxe8l")
 region = Rect2(1344, 0, 192, 192)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_8t73o"]
-atlas = ExtResource("5_run")
+atlas = ExtResource("4_xyyhd")
 region = Rect2(0, 0, 192, 192)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_q7m4d"]
-atlas = ExtResource("5_run")
+atlas = ExtResource("4_xyyhd")
 region = Rect2(192, 0, 192, 192)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_6c35r"]
-atlas = ExtResource("5_run")
+atlas = ExtResource("4_xyyhd")
 region = Rect2(384, 0, 192, 192)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_sc8re"]
-atlas = ExtResource("5_run")
+atlas = ExtResource("4_xyyhd")
 region = Rect2(576, 0, 192, 192)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_h8jii"]
-atlas = ExtResource("5_run")
+atlas = ExtResource("4_xyyhd")
 region = Rect2(768, 0, 192, 192)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_epqtl"]
-atlas = ExtResource("5_run")
+atlas = ExtResource("4_xyyhd")
 region = Rect2(960, 0, 192, 192)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_8an0u"]
@@ -150,26 +154,79 @@ animations = [{
 "speed": 5.0
 }]
 
-[node name="Soldier" unique_id=214381457 instance=ExtResource("1_scene")]
-script = ExtResource("2_script")
-ChaseSpeed = 100.0
-StoppingDistance = 40.0
-LevelIndex = 1
-BaseXp = 30.0
-XpMultiplier = 0.2
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_v2bfp"]
+radius = 15.0
 
-[node name="AnimatedSprite2D" parent="." index="0"]
+[sub_resource type="CircleShape2D" id="CircleShape2D_e1oyk"]
+radius = 250.0
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_e1oyk"]
+radius = 21.986078
+height = 70.16913
+
+[node name="Soldier" type="CharacterBody2D" unique_id=666187867]
+y_sort_enabled = true
+collision_layer = 17
+collision_mask = 9
+motion_mode = 1
+script = ExtResource("1_j7env")
+HurtSound = ExtResource("2_pxe8l")
+DeathSound = ExtResource("3_xyyhd")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=586828728]
 position = Vector2(0, -5.722046e-06)
 scale = Vector2(0.9635416, 0.8975626)
 sprite_frames = SubResource("SpriteFrames_8an0u")
 animation = &"Idle"
 
-[node name="CollisionShape2D" parent="." index="1"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=22620120]
+light_mask = 4
+z_index = 1
+y_sort_enabled = true
 position = Vector2(-2.0000005, 1)
 scale = Vector2(0.99999994, 0.99999994)
+shape = SubResource("CapsuleShape2D_v2bfp")
 
-[node name="StatManager" parent="." index="2"]
-BaseAttackValue = 8.0
+[node name="MovementController" parent="." unique_id=1324976384 node_paths=PackedStringArray("Stats") instance=ExtResource("5_7vwxt")]
+Stats = NodePath("../StatManager")
 
-[node name="DetectionArea" parent="." index="5"]
+[node name="StatManager" parent="." unique_id=1475410971 instance=ExtResource("6_miyan")]
+MaxHealth = 50.0
+
+[node name="LineOfSightRay" type="RayCast2D" parent="." unique_id=1704468108]
+collision_mask = 5
+
+[node name="DetectionArea" type="Area2D" parent="." unique_id=1567510452]
 visible = false
+light_mask = 5
+collision_layer = 5
+collision_mask = 5
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DetectionArea" unique_id=245786031]
+position = Vector2(1, 1)
+shape = SubResource("CircleShape2D_e1oyk")
+
+[node name="HitboxAreaRight" type="Area2D" parent="." unique_id=48499246]
+collision_layer = 0
+collision_mask = 4
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxAreaRight" unique_id=364693784]
+position = Vector2(30.000004, 6)
+rotation = 1.5352188
+shape = SubResource("CapsuleShape2D_e1oyk")
+
+[node name="HitboxAreaLeft" type="Area2D" parent="." unique_id=310702674]
+position = Vector2(-68, 0)
+collision_layer = 0
+collision_mask = 4
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxAreaLeft" unique_id=1973465669]
+position = Vector2(30.000004, 6)
+rotation = 1.5352188
+shape = SubResource("CapsuleShape2D_e1oyk")
+
+[node name="AttackController" type="Node" parent="." unique_id=56712398 node_paths=PackedStringArray("Stats")]
+script = ExtResource("7_se8nt")
+Stats = NodePath("../StatManager")
+Faction = 2
+BaseAttackCooldown = 2.0
