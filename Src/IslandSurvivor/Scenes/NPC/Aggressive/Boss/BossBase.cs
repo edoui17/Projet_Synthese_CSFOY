@@ -78,9 +78,6 @@ public partial class BossBase : AggressiveNpcBase
 
         m_bossController.UpdateBoss((float)p_delta, m_targetPlayer != null, hasLineOfSight, healthRatio);
 
-        // Always check if we can attack
-        HandleAttackState();
-
         Vector2 direction = new Vector2(m_agressorController.CurrentDirection.X, m_agressorController.CurrentDirection.Y);
         float targetSpeed = IdleSpeed;
 
@@ -126,31 +123,6 @@ public partial class BossBase : AggressiveNpcBase
         UpdateAnimation(new Vector2(m_agressorController.CurrentDirection.X, m_agressorController.CurrentDirection.Y));
     }
 
-    protected override void HandleAttackState()
-    {
-        if (m_attackController != null && m_attackController.CanAttack && m_targetPlayer != null)
-        {
-            float distanceSquaredToPlayer = GlobalPosition.DistanceSquaredTo(m_targetPlayer.GlobalPosition);
-
-            // Phase logic to decide between Melee and Ranged
-            if (m_bossController.CurrentPhase == BossPhase.Ranged)
-            {
-                // Ranged attack if in sight and within a reasonable distance
-                if (distanceSquaredToPlayer <= 400f * 400f && CheckLineOfSight())
-                {
-                    TryTriggerAttack("Ranged");
-                }
-            }
-            else
-            {
-                // Melee attack if close enough
-                if (distanceSquaredToPlayer <= 80f * 80f)
-                {
-                    TryTriggerAttack("Melee");
-                }
-            }
-        }
-    }
 
     private void TryTriggerAttack(string p_attackType)
     {

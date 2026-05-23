@@ -131,11 +131,6 @@ public partial class Lancer : MeleeAggressiveNpcBase
         {
             targetSpeed = 0f;
             direction = Vector2.Zero;
-
-            if (m_targetPlayer != null)
-            {
-                HandleAttackState();
-            }
         }
         else if (state == LancerStates.DASHING)
         {
@@ -240,26 +235,6 @@ public partial class Lancer : MeleeAggressiveNpcBase
         return direction.X < 0 ? "Left" : "Right";
     }
 
-    protected override void HandleAttackState()
-    {
-        if (m_attackController != null && m_attackController.CanAttack && m_targetPlayer != null)
-        {
-            string attackDirectionStr = GetDirectionString(m_targetPlayer.GlobalPosition);
-
-            string animName = "AttackSide";
-            if (attackDirectionStr == "Up") animName = "AttackUp";
-            else if (attackDirectionStr == "Down") animName = "AttackDown";
-
-            if (m_animatedSprite != null)
-            {
-                if (attackDirectionStr == "Left") m_animatedSprite.FlipH = true;
-                else if (attackDirectionStr == "Right") m_animatedSprite.FlipH = false;
-            }
-
-            m_attackController.SetAttackAnimation(animName);
-            m_attackController.TryAttack(attackDirectionStr);
-        }
-    }
 
     protected override void OnAttackStarted()
     {
