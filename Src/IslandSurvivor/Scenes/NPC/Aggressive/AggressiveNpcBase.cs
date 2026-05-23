@@ -273,7 +273,7 @@ public partial class AggressiveNpcBase : NpcBase, IEnemy
     {
         base.OnDamageTaken(p_attacker);
         m_targetPlayer = p_attacker;
-        
+
         if (HurtSound != null)
             AudioManager.Instance?.PlaySound2D(HurtSound, GlobalPosition, p_volumeLinear: HurtVolume, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
         else if (!string.IsNullOrEmpty(HurtSoundKey))
