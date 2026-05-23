@@ -133,4 +133,8 @@ public class TemporalUI : Godot.Control
 
 ## Thread-Safety
 
-L'implémentation `EventBus` gère de manière basique la sécurité des threads (Thread-Safety) en utilisant des blocs `lock` autour du dictionnaire des souscriptions (`m_subscriptions`). Lors de la publication (`Publish`), une copie (snapshot) des souscripteurs actifs est créée pour éviter les interblocages (deadlocks) ou les exceptions de collection modifiée si un souscripteur publie un autre événement ou modifie ses souscriptions durant le traitement.
+L'implémentation `EventBus` gère de manière basique la sécurité des threads (Thread-Safety) en utilisant des blocs `lock` autour du dictionnaire des souscriptions (`Dictionary<Type, List<object>> m_subscriptions`). Les abonnés sont stockés sous forme d'objets `WeakAction<T>` pour éviter les fuites de mémoire.
+
+Lors de la publication (`Publish`), les événements sont d'abord placés dans une `ConcurrentQueue<Action>` (`m_eventQueue`). Ensuite, lors de l'appel à `ProcessEvents()` (généralement dans la boucle de rendu principale `_Process`), ces actions sont dépilées et exécutées en appelant `DispatchEvent()`.
+
+Dans `DispatchEvent()`, une copie (snapshot) des souscripteurs actifs est créée en nettoyant les références mortes sous un bloc `lock`. Ensuite, l'invocation des événements (l'appel aux callbacks) se fait en dehors du bloc `lock`. Cette approche permet d'éviter les interblocages (deadlocks) et les exceptions de collection modifiée si un souscripteur publie un autre événement ou modifie ses souscriptions pendant le traitement de l'événement.
