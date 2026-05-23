@@ -3,7 +3,9 @@ using Core.Utils;
 using IslandSurvivor.Globals;
 using IslandSurvivor.Utils;
 
-public partial class Login : Control
+namespace IslandSurvivor.Scenes.UI.LoginScreen;
+
+public partial class LoginScreen : Control
 {
     [Signal]
     public delegate void OfflineModeRequestedEventHandler();
@@ -62,7 +64,7 @@ public partial class Login : Control
         m_loginBtn.Disabled = true;
         m_offlineBtn.Disabled = true;
 
-        GD.Print($"[Login] Attempting login for user: {username}");
+        GD.Print($"[LoginScreen] Attempting login for user: {username}");
 
         try
         {
@@ -70,7 +72,7 @@ public partial class Login : Control
 
             if (!string.IsNullOrEmpty(token))
             {
-                GD.Print("[Login] Login successful. Storing token and redirecting.");
+                GD.Print("[LoginScreen] Login successful. Storing token and redirecting.");
                 SessionProvider.StoreToken(token);
                 GetTree().ChangeSceneToFile("res://Scenes/MainMenu/MainMenu/MainMenu.tscn");
             }
@@ -83,7 +85,7 @@ public partial class Login : Control
         }
         catch (System.Exception ex)
         {
-            GD.PrintErr($"[Login] Network error during login: {ex.Message}");
+            GD.PrintErr($"[LoginScreen] Network error during login: {ex.Message}");
             ShowError("Erreur réseau. Serveur indisponible.");
             m_loginBtn.Disabled = false;
             m_offlineBtn.Disabled = false;
@@ -92,7 +94,7 @@ public partial class Login : Control
 
     private void OnOfflinePressed()
     {
-        GD.Print("[Login] Offline mode requested.");
+        GD.Print("[LoginScreen] Offline mode requested.");
         EmitSignal(SignalName.OfflineModeRequested);
     }
 
