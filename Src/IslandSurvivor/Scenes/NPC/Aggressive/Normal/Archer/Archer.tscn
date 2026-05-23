@@ -174,13 +174,6 @@ AttackVolume = 1.0
 HurtSound = ExtResource("3_febu1")
 DeathSound = ExtResource("4_12urs")
 
-[node name="AnimatedSprite2D" parent="."]
-position = Vector2(0, -5.722046e-06)
-scale = Vector2(0.9635416, 0.8975626)
-sprite_frames = SubResource("SpriteFrames_8an0u")
-animation = &"Attack"
-frame_progress = 0.37355852
-
 [node name="CollisionShape2D" parent="." index="1"]
 position = Vector2(-2.0000005, 1)
 scale = Vector2(0.99999994, 0.99999994)

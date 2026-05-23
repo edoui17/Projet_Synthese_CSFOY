@@ -497,10 +497,6 @@ AttackVolume = 1.0
 HurtSound = ExtResource("3_u3wq2")
 DeathSound = ExtResource("4_hesqx")
 
-[node name="AnimatedSprite2D" parent="."]
-sprite_frames = SubResource("SpriteFrames_twomw")
-animation = &"DashSide"
-
 [node name="StatManager" parent="." index="2"]
 MaxHealth = 40.0
 BaseSpeedValue = 200.0
