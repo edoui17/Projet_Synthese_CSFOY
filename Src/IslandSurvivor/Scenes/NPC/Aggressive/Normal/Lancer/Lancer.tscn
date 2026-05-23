@@ -90,6 +90,20 @@ tracks/4/keys = {
 "values": [Color(1, 1, 1, 1)]
 }
 
+tracks/5/type = "method"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("AttackController")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0.3),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": [],
+"method": &"ExecuteAttackHit"
+}]
+}
 [sub_resource type="Animation" id="Animation_4ud8o"]
 resource_name = "Attack_Side"
 length = 0.5
@@ -155,6 +169,20 @@ tracks/4/keys = {
 "values": [Color(1, 1, 1, 1)]
 }
 
+tracks/5/type = "method"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("AttackController")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0.3),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": [],
+"method": &"ExecuteAttackHit"
+}]
+}
 [sub_resource type="Animation" id="Animation_m2rt7"]
 resource_name = "Attack_Up"
 length = 0.5
@@ -220,6 +248,20 @@ tracks/4/keys = {
 "values": [Color(1, 1, 1, 1)]
 }
 
+tracks/5/type = "method"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("AttackController")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0.3),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": [],
+"method": &"ExecuteAttackHit"
+}]
+}
 [sub_resource type="Animation" id="Animation_da4pq"]
 resource_name = "Dash_Down"
 length = 0.4
@@ -659,6 +701,7 @@ InitialState = NodePath("IdleState")
 [node name="IdleState" parent="StateMachine" index="0" unique_id=1999968034 instance=ExtResource("state_IdleState")]
 
 [node name="ChaseState" parent="StateMachine" index="1" unique_id=1324818458 instance=ExtResource("state_ChaseState")]
+TargetStateOnStop = "WindUpState"
 
 [node name="WindUpState" parent="StateMachine" index="2" unique_id=1252753227 instance=ExtResource("state_WindUpState")]
 

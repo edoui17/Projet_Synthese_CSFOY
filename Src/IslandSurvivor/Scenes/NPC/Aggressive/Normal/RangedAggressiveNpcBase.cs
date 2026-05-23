@@ -19,7 +19,6 @@ public partial class RangedAggressiveNpcBase : AggressiveNpcBase
         {
             m_attackController.Stats = Stats;
             m_attackController.Faction = IslandSurvivor.Enums.EntityFaction.Enemy;
-            m_attackController.ActionFrame = 5; // Arrow release frame
 
             m_attackController.AttackStarted += OnAttackStarted;
             m_attackController.AttackActionTriggered += ShootProjectile;

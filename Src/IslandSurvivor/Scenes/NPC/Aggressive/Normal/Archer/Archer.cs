@@ -4,6 +4,9 @@ using Godot;
 
 public partial class Archer : RangedAggressiveNpcBase
 {
+    // RangedAggressiveNpcBase handles the standard ranged logic for Archer:
+    // Movement, detection, shooting, death, stat scaling.
+
     public override void _Ready()
     {
         AttackSoundKey = "Archer_Attack";
@@ -11,12 +14,6 @@ public partial class Archer : RangedAggressiveNpcBase
         if (Stats == null)
         {
             GD.PrintErr("Archer node requires a StatManager child node.");
-        }
-
-        // Load the Arrow scene
-        if (ProjectileScene == null)
-        {
-            GD.PrintErr("Archer failed to load Arrow.tscn!");
         }
 
         base._Ready();

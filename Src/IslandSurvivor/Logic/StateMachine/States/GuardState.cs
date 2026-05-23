@@ -6,7 +6,7 @@ using Godot;
 public partial class GuardState : State
 {
     [ExportGroup("Guard Configuration")]
-    [Export] public float GuardDuration { get; set; } = 2.0f;
+    [Export] public float GuardDuration { get; set; } = 1.0f;
     [Export] public float GuardCooldown { get; set; } = 5.0f;
     [Export] public float DamageMultiplier { get; set; } = 0.0f; // 0 means take 0 damage, 1 means full damage
     [Export] public string NextState { get; set; } = "ChaseState";

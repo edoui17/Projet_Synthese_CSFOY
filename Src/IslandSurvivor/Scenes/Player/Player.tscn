@@ -93,6 +93,20 @@ tracks/4/keys = {
 "values": [Color(1, 1, 1, 1)]
 }
 
+tracks/5/type = "method"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("AttackController")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0.3),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": [],
+"method": &"ExecuteAttackHit"
+}]
+}
 [sub_resource type="Animation" id="Animation_ji083"]
 resource_name = "Idle"
 length = 1.4

@@ -11,10 +11,10 @@ public partial class Reaper : BossBase
 
     private bool m_isAnimationTestMode = false;
     private int m_currentAnimationIndex = 0;
-    private string[] m_animationNames;
+    private string[] m_animationNames = System.Array.Empty<string>();
 
-    private Tween m_colorTween;
-    private Tween m_hoverTween;
+    private Tween? m_colorTween;
+    private Tween? m_hoverTween;
     private Vector2 m_originalSpritePosition;
 
     public override void _Ready()
@@ -120,63 +120,5 @@ public partial class Reaper : BossBase
         }
     }
 
-    public override void _PhysicsProcess(double p_delta)
-    {
-        if (m_isAnimationTestMode)
-        {
-            // Do not run normal AI or movement when testing animations
-            Velocity = Vector2.Zero;
-            return;
-        }
-
-        // Run normal boss physics process
-        base._PhysicsProcess(p_delta);
-    }
-
-    protected override void UpdateAnimation(Vector2 p_direction)
-    {
-        if (m_sprite == null) return;
-
-        bool isAttacking = m_attackController != null && m_attackController.IsAttacking;
-
-        if (isAttacking)
-        {
-            // Attack animation is handled by OnAttackStarted via signals
-            return;
-        }
-
-        if (Velocity.LengthSquared() > 0)
-        {
-            if (m_animationPlayer?.CurrentAnimation != m_animMoving)
-            {
-                m_animationPlayer?.Play(m_animMoving);
-            }
-        }
-        else
-        {
-            StringName targetIdleAnim = m_animIdle;
-
-            // If we are in the Shielded phase (under 66% HP but not enraged), play Shielded idle animation
-            if (m_bossController != null && m_bossController.CurrentPhase == IslandSurvivor.Logic.Entities.BossPhase.Shielded)
-            {
-                targetIdleAnim = new StringName("IdleShielded");
-            }
-
-            if (m_animationPlayer?.CurrentAnimation != targetIdleAnim)
-            {
-                m_animationPlayer?.Play(targetIdleAnim);
-            }
-        }
-
-        if (p_direction.X != 0 && !isAttacking)
-        {
-            m_sprite.FlipH = p_direction.X < 0;
-        }
-    }
-
-    protected override void OnAttackStarted()
-    {
-        string animName = m_bossController.CurrentPhase == IslandSurvivor.Logic.Entities.BossPhase.Enraged ? EnragedAttackAnimationName : NormalAttackAnimationName;
-        PlayAttackAnimation(animName);
-    }
+    // Rely exclusively on state machine for Reaper AI.
 }
