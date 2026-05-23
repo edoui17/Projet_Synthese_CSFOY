@@ -32,7 +32,6 @@ public partial class RangedAggressiveNpcBase : AggressiveNpcBase
 
     protected virtual void OnAttackStarted()
     {
-        // Handled via State Machine
     }
 
     protected virtual void ShootProjectile()

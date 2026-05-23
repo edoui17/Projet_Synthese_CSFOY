@@ -37,6 +37,5 @@ public partial class MeleeAggressiveNpcBase : AggressiveNpcBase
 
     protected virtual void OnAttackStarted()
     {
-        // Handled via State Machine
     }
 }

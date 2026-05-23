@@ -15,12 +15,14 @@ public partial class ChaseState : State
     [Export] public string AnimationName { get; set; } = "Moving";
     [Export] public string FallbackAnimationName { get; set; } = "Error";
 
-    private AnimationPlayer m_animationPlayer = null!;
+    private AnimationPlayer? m_animationPlayer;
+    private AnimatedSprite2D? m_animatedSprite;
 
     public override void Initialize(StateMachine p_stateMachine, CharacterBody2D p_npcContext)
     {
         base.Initialize(p_stateMachine, p_npcContext);
         m_animationPlayer = NpcContext.GetNodeOrNull<AnimationPlayer>("AnimationPlayer");
+        m_animatedSprite = NpcContext.GetNodeOrNull<AnimatedSprite2D>("AnimatedSprite2D");
     }
 
     public override void Enter()
@@ -36,6 +38,10 @@ public partial class ChaseState : State
                 GD.PushWarning($"[ChaseState] Animation '{AnimationName}' not found. Playing '{FallbackAnimationName}'.");
                 m_animationPlayer.Play(FallbackAnimationName);
             }
+        }
+        else if (m_animatedSprite != null)
+        {
+            m_animatedSprite.Play(AnimationName);
         }
     }
 
@@ -72,6 +78,11 @@ public partial class ChaseState : State
                     {
                         aggressiveNpc.Velocity = direction * ChaseSpeed;
                         aggressiveNpc.MoveAndSlide();
+
+                        if (m_animatedSprite != null && direction.X != 0)
+                        {
+                            m_animatedSprite.FlipH = direction.X < 0;
+                        }
                     }
                 }
             }

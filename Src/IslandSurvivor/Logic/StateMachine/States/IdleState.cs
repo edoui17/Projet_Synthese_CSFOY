@@ -14,12 +14,14 @@ public partial class IdleState : State
     [Export] public string FallbackAnimationName { get; set; } = "Error";
 
     private float m_timer;
-    private AnimationPlayer m_animationPlayer = null!;
+    private AnimationPlayer? m_animationPlayer;
+    private AnimatedSprite2D? m_animatedSprite;
 
     public override void Initialize(StateMachine p_stateMachine, CharacterBody2D p_npcContext)
     {
         base.Initialize(p_stateMachine, p_npcContext);
         m_animationPlayer = NpcContext.GetNodeOrNull<AnimationPlayer>("AnimationPlayer");
+        m_animatedSprite = NpcContext.GetNodeOrNull<AnimatedSprite2D>("AnimatedSprite2D");
     }
 
     public override void Enter()
@@ -37,6 +39,10 @@ public partial class IdleState : State
                 GD.PushWarning($"[IdleState] Animation '{AnimationName}' not found. Playing '{FallbackAnimationName}'.");
                 m_animationPlayer.Play(FallbackAnimationName);
             }
+        }
+        else if (m_animatedSprite != null)
+        {
+            m_animatedSprite.Play(AnimationName);
         }
 
         if (NpcContext is IslandSurvivor.Scenes.NPC.NpcBase npc)

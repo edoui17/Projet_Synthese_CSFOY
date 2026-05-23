@@ -12,10 +12,6 @@
 [ext_resource type="Texture2D" uid="uid://d2tfksdwjadim" path="res://Assets/TinySwords/Sprites/Lancer/Blue/Lancer_Up_Attack.png" id="4_mcrgq"]
 [ext_resource type="Texture2D" uid="uid://yjijwkud0pup" path="res://Assets/TinySwords/Sprites/Lancer/Blue/Lancer_Down_Defence.png" id="6_3eliq"]
 [ext_resource type="Texture2D" uid="uid://3t7pvqcjthlb" path="res://Assets/TinySwords/Sprites/Lancer/Blue/Lancer_Up_Defence.png" id="8_k4iku"]
-[ext_resource type="Script" path="res://Logic/StateMachine/StateMachine.cs" id="4_statemachine"]
-[ext_resource type="Script" path="res://Logic/StateMachine/States/WindUpState.cs" id="10_windup"]
-[ext_resource type="Script" path="res://Logic/StateMachine/States/DashState.cs" id="11_dash"]
-[ext_resource type="Script" path="res://Logic/StateMachine/States/RecoveryState.cs" id="12_recovery"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_qvb0c"]
 atlas = ExtResource("3_vdtxd")
@@ -494,7 +490,9 @@ AttackVolume = 1.0
 HurtSound = ExtResource("3_u3wq2")
 DeathSound = ExtResource("4_hesqx")
 
-[node name="Sprite2D" parent="." index="0"]
+[node name="AnimatedSprite2D" parent="." index="0"]
+sprite_frames = SubResource("SpriteFrames_twomw")
+animation = &"DashSide"
 
 [node name="StatManager" parent="." index="2"]
 MaxHealth = 40.0
@@ -535,16 +533,3 @@ collision_mask = 4
 position = Vector2(85.999985, -72)
 rotation = 1.567259
 shape = SubResource("CapsuleShape2D_lancer_hitbox")
-
-[node name="WindUpState" type="Node" parent="StateMachine"]
-script = ExtResource("10_windup")
-TargetStateOnComplete = "DashState"
-
-[node name="DashState" type="Node" parent="StateMachine"]
-script = ExtResource("11_dash")
-TargetStateOnComplete = "RecoveryState"
-TargetStateOnCollision = "RecoveryState"
-
-[node name="RecoveryState" type="Node" parent="StateMachine"]
-script = ExtResource("12_recovery")
-TargetStateOnComplete = "IdleState"

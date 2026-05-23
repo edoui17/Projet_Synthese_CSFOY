@@ -2,7 +2,6 @@
 
 [ext_resource type="PackedScene" uid="uid://ebase12345" path="res://Scenes/NPC/Aggressive/AggressiveNpcBase.tscn" id="1_scene"]
 [ext_resource type="Script" uid="uid://c48csl8462qpf" path="res://Scenes/NPC/Aggressive/Normal/MeleeAggressiveNpcBase.cs" id="2_script"]
-[ext_resource type="Script" path="res://Logic/StateMachine/StateMachine.cs" id="4_statemachine"]
 
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_hitbox"]

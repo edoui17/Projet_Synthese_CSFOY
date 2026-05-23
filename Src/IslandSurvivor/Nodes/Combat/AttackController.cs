@@ -37,7 +37,6 @@ public partial class AttackController : Node
         m_cachedAttackAnimationName = new StringName(AttackAnimationName);
     }
 
-    // Legacy support for AnimatedSprite2D
     private AnimatedSprite2D? m_attackSprite;
     public AnimatedSprite2D? AttackSprite
     {
@@ -66,8 +65,6 @@ public partial class AttackController : Node
         }
     }
 
-    [Export] public AnimationPlayer? AnimPlayer { get; set; }
-
     [Export] public int ActionFrame { get; set; } = 2;
 
     private float m_cooldownTimer = 0f;
@@ -93,16 +90,6 @@ public partial class AttackController : Node
         {
             m_owner = GetParent();
         }
-
-        if (AnimPlayer == null)
-        {
-            AnimPlayer = GetParent()?.GetNodeOrNull<AnimationPlayer>("AnimationPlayer");
-        }
-
-        if (AnimPlayer != null)
-        {
-            AnimPlayer.AnimationFinished += OnAnimationPlayerFinished;
-        }
     }
 
     private void OnFrameChanged()
@@ -125,25 +112,6 @@ public partial class AttackController : Node
         {
             CancelAttack();
         }
-    }
-
-    private void OnAnimationPlayerFinished(StringName animName)
-    {
-        if (!IsAttacking) return;
-
-        if (animName == m_cachedAttackAnimationName)
-        {
-            CancelAttack();
-        }
-    }
-
-    public void TriggerAction()
-    {
-        if (!IsAttacking || m_hasTriggeredAction) return;
-
-        ExecuteAttackHit();
-        EmitSignal(SignalName.AttackActionTriggered);
-        m_hasTriggeredAction = true;
     }
 
     public override void _PhysicsProcess(double p_delta)

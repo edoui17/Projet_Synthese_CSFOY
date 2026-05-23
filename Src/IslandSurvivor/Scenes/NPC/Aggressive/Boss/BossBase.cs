@@ -13,6 +13,7 @@ public partial class BossBase : AggressiveNpcBase
 
     protected Area2D m_hitboxAreaRight;
     protected Area2D m_hitboxAreaLeft;
+    protected IBossController m_bossController;
 
     public override void _Ready()
     {
@@ -25,6 +26,7 @@ public partial class BossBase : AggressiveNpcBase
         {
             m_attackController.Stats = Stats;
             m_attackController.Faction = IslandSurvivor.Enums.EntityFaction.Enemy;
+            m_attackController.AttackSprite = m_animatedSprite;
             m_attackController.ActionFrame = 3; // Generic boss hit frame
 
             if (m_hitboxAreaRight != null) m_attackController.RegisterArea("Right", m_hitboxAreaRight);
@@ -37,6 +39,13 @@ public partial class BossBase : AggressiveNpcBase
         {
             GD.PushWarning($"{Name}: AttackController not found.");
         }
+    }
+
+    protected override void InitializeController()
+    {
+        // Use the new BossController for phase management
+        m_bossController = new BossController(StoppingDistance);
+        m_agressorController = m_bossController;
     }
 
     protected override void ApplyLevelScaling()
@@ -56,25 +65,89 @@ public partial class BossBase : AggressiveNpcBase
 
     public override void _PhysicsProcess(double p_delta)
     {
-        base._PhysicsProcess(p_delta);
+        if (m_agressorController.CurrentState == NpcStates.DEAD) return;
+
+        bool hasLineOfSight = CheckLineOfSight();
+
+        // Pass the health ratio to update boss phases
+        float healthRatio = 1.0f;
+        if (Stats != null && Stats.MaxHealth > 0)
+        {
+            healthRatio = Stats.GetCurrentValue(Core.Managers.Stats.StatType.Health) / Stats.MaxHealth;
+        }
+
+        m_bossController.UpdateBoss((float)p_delta, m_targetPlayer != null, hasLineOfSight, healthRatio);
+
+        Vector2 direction = new Vector2(m_agressorController.CurrentDirection.X, m_agressorController.CurrentDirection.Y);
+        float targetSpeed = IdleSpeed;
+
+        if (m_attackController != null && m_attackController.IsAttacking)
+        {
+            targetSpeed = 0f;
+            direction = Vector2.Zero;
+        }
+        else if (m_agressorController.CurrentState == NpcStates.CHASE && m_targetPlayer != null)
+        {
+            float distanceSquaredToPlayer = GlobalPosition.DistanceSquaredTo(m_targetPlayer.GlobalPosition);
+            // Replaced DistanceTo with DistanceSquaredTo to eliminate square root calculation in hot path (_PhysicsProcess)
+            if (distanceSquaredToPlayer <= StoppingDistance * StoppingDistance)
+            {
+                targetSpeed = 0f;
+                direction = Vector2.Zero;
+            }
+            else
+            {
+                targetSpeed = ChaseSpeed;
+                Vector2 globalPos = GlobalPosition;
+                Vector2 targetPos = m_targetPlayer.GlobalPosition;
+                m_agressorController.UpdateChaseDirection(globalPos, targetPos);
+                direction = new Vector2(m_agressorController.CurrentDirection.X, m_agressorController.CurrentDirection.Y);
+            }
+        }
+
+        if (m_movementController != null)
+        {
+            m_movementController.Move(direction, targetSpeed);
+        }
+        else
+        {
+            Velocity = direction * targetSpeed;
+            MoveAndSlide();
+        }
+
+        if (m_agressorController.CurrentState == NpcStates.IDLE && GetSlideCollisionCount() > 0)
+        {
+            m_agressorController.ForceNewDirection();
+        }
+
+        UpdateAnimation(new Vector2(m_agressorController.CurrentDirection.X, m_agressorController.CurrentDirection.Y));
     }
+
 
     private void TryTriggerAttack(string p_attackType)
     {
-        if (m_sprite != null && m_targetPlayer != null)
+        if (m_animatedSprite != null && m_targetPlayer != null)
         {
-            m_sprite.FlipH = m_targetPlayer.GlobalPosition.X < GlobalPosition.X;
+            m_animatedSprite.FlipH = m_targetPlayer.GlobalPosition.X < GlobalPosition.X;
         }
-        string direction = (m_sprite != null && m_sprite.FlipH) ? "Left" : "Right";
-        m_attackController?.TryAttack(direction);
+        string direction = (m_animatedSprite != null && m_animatedSprite.FlipH) ? "Left" : "Right";
+        m_attackController.TryAttack(direction);
     }
 
     protected virtual void OnAttackStarted()
     {
+        string animName = m_bossController.CurrentPhase == BossPhase.Ranged ? RangedAttackAnimationName : MeleeAttackAnimationName;
+        PlayAttackAnimation(animName);
     }
 
     protected virtual void OnAttackActionTriggered()
     {
+        // Ranged attack action
+        if (m_bossController.CurrentPhase == BossPhase.Ranged)
+        {
+            ShootProjectile();
+        }
+        // Melee attack action is handled automatically by the hitboxes in AttackController
     }
 
     protected virtual void ShootProjectile()

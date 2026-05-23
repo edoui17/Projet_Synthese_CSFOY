@@ -5,7 +5,6 @@
 [ext_resource type="AudioStream" uid="uid://c3jjna55qsax6" path="res://Assets/Audio/kenney_impact-sounds/Audio/jofae-swing-whoosh-110410.mp3" id="attack_stream"]
 [ext_resource type="AudioStream" uid="uid://b2l1i3sytynb8" path="res://Assets/Audio/kenney_impact-sounds/Audio/impactGlass_medium_003.ogg" id="hurt_stream"]
 [ext_resource type="Script" uid="uid://bhrvrxhl1h86p" path="res://Nodes/Combat/AttackController.cs" id="4_attack"]
-[ext_resource type="Script" path="res://Logic/StateMachine/StateMachine.cs" id="4_statemachine"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_base"]
 radius = 15.0

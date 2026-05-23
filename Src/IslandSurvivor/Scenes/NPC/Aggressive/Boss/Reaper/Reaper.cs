@@ -21,19 +21,10 @@ public partial class Reaper : BossBase
     {
         base._Ready();
 
-        if (m_sprite != null)
+        if (m_animatedSprite != null && m_animatedSprite.SpriteFrames != null)
         {
-            m_originalSpritePosition = m_sprite.Position;
-        }
-
-        if (m_animationPlayer != null)
-        {
-            var animList = m_animationPlayer.GetAnimationList();
-            m_animationNames = new string[animList.Length];
-            for (int i = 0; i < animList.Length; i++)
-            {
-                m_animationNames[i] = animList[i].ToString();
-            }
+            m_animationNames = m_animatedSprite.SpriteFrames.GetAnimationNames();
+            m_originalSpritePosition = m_animatedSprite.Position;
         }
     }
 
@@ -70,14 +61,14 @@ public partial class Reaper : BossBase
 
     private void PlayTestAnimation()
     {
-        if (m_animationPlayer == null) return;
+        if (m_animatedSprite == null) return;
 
         string animName = m_animationNames[m_currentAnimationIndex];
         GD.Print($"[Reaper] Playing Animation: {animName}");
 
         ResetAnimationEffects();
 
-        m_animationPlayer.Play(animName);
+        m_animatedSprite.Play(animName);
 
         if (animName == "IdleShielded")
         {
@@ -87,7 +78,7 @@ public partial class Reaper : BossBase
 
     private void ApplyShieldEffects()
     {
-        if (m_sprite == null) return;
+        if (m_animatedSprite == null) return;
 
         // Reset any existing tweens just in case
         ResetAnimationEffects();
@@ -96,8 +87,8 @@ public partial class Reaper : BossBase
         m_colorTween = CreateTween();
         m_colorTween.SetLoops(); // Loop infinitely
         Color lightBlue = new Color(0.5f, 0.8f, 1.0f, 1.0f); // Light blue tint
-        m_colorTween.TweenProperty(m_sprite, "modulate", lightBlue, 1.0f).SetTrans(Tween.TransitionType.Sine).SetEase(Tween.EaseType.InOut);
-        m_colorTween.TweenProperty(m_sprite, "modulate", Colors.White, 1.0f).SetTrans(Tween.TransitionType.Sine).SetEase(Tween.EaseType.InOut);
+        m_colorTween.TweenProperty(m_animatedSprite, "modulate", lightBlue, 1.0f).SetTrans(Tween.TransitionType.Sine).SetEase(Tween.EaseType.InOut);
+        m_colorTween.TweenProperty(m_animatedSprite, "modulate", Colors.White, 1.0f).SetTrans(Tween.TransitionType.Sine).SetEase(Tween.EaseType.InOut);
 
         // 2. Slow Hovering Effect
         m_hoverTween = CreateTween();
@@ -105,8 +96,8 @@ public partial class Reaper : BossBase
         Vector2 upPos = m_originalSpritePosition + new Vector2(0, -15);
         Vector2 downPos = m_originalSpritePosition + new Vector2(0, 5);
 
-        m_hoverTween.TweenProperty(m_sprite, "position", upPos, 2.0f).SetTrans(Tween.TransitionType.Sine).SetEase(Tween.EaseType.InOut);
-        m_hoverTween.TweenProperty(m_sprite, "position", downPos, 2.0f).SetTrans(Tween.TransitionType.Sine).SetEase(Tween.EaseType.InOut);
+        m_hoverTween.TweenProperty(m_animatedSprite, "position", upPos, 2.0f).SetTrans(Tween.TransitionType.Sine).SetEase(Tween.EaseType.InOut);
+        m_hoverTween.TweenProperty(m_animatedSprite, "position", downPos, 2.0f).SetTrans(Tween.TransitionType.Sine).SetEase(Tween.EaseType.InOut);
     }
 
     private void ResetAnimationEffects()
@@ -122,10 +113,10 @@ public partial class Reaper : BossBase
             m_hoverTween = null;
         }
 
-        if (m_sprite != null)
+        if (m_animatedSprite != null)
         {
-            m_sprite.Modulate = Colors.White;
-            m_sprite.Position = m_originalSpritePosition;
+            m_animatedSprite.Modulate = Colors.White;
+            m_animatedSprite.Position = m_originalSpritePosition;
         }
     }
 
@@ -142,9 +133,50 @@ public partial class Reaper : BossBase
         base._PhysicsProcess(p_delta);
     }
 
+    protected override void UpdateAnimation(Vector2 p_direction)
+    {
+        if (m_animatedSprite == null) return;
+
+        bool isAttacking = m_attackController != null && m_attackController.IsAttacking;
+
+        if (isAttacking)
+        {
+            // Attack animation is handled by OnAttackStarted via signals
+            return;
+        }
+
+        if (Velocity.LengthSquared() > 0)
+        {
+            if (m_animatedSprite.Animation != m_animMoving)
+            {
+                m_animatedSprite.Play(m_animMoving);
+            }
+        }
+        else
+        {
+            StringName targetIdleAnim = m_animIdle;
+
+            // If we are in the Shielded phase (under 66% HP but not enraged), play Shielded idle animation
+            if (m_bossController != null && m_bossController.CurrentPhase == IslandSurvivor.Logic.Entities.BossPhase.Shielded)
+            {
+                targetIdleAnim = new StringName("IdleShielded");
+            }
+
+            if (m_animatedSprite.Animation != targetIdleAnim)
+            {
+                m_animatedSprite.Play(targetIdleAnim);
+            }
+        }
+
+        if (p_direction.X != 0 && !isAttacking)
+        {
+            m_animatedSprite.FlipH = p_direction.X < 0;
+        }
+    }
 
     protected override void OnAttackStarted()
     {
-        // Handled via State Machine
+        string animName = m_bossController.CurrentPhase == IslandSurvivor.Logic.Entities.BossPhase.Enraged ? EnragedAttackAnimationName : NormalAttackAnimationName;
+        PlayAttackAnimation(animName);
     }
 }

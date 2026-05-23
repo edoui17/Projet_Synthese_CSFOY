@@ -4,7 +4,6 @@
 [ext_resource type="SpriteFrames" uid="uid://ondukel2hk2a" path="res://Scenes/NPC/Passive/Sheep/SheepFrames.tres" id="2_frames"]
 [ext_resource type="PackedScene" uid="uid://biqhbrp7fjfyj" path="res://Nodes/StatsManager/StatsManager.tscn" id="4_cdkpw"]
 [ext_resource type="PackedScene" path="res://Nodes/Movement/MovementController.tscn" id="6_mov"]
-[ext_resource type="Script" path="res://Logic/StateMachine/StateMachine.cs" id="4_statemachine"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ifvjj"]
 size = Vector2(43, 33)
@@ -16,9 +15,12 @@ motion_mode = 1
 script = ExtResource("1_d7b5k")
 Stats = NodePath("StatManager")
 m_movementController = NodePath("MovementController")
-m_sprite = NodePath("Sprite2D")
+m_sprite = NodePath("AnimatedSprite2D")
 
-[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1421437182]
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1421437182]
+sprite_frames = ExtResource("2_frames")
+animation = &"IDLE"
+autoplay = "IDLE"
 
 [node name="StatManager" parent="." unique_id=1475410971 instance=ExtResource("4_cdkpw")]
 MaxHealth = 30.0
@@ -30,8 +32,3 @@ Stats = NodePath("../StatManager")
 light_mask = 5
 position = Vector2(0.5, 0.5)
 shape = SubResource("RectangleShape2D_ifvjj")
-
-[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
-
-[node name="StateMachine" type="Node" parent="."]
-script = ExtResource("4_statemachine")

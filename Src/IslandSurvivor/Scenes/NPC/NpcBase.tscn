@@ -3,12 +3,6 @@
 [ext_resource type="Script" uid="uid://dmj8y3jasw7qr" path="res://Scenes/NPC/NpcBase.cs" id="1_script"]
 [ext_resource type="PackedScene" path="res://Nodes/Movement/MovementController.tscn" id="2_movement"]
 [ext_resource type="PackedScene" uid="uid://biqhbrp7fjfyj" path="res://Nodes/StatsManager/StatsManager.tscn" id="3_stats"]
-[ext_resource type="Script" path="res://Logic/StateMachine/States/IdleState.cs" id="5_idle"]
-[ext_resource type="Script" path="res://Logic/StateMachine/States/ChaseState.cs" id="6_chase"]
-[ext_resource type="Script" path="res://Logic/StateMachine/States/AttackState.cs" id="7_attack"]
-[ext_resource type="Script" path="res://Logic/StateMachine/States/DeathState.cs" id="8_death"]
-[ext_resource type="Script" path="res://Logic/StateMachine/States/FleeState.cs" id="9_flee"]
-[ext_resource type="Script" path="res://Logic/StateMachine/StateMachine.cs" id="4_statemachine"]
 
 [node name="NpcBase" type="CharacterBody2D" node_paths=PackedStringArray("Stats")]
 y_sort_enabled = true
@@ -18,7 +12,7 @@ motion_mode = 1
 script = ExtResource("1_script")
 Stats = NodePath("StatManager")
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 light_mask = 4
@@ -29,23 +23,3 @@ y_sort_enabled = true
 
 [node name="MovementController" parent="." node_paths=PackedStringArray("Stats") instance=ExtResource("2_movement")]
 Stats = NodePath("../StatManager")
-
-[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
-
-[node name="StateMachine" type="Node" parent="."]
-script = ExtResource("4_statemachine")
-
-[node name="IdleState" type="Node" parent="StateMachine"]
-script = ExtResource("5_idle")
-
-[node name="ChaseState" type="Node" parent="StateMachine"]
-script = ExtResource("6_chase")
-
-[node name="AttackState" type="Node" parent="StateMachine"]
-script = ExtResource("7_attack")
-
-[node name="DeathState" type="Node" parent="StateMachine"]
-script = ExtResource("8_death")
-
-[node name="FleeState" type="Node" parent="StateMachine"]
-script = ExtResource("9_flee")

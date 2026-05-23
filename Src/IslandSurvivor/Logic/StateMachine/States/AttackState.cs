@@ -50,15 +50,6 @@ public partial class AttackState : State
     {
         if (m_attackController != null)
         {
-            if (m_attackController.AnimPlayer != null)
-            {
-                // Trigger action roughly midway if not using AnimatedSprite2D frame callbacks
-                if (m_attackController.IsAttacking && m_attackController.AnimPlayer.IsPlaying() && m_attackController.AnimPlayer.CurrentAnimationPosition > m_attackController.AnimPlayer.CurrentAnimationLength / 2.0f)
-                {
-                     m_attackController.TriggerAction();
-                }
-            }
-
             if (!m_attackController.IsAttacking)
             {
                 TransitionTo(NextState);
