@@ -700,13 +700,6 @@ ProjectileScene = ExtResource("5_scythe")
 MeleeAttackAnimationName = "Attack_Melee"
 RangedAttackAnimationName = "ScytheThrow"
 
-[node name="AnimatedSprite2D" parent="."]
-scale = Vector2(5, 5)
-sprite_frames = SubResource("SpriteFrames_t3tbm")
-animation = &"RangeBlast"
-autoplay = "Idle"
-frame_progress = 0.56376874
-
 [node name="CollisionShape2D" parent="." index="1"]
 position = Vector2(-4, -6)
 shape = SubResource("CapsuleShape2D_dp46e")
