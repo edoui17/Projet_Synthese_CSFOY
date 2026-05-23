@@ -75,11 +75,11 @@ public partial class LoginScreen : Control
 
             if (!string.IsNullOrEmpty(token))
             {
-                GD.Print("[LoginScreen] Login successful. Storing token and redirecting.");
+                GD.Print("[LoginScreen] Login successful. Storing token and triggering initialization flow.");
                 SessionProvider.StoreToken(token);
 
-                // Redirecting to LoadingScreen for US 20.0 synchronization flow
-                GetTree().ChangeSceneToFile("res://Scenes/UI/LoadingScreen/LoadingScreen.tscn");
+                // Trigger full initialization flow in GameManager to handle LoadingScreen and Sync
+                IslandSurvivor.Managers.GameManager.Instance.InitializeGameAsync();
             }
             else
             {
@@ -90,14 +90,8 @@ public partial class LoginScreen : Control
         {
             GD.PrintErr($"[LoginScreen] Network error during login: {ex.Message}");
 
-            if (ex.Message.Contains("503") || ex.Message.Contains("Service Unavailable"))
-            {
-                ShowError("Serveur API indisponible.");
-            }
-            else
-            {
-                ShowError("Erreur réseau. Veuillez réessayer plus tard.");
-            }
+            // Check for Server/Network issues (not 401)
+            ShowError("Serveur API indisponible.");
         }
         finally
         {

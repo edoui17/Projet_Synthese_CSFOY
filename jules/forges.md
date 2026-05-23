@@ -378,3 +378,7 @@ Pour tester l'écran de login dans l'écosystème complet :
 
 ### Architectural Decoupling
 - **Signal Bus for Offline Mode**: To maintain strict N-Tier separation, `LoginScreen` communicates guest access requests via a global `OfflineModeRequested` signal in the `SignalManager`. The `GameManager` subscribes to this signal to trigger its internal guest mode initialization, avoiding direct UI-to-Manager coupling.
+
+### 2026-05-23 - [Correctif] US 11.0.2 : Résolution du blocage de synchronisation et Distinction des erreurs
+- **Bug Fix (Sync Loop)**: Correction d'un problème où le changement direct de scène vers `LoadingScreen.tscn` après le login ne déclenchait pas l'initialisation du `GameManager`. Désormais, `LoginScreen` appelle explicitement `GameManager.InitializeGameAsync()` en cas de succès, garantissant le lancement de la routine de synchronisation du profil.
+- **Bug Fix (Error Handling)**: Refonte de `ApiService.LoginAsync` pour ne plus avaler les `HttpRequestException`. L'API lève désormais une exception pour les erreurs 5xx (serveur) ou réseau, permettant au client d'afficher "Serveur API indisponible" au lieu de "Identifiants invalides" (réservé au code 401).
