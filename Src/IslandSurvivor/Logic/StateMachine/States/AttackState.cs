@@ -27,17 +27,58 @@ public partial class AttackState : State
 
         if (m_attackController != null && m_attackController.CanAttack)
         {
+            string animSuffix = "_Side";
+            string direction = "Right";
+
             if (NpcContext is IslandSurvivor.Scenes.NPC.Aggressive.AggressiveNpcBase aggNpc)
             {
                 var target = aggNpc.GetTarget();
-                if (target != null && m_sprite != null)
+                if (target != null)
                 {
-                    m_sprite.FlipH = target.GlobalPosition.X < NpcContext.GlobalPosition.X;
+                    Vector2 toTarget = target.GlobalPosition - NpcContext.GlobalPosition;
+
+                    if (System.Math.Abs(toTarget.Y) > System.Math.Abs(toTarget.X))
+                    {
+                        if (toTarget.Y < 0)
+                        {
+                            animSuffix = "_Up";
+                            direction = "Up";
+                        }
+                        else
+                        {
+                            animSuffix = "_Down";
+                            direction = "Down";
+                        }
+                    }
+                    else
+                    {
+                        animSuffix = "_Side";
+                        direction = toTarget.X < 0 ? "Left" : "Right";
+                        if (m_sprite != null)
+                        {
+                            m_sprite.FlipH = toTarget.X < 0;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                // Fallback for non-aggressive NPCs or missing target
+                if (m_sprite != null)
+                {
+                    direction = m_sprite.FlipH ? "Left" : "Right";
                 }
             }
 
-            string direction = (m_sprite != null && m_sprite.FlipH) ? "Left" : "Right";
-            m_attackController.SetAttackAnimation(AttackAnimationName);
+            string fullAnimName = $"{AttackAnimationName}{animSuffix}";
+
+            // Check if the base AttackAnimationName already has the suffix to prevent double appending if configured wrongly
+            if (AttackAnimationName.EndsWith("_Side") || AttackAnimationName.EndsWith("_Up") || AttackAnimationName.EndsWith("_Down"))
+            {
+                fullAnimName = AttackAnimationName;
+            }
+
+            m_attackController.SetAttackAnimation(fullAnimName);
             m_attackController.TryAttack(direction);
         }
         else

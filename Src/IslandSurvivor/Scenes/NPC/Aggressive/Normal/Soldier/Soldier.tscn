@@ -444,6 +444,9 @@ _data = {
 &"RESET": SubResource("Animation_miyan")
 }
 
+[ext_resource type="Script" path="res://Src/IslandSurvivor/Logic/StateMachine/States/SoldierCombatDecisionState.cs" id="state_SoldierCombatDecisionState"]
+[ext_resource type="Script" path="res://Src/IslandSurvivor/Logic/StateMachine/States/GuardState.cs" id="state_GuardState"]
+
 [node name="Soldier" unique_id=666187867 instance=ExtResource("1_scene")]
 script = ExtResource("1_j7env")
 AttackAnimationName = "Attack"
@@ -494,7 +497,14 @@ libraries/ = SubResource("AnimationLibrary_kuixf")
 [node name="IdleState" parent="StateMachine" parent_id_path=PackedInt32Array(402971195) index="0" unique_id=1934142247 instance=ExtResource("state_IdleState")]
 
 [node name="ChaseState" parent="StateMachine" parent_id_path=PackedInt32Array(402971195) index="1" unique_id=1630270298 instance=ExtResource("state_ChaseState")]
+TargetStateOnStop = "SoldierCombatDecisionState"
 
 [node name="AttackState" parent="StateMachine" parent_id_path=PackedInt32Array(402971195) index="2" unique_id=1708810746 instance=ExtResource("state_AttackState")]
 
 [node name="DeathState" parent="StateMachine" parent_id_path=PackedInt32Array(402971195) index="3" unique_id=679989419 instance=ExtResource("state_DeathState")]
+
+[node name="GuardState" type="Node" parent="StateMachine" parent_id_path=PackedInt32Array(402971195) index="4" unique_id=987654321]
+script = ExtResource("state_GuardState")
+
+[node name="SoldierCombatDecisionState" type="Node" parent="StateMachine" parent_id_path=PackedInt32Array(402971195) index="5" unique_id=987654322]
+script = ExtResource("state_SoldierCombatDecisionState")

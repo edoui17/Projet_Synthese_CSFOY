@@ -33,6 +33,25 @@ public partial class AggressiveNpcBase : NpcBase, IEnemy
     protected Area2D m_detectionArea;
     protected RayCast2D m_lineOfSightRay;
     protected Node2D m_targetPlayer;
+    public bool IsGuarding => m_isGuarding;
+    public bool CanGuard => m_guardCooldownTimer <= 0.0f;
+    protected bool m_isGuarding = false;
+    protected string m_guardDirection = "";
+    protected float m_guardDamageMultiplier = 1.0f;
+    protected float m_guardCooldownTimer = 0.0f;
+
+    public void SetGuardState(bool isGuarding, string direction, float multiplier)
+    {
+        m_isGuarding = isGuarding;
+        m_guardDirection = direction;
+        m_guardDamageMultiplier = multiplier;
+    }
+
+    public void StartGuardCooldown(float cooldown)
+    {
+        m_guardCooldownTimer = cooldown;
+    }
+
 
     public Node2D GetTarget() => m_targetPlayer;
     public bool HasTargetAndLineOfSight() => m_targetPlayer != null && CheckLineOfSight();
@@ -118,6 +137,11 @@ public partial class AggressiveNpcBase : NpcBase, IEnemy
     public override void _PhysicsProcess(double p_delta)
     {
         base._PhysicsProcess(p_delta);
+
+        if (m_guardCooldownTimer > 0)
+        {
+            m_guardCooldownTimer -= (float)p_delta;
+        }
 
         if (m_movementController == null && Velocity != Vector2.Zero)
         {
@@ -219,6 +243,58 @@ public partial class AggressiveNpcBase : NpcBase, IEnemy
             AudioManager.Instance?.PlaySound2D(AttackSound, GlobalPosition, p_volumeLinear: AttackVolume, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
         else if (!string.IsNullOrEmpty(AttackSoundKey))
             AudioManager.Instance?.PlaySound2D(AttackSoundKey, GlobalPosition, p_volumeLinear: AttackVolume, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
+    }
+
+    public override void TakeDamage(int p_amount, object p_attacker)
+    {
+        m_lastAttacker = p_attacker;
+
+        int actualDamage = p_amount;
+        bool wasBlocked = false;
+
+        if (m_isGuarding && p_attacker is Node2D attackNode)
+        {
+            // Determine attack direction relative to the NPC
+            bool attackCameFromLeft = attackNode.GlobalPosition.X < GlobalPosition.X;
+            string attackDirection = attackCameFromLeft ? "Left" : "Right";
+
+            if (attackDirection == m_guardDirection)
+            {
+                wasBlocked = true;
+                actualDamage = Mathf.RoundToInt(p_amount * m_guardDamageMultiplier);
+            }
+        }
+
+        if (Stats != null)
+        {
+            float currentHp = Stats.GetCurrentValue(StatType.Health);
+            Stats.SetCurrentValue(StatType.Health, currentHp - actualDamage);
+        }
+
+        bool isDead = Stats == null || Stats.GetCurrentValue(StatType.Health) <= 0;
+
+        if (p_attacker is Node2D attackerNode)
+        {
+            if (isDead && attackerNode.IsInGroup("Player"))
+            {
+                m_wasKilledByPlayer = true;
+            }
+
+            if (!isDead)
+            {
+                OnDamageTaken(attackerNode);
+
+                if (wasBlocked)
+                {
+                    IslandSurvivor.Extensions.NodeExtensions.PlayShake(this);
+                }
+                else
+                {
+                    IslandSurvivor.Extensions.NodeExtensions.PlayHitFlash(this);
+                    IslandSurvivor.Extensions.NodeExtensions.PlayShake(this);
+                }
+            }
+        }
     }
 
     protected override void OnDamageTaken(Node2D p_attacker)
