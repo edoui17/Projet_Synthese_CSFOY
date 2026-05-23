@@ -8,6 +8,9 @@
 [ext_resource type="AudioStream" uid="uid://dyptmqwmpqavj" path="res://Assets/Audio/kenney_impact-sounds/Audio/impactMining_001.ogg" id="death_stream"]
 [ext_resource type="AudioStream" uid="uid://bcfiumkcvg6e8" path="res://Assets/Audio/kenney_impact-sounds/Audio/scottishperson-sound-effect-woman-scream-236488.mp3" id="hurt_stream"]
 [ext_resource type="AudioStream" uid="uid://bqwy8igx2da3j" path="res://Assets/Audio/kenney_impact-sounds/Audio/stu9-monsheep-352819.mp3" id="idle_stream"]
+[ext_resource type="PackedScene" uid="uid://hc3bvry1wnv6e" path="res://Nodes/State/Movement/IdleState.tscn" id="state_IdleState"]
+[ext_resource type="PackedScene" uid="uid://sq896rb2a764a" path="res://Nodes/State/Movement/FleeState.tscn" id="state_FleeState"]
+[ext_resource type="PackedScene" uid="uid://sl1st4eaw0nji" path="res://Nodes/State/Core/DeathState.tscn" id="state_DeathState"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_dmdtk"]
 radius = 13.0
@@ -235,9 +238,6 @@ _data = {
 &"Moving": SubResource("Animation_m5ir2"),
 &"RESET": SubResource("Animation_are8w")
 }
-[ext_resource type="PackedScene" uid="uid://hc3bvry1wnv6e" path="res://Nodes/State/Movement/IdleState.tscn" id="state_IdleState"]
-[ext_resource type="PackedScene" uid="uid://sq896rb2a764a" path="res://Nodes/State/Movement/FleeState.tscn" id="state_FleeState"]
-[ext_resource type="PackedScene" uid="uid://sl1st4eaw0nji" path="res://Nodes/State/Core/DeathState.tscn" id="state_DeathState"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ifvjj"]
 size = Vector2(43, 33)
