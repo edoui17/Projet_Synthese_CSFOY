@@ -151,7 +151,7 @@ public partial class Player : CharacterBody2D, IDamageable
 
         if (m_animationPlayer != null && m_animationPlayer.HasAnimation(m_animAttack))
         {
-            if (m_animationPlayer.CurrentAnimation != m_animAttack)
+            if (!m_animationPlayer.IsPlaying() || m_animationPlayer.CurrentAnimation != m_animAttack)
                 m_animationPlayer.Play(m_animAttack);
         }
     }
@@ -347,7 +347,7 @@ public partial class Player : CharacterBody2D, IDamageable
 
         if (m_animationPlayer != null && m_animationPlayer.HasAnimation(m_animInteract))
         {
-            if (m_animationPlayer.CurrentAnimation != m_animInteract)
+            if (!m_animationPlayer.IsPlaying() || m_animationPlayer.CurrentAnimation != m_animInteract)
                 m_animationPlayer.Play(m_animInteract);
             await ToSignal(m_animationPlayer, AnimationPlayer.SignalName.AnimationFinished);
         }
@@ -380,11 +380,11 @@ public partial class Player : CharacterBody2D, IDamageable
         switch (m_currentState)
         {
             case PlayerState.Idle:
-                if (m_animationPlayer.CurrentAnimation != m_animIdle && m_animationPlayer.HasAnimation(m_animIdle))
+                if ((!m_animationPlayer.IsPlaying() || m_animationPlayer.CurrentAnimation != m_animIdle) && m_animationPlayer.HasAnimation(m_animIdle))
                     m_animationPlayer.Play(m_animIdle);
                 break;
             case PlayerState.Moving:
-                if (m_animationPlayer.CurrentAnimation != m_animRun && m_animationPlayer.HasAnimation(m_animRun))
+                if ((!m_animationPlayer.IsPlaying() || m_animationPlayer.CurrentAnimation != m_animRun) && m_animationPlayer.HasAnimation(m_animRun))
                     m_animationPlayer.Play(m_animRun);
                 break;
         }
