@@ -25,6 +25,7 @@ public partial class ScoreManager : Node
     public override void _Ready()
     {
         base._Ready();
+        AddToGroup("ScoreManager");
 
         m_scoreTracker = ServiceRegistry.Instance.ScoreTracker;
         m_eventBus = ServiceRegistry.Instance.EventBus;

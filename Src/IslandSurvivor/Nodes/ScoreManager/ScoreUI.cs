@@ -12,7 +12,7 @@ public partial class ScoreUI : Label
         if (m_scoreManager == null)
         {
             // Try to find it dynamically globally
-            m_scoreManager = GetTree().Root.GetNodeOrNull<ScoreManager>("Main/ScoreManager");
+            m_scoreManager = GetTree().GetFirstNodeInGroup("ScoreManager") as ScoreManager;
         }
 
         if (m_scoreManager == null)

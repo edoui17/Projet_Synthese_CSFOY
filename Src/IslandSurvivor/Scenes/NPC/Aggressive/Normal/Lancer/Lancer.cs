@@ -47,9 +47,9 @@ public partial class Lancer : MeleeAggressiveNpcBase
         if (m_hitboxAreaUp != null) m_hitboxAreaUp.BodyEntered += OnDashHitboxEntered;
         if (m_hitboxAreaDown != null) m_hitboxAreaDown.BodyEntered += OnDashHitboxEntered;
 
-        if (m_animatedSprite != null)
+        if (m_animationPlayer != null)
         {
-            m_animatedSprite.AnimationFinished += OnAnimationFinished;
+            m_animationPlayer.AnimationFinished += OnAnimationFinished;
         }
     }
 
@@ -145,16 +145,16 @@ public partial class Lancer : MeleeAggressiveNpcBase
                 }
 
                 // Cache the visual animation string so it doesn't change mid-dash if player moves
-                string dashAnimName = "DashSide";
+                string dashAnimName = "Dash_Side";
                 if (dashDirectionStr == "Up") dashAnimName = "DashUp";
                 else if (dashDirectionStr == "Down") dashAnimName = "DashDown";
 
-                if (m_animatedSprite != null)
+                if (m_animationPlayer != null)
                 {
-                    m_animatedSprite.Play(dashAnimName);
+                    m_animationPlayer?.Play(dashAnimName);
                     // Also lock visual flip for Side dashes
-                    if (dashDirectionStr == "Left") m_animatedSprite.FlipH = true;
-                    else if (dashDirectionStr == "Right") m_animatedSprite.FlipH = false;
+                    if (dashDirectionStr == "Left") if (m_sprite != null) m_sprite.FlipH = true;
+                    else if (dashDirectionStr == "Right") if (m_sprite != null) m_sprite.FlipH = false;
                 }
 
                 if (dashDirectionStr == "Left") m_dashActiveHitbox = m_hitboxAreaLeft;
@@ -238,16 +238,16 @@ public partial class Lancer : MeleeAggressiveNpcBase
 
     protected override void OnAttackStarted()
     {
-        if (m_animatedSprite != null && m_attackController != null)
+        if (m_animationPlayer != null && m_attackController != null)
         {
-            m_animatedSprite.Play(m_attackController.AttackAnimationName);
-            m_animatedSprite.Frame = 0;
+            m_animationPlayer?.Play(m_attackController.AttackAnimationName);
+
         }
     }
 
     protected override void UpdateAnimation(Vector2 p_direction)
     {
-        if (m_animatedSprite == null) return;
+
 
         bool isAttacking = m_attackController != null && m_attackController.IsAttacking;
         string state = m_lancerController.CurrentState;
@@ -255,60 +255,60 @@ public partial class Lancer : MeleeAggressiveNpcBase
         // Visual orientation
         if (p_direction.X != 0 && !isAttacking && state != LancerStates.WIND_UP && state != LancerStates.DASHING && state != LancerStates.RECOVERY)
         {
-            m_animatedSprite.FlipH = p_direction.X < 0;
+            if (m_sprite != null) m_sprite.FlipH = p_direction.X < 0;
         }
 
         if (isAttacking)
         {
             string animName = m_attackController.AttackAnimationName;
-            if (m_animatedSprite.Animation != animName)
+            if (m_animationPlayer?.CurrentAnimation != animName)
             {
-                m_animatedSprite.Play(animName);
-                m_animatedSprite.Frame = 0;
+                m_animationPlayer?.Play(animName);
+
             }
             return;
         }
 
         if (state == LancerStates.WIND_UP)
         {
-            if (m_targetPlayer != null) m_animatedSprite.FlipH = m_targetPlayer.GlobalPosition.X < GlobalPosition.X;
-            m_animatedSprite.Play("Idle");
+            if (m_targetPlayer != null && m_sprite != null) m_sprite.FlipH = m_targetPlayer.GlobalPosition.X < GlobalPosition.X;
+            m_animationPlayer?.Play("Idle");
             return;
         }
         else if (state == LancerStates.DASHING)
         {
             // Dash animation and flipping are locked in when dash starts to prevent desync
             // Just ensure it keeps playing whatever was locked in
-            if (m_animatedSprite.Animation.ToString().StartsWith("Dash") == false)
+            if (m_animationPlayer?.CurrentAnimation.ToString().StartsWith("Dash") == false)
             {
-                m_animatedSprite.Play("DashSide"); // Fallback
+                m_animationPlayer?.Play("Dash_Side"); // Fallback
             }
             return;
         }
         else if (state == LancerStates.RECOVERY)
         {
-            m_animatedSprite.Play("Idle");
+            m_animationPlayer?.Play("Idle");
             return;
         }
 
         // Base movements
         if (Velocity.LengthSquared() > 0 && state != "Resting")
         {
-            m_animatedSprite.Play("Moving");
+            m_animationPlayer?.Play("Moving");
         }
         else
         {
-            m_animatedSprite.Play("Idle");
+            m_animationPlayer?.Play("Idle");
         }
     }
 
-    private void OnAnimationFinished()
+    private void OnAnimationFinished(Godot.StringName animName)
     {
-        if (m_animatedSprite == null) return;
+
 
         string state = m_lancerController.CurrentState;
 
-        if (state == LancerStates.DASHING && m_animatedSprite.Animation.ToString().StartsWith("Dash"))
+        if (state == LancerStates.DASHING && animName.ToString().StartsWith("Dash"))
         {
             // End of dash animation
             EndDashSequence();

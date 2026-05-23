@@ -124,7 +124,7 @@ public partial class Player : CharacterBody2D, IDamageable
         {
             m_attackController.Stats = Stats;
             m_attackController.Faction = EntityFaction.Player;
-            m_attackController.AttackSprite = m_animatedSprite;
+            m_attackController.LegacyAttackSprite = m_animatedSprite;
 
             if (m_weaponAreaRight != null) m_attackController.RegisterArea("Right", m_weaponAreaRight);
             if (m_weaponAreaLeft != null) m_attackController.RegisterArea("Left", m_weaponAreaLeft);

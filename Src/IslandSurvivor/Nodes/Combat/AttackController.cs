@@ -37,30 +37,90 @@ public partial class AttackController : Node
         m_cachedAttackAnimationName = new StringName(AttackAnimationName);
     }
 
-    private AnimatedSprite2D? m_attackSprite;
-    public AnimatedSprite2D? AttackSprite
+    private AnimatedSprite2D? m_legacyAttackSprite;
+    public AnimatedSprite2D? LegacyAttackSprite
+    {
+        get => m_legacyAttackSprite;
+        set
+        {
+            if (m_legacyAttackSprite != null)
+            {
+                if (m_legacyAttackSprite.IsConnected(AnimatedSprite2D.SignalName.FrameChanged, new Callable(this, MethodName.OnLegacyFrameChanged)))
+                {
+                    m_legacyAttackSprite.Disconnect(AnimatedSprite2D.SignalName.FrameChanged, new Callable(this, MethodName.OnLegacyFrameChanged));
+                }
+                if (m_legacyAttackSprite.IsConnected(AnimatedSprite2D.SignalName.AnimationFinished, new Callable(this, MethodName.OnLegacyAnimationFinished)))
+                {
+                    m_legacyAttackSprite.Disconnect(AnimatedSprite2D.SignalName.AnimationFinished, new Callable(this, MethodName.OnLegacyAnimationFinished));
+                }
+            }
+            m_legacyAttackSprite = value;
+            if (m_legacyAttackSprite != null)
+            {
+                m_legacyAttackSprite.Connect(AnimatedSprite2D.SignalName.FrameChanged, new Callable(this, MethodName.OnLegacyFrameChanged));
+                m_legacyAttackSprite.Connect(AnimatedSprite2D.SignalName.AnimationFinished, new Callable(this, MethodName.OnLegacyAnimationFinished));
+            }
+        }
+    }
+
+    private void OnLegacyFrameChanged()
+    {
+        if (LegacyAttackSprite == null || !IsAttacking) return;
+        if (LegacyAttackSprite.Animation == m_cachedAttackAnimationName && LegacyAttackSprite.Frame >= ActionFrame && !m_hasTriggeredAction)
+        {
+            ExecuteAttackHit();
+            EmitSignal(SignalName.AttackActionTriggered);
+            m_hasTriggeredAction = true;
+        }
+    }
+
+    private void OnLegacyAnimationFinished()
+    {
+        if (LegacyAttackSprite == null || !IsAttacking) return;
+        if (LegacyAttackSprite.Animation == m_cachedAttackAnimationName)
+        {
+            CancelAttack();
+        }
+    }
+
+    private Sprite2D? m_attackSprite;
+    public Sprite2D? AttackSprite
     {
         get => m_attackSprite;
         set
         {
             if (m_attackSprite != null)
             {
-                if (m_attackSprite.IsConnected(AnimatedSprite2D.SignalName.FrameChanged, new Callable(this, MethodName.OnFrameChanged)))
+                if (m_attackSprite.IsConnected(Sprite2D.SignalName.FrameChanged, new Callable(this, MethodName.OnFrameChanged)))
                 {
-                    m_attackSprite.Disconnect(AnimatedSprite2D.SignalName.FrameChanged, new Callable(this, MethodName.OnFrameChanged));
-                }
-                if (m_attackSprite.IsConnected(AnimatedSprite2D.SignalName.AnimationFinished, new Callable(this, MethodName.OnAnimationFinished)))
-                {
-                    m_attackSprite.Disconnect(AnimatedSprite2D.SignalName.AnimationFinished, new Callable(this, MethodName.OnAnimationFinished));
+                    m_attackSprite.Disconnect(Sprite2D.SignalName.FrameChanged, new Callable(this, MethodName.OnFrameChanged));
                 }
             }
-
             m_attackSprite = value;
-
             if (m_attackSprite != null)
             {
-                m_attackSprite.Connect(AnimatedSprite2D.SignalName.FrameChanged, new Callable(this, MethodName.OnFrameChanged));
-                m_attackSprite.Connect(AnimatedSprite2D.SignalName.AnimationFinished, new Callable(this, MethodName.OnAnimationFinished));
+                m_attackSprite.Connect(Sprite2D.SignalName.FrameChanged, new Callable(this, MethodName.OnFrameChanged));
+            }
+        }
+    }
+
+    private AnimationPlayer? m_animationPlayer;
+    public AnimationPlayer? AttackAnimationPlayer
+    {
+        get => m_animationPlayer;
+        set
+        {
+            if (m_animationPlayer != null)
+            {
+                if (m_animationPlayer.IsConnected(AnimationPlayer.SignalName.AnimationFinished, new Callable(this, MethodName.OnAnimationFinished)))
+                {
+                    m_animationPlayer.Disconnect(AnimationPlayer.SignalName.AnimationFinished, new Callable(this, MethodName.OnAnimationFinished));
+                }
+            }
+            m_animationPlayer = value;
+            if (m_animationPlayer != null)
+            {
+                m_animationPlayer.Connect(AnimationPlayer.SignalName.AnimationFinished, new Callable(this, MethodName.OnAnimationFinished));
             }
         }
     }
@@ -96,7 +156,10 @@ public partial class AttackController : Node
     {
         if (AttackSprite == null || !IsAttacking) return;
 
-        if (AttackSprite.Animation == m_cachedAttackAnimationName && AttackSprite.Frame >= ActionFrame && !m_hasTriggeredAction)
+        // With AnimationPlayer, the Sprite2D.Animation string doesn't exist. We check AnimationPlayer's current animation.
+        bool isCorrectAnimation = (AttackAnimationPlayer != null && AttackAnimationPlayer.CurrentAnimation == AttackAnimationName);
+
+        if (isCorrectAnimation && AttackSprite.Frame >= ActionFrame && !m_hasTriggeredAction)
         {
             ExecuteAttackHit();
             EmitSignal(SignalName.AttackActionTriggered);
@@ -104,11 +167,11 @@ public partial class AttackController : Node
         }
     }
 
-    private void OnAnimationFinished()
+    private void OnAnimationFinished(Godot.StringName p_animName)
     {
-        if (AttackSprite == null || !IsAttacking) return;
+        if (!IsAttacking) return;
 
-        if (AttackSprite.Animation == m_cachedAttackAnimationName)
+        if (p_animName == AttackAnimationName)
         {
             CancelAttack();
         }

@@ -8,6 +8,8 @@ public partial class PassiveNpcBase : NpcBase
     [Export] public float FleeSpeed { get; set; } = 120.0f;
 
     protected PassiveController m_passiveController = null!;
+    protected Sprite2D? m_sprite;
+    protected AnimationPlayer? m_animationPlayer;
 
     public override string CurrentState => m_passiveController?.CurrentState ?? NpcStates.IDLE;
 
@@ -15,6 +17,8 @@ public partial class PassiveNpcBase : NpcBase
     {
         base._Ready();
         m_passiveController = new PassiveController();
+        m_sprite = GetNodeOrNull<Sprite2D>("Sprite2D");
+        m_animationPlayer = GetNodeOrNull<AnimationPlayer>("AnimationPlayer");
         NpcType = "Passive";
     }
 
@@ -47,26 +51,29 @@ public partial class PassiveNpcBase : NpcBase
             m_passiveController.ForceNewDirection();
         }
 
-        if (m_animatedSprite != null)
+        if (m_sprite != null)
         {
             if (direction.X != 0)
             {
-                m_animatedSprite.FlipH = direction.X < 0;
+                m_sprite.FlipH = direction.X < 0;
             }
+        }
 
+        if (m_animationPlayer != null)
+        {
             if (m_passiveController.CurrentState == NpcStates.FLEE)
             {
-                if (m_animatedSprite.Animation != "FLEE") m_animatedSprite.Play("FLEE");
+                if (m_animationPlayer.CurrentAnimation != "Flee") m_animationPlayer.Play("Flee");
             }
             else
             {
                 if (Velocity.LengthSquared() > 0 || direction.LengthSquared() > 0)
                 {
-                    if (m_animatedSprite.Animation != "IDLE") m_animatedSprite.Play("IDLE");
+                    if (m_animationPlayer.CurrentAnimation != "Moving") m_animationPlayer.Play("Moving");
                 }
                 else
                 {
-                    if (m_animatedSprite.Animation != "IDLE") m_animatedSprite.Play("IDLE");
+                    if (m_animationPlayer.CurrentAnimation != "Idle") m_animationPlayer.Play("Idle");
                 }
             }
         }
