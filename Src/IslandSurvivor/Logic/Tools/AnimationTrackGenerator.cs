@@ -6,7 +6,11 @@ using IslandSurvivor.Logic.StateMachine;
 [Tool]
 public partial class AnimationTrackGenerator : Node
 {
-    [Export]
+  [Export]
+  AnimationPlayer animPlayer;
+  [Export]
+  Node stateMachine;
+  [Export]
     public bool GenerateAnimations
     {
         get => false;
@@ -23,8 +27,7 @@ public partial class AnimationTrackGenerator : Node
     {
         if (!Engine.IsEditorHint()) return;
 
-        var animPlayer = GetParent().GetNodeOrNull<AnimationPlayer>("AnimationPlayer");
-        var stateMachine = GetParent().GetNodeOrNull<IslandSurvivor.Logic.StateMachine.StateMachine>("StateMachine");
+        
 
         if (animPlayer == null)
         {

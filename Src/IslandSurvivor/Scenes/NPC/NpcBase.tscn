@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://dmj8y3jasw7qr" path="res://Scenes/NPC/NpcBase.cs" id="1_script"]
 [ext_resource type="PackedScene" path="res://Nodes/Movement/MovementController.tscn" id="2_movement"]
 [ext_resource type="PackedScene" uid="uid://biqhbrp7fjfyj" path="res://Nodes/StatsManager/StatsManager.tscn" id="3_stats"]
-[ext_resource type="PackedScene" uid="uid://sb5kp4oa6s35b" path="res://Nodes/State/Core/StateMachine.tscn" id="4_state_machine"]
+[ext_resource type="PackedScene" uid="uid://cui3dv0aw0l38" path="res://Nodes/State/Core/StateMachine.tscn" id="4_state_machine"]
 
 [node name="NpcBase" type="CharacterBody2D" unique_id=788136980 node_paths=PackedStringArray("Stats")]
 y_sort_enabled = true
@@ -26,4 +26,5 @@ y_sort_enabled = true
 Stats = NodePath("../StatManager")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1869571986]
-[node name="StateMachine" parent="." instance=ExtResource("4_state_machine")]
+
+[node name="StateMachine" parent="." unique_id=402971195 instance=ExtResource("4_state_machine")]
