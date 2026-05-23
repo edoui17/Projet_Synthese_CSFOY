@@ -26,7 +26,8 @@ public partial class BossBase : AggressiveNpcBase
         {
             m_attackController.Stats = Stats;
             m_attackController.Faction = IslandSurvivor.Enums.EntityFaction.Enemy;
-            m_attackController.AttackSprite = m_animatedSprite;
+            m_attackController.AttackSprite = m_sprite;
+            m_attackController.AttackAnimationPlayer = GetNodeOrNull<AnimationPlayer>("AnimationPlayer");
             m_attackController.ActionFrame = 3; // Generic boss hit frame
 
             if (m_hitboxAreaRight != null) m_attackController.RegisterArea("Right", m_hitboxAreaRight);
@@ -126,11 +127,11 @@ public partial class BossBase : AggressiveNpcBase
 
     private void TryTriggerAttack(string p_attackType)
     {
-        if (m_animatedSprite != null && m_targetPlayer != null)
+        if (m_sprite != null && m_targetPlayer != null)
         {
-            m_animatedSprite.FlipH = m_targetPlayer.GlobalPosition.X < GlobalPosition.X;
+            m_sprite.FlipH = m_targetPlayer.GlobalPosition.X < GlobalPosition.X;
         }
-        string direction = (m_animatedSprite != null && m_animatedSprite.FlipH) ? "Left" : "Right";
+        string direction = (m_sprite != null && m_sprite.FlipH) ? "Left" : "Right";
         m_attackController.TryAttack(direction);
     }
 
