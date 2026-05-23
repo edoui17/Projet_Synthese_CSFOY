@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c7q4wps0c7vh1"
-path="res://.godot/imported/HappySheep_Bouncing.png-297043ac92bf98b11d9640785d736806.ctex"
+uid="uid://yh2ufkt82mxm"
+path="res://.godot/imported/HappySheep_All.png-b6f520938f1f522a8a9de81cbaa65aa4.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/TinySwords/Decorations/Sheep/HappySheep_Bouncing.png"
-dest_files=["res://.godot/imported/HappySheep_Bouncing.png-297043ac92bf98b11d9640785d736806.ctex"]
+source_file="res://Assets/TinySwords/Sprites/Sheep/HappySheep_All.png"
+dest_files=["res://.godot/imported/HappySheep_All.png-b6f520938f1f522a8a9de81cbaa65aa4.ctex"]
 
 [params]
 

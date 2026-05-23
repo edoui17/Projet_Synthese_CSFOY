@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://dp0whjdqfsr25"]
+
+[ext_resource type="Script" uid="uid://b6bmukc33rrbu" path="res://Logic/Tools/AnimationTrackGenerator.cs" id="1_244nm"]
+
+[node name="Tool_AnimationTrackGenerator" type="Node" unique_id=1741877230]
+script = ExtResource("1_244nm")
