@@ -95,7 +95,7 @@ public partial class GameManager : Node
         }
 
         GD.Print("[GameManager] No valid session. Redirecting to Login.");
-        await CompleteInitialization("res://Scenes/Login/Login.tscn");
+        await CompleteInitialization("res://Scenes/UI/LoginScreen/LoginScreen.tscn");
     }
 
     private void ShowLoadingScreen()

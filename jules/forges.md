@@ -342,3 +342,24 @@ When triggering updates (e.g., UI upgrades emitting events to a decoupled compon
 - **Feedback Visuel** : Utilisation d'un `Label` d'erreur dédié, piloté par la validation locale avant tout appel réseau, pour une UX réactive.
 ## Godot Quirks & Line-of-Sight
 For instant line-of-sight validation (e.g., preventing melee attacks or detection through walls), prefer using `PhysicsRayQueryParameters2D` querying the `DirectSpaceState` against the map collision mask (Layer 1), rather than relying on `RayCast2D` nodes to avoid node-update and local-coordinate complexities.
+
+## 2026-05-23 - US 11.0.1 : Interface Graphique du Formulaire et Validation Locale (Standardisation)
+
+### Architecture et Restructuration
+- **Migration de la Scène** : Déplacement de `res://Scenes/Login/Login.tscn` vers `res://Scenes/UI/LoginScreen/LoginScreen.tscn` pour standardiser la structure des scènes d'UI. L'ancien dossier `Scenes/Login/` a été supprimé.
+- **Renommage des Scripts** : Le script compagnon est désormais `LoginScreen.cs` et la classe est nommée `LoginScreen` (namespace `IslandSurvivor.Scenes.UI.LoginScreen`).
+- **Mise à jour GameManager** : Le `GameManager` a été mis à jour pour rediriger vers le nouveau chemin de la scène de login lorsqu'aucune session n'est trouvée.
+
+### Guide de Test de la Pull Request
+Pour tester l'écran de login dans l'écosystème complet :
+1. **Dépendances d'Infrastructure** :
+   - **SQL Server** : Doit être actif. L'authentification nécessite une vérification en base de données.
+   - **API ASP.NET Core** : Doit être lancée (`Src/API`). Elle sert de pont entre le jeu et la base de données.
+   - **Web Dashboard (Optionnel)** : Non requis pour l'initialisation du jeu, mais recommandé pour vérifier la synchronisation post-login.
+2. **Scénarios de Test UI** :
+   - **Validation Locale** : Tester avec un identifiant de moins de 3 caractères (ex: "ab"). Un message d'erreur rouge doit apparaître sans appel réseau.
+   - **Login Réussi** : Utiliser un compte valide. Redirection vers `MainMenu.tscn`.
+   - **Mode Hors Ligne** : Cliquer sur "Mode Hors Ligne". Redirection immédiate vers `MainMenu.tscn` avec un profil "Guest".
+3. **Comptes de Test (Seed Data)** :
+   - **User** : `Admin`, **Password** : `Admin123` (ou selon `data.sql`).
+   - **User** : `Player1`, **Password** : `Password123`.
