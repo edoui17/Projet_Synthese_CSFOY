@@ -12,6 +12,8 @@
 [ext_resource type="PackedScene" uid="uid://6ct74ht3u7xs" path="res://Nodes/State/Movement/ChaseState.tscn" id="state_ChaseState"]
 [ext_resource type="PackedScene" uid="uid://c5fchvpan65ig" path="res://Nodes/State/Core/DeathState.tscn" id="state_DeathState"]
 [ext_resource type="PackedScene" uid="uid://dhogbp2sdg1fm" path="res://Nodes/State/Movement/IdleState.tscn" id="state_IdleState"]
+[ext_resource type="Script" path="res://Src/IslandSurvivor/Logic/StateMachine/States/SoldierCombatDecisionState.cs" id="state_SoldierCombatDecisionState"]
+[ext_resource type="Script" path="res://Src/IslandSurvivor/Logic/StateMachine/States/GuardState.cs" id="state_GuardState"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_v2bfp"]
 radius = 15.0
@@ -444,8 +446,6 @@ _data = {
 &"RESET": SubResource("Animation_miyan")
 }
 
-[ext_resource type="Script" path="res://Src/IslandSurvivor/Logic/StateMachine/States/SoldierCombatDecisionState.cs" id="state_SoldierCombatDecisionState"]
-[ext_resource type="Script" path="res://Src/IslandSurvivor/Logic/StateMachine/States/GuardState.cs" id="state_GuardState"]
 
 [node name="Soldier" unique_id=666187867 instance=ExtResource("1_scene")]
 script = ExtResource("1_j7env")
