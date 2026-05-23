@@ -63,17 +63,17 @@ public partial class PassiveNpcBase : NpcBase
         {
             if (m_passiveController.CurrentState == NpcStates.FLEE)
             {
-                if (m_animationPlayer.CurrentAnimation != "Flee") m_animationPlayer.Play("Flee");
+                if (!m_animationPlayer.IsPlaying() || m_animationPlayer.CurrentAnimation != "Flee") m_animationPlayer.Play("Flee");
             }
             else
             {
                 if (Velocity.LengthSquared() > 0 || direction.LengthSquared() > 0)
                 {
-                    if (m_animationPlayer.CurrentAnimation != "Moving") m_animationPlayer.Play("Moving");
+                    if (!m_animationPlayer.IsPlaying() || m_animationPlayer.CurrentAnimation != "Moving") m_animationPlayer.Play("Moving");
                 }
                 else
                 {
-                    if (m_animationPlayer.CurrentAnimation != "Idle") m_animationPlayer.Play("Idle");
+                    if (!m_animationPlayer.IsPlaying() || m_animationPlayer.CurrentAnimation != "Idle") m_animationPlayer.Play("Idle");
                 }
             }
         }
