@@ -511,6 +511,7 @@ StopDistance = 250.0
 TargetStateOnStop = "WindUpState"
 
 [node name="WindUpState" parent="StateMachine" index="2" unique_id=1275579956 instance=ExtResource("state_WindUpState")]
+NextStateAfterWindup = "AttackState"
 
 [node name="AttackState" parent="StateMachine" index="3" unique_id=1764309944 instance=ExtResource("state_AttackState")]
 

@@ -87,7 +87,7 @@ public partial class AttackController : Node
     {
         if (!IsAttacking) return;
 
-        if (p_animName == AttackAnimationName)
+        if (p_animName == m_cachedAttackAnimationName)
         {
             CancelAttack();
         }

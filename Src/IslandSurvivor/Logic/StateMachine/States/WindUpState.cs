@@ -7,7 +7,7 @@ public partial class WindUpState : State
 {
     [ExportGroup("State Configuration")]
     [Export] public float WindUpDuration { get; set; } = 0.75f;
-    [Export] public string TargetStateOnComplete { get; set; } = "DashState";
+    [Export] public string NextStateAfterWindup { get; set; } = "AttackState";
     [Export] public string TargetStateOnLoseSight { get; set; } = "IdleState";
 
     [ExportGroup("State Animations")]
@@ -70,7 +70,7 @@ public partial class WindUpState : State
 
         if (m_timer <= 0)
         {
-            TransitionTo(TargetStateOnComplete);
+            TransitionTo(NextStateAfterWindup);
         }
     }
 }
