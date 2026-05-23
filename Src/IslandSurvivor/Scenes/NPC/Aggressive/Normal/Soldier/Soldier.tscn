@@ -10,6 +10,11 @@
 [ext_resource type="PackedScene" uid="uid://biqhbrp7fjfyj" path="res://Nodes/StatsManager/StatsManager.tscn" id="6_miyan"]
 [ext_resource type="Script" uid="uid://bhrvrxhl1h86p" path="res://Nodes/Combat/AttackController.cs" id="7_se8nt"]
 
+[ext_resource type="PackedScene" uid="uid://hc3bvry1wnv6e" path="res://Nodes/State/Movement/IdleState.tscn" id="state_IdleState"]
+[ext_resource type="PackedScene" uid="uid://ydr2rgzdh3hie" path="res://Nodes/State/Movement/ChaseState.tscn" id="state_ChaseState"]
+[ext_resource type="PackedScene" uid="uid://tv17dq11ra3eo" path="res://Nodes/State/Combat/AttackState.tscn" id="state_AttackState"]
+[ext_resource type="PackedScene" uid="uid://sl1st4eaw0nji" path="res://Nodes/State/Core/DeathState.tscn" id="state_DeathState"]
+
 [sub_resource type="AtlasTexture" id="AtlasTexture_8hhla"]
 atlas = ExtResource("2_110m5")
 region = Rect2(0, 0, 192, 192)
@@ -230,3 +235,8 @@ script = ExtResource("7_se8nt")
 Stats = NodePath("../StatManager")
 Faction = 2
 BaseAttackCooldown = 2.0
+
+[node name="IdleState" parent="StateMachine" instance=ExtResource("state_IdleState")]
+[node name="ChaseState" parent="StateMachine" instance=ExtResource("state_ChaseState")]
+[node name="AttackState" parent="StateMachine" instance=ExtResource("state_AttackState")]
+[node name="DeathState" parent="StateMachine" instance=ExtResource("state_DeathState")]
