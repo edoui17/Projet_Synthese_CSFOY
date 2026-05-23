@@ -723,6 +723,7 @@ polygon = PackedVector2Array(45, -96, 93, -61, 113, -13, 116, 44, 98, 74, 45, 74
 [node name="IdleState" parent="StateMachine" instance=ExtResource("state_IdleState")]
 [node name="ChaseState" parent="StateMachine" instance=ExtResource("state_ChaseState")]
 [node name="WindUpState" parent="StateMachine" instance=ExtResource("state_WindUpState")]
+NextStateAfterWindup = "AttackState"
 [node name="AttackState" parent="StateMachine" instance=ExtResource("state_AttackState")]
 [node name="RecoveryState" parent="StateMachine" instance=ExtResource("state_RecoveryState")]
 [node name="DeathState" parent="StateMachine" instance=ExtResource("state_DeathState")]

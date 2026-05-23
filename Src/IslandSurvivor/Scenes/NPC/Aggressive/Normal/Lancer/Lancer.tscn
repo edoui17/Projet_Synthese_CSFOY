@@ -704,6 +704,7 @@ InitialState = NodePath("IdleState")
 TargetStateOnStop = "WindUpState"
 
 [node name="WindUpState" parent="StateMachine" index="2" unique_id=1252753227 instance=ExtResource("state_WindUpState")]
+NextStateAfterWindup = "DashState"
 
 [node name="DashState" parent="StateMachine" index="3" unique_id=28822031 instance=ExtResource("state_DashState")]
 
