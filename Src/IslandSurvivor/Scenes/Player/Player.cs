@@ -21,7 +21,8 @@ public partial class Player : CharacterBody2D, IDamageable
     private PlayerState m_lastDebugState = (PlayerState)(-1);
 
 
-    [Export] private AnimatedSprite2D? m_animatedSprite;
+    [Export] private Sprite2D? m_sprite;
+    [Export] private AnimationPlayer? m_animationPlayer;
     [Export] private Label? m_interactionLabel;
     [Export] private Label? m_debugLabel;
     [Export] private Label? m_levelLabel;
@@ -56,9 +57,10 @@ public partial class Player : CharacterBody2D, IDamageable
 
     // Cached StringNames to prevent implicit string allocation and GC spikes during engine interop calls
     private readonly StringName m_animIdle = new StringName("Idle");
-    private readonly StringName m_animRun = new StringName("Run");
+    private readonly StringName m_animRun = new StringName("Moving");
     private readonly StringName m_animAttack = new StringName("Attack");
     private readonly StringName m_animInteract = new StringName("Interact");
+    private readonly StringName m_animDeath = new StringName("Death");
 
     // Input actions
     private static readonly StringName ACTION_ATTACK = new StringName("attack");
@@ -124,7 +126,8 @@ public partial class Player : CharacterBody2D, IDamageable
         {
             m_attackController.Stats = Stats;
             m_attackController.Faction = EntityFaction.Player;
-            m_attackController.LegacyAttackSprite = m_animatedSprite;
+            m_attackController.AttackSprite = m_sprite;
+            m_attackController.AttackAnimationPlayer = m_animationPlayer;
 
             if (m_weaponAreaRight != null) m_attackController.RegisterArea("Right", m_weaponAreaRight);
             if (m_weaponAreaLeft != null) m_attackController.RegisterArea("Left", m_weaponAreaLeft);
@@ -146,10 +149,10 @@ public partial class Player : CharacterBody2D, IDamageable
         else if (!string.IsNullOrEmpty(AttackSoundKey))
             AudioManager.Instance?.PlaySound2D(AttackSoundKey, GlobalPosition, p_volumeLinear: AttackVolume);
 
-        if (m_animatedSprite != null)
+        if (m_animationPlayer != null && m_animationPlayer.HasAnimation(m_animAttack))
         {
-            if (m_animatedSprite.Animation != m_animAttack)
-                m_animatedSprite.Play(m_animAttack);
+            if (m_animationPlayer.CurrentAnimation != m_animAttack)
+                m_animationPlayer.Play(m_animAttack);
         }
     }
 
@@ -262,7 +265,7 @@ public partial class Player : CharacterBody2D, IDamageable
         if (m_movementController == null) return;
 
         Vector2 direction = Input.GetVector(ACTION_MOVE_LEFT, ACTION_MOVE_RIGHT, ACTION_MOVE_UP, ACTION_MOVE_DOWN);
-        Vector2 dashDirection = direction != Vector2.Zero ? direction.Normalized() : ((m_animatedSprite != null && m_animatedSprite.FlipH) ? Vector2.Left : Vector2.Right);
+        Vector2 dashDirection = direction != Vector2.Zero ? direction.Normalized() : ((m_sprite != null && m_sprite.FlipH) ? Vector2.Left : Vector2.Right);
 
         if (m_movementController.TryDash(dashDirection))
         {
@@ -279,9 +282,9 @@ public partial class Player : CharacterBody2D, IDamageable
         {
             m_currentState = PlayerState.Moving;
 
-            if (m_animatedSprite != null && m_currentState != PlayerState.Attacking)
+            if (m_sprite != null && m_currentState != PlayerState.Attacking)
             {
-                m_animatedSprite.FlipH = direction.X < 0;
+                m_sprite.FlipH = direction.X < 0;
             }
         }
         else
@@ -342,11 +345,11 @@ public partial class Player : CharacterBody2D, IDamageable
         SetState(PlayerState.Interacting);
         m_bestTarget.Interact();
 
-        if (m_animatedSprite != null)
+        if (m_animationPlayer != null && m_animationPlayer.HasAnimation(m_animInteract))
         {
-            if (m_animatedSprite.Animation != m_animInteract)
-                m_animatedSprite.Play(m_animInteract);
-            await ToSignal(m_animatedSprite, AnimatedSprite2D.SignalName.AnimationFinished);
+            if (m_animationPlayer.CurrentAnimation != m_animInteract)
+                m_animationPlayer.Play(m_animInteract);
+            await ToSignal(m_animationPlayer, AnimationPlayer.SignalName.AnimationFinished);
         }
         else
         {
@@ -360,7 +363,7 @@ public partial class Player : CharacterBody2D, IDamageable
     {
         if (m_attackController == null) return;
 
-        string direction = (m_animatedSprite != null && m_animatedSprite.FlipH) ? "Left" : "Right";
+        string direction = (m_sprite != null && m_sprite.FlipH) ? "Left" : "Right";
 
         if (m_attackController.TryAttack(direction))
         {
@@ -370,17 +373,19 @@ public partial class Player : CharacterBody2D, IDamageable
 
     private void UpdateAnimation()
     {
-        if (m_animatedSprite == null) return;
+        if (m_animationPlayer == null) return;
+
+        if (m_currentState == PlayerState.Attacking) return; // Handled separately
 
         switch (m_currentState)
         {
             case PlayerState.Idle:
-                if (m_animatedSprite.Animation != m_animIdle)
-                    m_animatedSprite.Play(m_animIdle);
+                if (m_animationPlayer.CurrentAnimation != m_animIdle && m_animationPlayer.HasAnimation(m_animIdle))
+                    m_animationPlayer.Play(m_animIdle);
                 break;
             case PlayerState.Moving:
-                if (m_animatedSprite.Animation != m_animRun)
-                    m_animatedSprite.Play(m_animRun);
+                if (m_animationPlayer.CurrentAnimation != m_animRun && m_animationPlayer.HasAnimation(m_animRun))
+                    m_animationPlayer.Play(m_animRun);
                 break;
         }
     }
@@ -484,10 +489,13 @@ public partial class Player : CharacterBody2D, IDamageable
         else if (!string.IsNullOrEmpty(DeathSoundKey))
             AudioManager.Instance?.PlaySound(DeathSoundKey, p_volumeLinear: DeathVolume);
 
-        if (m_animatedSprite != null)
+        if (m_animationPlayer != null && m_animationPlayer.HasAnimation(m_animDeath))
         {
-            // If there's a death animation, play it. Otherwise, stop animation.
-            m_animatedSprite.Stop();
+            m_animationPlayer.Play(m_animDeath);
+        }
+        else if (m_animationPlayer != null)
+        {
+            m_animationPlayer.Stop();
         }
 
         // Emit PlayerDiedEvent

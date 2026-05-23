@@ -73,6 +73,11 @@ public partial class ChaseState : State
                     if (aggressiveNpc.MovementController != null)
                     {
                         aggressiveNpc.MovementController.Move(direction, ChaseSpeed);
+
+                        if (m_sprite != null && direction.X != 0)
+                        {
+                            m_sprite.FlipH = direction.X < 0;
+                        }
                     }
                     else
                     {

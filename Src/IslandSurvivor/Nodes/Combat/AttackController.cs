@@ -1,107 +1,41 @@
+namespace IslandSurvivor.Nodes.Combat;
+
 using Godot;
-using System.Collections.Generic;
-using Core.Interfaces.Stats;
-using Core.Managers.Stats;
 using IslandSurvivor.Enums;
 using IslandSurvivor.Interfaces;
 using IslandSurvivor.Logic;
-
-namespace IslandSurvivor.Nodes.Combat;
+using Core.Interfaces.Stats;
+using Core.Managers.Stats;
+using System.Collections.Generic;
 
 [GlobalClass]
 public partial class AttackController : Node
 {
-    [Signal]
-    public delegate void AttackStartedEventHandler();
-
-    [Signal]
-    public delegate void TargetHitEventHandler(Node p_target, int p_damageDealt);
-
-    [Signal]
-    public delegate void AttackFinishedEventHandler();
-
-    [Signal]
-    public delegate void AttackActionTriggeredEventHandler();
-
-    [Export] public StatManager? Stats { get; set; }
-    [Export] public EntityFaction Faction { get; set; } = EntityFaction.None;
+    [Signal] public delegate void AttackStartedEventHandler();
+    [Signal] public delegate void AttackFinishedEventHandler();
+    [Signal] public delegate void AttackActionTriggeredEventHandler();
+    [Signal] public delegate void TargetHitEventHandler(Node p_target, int p_damage);
 
     [Export] public float BaseAttackCooldown { get; set; } = 1.0f;
-
+    [Export] public EntityFaction Faction { get; set; } = EntityFaction.Player;
     [Export] public string AttackAnimationName { get; set; } = "Attack";
-    private StringName m_cachedAttackAnimationName = null!;
 
-    public void SetAttackAnimation(string p_animationName)
+    public StatManager? Stats { get; set; }
+
+    private StringName m_cachedAttackAnimationName = new StringName();
+
+    public void SetAttackAnimation(string p_animName)
     {
-        AttackAnimationName = p_animationName;
-        m_cachedAttackAnimationName = new StringName(AttackAnimationName);
+        AttackAnimationName = p_animName;
+        m_cachedAttackAnimationName = new StringName(p_animName);
     }
 
-    private AnimatedSprite2D? m_legacyAttackSprite;
-    public AnimatedSprite2D? LegacyAttackSprite
-    {
-        get => m_legacyAttackSprite;
-        set
-        {
-            if (m_legacyAttackSprite != null)
-            {
-                if (m_legacyAttackSprite.IsConnected(AnimatedSprite2D.SignalName.FrameChanged, new Callable(this, MethodName.OnLegacyFrameChanged)))
-                {
-                    m_legacyAttackSprite.Disconnect(AnimatedSprite2D.SignalName.FrameChanged, new Callable(this, MethodName.OnLegacyFrameChanged));
-                }
-                if (m_legacyAttackSprite.IsConnected(AnimatedSprite2D.SignalName.AnimationFinished, new Callable(this, MethodName.OnLegacyAnimationFinished)))
-                {
-                    m_legacyAttackSprite.Disconnect(AnimatedSprite2D.SignalName.AnimationFinished, new Callable(this, MethodName.OnLegacyAnimationFinished));
-                }
-            }
-            m_legacyAttackSprite = value;
-            if (m_legacyAttackSprite != null)
-            {
-                m_legacyAttackSprite.Connect(AnimatedSprite2D.SignalName.FrameChanged, new Callable(this, MethodName.OnLegacyFrameChanged));
-                m_legacyAttackSprite.Connect(AnimatedSprite2D.SignalName.AnimationFinished, new Callable(this, MethodName.OnLegacyAnimationFinished));
-            }
-        }
-    }
-
-    private void OnLegacyFrameChanged()
-    {
-        if (LegacyAttackSprite == null || !IsAttacking) return;
-        if (LegacyAttackSprite.Animation == m_cachedAttackAnimationName && LegacyAttackSprite.Frame >= ActionFrame && !m_hasTriggeredAction)
-        {
-            ExecuteAttackHit();
-            EmitSignal(SignalName.AttackActionTriggered);
-            m_hasTriggeredAction = true;
-        }
-    }
-
-    private void OnLegacyAnimationFinished()
-    {
-        if (LegacyAttackSprite == null || !IsAttacking) return;
-        if (LegacyAttackSprite.Animation == m_cachedAttackAnimationName)
-        {
-            CancelAttack();
-        }
-    }
-
+    // Unused, keeping for API compatibility if something binds to it, but it no longer drives frame events.
     private Sprite2D? m_attackSprite;
     public Sprite2D? AttackSprite
     {
         get => m_attackSprite;
-        set
-        {
-            if (m_attackSprite != null)
-            {
-                if (m_attackSprite.IsConnected(Sprite2D.SignalName.FrameChanged, new Callable(this, MethodName.OnFrameChanged)))
-                {
-                    m_attackSprite.Disconnect(Sprite2D.SignalName.FrameChanged, new Callable(this, MethodName.OnFrameChanged));
-                }
-            }
-            m_attackSprite = value;
-            if (m_attackSprite != null)
-            {
-                m_attackSprite.Connect(Sprite2D.SignalName.FrameChanged, new Callable(this, MethodName.OnFrameChanged));
-            }
-        }
+        set => m_attackSprite = value;
     }
 
     private AnimationPlayer? m_animationPlayer;
@@ -125,15 +59,12 @@ public partial class AttackController : Node
         }
     }
 
-    [Export] public int ActionFrame { get; set; } = 2;
-
     private float m_cooldownTimer = 0f;
-    private bool m_hasTriggeredAction = false;
 
     public bool IsAttacking { get; private set; } = false;
     public bool CanAttack => !IsAttacking && m_cooldownTimer <= 0f;
 
-    private System.Collections.Generic.Dictionary<string, Area2D> m_directionAreas = new();
+    private Dictionary<string, Area2D> m_directionAreas = new();
     private HashSet<object> m_hitTargetsThisAttack = new();
     private Area2D? m_currentActiveArea;
     private Node? m_owner;
@@ -149,21 +80,6 @@ public partial class AttackController : Node
         if (m_owner == null)
         {
             m_owner = GetParent();
-        }
-    }
-
-    private void OnFrameChanged()
-    {
-        if (AttackSprite == null || !IsAttacking) return;
-
-        // With AnimationPlayer, the Sprite2D.Animation string doesn't exist. We check AnimationPlayer's current animation.
-        bool isCorrectAnimation = (AttackAnimationPlayer != null && AttackAnimationPlayer.CurrentAnimation == AttackAnimationName);
-
-        if (isCorrectAnimation && AttackSprite.Frame >= ActionFrame && !m_hasTriggeredAction)
-        {
-            ExecuteAttackHit();
-            EmitSignal(SignalName.AttackActionTriggered);
-            m_hasTriggeredAction = true;
         }
     }
 
@@ -187,7 +103,6 @@ public partial class AttackController : Node
         {
             m_cooldownTimer -= delta;
         }
-
     }
 
     public void RegisterArea(string p_direction, Area2D p_area)
@@ -195,7 +110,6 @@ public partial class AttackController : Node
         m_directionAreas[p_direction] = p_area;
         p_area.Monitoring = false;
 
-        // Remove existing connections to prevent duplicates
         if (p_area.IsConnected(Area2D.SignalName.AreaEntered, new Callable(this, MethodName.OnAreaEntered)))
         {
             p_area.Disconnect(Area2D.SignalName.AreaEntered, new Callable(this, MethodName.OnAreaEntered));
@@ -216,15 +130,11 @@ public partial class AttackController : Node
         Area2D? area = null;
         m_directionAreas.TryGetValue(p_direction, out area);
 
-        // For ranged enemies, they might not have areas registered, so we allow it to proceed without one.
-
         IsAttacking = true;
-        m_hasTriggeredAction = false;
         m_hitTargetsThisAttack.Clear();
 
         float speedStat = Stats?.GetCurrentValue(StatType.Speed) ?? 0f;
 
-        // Ensure cooldown scales with speed, but attacks are exclusively animation-driven
         float cooldown = CombatMath.CalculateTime(BaseAttackCooldown, speedStat, 0.2f);
         m_cooldownTimer = cooldown;
 
@@ -234,15 +144,17 @@ public partial class AttackController : Node
         return true;
     }
 
+    // Public method intended to be called exclusively by the Godot AnimationPlayer via a Method Track
     public void ExecuteAttackHit()
     {
         if (!IsAttacking) return;
+
+        EmitSignal(SignalName.AttackActionTriggered);
 
         if (m_currentActiveArea != null)
         {
             m_currentActiveArea.Monitoring = true;
 
-            // Manually check for already overlapping bodies and areas to prevent missed hits
             var overlappingBodies = m_currentActiveArea.GetOverlappingBodies();
             foreach (var body in overlappingBodies)
             {

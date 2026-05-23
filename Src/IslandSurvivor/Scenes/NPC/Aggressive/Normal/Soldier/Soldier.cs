@@ -4,7 +4,7 @@ using Godot;
 
 public partial class Soldier : MeleeAggressiveNpcBase
 {
-    // The base class EnemyBase handles all the standard logic for Soldier:
+    // The base class handles all the standard logic for Soldier:
     // Movement, detection, hitbox attacks, death, stat scaling.
 
     public override void _Ready()
