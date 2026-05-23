@@ -1,0 +1,11 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" uid="uid://cqo7rlgy61vfa" path="res://Scenes/Player/Player.tscn" id="1_player"]
+[ext_resource type="Script" uid="uid://cjfmsf5xpuue1" path="res://Scenes/TestScenes/TestProjectilesScene.cs" id="4_script"]
+
+
+[node name="TestProjectilesScene" type="Node2D"]
+script = ExtResource("4_script")
+
+[node name="Player" parent="." instance=ExtResource("1_player")]
+position = Vector2(500, 300)

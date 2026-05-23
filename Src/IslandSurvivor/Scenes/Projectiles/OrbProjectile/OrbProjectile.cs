@@ -1,15 +1,8 @@
+namespace IslandSurvivor.Scenes.Projectiles;
+
 using Godot;
-using System;
+using IslandSurvivor.Logic.Projectiles;
 
-public partial class OrbProjectile : Area2D
+public partial class OrbProjectile : BaseProjectile
 {
-    // Called when the node enters the scene tree for the first time.
-    public override void _Ready()
-    {
-    }
-
-    // Called every frame. 'delta' is the elapsed time since the previous frame.
-    public override void _Process(double delta)
-    {
-    }
 }

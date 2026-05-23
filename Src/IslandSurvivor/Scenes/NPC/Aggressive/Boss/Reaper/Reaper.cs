@@ -167,6 +167,11 @@ public partial class Reaper : BossBase
                 m_animatedSprite.Play(targetIdleAnim);
             }
         }
+
+        if (p_direction.X != 0 && !isAttacking)
+        {
+            m_animatedSprite.FlipH = p_direction.X < 0;
+        }
     }
 
     protected override void OnAttackStarted()
