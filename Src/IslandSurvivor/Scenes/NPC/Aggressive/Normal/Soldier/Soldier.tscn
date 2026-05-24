@@ -534,7 +534,7 @@ collision_layer = 0
 collision_mask = 4
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxAreaUp" index="0" unique_id=735860196]
-position = Vector2(0.99999976, 48)
+position = Vector2(0.99999976, -48)
 rotation = 1.5352188
 shape = SubResource("CapsuleShape2D_e1oyk")
 
@@ -543,7 +543,7 @@ collision_layer = 0
 collision_mask = 4
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxAreaDown" index="0" unique_id=1429564777]
-position = Vector2(1, -38)
+position = Vector2(1, 38)
 rotation = 1.5352188
 shape = SubResource("CapsuleShape2D_e1oyk")
 
