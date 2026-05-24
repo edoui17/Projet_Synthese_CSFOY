@@ -133,7 +133,7 @@ public partial class StateMachine : State
                     var target = aggNpc.GetTarget();
                     if (target != null)
                     {
-                        nextStateName = GetCombatDecisionState();
+                        nextStateName = StateConstants.RecoveryStateName;
                     }
                     else
                     {
@@ -149,14 +149,7 @@ public partial class StateMachine : State
             case StateConstants.WindUpState:
                 if (p_reason == StateExitReason.Finished)
                 {
-                    nextStateName = StateConstants.DashStateName; // Or "AttackState", depending on the NPC. Lancer uses DashState after WindUp. Wait, this needs to be specific.
-                    // For the Lancer, WindUp goes to DashState.
-                    // Let's assume it goes to AttackState by default, but if it has DashState, it goes to DashState?
-                    // Let me check if DashState is present.
-                    if (m_states.ContainsKey(StateConstants.DashStateName))
-                        nextStateName = StateConstants.DashStateName;
-                    else
-                        nextStateName = StateConstants.AttackStateName;
+                    nextStateName = StateConstants.AttackStateName;
                 }
                 break;
 

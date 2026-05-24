@@ -13,7 +13,7 @@ public partial class Lancer : MeleeAggressiveNpcBase
     {
         if (distanceSquared <= attackRangeSquared)
         {
-            return IslandSurvivor.Logic.StateMachine.StateConstants.AttackStateName;
+            return IslandSurvivor.Logic.StateMachine.StateConstants.WindUpStateName;
         }
         if (distanceSquared <= DashThreshold * DashThreshold)
         {
