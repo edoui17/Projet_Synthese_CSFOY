@@ -8,6 +8,10 @@ public partial class StateMachine : State
 {
     [Export] public State InitialState { get; set; } = null!;
 
+    [ExportGroup("Combat Configuration")]
+    [Export] public float AttackRange { get; set; } = 60.0f;
+    [Export] public float GuardChance { get; set; } = 0.3f;
+
     private Dictionary<StringName, State> m_states = new Dictionary<StringName, State>();
     private State? m_currentState;
 
@@ -100,33 +104,35 @@ public partial class StateMachine : State
                 }
                 else if (p_reason == StateExitReason.TargetReached)
                 {
-                    var attackController = NpcContext.GetNodeOrNull<IslandSurvivor.Nodes.Combat.AttackController>("AttackController");
-                    if (attackController != null && attackController.CanAttack)
-                    {
-                        nextStateName = new StringName("AttackState");
-                    }
-                    else
-                    {
-                        float guardChance = 0.0f;
-                        if (p_sourceState is IslandSurvivor.Logic.StateMachine.States.ChaseState chaseState)
-                        {
-                            guardChance = chaseState.GuardChance;
-                        }
-
-                        if (NpcContext is IslandSurvivor.Scenes.NPC.Aggressive.AggressiveNpcBase aggNpc && aggNpc.CanGuard && GD.Randf() <= guardChance)
-                        {
-                            nextStateName = new StringName("GuardState");
-                        }
-                        else
-                        {
-                            nextStateName = new StringName("IdleState");
-                        }
-                    }
+                    nextStateName = GetCombatDecisionState();
                 }
                 break;
 
             case "AttackState":
-                nextStateName = new StringName("ChaseState");
+                if (NpcContext is IslandSurvivor.Scenes.NPC.Aggressive.AggressiveNpcBase aggNpc)
+                {
+                    var target = aggNpc.GetTarget();
+                    if (target != null)
+                    {
+                        float distSquared = NpcContext.GlobalPosition.DistanceSquaredTo(target.GlobalPosition);
+                        if (distSquared <= AttackRange * AttackRange)
+                        {
+                            nextStateName = GetCombatDecisionState();
+                        }
+                        else
+                        {
+                            nextStateName = new StringName("ChaseState");
+                        }
+                    }
+                    else
+                    {
+                        nextStateName = new StringName("ChaseState");
+                    }
+                }
+                else
+                {
+                    nextStateName = new StringName("ChaseState");
+                }
                 break;
 
             case "WindUpState":
@@ -180,6 +186,32 @@ public partial class StateMachine : State
             if (NpcContext != null && Engine.IsEditorHint() == false)
             {
                 GD.PushWarning($"[Frame: {Engine.GetPhysicsFrames()}] [{NpcContext.Name}] [StateMachine] WARNING: Attempted to transition to unknown state '{nextStateName}'");
+            }
+        }
+    }
+
+    private StringName GetCombatDecisionState()
+    {
+        var attackController = NpcContext.GetNodeOrNull<IslandSurvivor.Nodes.Combat.AttackController>("AttackController");
+
+        if (attackController != null && attackController.CanAttack)
+        {
+            if (NpcContext is IslandSurvivor.Scenes.NPC.Aggressive.AggressiveNpcBase aggressiveNpc && aggressiveNpc.CanGuard && GD.Randf() <= GuardChance)
+            {
+                return new StringName("GuardState");
+            }
+
+            return new StringName("AttackState");
+        }
+        else
+        {
+            if (NpcContext is IslandSurvivor.Scenes.NPC.Aggressive.AggressiveNpcBase aggNpc && aggNpc.CanGuard)
+            {
+                return new StringName("GuardState");
+            }
+            else
+            {
+                return new StringName("IdleState");
             }
         }
     }
