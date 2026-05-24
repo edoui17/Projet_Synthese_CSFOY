@@ -13,6 +13,7 @@
 [ext_resource type="PackedScene" uid="uid://c5fchvpan65ig" path="res://Nodes/State/Core/DeathState.tscn" id="state_DeathState"]
 [ext_resource type="Script" uid="uid://bf0qw7vijbet6" path="res://Logic/StateMachine/States/GuardState.cs" id="state_GuardState"]
 [ext_resource type="PackedScene" uid="uid://dhogbp2sdg1fm" path="res://Nodes/State/Movement/IdleState.tscn" id="state_IdleState"]
+
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_v2bfp"]
 radius = 15.0
 
@@ -30,64 +31,63 @@ step = 0.1
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/path = NodePath("Sprite2D:texture")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5),
-"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
 "update": 1,
-"values": [24, 25, 26, 27, 28, 29]
+"values": [ExtResource("5_pxe8l")]
 }
 tracks/1/type = "value"
 tracks/1/imported = false
 tracks/1/enabled = true
-tracks/1/path = NodePath("Sprite2D:texture")
+tracks/1/path = NodePath("Sprite2D:hframes")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 1,
-"values": [ExtResource("5_pxe8l")]
+"values": [6]
 }
 tracks/2/type = "value"
 tracks/2/imported = false
 tracks/2/enabled = true
-tracks/2/path = NodePath("Sprite2D:hframes")
+tracks/2/path = NodePath("Sprite2D:vframes")
 tracks/2/interp = 1
 tracks/2/loop_wrap = true
 tracks/2/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 1,
-"values": [6]
+"values": [8]
 }
 tracks/3/type = "value"
 tracks/3/imported = false
 tracks/3/enabled = true
-tracks/3/path = NodePath("Sprite2D:vframes")
+tracks/3/path = NodePath("Sprite2D:self_modulate")
 tracks/3/interp = 1
 tracks/3/loop_wrap = true
 tracks/3/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [8]
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
 }
 tracks/4/type = "value"
 tracks/4/imported = false
 tracks/4/enabled = true
-tracks/4/path = NodePath("Sprite2D:self_modulate")
+tracks/4/path = NodePath("Sprite2D:frame")
 tracks/4/interp = 1
 tracks/4/loop_wrap = true
 tracks/4/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Color(1, 1, 1, 1)]
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [24, 25, 26, 27, 28, 29]
 }
-
 tracks/5/type = "method"
 tracks/5/imported = false
 tracks/5/enabled = true
@@ -102,6 +102,7 @@ tracks/5/keys = {
 "method": &"ExecuteAttackHit"
 }]
 }
+
 [sub_resource type="Animation" id="Animation_kuixf"]
 resource_name = "Attack_Side"
 length = 0.6
@@ -166,7 +167,6 @@ tracks/4/keys = {
 "update": 0,
 "values": [Color(1, 1, 1, 1)]
 }
-
 tracks/5/type = "method"
 tracks/5/imported = false
 tracks/5/enabled = true
@@ -181,6 +181,7 @@ tracks/5/keys = {
 "method": &"ExecuteAttackHit"
 }]
 }
+
 [sub_resource type="Animation" id="Animation_rmcea"]
 resource_name = "Attack_Up"
 length = 0.6
@@ -245,7 +246,6 @@ tracks/4/keys = {
 "update": 0,
 "values": [Color(1, 1, 1, 1)]
 }
-
 tracks/5/type = "method"
 tracks/5/imported = false
 tracks/5/enabled = true
@@ -260,6 +260,7 @@ tracks/5/keys = {
 "method": &"ExecuteAttackHit"
 }]
 }
+
 [sub_resource type="Animation" id="Animation_2wysq"]
 resource_name = "Guard"
 length = 0.5
@@ -388,50 +389,50 @@ step = 0.1
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/path = NodePath("Sprite2D:texture")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5),
-"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
 "update": 1,
-"values": [6, 7, 8, 9, 10, 11]
+"values": [ExtResource("5_pxe8l")]
 }
 tracks/1/type = "value"
 tracks/1/imported = false
 tracks/1/enabled = true
-tracks/1/path = NodePath("Sprite2D:texture")
+tracks/1/path = NodePath("Sprite2D:hframes")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 1,
-"values": [ExtResource("5_pxe8l")]
+"values": [6]
 }
 tracks/2/type = "value"
 tracks/2/imported = false
 tracks/2/enabled = true
-tracks/2/path = NodePath("Sprite2D:hframes")
+tracks/2/path = NodePath("Sprite2D:vframes")
 tracks/2/interp = 1
 tracks/2/loop_wrap = true
 tracks/2/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 1,
-"values": [6]
+"values": [8]
 }
 tracks/3/type = "value"
 tracks/3/imported = false
 tracks/3/enabled = true
-tracks/3/path = NodePath("Sprite2D:vframes")
+tracks/3/path = NodePath("Sprite2D:frame")
 tracks/3/interp = 1
 tracks/3/loop_wrap = true
 tracks/3/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
 "update": 1,
-"values": [8]
+"values": [6, 7, 8, 9, 10, 11]
 }
 tracks/4/type = "value"
 tracks/4/imported = false
@@ -476,7 +477,6 @@ _data = {
 
 [node name="Soldier" unique_id=666187867 instance=ExtResource("1_scene")]
 script = ExtResource("1_j7env")
-AttackAnimationName = "Attack"
 ChaseSpeed = 100.0
 StoppingDistance = 40.0
 LevelIndex = 1
@@ -488,7 +488,7 @@ HurtSound = ExtResource("2_pxe8l")
 DeathSound = ExtResource("3_xyyhd")
 
 [node name="Sprite2D" parent="." index="0" unique_id=1104255030]
-texture = ExtResource("5_miyan")
+texture = ExtResource("5_pxe8l")
 hframes = 6
 vframes = 8
 frame = 2

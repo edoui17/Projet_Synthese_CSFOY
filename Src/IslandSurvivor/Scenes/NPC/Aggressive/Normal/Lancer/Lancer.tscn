@@ -32,64 +32,63 @@ step = 0.1
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/path = NodePath("Sprite2D:texture")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4),
-"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
 "update": 1,
-"values": [2, 1, 0, 1, 2]
+"values": [ExtResource("3_vdtxd")]
 }
 tracks/1/type = "value"
 tracks/1/imported = false
 tracks/1/enabled = true
-tracks/1/path = NodePath("Sprite2D:texture")
+tracks/1/path = NodePath("Sprite2D:hframes")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 1,
-"values": [ExtResource("3_vdtxd")]
+"values": [3]
 }
 tracks/2/type = "value"
 tracks/2/imported = false
 tracks/2/enabled = true
-tracks/2/path = NodePath("Sprite2D:hframes")
+tracks/2/path = NodePath("Sprite2D:vframes")
 tracks/2/interp = 1
 tracks/2/loop_wrap = true
 tracks/2/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 1,
-"values": [3]
+"values": [1]
 }
 tracks/3/type = "value"
 tracks/3/imported = false
 tracks/3/enabled = true
-tracks/3/path = NodePath("Sprite2D:vframes")
+tracks/3/path = NodePath("Sprite2D:self_modulate")
 tracks/3/interp = 1
 tracks/3/loop_wrap = true
 tracks/3/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [1]
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
 }
 tracks/4/type = "value"
 tracks/4/imported = false
 tracks/4/enabled = true
-tracks/4/path = NodePath("Sprite2D:self_modulate")
+tracks/4/path = NodePath("Sprite2D:frame")
 tracks/4/interp = 1
 tracks/4/loop_wrap = true
 tracks/4/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Color(1, 1, 1, 1)]
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 1,
+"values": [2, 1, 0, 1, 2]
 }
-
 tracks/5/type = "method"
 tracks/5/imported = false
 tracks/5/enabled = true
@@ -104,6 +103,7 @@ tracks/5/keys = {
 "method": &"ExecuteAttackHit"
 }]
 }
+
 [sub_resource type="Animation" id="Animation_4ud8o"]
 resource_name = "Attack_Side"
 length = 0.5
@@ -168,7 +168,6 @@ tracks/4/keys = {
 "update": 0,
 "values": [Color(1, 1, 1, 1)]
 }
-
 tracks/5/type = "method"
 tracks/5/imported = false
 tracks/5/enabled = true
@@ -183,6 +182,7 @@ tracks/5/keys = {
 "method": &"ExecuteAttackHit"
 }]
 }
+
 [sub_resource type="Animation" id="Animation_m2rt7"]
 resource_name = "Attack_Up"
 length = 0.5
@@ -247,7 +247,6 @@ tracks/4/keys = {
 "update": 0,
 "values": [Color(1, 1, 1, 1)]
 }
-
 tracks/5/type = "method"
 tracks/5/imported = false
 tracks/5/enabled = true
@@ -262,6 +261,7 @@ tracks/5/keys = {
 "method": &"ExecuteAttackHit"
 }]
 }
+
 [sub_resource type="Animation" id="Animation_da4pq"]
 resource_name = "Dash_Down"
 length = 0.4
@@ -623,7 +623,6 @@ _data = {
 script = ExtResource("1_x8y9z")
 DashSpeedMultiplier = 4.0
 MinDashDistance = 175.0
-AttackAnimationName = "Attack"
 ChaseSpeed = 100.0
 StoppingDistance = 40.0
 LevelIndex = 1
@@ -635,8 +634,9 @@ HurtSound = ExtResource("3_u3wq2")
 DeathSound = ExtResource("4_hesqx")
 
 [node name="Sprite2D" parent="." index="0" unique_id=1104255030]
-texture = ExtResource("2_qp1c1")
+texture = ExtResource("3_vdtxd")
 hframes = 3
+frame = 2
 
 [node name="CollisionShape2D" parent="." index="1" unique_id=1322914286]
 visible = false
