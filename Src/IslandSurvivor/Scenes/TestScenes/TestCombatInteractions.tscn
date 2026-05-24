@@ -46,3 +46,7 @@ position = Vector2(1067, 8)
 
 [node name="Archer" parent="Entities" unique_id=61408674 instance=ExtResource("9_vji2q")]
 position = Vector2(536, 716)
+AttackRange = 60.0
+GuardChance = 0.3
+MinAttackRange = 80.0
+MaxAttackRange = 350.0

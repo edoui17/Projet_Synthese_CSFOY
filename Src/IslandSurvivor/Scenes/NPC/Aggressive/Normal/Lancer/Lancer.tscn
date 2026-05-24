@@ -17,6 +17,14 @@
 [sub_resource type="CircleShape2D" id="CircleShape2D_lancer_detection"]
 radius = 400.0
 
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_hesqx"]
+radius = 18.01414
+height = 131.89413
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_sw6gv"]
+radius = 18.024134
+height = 125.70204
+
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_lancer_hitbox"]
 radius = 16.999716
 height = 120.0
@@ -690,19 +698,21 @@ BaseSpeedValue = 200.0
 visible = false
 
 [node name="CollisionShape2D" parent="DetectionArea" index="0"]
-visible = false
 shape = SubResource("CircleShape2D_lancer_detection")
 
-[node name="HitboxAreaRight" parent="." index="9"]
-visible = false
+[node name="CollisionShape2D" parent="HitboxAreaUp" index="0"]
+rotation = 3.1259809
+shape = SubResource("CapsuleShape2D_hesqx")
+
+[node name="CollisionShape2D" parent="HitboxAreaDown" index="0"]
+position = Vector2(-1, 80)
+rotation = 0.014080614
+shape = SubResource("CapsuleShape2D_sw6gv")
 
 [node name="CollisionShape2D" parent="HitboxAreaRight" index="0"]
 position = Vector2(73.000015, 14.000002)
 rotation = 1.567259
 shape = SubResource("CapsuleShape2D_lancer_hitbox")
-
-[node name="HitboxAreaLeft" parent="." index="10"]
-visible = false
 
 [node name="CollisionShape2D" parent="HitboxAreaLeft" index="0"]
 position = Vector2(-4.9999847, 12)
