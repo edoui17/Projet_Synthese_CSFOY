@@ -95,6 +95,10 @@ public partial class StateMachine : State
                 {
                     nextStateName = new StringName("ChaseState");
                 }
+                else if (p_reason == StateExitReason.CooldownFinished)
+                {
+                    nextStateName = GetCombatDecisionState();
+                }
                 break;
 
             case "ChaseState":
@@ -165,7 +169,7 @@ public partial class StateMachine : State
                 break;
 
             case "GuardState":
-                nextStateName = new StringName("ChaseState");
+                nextStateName = GetPostGuardState();
                 break;
 
             case "DeathState":
@@ -188,6 +192,22 @@ public partial class StateMachine : State
                 GD.PushWarning($"[Frame: {Engine.GetPhysicsFrames()}] [{NpcContext.Name}] [StateMachine] WARNING: Attempted to transition to unknown state '{nextStateName}'");
             }
         }
+    }
+
+    private StringName GetPostGuardState()
+    {
+        if (NpcContext is not IslandSurvivor.Scenes.NPC.Aggressive.AggressiveNpcBase aggNpcGuard)
+            return new StringName("ChaseState");
+
+        var target = aggNpcGuard.GetTarget();
+        if (target == null)
+            return new StringName("IdleState");
+
+        float distSquared = NpcContext.GlobalPosition.DistanceSquaredTo(target.GlobalPosition);
+        if (distSquared <= AttackRange * AttackRange)
+            return GetCombatDecisionState();
+
+        return new StringName("ChaseState");
     }
 
     private StringName GetCombatDecisionState()
