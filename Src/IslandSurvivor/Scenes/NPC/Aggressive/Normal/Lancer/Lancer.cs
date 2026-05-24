@@ -6,7 +6,6 @@ using IslandSurvivor.Logic.Entities;
 
 public partial class Lancer : MeleeAggressiveNpcBase
 {
-    [Export] public float DashSpeedMultiplier { get; set; } = 3.0f;
     [Export] public float DashThreshold { get; set; } = 150.0f;
 
     protected override Godot.StringName GetCombatDecisionState(float distanceSquared, float attackRangeSquared)
