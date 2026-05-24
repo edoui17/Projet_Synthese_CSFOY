@@ -12,6 +12,8 @@ public partial class RecoveryState : State
     [Export] public string AnimationName { get; set; } = "Idle";
     [Export] public string FallbackAnimationName { get; set; } = "Idle";
 
+    public override bool IsActionState => true;
+
     private AnimationPlayer m_animationPlayer = null!;
     private float m_timer;
 

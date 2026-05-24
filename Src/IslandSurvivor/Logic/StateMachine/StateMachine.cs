@@ -189,8 +189,11 @@ public partial class StateMachine : State
 
             if (m_currentState?.Name == nextStateName)
             {
-                m_currentState.Exit();
-                m_currentState.Enter();
+                if (m_currentState.IsActionState)
+                {
+                    m_currentState.Exit();
+                    m_currentState.Enter();
+                }
                 return;
             }
 
@@ -274,8 +277,11 @@ public partial class StateMachine : State
 
         if (m_currentState?.Name == p_targetStateName)
         {
-            m_currentState.Exit();
-            m_currentState.Enter();
+            if (m_currentState.IsActionState)
+            {
+                m_currentState.Exit();
+                m_currentState.Enter();
+            }
             return;
         }
 

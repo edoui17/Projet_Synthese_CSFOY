@@ -13,6 +13,8 @@ public partial class DashState : State
     [Export] public string AnimationName { get; set; } = "Dash";
     [Export] public string FallbackAnimationName { get; set; } = "Moving";
 
+    public override bool IsActionState => true;
+
     private AnimationPlayer m_animationPlayer = null!;
     private float m_timer;
     private Vector2 m_dashDirection = Vector2.Zero;

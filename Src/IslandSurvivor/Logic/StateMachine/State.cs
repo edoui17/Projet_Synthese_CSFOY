@@ -11,6 +11,8 @@ public partial class State : Node
     public StateMachine StateMachine { get; protected set; }
     public CharacterBody2D NpcContext { get; protected set; }
 
+    public virtual bool IsActionState => false;
+
     public virtual void Initialize(StateMachine p_stateMachine, CharacterBody2D p_npcContext)
     {
         StateMachine = p_stateMachine;
