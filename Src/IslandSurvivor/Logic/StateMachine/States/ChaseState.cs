@@ -88,10 +88,28 @@ public partial class ChaseState : State
                 else if (distSquared <= AttackRange * AttackRange)
                 {
                     aggressiveNpc.Velocity = Vector2.Zero;
-                    CompleteState(StateExitReason.TargetReached);
+
+                    var attackController = NpcContext.GetNodeOrNull<IslandSurvivor.Nodes.Combat.AttackController>("AttackController");
+
+                    if (attackController != null && attackController.CanAttack)
+                    {
+                        CompleteState(StateExitReason.TargetReached);
+                    }
+                    else
+                    {
+                        if (m_animationPlayer != null && m_animationPlayer.HasAnimation("Idle"))
+                        {
+                            m_animationPlayer.Play("Idle");
+                        }
+                    }
                 }
                 else
                 {
+                    if (m_animationPlayer != null && m_animationPlayer.HasAnimation(AnimationName))
+                    {
+                        m_animationPlayer.Play(AnimationName);
+                    }
+
                     Vector2 direction = (target.GlobalPosition - NpcContext.GlobalPosition).Normalized();
 
                     if (aggressiveNpc.MovementController != null)
