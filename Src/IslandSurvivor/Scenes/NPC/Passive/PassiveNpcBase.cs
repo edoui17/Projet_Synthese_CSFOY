@@ -13,6 +13,15 @@ public partial class PassiveNpcBase : NpcBase
 
     public override string CurrentState => m_passiveController?.CurrentState ?? NpcStates.IDLE;
 
+    public override Godot.StringName GetDecisionState(Node2D target)
+    {
+        if (target != null)
+        {
+            return IslandSurvivor.Logic.StateMachine.StateConstants.FleeStateName;
+        }
+        return IslandSurvivor.Logic.StateMachine.StateConstants.WanderStateName;
+    }
+
     public override void _Ready()
     {
         base._Ready();

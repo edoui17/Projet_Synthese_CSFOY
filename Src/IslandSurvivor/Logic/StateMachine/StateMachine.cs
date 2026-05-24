@@ -8,14 +8,6 @@ public partial class StateMachine : State
 {
     [Export] public State InitialState { get; set; } = null!;
 
-    [ExportGroup("Melee Configuration")]
-    [Export] public float AttackRange { get; set; } = 60.0f;
-    [Export] public float GuardChance { get; set; } = 0.3f;
-
-    [ExportGroup("Ranged Configuration")]
-    [Export] public float MinAttackRange { get; set; } = 80.0f;
-    [Export] public float MaxAttackRange { get; set; } = 350.0f;
-
     private Dictionary<StringName, State> m_states = new Dictionary<StringName, State>();
     private State? m_currentState;
 
@@ -251,76 +243,16 @@ public partial class StateMachine : State
 
     private StringName GetCombatDecisionState()
     {
-        var aggressiveNpc = NpcContext as IslandSurvivor.Scenes.NPC.Aggressive.AggressiveNpcBase;
-        if (aggressiveNpc == null)
+        if (NpcContext == null)
             return StateConstants.IdleStateName;
 
-        var target = aggressiveNpc.GetTarget();
-        if (target == null)
-        {
-            if (m_states.TryGetValue(StateConstants.IdleStateName, out State idleStateNode) && idleStateNode is IslandSurvivor.Logic.StateMachine.States.IdleState idleState)
-            {
-                if (idleState.IsWanderCooldownElapsed && m_states.ContainsKey(StateConstants.WanderStateName))
-                {
-                    return StateConstants.WanderStateName;
-                }
-            }
-            return StateConstants.IdleStateName;
-        }
-
-        float distSquared = NpcContext.GlobalPosition.DistanceSquaredTo(target.GlobalPosition);
-        bool isRanged = NpcContext is IslandSurvivor.Scenes.NPC.Aggressive.RangedAggressiveNpcBase;
-        float checkRange = isRanged ? MaxAttackRange : AttackRange;
-
-        if (distSquared > checkRange * checkRange)
-        {
-            return StateConstants.ChaseStateName;
-        }
-
-        if (isRanged)
-        {
-            if (distSquared < MinAttackRange * MinAttackRange)
-            {
-                return StateConstants.RepositionStateName;
-            }
-        }
-
-        if (NpcContext is IslandSurvivor.Scenes.NPC.Aggressive.Normal.Lancer.Lancer lancer)
-        {
-            if (distSquared <= checkRange * checkRange)
-            {
-                return StateConstants.AttackStateName;
-            }
-            if (distSquared < lancer.DashThreshold * lancer.DashThreshold)
-            {
-                return StateConstants.ChaseStateName;
-            }
-            return new StringName("LancerRepositionState");
-        }
-
-        var attackController = NpcContext.GetNodeOrNull<IslandSurvivor.Nodes.Combat.AttackController>("AttackController");
-
-        if (attackController != null && attackController.CanAttack)
-        {
-            if (aggressiveNpc.CanGuard && GD.Randf() <= GuardChance)
-            {
-                return StateConstants.GuardStateName;
-            }
-
-            return StateConstants.AttackStateName;
-        }
-        else
-        {
-            if (aggressiveNpc.CanGuard)
-            {
-                return StateConstants.GuardStateName;
-            }
-            else
-            {
-                return StateConstants.IdleStateName;
-            }
-        }
+        var target = (NpcContext as IslandSurvivor.Scenes.NPC.Aggressive.AggressiveNpcBase)?.GetTarget();
+        return ((IslandSurvivor.Scenes.NPC.NpcBase)NpcContext).GetDecisionState(target);
     }
+
+    public bool HasState(Godot.StringName stateName) => m_states.ContainsKey(stateName);
+
+    public State GetState(Godot.StringName stateName) => m_states.TryGetValue(stateName, out var state) ? state : null;
 
     public void ForceTransition(StringName p_targetStateName)
     {

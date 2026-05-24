@@ -9,6 +9,19 @@ public partial class Lancer : MeleeAggressiveNpcBase
     [Export] public float DashSpeedMultiplier { get; set; } = 3.0f;
     [Export] public float DashThreshold { get; set; } = 150.0f;
 
+    protected override Godot.StringName GetCombatDecisionState(float distanceSquared, float attackRangeSquared)
+    {
+        if (distanceSquared <= attackRangeSquared)
+        {
+            return IslandSurvivor.Logic.StateMachine.StateConstants.AttackStateName;
+        }
+        if (distanceSquared < DashThreshold * DashThreshold)
+        {
+            return IslandSurvivor.Logic.StateMachine.StateConstants.ChaseStateName;
+        }
+        return new Godot.StringName("LancerRepositionState");
+    }
+
     public override void _Ready()
     {
         base._Ready();

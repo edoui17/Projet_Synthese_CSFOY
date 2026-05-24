@@ -90,11 +90,11 @@ public partial class ChaseState : State
 
                     if (isRanged)
                     {
-                        inAttackRange = distSquared <= StateMachine.MaxAttackRange * StateMachine.MaxAttackRange;
+                        inAttackRange = distSquared <= ((IslandSurvivor.Scenes.NPC.Aggressive.AggressiveNpcBase)NpcContext).MaxAttackRange * ((IslandSurvivor.Scenes.NPC.Aggressive.AggressiveNpcBase)NpcContext).MaxAttackRange;
                     }
                     else
                     {
-                        inAttackRange = distSquared <= StateMachine.AttackRange * StateMachine.AttackRange;
+                        inAttackRange = distSquared <= ((IslandSurvivor.Scenes.NPC.Aggressive.AggressiveNpcBase)NpcContext).AttackRange * ((IslandSurvivor.Scenes.NPC.Aggressive.AggressiveNpcBase)NpcContext).AttackRange;
                     }
 
                     if (inAttackRange)

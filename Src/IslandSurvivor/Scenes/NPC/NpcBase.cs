@@ -36,6 +36,11 @@ public partial class NpcBase : CharacterBody2D, INpc, IDamageable
 
     public virtual string CurrentState => m_stateMachine?.CurrentState?.Name ?? "";
 
+    public virtual Godot.StringName GetDecisionState(Node2D target)
+    {
+        return IslandSurvivor.Logic.StateMachine.StateConstants.IdleStateName;
+    }
+
     public override void _Ready()
     {
         base._Ready();

@@ -14,6 +14,12 @@ public partial class BossBase : AggressiveNpcBase
     protected Area2D? m_hitboxAreaRight;
     protected Area2D? m_hitboxAreaLeft;
 
+    protected override Godot.StringName GetCombatDecisionState(float distanceSquared, float attackRangeSquared)
+    {
+        // Future boss phases and AoE cooldown logic will be injected here.
+        return base.GetCombatDecisionState(distanceSquared, attackRangeSquared);
+    }
+
     public override void _Ready()
     {
         base._Ready();
