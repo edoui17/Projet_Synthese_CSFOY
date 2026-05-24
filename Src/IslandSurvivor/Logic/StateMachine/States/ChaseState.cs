@@ -7,7 +7,7 @@ public partial class ChaseState : State
 {
     [ExportGroup("State Configuration")]
     [Export] public float ChaseSpeed { get; set; } = 120.0f;
-    [Export] public float AttackRange { get; set; } = 40.0f;
+    [Export] public float AttackRange { get; set; } = 60.0f;
     [Export] public float LoseInterestRange { get; set; } = 100.0f;
     [Export] public float GuardChance { get; set; } = 0.5f;
 
