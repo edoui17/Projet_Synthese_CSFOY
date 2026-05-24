@@ -11,6 +11,8 @@ public partial class StateMachine : State
     [ExportGroup("Combat Configuration")]
     [Export] public float AttackRange { get; set; } = 60.0f;
     [Export] public float GuardChance { get; set; } = 0.3f;
+    [Export] public float MinAttackRange { get; set; } = 40.0f;
+    [Export] public float MaxAttackRange { get; set; } = 150.0f;
 
     private Dictionary<StringName, State> m_states = new Dictionary<StringName, State>();
     private State? m_currentState;
@@ -168,6 +170,13 @@ public partial class StateMachine : State
                 }
                 break;
 
+            case "RepositionState":
+                if (p_reason == StateExitReason.Finished)
+                {
+                    nextStateName = new StringName("IdleState");
+                }
+                break;
+
             case "GuardState":
                 nextStateName = GetPostGuardState();
                 break;
@@ -212,6 +221,22 @@ public partial class StateMachine : State
 
     private StringName GetCombatDecisionState()
     {
+        if (NpcContext is IslandSurvivor.Scenes.NPC.Aggressive.RangedAggressiveNpcBase rangedNpc)
+        {
+            var target = rangedNpc.GetTarget();
+            if (target != null)
+            {
+                float distSquared = NpcContext.GlobalPosition.DistanceSquaredTo(target.GlobalPosition);
+                if (distSquared < MinAttackRange * MinAttackRange)
+                {
+                    if (m_states.ContainsKey(new StringName("RepositionState")))
+                    {
+                        return new StringName("RepositionState");
+                    }
+                }
+            }
+        }
+
         var attackController = NpcContext.GetNodeOrNull<IslandSurvivor.Nodes.Combat.AttackController>("AttackController");
 
         if (attackController != null && attackController.CanAttack)

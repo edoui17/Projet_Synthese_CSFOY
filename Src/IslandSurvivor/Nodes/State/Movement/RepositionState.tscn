@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://c111reposition"]
+
+[ext_resource type="Script" uid="uid://c222reposition" path="res://Logic/StateMachine/States/RepositionState.cs" id="1_4n2g3"]
+
+[node name="RepositionState" type="Node"]
+script = ExtResource("1_4n2g3")
