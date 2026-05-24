@@ -34,6 +34,8 @@ public partial class NpcBase : CharacterBody2D, INpc, IDamageable
     protected object? m_lastAttacker = null;
     protected bool m_wasKilledByPlayer = false;
 
+    public object? LastAttacker => m_lastAttacker;
+
     public virtual string CurrentState => m_stateMachine?.CurrentState?.Name ?? "";
 
     public virtual Godot.StringName GetDecisionState(Node2D target)
