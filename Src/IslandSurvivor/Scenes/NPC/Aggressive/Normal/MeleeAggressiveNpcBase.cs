@@ -4,6 +4,8 @@ using Godot;
 
 public partial class MeleeAggressiveNpcBase : AggressiveNpcBase
 {
+    public override bool CanGuard => !m_isGuarding && m_guardCooldownTimer <= 0.0f;
+
     protected Area2D? m_hitboxAreaRight;
     protected Area2D? m_hitboxAreaLeft;
     protected Area2D? m_hitboxAreaUp;

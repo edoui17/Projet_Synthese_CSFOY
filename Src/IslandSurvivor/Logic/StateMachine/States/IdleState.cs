@@ -67,17 +67,16 @@ public partial class IdleState : State
                 if (target != null)
                 {
                     float distSquared = NpcContext.GlobalPosition.DistanceSquaredTo(target.GlobalPosition);
-
                     bool isRanged = NpcContext is IslandSurvivor.Scenes.NPC.Aggressive.RangedAggressiveNpcBase;
                     float checkRange = isRanged ? StateMachine.MaxAttackRange : StateMachine.AttackRange;
 
                     if (distSquared <= checkRange * checkRange)
                     {
                         var attackController = NpcContext.GetNodeOrNull<IslandSurvivor.Nodes.Combat.AttackController>("AttackController");
-                        bool canAttack = attackController != null && attackController.CanAttack;
-                        bool canGuard = aggressiveNpc.CanGuard;
+                        bool isAttackCooldownReady = attackController != null && attackController.CanAttack;
 
-                        if (canAttack || canGuard)
+                        // Let the StateMachine evaluate if it can guard or attack. We just notify that we are ready to transition.
+                        if (isAttackCooldownReady || m_timer <= 0)
                         {
                             m_hasCompleted = true;
                             CompleteState(StateExitReason.CooldownFinished);
