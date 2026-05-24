@@ -94,10 +94,10 @@ public partial class StateMachine : State
 
         switch (p_sourceState.Name.ToString())
         {
-            case "IdleState":
+            case StateConstants.IdleState:
                 if (p_reason == StateExitReason.TargetDetected)
                 {
-                    nextStateName = new StringName("ChaseState");
+                    nextStateName = StateConstants.ChaseStateName;
                 }
                 else if (p_reason == StateExitReason.CooldownFinished)
                 {
@@ -105,10 +105,10 @@ public partial class StateMachine : State
                 }
                 break;
 
-            case "ChaseState":
+            case StateConstants.ChaseState:
                 if (p_reason == StateExitReason.TargetLost)
                 {
-                    nextStateName = new StringName("IdleState");
+                    nextStateName = StateConstants.IdleStateName;
                 }
                 else if (p_reason == StateExitReason.TargetReached)
                 {
@@ -116,7 +116,7 @@ public partial class StateMachine : State
                 }
                 break;
 
-            case "AttackState":
+            case StateConstants.AttackState:
                 if (NpcContext is IslandSurvivor.Scenes.NPC.Aggressive.AggressiveNpcBase aggNpc)
                 {
                     var target = aggNpc.GetTarget();
@@ -126,56 +126,56 @@ public partial class StateMachine : State
                     }
                     else
                     {
-                        nextStateName = new StringName("IdleState");
+                        nextStateName = StateConstants.IdleStateName;
                     }
                 }
                 else
                 {
-                    nextStateName = new StringName("IdleState");
+                    nextStateName = StateConstants.IdleStateName;
                 }
                 break;
 
-            case "WindUpState":
+            case StateConstants.WindUpState:
                 if (p_reason == StateExitReason.Finished)
                 {
-                    nextStateName = new StringName("DashState"); // Or "AttackState", depending on the NPC. Lancer uses DashState after WindUp. Wait, this needs to be specific.
+                    nextStateName = StateConstants.DashStateName; // Or "AttackState", depending on the NPC. Lancer uses DashState after WindUp. Wait, this needs to be specific.
                     // For the Lancer, WindUp goes to DashState.
                     // Let's assume it goes to AttackState by default, but if it has DashState, it goes to DashState?
                     // Let me check if DashState is present.
-                    if (m_states.ContainsKey(new StringName("DashState")))
-                        nextStateName = new StringName("DashState");
+                    if (m_states.ContainsKey(StateConstants.DashStateName))
+                        nextStateName = StateConstants.DashStateName;
                     else
-                        nextStateName = new StringName("AttackState");
+                        nextStateName = StateConstants.AttackStateName;
                 }
                 break;
 
-            case "DashState":
-                nextStateName = new StringName("RecoveryState");
+            case StateConstants.DashState:
+                nextStateName = StateConstants.RecoveryStateName;
                 break;
 
-            case "RecoveryState":
-                nextStateName = new StringName("IdleState");
+            case StateConstants.RecoveryState:
+                nextStateName = StateConstants.IdleStateName;
                 break;
 
-            case "FleeState":
+            case StateConstants.FleeState:
                 if (p_reason == StateExitReason.Finished)
                 {
-                    nextStateName = new StringName("IdleState");
+                    nextStateName = StateConstants.IdleStateName;
                 }
                 break;
 
-            case "RepositionState":
+            case StateConstants.RepositionState:
                 if (p_reason == StateExitReason.Finished)
                 {
-                    nextStateName = new StringName("IdleState");
+                    nextStateName = StateConstants.IdleStateName;
                 }
                 break;
 
-            case "GuardState":
+            case StateConstants.GuardState:
                 nextStateName = GetPostGuardState();
                 break;
 
-            case "DeathState":
+            case StateConstants.DeathState:
                 // No transitions out of DeathState
                 return;
         }
@@ -200,11 +200,11 @@ public partial class StateMachine : State
     private StringName GetPostGuardState()
     {
         if (NpcContext is not IslandSurvivor.Scenes.NPC.Aggressive.AggressiveNpcBase aggNpcGuard)
-            return new StringName("IdleState");
+            return StateConstants.IdleStateName;
 
         var target = aggNpcGuard.GetTarget();
         if (target == null)
-            return new StringName("IdleState");
+            return StateConstants.IdleStateName;
 
         return GetCombatDecisionState();
     }
@@ -213,11 +213,11 @@ public partial class StateMachine : State
     {
         var aggressiveNpc = NpcContext as IslandSurvivor.Scenes.NPC.Aggressive.AggressiveNpcBase;
         if (aggressiveNpc == null)
-            return new StringName("IdleState");
+            return StateConstants.IdleStateName;
 
         var target = aggressiveNpc.GetTarget();
         if (target == null)
-            return new StringName("IdleState");
+            return StateConstants.IdleStateName;
 
         float distSquared = NpcContext.GlobalPosition.DistanceSquaredTo(target.GlobalPosition);
         bool isRanged = NpcContext is IslandSurvivor.Scenes.NPC.Aggressive.RangedAggressiveNpcBase;
@@ -225,16 +225,16 @@ public partial class StateMachine : State
 
         if (distSquared > checkRange * checkRange)
         {
-            return new StringName("ChaseState");
+            return StateConstants.ChaseStateName;
         }
 
         if (isRanged)
         {
             if (distSquared < MinAttackRange * MinAttackRange)
             {
-                if (m_states.ContainsKey(new StringName("RepositionState")))
+                if (m_states.ContainsKey(StateConstants.RepositionStateName))
                 {
-                    return new StringName("RepositionState");
+                    return StateConstants.RepositionStateName;
                 }
             }
         }
@@ -245,20 +245,20 @@ public partial class StateMachine : State
         {
             if (aggressiveNpc.CanGuard && GD.Randf() <= GuardChance)
             {
-                return new StringName("GuardState");
+                return StateConstants.GuardStateName;
             }
 
-            return new StringName("AttackState");
+            return StateConstants.AttackStateName;
         }
         else
         {
             if (aggressiveNpc.CanGuard)
             {
-                return new StringName("GuardState");
+                return StateConstants.GuardStateName;
             }
             else
             {
-                return new StringName("IdleState");
+                return StateConstants.IdleStateName;
             }
         }
     }
