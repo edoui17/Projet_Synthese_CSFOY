@@ -7,7 +7,6 @@ public partial class IdleState : State
 {
     [ExportGroup("State Configuration")]
     [Export] public float WaitTime { get; set; } = 2.0f;
-    [Export] public string TargetStateOnDetect { get; set; } = "ChaseState";
 
     [ExportGroup("State Animations")]
     [Export] public string AnimationName { get; set; } = "Idle";
@@ -59,7 +58,7 @@ public partial class IdleState : State
         {
             if (aggressiveNpc.HasTargetAndLineOfSight())
             {
-                TransitionTo(TargetStateOnDetect);
+                CompleteState(StateExitReason.TargetDetected);
                 return;
             }
         }

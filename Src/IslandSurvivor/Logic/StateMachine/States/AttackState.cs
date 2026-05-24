@@ -6,7 +6,6 @@ using Godot;
 public partial class AttackState : State
 {
     [Export] public string AttackAnimationName { get; set; } = "Attack";
-    [Export] public string NextState { get; set; } = "ChaseState";
 
     private IslandSurvivor.Nodes.Combat.AttackController m_attackController = null!;
     private Sprite2D m_sprite = null!;
@@ -83,7 +82,7 @@ public partial class AttackState : State
         }
         else
         {
-            TransitionTo(NextState);
+            CompleteState(StateExitReason.Finished);
         }
     }
 
@@ -93,12 +92,12 @@ public partial class AttackState : State
         {
             if (!m_attackController.IsAttacking)
             {
-                TransitionTo(NextState);
+                CompleteState(StateExitReason.Finished);
             }
         }
         else
         {
-            TransitionTo(NextState);
+            CompleteState(StateExitReason.Finished);
         }
     }
 }

@@ -9,9 +9,6 @@ public partial class ChaseState : State
     [Export] public float ChaseSpeed { get; set; } = 120.0f;
     [Export] public float AttackRange { get; set; } = 40.0f;
     [Export] public float LoseInterestRange { get; set; } = 100.0f;
-    [Export] public string TargetStateOnStop { get; set; } = "AttackState";
-    [Export] public string TargetStateOnLoseSight { get; set; } = "IdleState";
-    [Export] public string GuardStateName { get; set; } = "GuardState";
     [Export] public float GuardChance { get; set; } = 0.5f;
 
     [ExportGroup("State Animations")]
@@ -55,7 +52,7 @@ public partial class ChaseState : State
             if (!aggressiveNpc.HasTargetAndLineOfSight())
             {
                 aggressiveNpc.Velocity = Vector2.Zero;
-                TransitionTo(TargetStateOnLoseSight);
+                CompleteState(StateExitReason.TargetLost);
                 return;
             }
 
@@ -67,23 +64,12 @@ public partial class ChaseState : State
                 if (distSquared > LoseInterestRange * LoseInterestRange)
                 {
                     aggressiveNpc.Velocity = Vector2.Zero;
-                    TransitionTo(TargetStateOnLoseSight);
+                    CompleteState(StateExitReason.TargetLost);
                 }
                 else if (distSquared <= AttackRange * AttackRange)
                 {
                     aggressiveNpc.Velocity = Vector2.Zero;
-
-                    if (aggressiveNpc.CanGuard)
-                    {
-                        float roll = (float)GD.Randf();
-                        if (roll <= GuardChance)
-                        {
-                            TransitionTo(GuardStateName);
-                            return;
-                        }
-                    }
-
-                    TransitionTo(TargetStateOnStop);
+                    CompleteState(StateExitReason.TargetReached);
                 }
                 else
                 {

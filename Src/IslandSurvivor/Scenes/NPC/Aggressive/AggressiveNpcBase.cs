@@ -25,6 +25,8 @@ public partial class AggressiveNpcBase : NpcBase
     protected Sprite2D? m_sprite;
     protected AnimationPlayer? m_animationPlayer;
 
+    public Vector2 LockedDirection { get; set; } = Vector2.Zero;
+
     protected bool m_isGuarding = false;
     protected string m_guardDirection = "";
     protected float m_guardDamageMultiplier = 1.0f;

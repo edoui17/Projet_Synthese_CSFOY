@@ -8,8 +8,6 @@ public partial class DashState : State
     [ExportGroup("State Configuration")]
     [Export] public float DashSpeed { get; set; } = 400.0f;
     [Export] public float DashDuration { get; set; } = 0.5f;
-    [Export] public string TargetStateOnComplete { get; set; } = "RecoveryState";
-    [Export] public string TargetStateOnCollision { get; set; } = "RecoveryState";
 
     [ExportGroup("State Animations")]
     [Export] public string AnimationName { get; set; } = "Dash";
@@ -41,25 +39,24 @@ public partial class DashState : State
             }
         }
 
-        // Try to get the locked direction from the WindUpState if it exists in the same StateMachine
-        var windUpState = StateMachine.GetNodeOrNull<WindUpState>("WindUpState");
-        if (windUpState != null && windUpState.LockedDirection != Vector2.Zero)
+        if (NpcContext is IslandSurvivor.Scenes.NPC.Aggressive.AggressiveNpcBase aggNpc)
         {
-            m_dashDirection = windUpState.LockedDirection;
-        }
-        else if (NpcContext is IslandSurvivor.Scenes.NPC.Aggressive.AggressiveNpcBase aggNpc)
-        {
-            // Fallback: calculate direction now if no WindUp state provided it
-            var target = aggNpc.GetTarget();
-            if (target != null)
+            if (aggNpc.LockedDirection != Vector2.Zero)
             {
-                m_dashDirection = (target.GlobalPosition - NpcContext.GlobalPosition).Normalized();
+                m_dashDirection = aggNpc.LockedDirection;
             }
             else
             {
-                // Failsafe: dash forward based on facing direction
-                var sprite = NpcContext.GetNodeOrNull<Sprite2D>("Sprite2D");
-                m_dashDirection = (sprite != null && sprite.FlipH) ? Vector2.Left : Vector2.Right;
+                var target = aggNpc.GetTarget();
+                if (target != null)
+                {
+                    m_dashDirection = (target.GlobalPosition - NpcContext.GlobalPosition).Normalized();
+                }
+                else
+                {
+                    var sprite = NpcContext.GetNodeOrNull<Sprite2D>("Sprite2D");
+                    m_dashDirection = (sprite != null && sprite.FlipH) ? Vector2.Left : Vector2.Right;
+                }
             }
         }
 
@@ -84,7 +81,7 @@ public partial class DashState : State
 
         if (m_timer <= 0)
         {
-            TransitionTo(TargetStateOnComplete);
+            CompleteState(StateExitReason.Finished);
             return;
         }
 
@@ -109,7 +106,7 @@ public partial class DashState : State
                     KinematicCollision2D collision = npc.GetSlideCollision(i);
                     if (collision.GetCollider() is StaticBody2D or TileMapLayer)
                     {
-                        TransitionTo(TargetStateOnCollision);
+                        CompleteState(StateExitReason.CollisionDetected);
                         return;
                     }
                 }

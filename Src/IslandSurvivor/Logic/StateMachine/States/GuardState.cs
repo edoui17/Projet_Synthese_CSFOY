@@ -9,7 +9,6 @@ public partial class GuardState : State
     [Export] public float GuardDuration { get; set; } = 1.0f;
     [Export] public float GuardCooldown { get; set; } = 5.0f;
     [Export] public float DamageMultiplier { get; set; } = 0.0f; // 0 means take 0 damage, 1 means full damage
-    [Export] public string NextState { get; set; } = "ChaseState";
 
     [ExportGroup("Guard Animations")]
     [Export] public string GuardAnimationName { get; set; } = "Guard";
@@ -111,7 +110,7 @@ public partial class GuardState : State
 
         if (m_guardTimer <= 0)
         {
-            TransitionTo(NextState);
+            CompleteState(StateExitReason.Finished);
         }
     }
 }
