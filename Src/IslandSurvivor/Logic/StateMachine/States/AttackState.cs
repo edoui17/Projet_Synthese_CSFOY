@@ -35,7 +35,9 @@ public partial class AttackState : State
                 var target = aggNpc.GetTarget();
                 if (target != null)
                 {
-                    Vector2 toTarget = target.GlobalPosition - NpcContext.GlobalPosition;
+                    Vector2 toTarget = aggNpc.LockedDirection != Vector2.Zero
+                        ? aggNpc.LockedDirection
+                        : (target.GlobalPosition - NpcContext.GlobalPosition).Normalized();
 
                     if (System.Math.Abs(toTarget.Y) > System.Math.Abs(toTarget.X))
                     {
