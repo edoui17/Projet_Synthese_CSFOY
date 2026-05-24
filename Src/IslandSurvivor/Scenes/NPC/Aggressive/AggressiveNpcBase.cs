@@ -31,8 +31,8 @@ public partial class AggressiveNpcBase : NpcBase
     protected string m_guardDirection = "";
     protected float m_guardDamageMultiplier = 1.0f;
     protected float m_guardCooldownTimer = 0.0f;
-    [ExportGroup("Combat Properties")]
-    [Export] public virtual bool CanGuard { get; set; } = false;
+
+    public virtual bool CanGuard => false;
 
     public void SetGuardState(bool isGuarding, string direction, float multiplier)
     {

@@ -18,7 +18,6 @@ public partial class StateMachine : State
 
     private Dictionary<StringName, State> m_states = new Dictionary<StringName, State>();
     private State? m_currentState;
-    private double m_timeInCurrentState = 0;
 
     public State? CurrentState => m_currentState;
 
@@ -66,7 +65,6 @@ public partial class StateMachine : State
     public override void Enter()
     {
         m_currentState?.Enter();
-        m_timeInCurrentState = 0;
     }
 
     public override void Exit()
@@ -74,14 +72,12 @@ public partial class StateMachine : State
         if (m_currentState != null)
         {
             m_currentState.Exit();
-            m_timeInCurrentState = 0;
             m_currentState = null;
         }
     }
 
     public override void Update(double p_delta)
     {
-        m_timeInCurrentState += p_delta;
         m_currentState?.Update(p_delta);
     }
 
@@ -92,17 +88,6 @@ public partial class StateMachine : State
 
     private void OnStateFinished(State p_sourceState, StateExitReason p_reason)
     {
-        // Prevent frame-thrashing crashes by enforcing a minimum state duration
-        if (m_timeInCurrentState < 0.1)
-        {
-            if (NpcContext != null && Engine.IsEditorHint() == false)
-            {
-                GD.PushWarning($"[Frame: {Engine.GetPhysicsFrames()}] [{NpcContext.Name}] [StateMachine] Thrashing prevented: State {m_currentState?.Name} finished in {m_timeInCurrentState}s.");
-            }
-            ForceTransition(StateConstants.IdleStateName);
-            return;
-        }
-
         if (p_sourceState != m_currentState) return;
 
         StringName nextStateName = null;
@@ -356,7 +341,6 @@ public partial class StateMachine : State
 
         m_currentState?.Exit();
         m_currentState = m_states[p_targetStateName];
-        m_timeInCurrentState = 0;
         m_currentState.Enter();
     }
 }
