@@ -528,6 +528,7 @@ InitialState = NodePath("IdleState")
 [node name="IdleState" parent="StateMachine" index="0" unique_id=1934142247 instance=ExtResource("state_IdleState")]
 
 [node name="ChaseState" parent="StateMachine" index="1" unique_id=1630270298 instance=ExtResource("state_ChaseState")]
+LoseInterestRange = 500.0
 
 [node name="AttackState" parent="StateMachine" index="2" unique_id=1708810746 instance=ExtResource("state_AttackState")]
 
