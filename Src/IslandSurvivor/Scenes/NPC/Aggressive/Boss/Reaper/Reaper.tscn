@@ -12,6 +12,7 @@
 [ext_resource type="PackedScene" uid="uid://tv17dq11ra3eo" path="res://Nodes/State/Combat/AttackState.tscn" id="state_AttackState"]
 [ext_resource type="PackedScene" uid="uid://knhcnif6felbl" path="res://Nodes/State/Combat/RecoveryState.tscn" id="state_RecoveryState"]
 [ext_resource type="PackedScene" uid="uid://sl1st4eaw0nji" path="res://Nodes/State/Core/DeathState.tscn" id="state_DeathState"]
+[ext_resource type="PackedScene" uid="uid://a866a9c1b5164" path="res://Nodes/State/Movement/WanderState.tscn" id="state_WanderState"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_c0sqb"]
 atlas = ExtResource("2_dp46e")
@@ -721,6 +722,7 @@ scale = Vector2(-1, 1)
 polygon = PackedVector2Array(45, -96, 93, -61, 113, -13, 116, 44, 98, 74, 45, 74)
 
 [node name="IdleState" parent="StateMachine" instance=ExtResource("state_IdleState")]
+[node name="WanderState" parent="StateMachine" instance=ExtResource("state_WanderState")]
 [node name="ChaseState" parent="StateMachine" instance=ExtResource("state_ChaseState")]
 [node name="WindUpState" parent="StateMachine" instance=ExtResource("state_WindUpState")]
 NextStateAfterWindup = "AttackState"

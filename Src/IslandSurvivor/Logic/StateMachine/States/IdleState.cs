@@ -7,15 +7,19 @@ public partial class IdleState : State
 {
     [ExportGroup("State Configuration")]
     [Export] public float WaitTime { get; set; } = 2.0f;
+    [Export] public float WanderCooldown { get; set; } = 3.0f;
 
     [ExportGroup("State Animations")]
     [Export] public string AnimationName { get; set; } = "Idle";
     [Export] public string FallbackAnimationName { get; set; } = "Error";
 
     private float m_timer;
+    private float m_wanderTimer;
     private AnimationPlayer? m_animationPlayer;
     private Sprite2D? m_sprite;
     private bool m_hasCompleted = false;
+
+    public bool IsWanderCooldownElapsed => m_wanderTimer <= 0;
 
     public override void Initialize(StateMachine p_stateMachine, CharacterBody2D p_npcContext)
     {
@@ -28,6 +32,7 @@ public partial class IdleState : State
     {
         base.Enter();
         m_timer = WaitTime;
+        m_wanderTimer = WanderCooldown;
         m_hasCompleted = false;
 
         if (m_animationPlayer != null)
@@ -58,6 +63,8 @@ public partial class IdleState : State
         if (m_hasCompleted) return;
 
         m_timer -= (float)p_delta;
+
+        m_wanderTimer -= (float)p_delta;
 
         if (NpcContext is IslandSurvivor.Scenes.NPC.Aggressive.AggressiveNpcBase aggressiveNpc)
         {
@@ -95,6 +102,12 @@ public partial class IdleState : State
 
         if (m_timer <= 0)
         {
+            if (IsWanderCooldownElapsed)
+            {
+                m_hasCompleted = true;
+                CompleteState(StateExitReason.Finished);
+                return;
+            }
             m_timer = WaitTime;
         }
     }
