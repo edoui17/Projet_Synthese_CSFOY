@@ -140,6 +140,11 @@ public partial class AttackController : Node
 
         m_currentActiveArea = area;
 
+        if (m_animationPlayer != null && !string.IsNullOrEmpty(AttackAnimationName))
+        {
+            m_animationPlayer.Play(AttackAnimationName);
+        }
+
         EmitSignal(SignalName.AttackStarted);
         return true;
     }
