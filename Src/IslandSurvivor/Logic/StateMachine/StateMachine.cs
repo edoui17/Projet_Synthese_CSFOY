@@ -265,10 +265,18 @@ public partial class StateMachine : State
 
     public void ForceTransition(string p_targetStateName)
     {
-        if (!m_states.ContainsKey(new StringName(p_targetStateName))) return;
+        StringName targetName = new StringName(p_targetStateName);
+        if (!m_states.ContainsKey(targetName)) return;
+
+        if (m_currentState?.Name == targetName)
+        {
+            m_currentState.Exit();
+            m_currentState.Enter();
+            return;
+        }
 
         m_currentState?.Exit();
-        m_currentState = m_states[new StringName(p_targetStateName)];
+        m_currentState = m_states[targetName];
         m_currentState.Enter();
     }
 }

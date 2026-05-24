@@ -15,6 +15,7 @@ public partial class IdleState : State
     private float m_timer;
     private AnimationPlayer? m_animationPlayer;
     private Sprite2D? m_sprite;
+    private bool m_hasCompleted = false;
 
     public override void Initialize(StateMachine p_stateMachine, CharacterBody2D p_npcContext)
     {
@@ -27,6 +28,7 @@ public partial class IdleState : State
     {
         base.Enter();
         m_timer = WaitTime;
+        m_hasCompleted = false;
 
         if (m_animationPlayer != null)
         {
@@ -53,6 +55,8 @@ public partial class IdleState : State
 
     public override void Update(double p_delta)
     {
+        if (m_hasCompleted) return;
+
         m_timer -= (float)p_delta;
 
         if (NpcContext is IslandSurvivor.Scenes.NPC.Aggressive.AggressiveNpcBase aggressiveNpc)
@@ -75,12 +79,14 @@ public partial class IdleState : State
 
                         if (canAttack || canGuard)
                         {
+                            m_hasCompleted = true;
                             CompleteState(StateExitReason.CooldownFinished);
                             return;
                         }
                     }
                     else
                     {
+                        m_hasCompleted = true;
                         CompleteState(StateExitReason.TargetDetected);
                         return;
                     }
