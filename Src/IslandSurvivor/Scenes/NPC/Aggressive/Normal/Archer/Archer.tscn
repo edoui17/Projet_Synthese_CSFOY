@@ -549,17 +549,17 @@ libraries/ = SubResource("AnimationLibrary_do8kw")
 [node name="StateMachine" parent="." index="10" unique_id=402971195 node_paths=PackedStringArray("InitialState")]
 InitialState = NodePath("IdleState")
 
-[node name="IdleState" parent="StateMachine" index="0" unique_id=287227327 instance=ExtResource("state_IdleState")]
+[node name="IdleState" parent="StateMachine" index="0"]
 
-[node name="WanderState" parent="StateMachine" instance=ExtResource("state_WanderState")]
+[node name="WanderState" parent="StateMachine" index="1"]
 
-[node name="ChaseState" parent="StateMachine" index="1" unique_id=553646532 instance=ExtResource("state_ChaseState")]
+[node name="ChaseState" parent="StateMachine" index="2"]
 LoseInterestRange = 600.0
 
-[node name="WindUpState" parent="StateMachine" index="2" unique_id=1275579956 instance=ExtResource("state_WindUpState")]
+[node name="WindUpState" parent="StateMachine" index="3"]
 
-[node name="AttackState" parent="StateMachine" index="3" unique_id=1764309944 instance=ExtResource("state_AttackState")]
+[node name="AttackState" parent="StateMachine" index="4"]
 
-[node name="DeathState" parent="StateMachine" index="4" unique_id=1320812656 instance=ExtResource("state_DeathState")]
+[node name="DeathState" parent="StateMachine" index="6"]
 
-[node name="RepositionState" parent="StateMachine" index="5" unique_id=999999999 instance=ExtResource("state_RepositionState")]
+[node name="RepositionState" parent="StateMachine" index="7"]

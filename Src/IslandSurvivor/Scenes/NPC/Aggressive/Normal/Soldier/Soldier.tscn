@@ -579,16 +579,16 @@ libraries/ = SubResource("AnimationLibrary_kuixf")
 [node name="StateMachine" parent="." index="12" unique_id=402971195 node_paths=PackedStringArray("InitialState")]
 InitialState = NodePath("IdleState")
 
-[node name="IdleState" parent="StateMachine" index="0" unique_id=1934142247 instance=ExtResource("state_IdleState")]
+[node name="IdleState" parent="StateMachine" index="0"]
 
-[node name="WanderState" parent="StateMachine" instance=ExtResource("state_WanderState")]
+[node name="WanderState" parent="StateMachine" index="1"]
 
-[node name="ChaseState" parent="StateMachine" index="1" unique_id=1630270298 instance=ExtResource("state_ChaseState")]
+[node name="ChaseState" parent="StateMachine" index="2"]
 LoseInterestRange = 500.0
 
-[node name="AttackState" parent="StateMachine" index="2" unique_id=1708810746 instance=ExtResource("state_AttackState")]
+[node name="AttackState" parent="StateMachine" index="4"]
 
-[node name="DeathState" parent="StateMachine" index="3" unique_id=679989419 instance=ExtResource("state_DeathState")]
+[node name="DeathState" parent="StateMachine" index="6"]
 
 [node name="GuardState" type="Node" parent="StateMachine" index="4" unique_id=987654321]
 script = ExtResource("state_GuardState")

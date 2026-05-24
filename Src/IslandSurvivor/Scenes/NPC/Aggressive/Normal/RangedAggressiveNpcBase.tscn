@@ -6,6 +6,8 @@
 
 
 
+
+[ext_resource type="PackedScene" path="res://Nodes/State/Core/States/RepositionState.tscn" id="state_RepositionState"]
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_hitbox_ranged"]
 radius = 21.986078
 height = 70.16913
@@ -25,3 +27,7 @@ shape = SubResource("CapsuleShape2D_hitbox_ranged")
 
 [node name="ProjectileSpawnPosition" type="Marker2D" parent="." index="8"]
 position = Vector2(15, 0)
+
+[node name="StateMachine" parent="." index="9"]
+
+[node name="RepositionState" parent="StateMachine" index="7" instance=ExtResource("state_RepositionState")]
