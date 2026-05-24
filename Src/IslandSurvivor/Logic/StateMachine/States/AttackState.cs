@@ -40,9 +40,9 @@ public partial class AttackState : State
                 var target = aggNpc.GetTarget();
                 if (target != null)
                 {
-                    Vector2 toTarget = aggNpc.LockedDirection != Vector2.Zero
-                        ? aggNpc.LockedDirection
-                        : (target.GlobalPosition - NpcContext.GlobalPosition).Normalized();
+                    // Lock direction toward target immediately to prevent jitter during attack animation
+                    aggNpc.LockedDirection = (target.GlobalPosition - NpcContext.GlobalPosition).Normalized();
+                    Vector2 toTarget = aggNpc.LockedDirection;
 
                     if (System.Math.Abs(toTarget.Y) > System.Math.Abs(toTarget.X))
                     {

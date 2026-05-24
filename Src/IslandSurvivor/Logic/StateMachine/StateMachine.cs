@@ -133,14 +133,7 @@ public partial class StateMachine : State
                     var target = aggNpc.GetTarget();
                     if (target != null)
                     {
-                        if (NpcContext is IslandSurvivor.Scenes.NPC.Aggressive.Normal.Lancer.Lancer)
-                        {
-                            nextStateName = new StringName("LancerRepositionState");
-                        }
-                        else
-                        {
-                            nextStateName = GetCombatDecisionState();
-                        }
+                        nextStateName = GetCombatDecisionState();
                     }
                     else
                     {
@@ -185,7 +178,7 @@ public partial class StateMachine : State
             case StateConstants.RepositionState:
                 if (p_reason == StateExitReason.Finished)
                 {
-                    if (NpcContext is IslandSurvivor.Scenes.NPC.Aggressive.Normal.Lancer.Lancer)
+                    if (NpcContext is IslandSurvivor.Scenes.NPC.Aggressive.Normal.Lancer.Lancer lancer)
                     {
                         nextStateName = StateConstants.DashStateName;
                     }
@@ -292,11 +285,15 @@ public partial class StateMachine : State
             }
         }
 
-        if (NpcContext is IslandSurvivor.Scenes.NPC.Aggressive.Normal.Lancer.Lancer)
+        if (NpcContext is IslandSurvivor.Scenes.NPC.Aggressive.Normal.Lancer.Lancer lancer)
         {
             if (distSquared <= checkRange * checkRange)
             {
                 return StateConstants.AttackStateName;
+            }
+            if (distSquared < lancer.DashThreshold * lancer.DashThreshold)
+            {
+                return StateConstants.ChaseStateName;
             }
             return new StringName("LancerRepositionState");
         }

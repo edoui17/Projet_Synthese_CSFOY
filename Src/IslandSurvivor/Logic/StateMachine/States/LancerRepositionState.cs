@@ -15,7 +15,7 @@ public partial class LancerRepositionState : RepositionState
             if (target != null)
             {
                 // Calculate dash vector directly toward the player
-                aggNpc.LockedDirection = (target.GlobalPosition - NpcContext.GlobalPosition).Normalized();
+                aggNpc.LockedDirection = (target.GlobalPosition - NpcContext.GlobalPosition).Normalized(); // Pre-calculate perfectly toward player
             }
             else
             {
