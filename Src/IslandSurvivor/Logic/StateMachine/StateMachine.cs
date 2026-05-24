@@ -248,7 +248,7 @@ public partial class StateMachine : State
 
         if (attackController != null && attackController.CanAttack)
         {
-            if (aggressiveNpc.CanGuard && GD.Randf() <= GuardChance)
+            if (NpcContext is IslandSurvivor.Scenes.NPC.Aggressive.MeleeAggressiveNpcBase meleeNpc && meleeNpc.CanGuard && GD.Randf() <= GuardChance)
             {
                 return StateConstants.GuardStateName;
             }
@@ -257,7 +257,7 @@ public partial class StateMachine : State
         }
         else
         {
-            if (aggressiveNpc.CanGuard)
+            if (NpcContext is IslandSurvivor.Scenes.NPC.Aggressive.MeleeAggressiveNpcBase meleeNpc2 && meleeNpc2.CanGuard)
             {
                 return StateConstants.GuardStateName;
             }
