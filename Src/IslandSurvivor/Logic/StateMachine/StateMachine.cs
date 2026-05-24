@@ -153,7 +153,11 @@ public partial class StateMachine : State
                     if (target != null)
                     {
                         float distSquared = NpcContext.GlobalPosition.DistanceSquaredTo(target.GlobalPosition);
-                        if (distSquared <= AttackRange * AttackRange)
+
+                        bool isRanged = NpcContext is IslandSurvivor.Scenes.NPC.Aggressive.RangedAggressiveNpcBase;
+                        float checkRange = isRanged ? MaxAttackRange : AttackRange;
+
+                        if (distSquared <= checkRange * checkRange)
                         {
                             nextStateName = GetCombatDecisionState();
                         }
@@ -245,7 +249,11 @@ public partial class StateMachine : State
             return new StringName("IdleState");
 
         float distSquared = NpcContext.GlobalPosition.DistanceSquaredTo(target.GlobalPosition);
-        if (distSquared <= AttackRange * AttackRange)
+
+        bool isRanged = NpcContext is IslandSurvivor.Scenes.NPC.Aggressive.RangedAggressiveNpcBase;
+        float checkRange = isRanged ? MaxAttackRange : AttackRange;
+
+        if (distSquared <= checkRange * checkRange)
             return GetCombatDecisionState();
 
         return new StringName("ChaseState");
