@@ -63,7 +63,11 @@ public partial class IdleState : State
                 if (target != null)
                 {
                     float distSquared = NpcContext.GlobalPosition.DistanceSquaredTo(target.GlobalPosition);
-                    if (distSquared <= StateMachine.AttackRange * StateMachine.AttackRange)
+
+                    bool isRanged = NpcContext is IslandSurvivor.Scenes.NPC.Aggressive.RangedAggressiveNpcBase;
+                    float checkRange = isRanged ? StateMachine.MaxAttackRange : StateMachine.AttackRange;
+
+                    if (distSquared <= checkRange * checkRange)
                     {
                         var attackController = NpcContext.GetNodeOrNull<IslandSurvivor.Nodes.Combat.AttackController>("AttackController");
                         bool canAttack = attackController != null && attackController.CanAttack;
