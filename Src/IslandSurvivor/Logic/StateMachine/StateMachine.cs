@@ -94,6 +94,13 @@ public partial class StateMachine : State
 
         switch (p_sourceState.Name.ToString())
         {
+            case "LancerRepositionState":
+                if (p_reason == StateExitReason.Finished)
+                {
+                    nextStateName = StateConstants.DashStateName;
+                }
+                break;
+
             case StateConstants.IdleState:
                 if (p_reason == StateExitReason.TargetDetected)
                 {
@@ -171,7 +178,14 @@ public partial class StateMachine : State
             case StateConstants.RepositionState:
                 if (p_reason == StateExitReason.Finished)
                 {
-                    nextStateName = StateConstants.IdleStateName;
+                    if (NpcContext is IslandSurvivor.Scenes.NPC.Aggressive.Normal.Lancer.Lancer)
+                    {
+                        nextStateName = StateConstants.DashStateName;
+                    }
+                    else
+                    {
+                        nextStateName = StateConstants.IdleStateName;
+                    }
                 }
                 break;
 
@@ -269,6 +283,15 @@ public partial class StateMachine : State
             {
                 return StateConstants.RepositionStateName;
             }
+        }
+
+        if (NpcContext is IslandSurvivor.Scenes.NPC.Aggressive.Normal.Lancer.Lancer)
+        {
+            if (distSquared <= checkRange * checkRange)
+            {
+                return StateConstants.AttackStateName;
+            }
+            return StateConstants.RepositionStateName;
         }
 
         var attackController = NpcContext.GetNodeOrNull<IslandSurvivor.Nodes.Combat.AttackController>("AttackController");
