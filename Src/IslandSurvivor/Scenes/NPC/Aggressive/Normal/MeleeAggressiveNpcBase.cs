@@ -20,7 +20,7 @@ public partial class MeleeAggressiveNpcBase : AggressiveNpcBase
                 return IslandSurvivor.Logic.StateMachine.StateConstants.GuardStateName;
             }
 
-            return IslandSurvivor.Logic.StateMachine.StateConstants.AttackStateName;
+            return IslandSurvivor.Logic.StateMachine.StateConstants.WindUpStateName;
         }
         else
         {

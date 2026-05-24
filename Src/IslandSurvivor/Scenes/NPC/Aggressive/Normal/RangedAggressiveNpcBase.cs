@@ -28,7 +28,7 @@ public partial class RangedAggressiveNpcBase : AggressiveNpcBase
 
         if (m_attackController != null && m_attackController.CanAttack)
         {
-            return IslandSurvivor.Logic.StateMachine.StateConstants.AttackStateName;
+            return IslandSurvivor.Logic.StateMachine.StateConstants.WindUpStateName;
         }
 
         return IslandSurvivor.Logic.StateMachine.StateConstants.IdleStateName;

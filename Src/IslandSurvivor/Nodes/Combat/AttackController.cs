@@ -134,23 +134,18 @@ public partial class AttackController : Node
 
     if (!CanAttack) return false;
 
-    // 2. Validate dictionary access
-    if (!m_directionAreas.TryGetValue(p_direction, out Area2D? area))
-    {
-      GD.PrintErr($"CRITICAL: No hitbox registered for direction: {p_direction}");
-      return false;
-    }
-
-    // 3. Ensure the area exists before proceeding
-    if (!GodotObject.IsInstanceValid(area))
-    {
-      GD.PrintErr($"CRITICAL: Registered hitbox for {p_direction} is invalid!");
-      return false;
-    }
-
     IsAttacking = true;
     m_hitTargetsThisAttack.Clear();
-    m_currentActiveArea = area;
+
+    // 2. Try getting a registered hitbox. If none exist (e.g., Archer), that's fine.
+    if (m_directionAreas.TryGetValue(p_direction, out Area2D? area) && GodotObject.IsInstanceValid(area))
+    {
+      m_currentActiveArea = area;
+    }
+    else
+    {
+      m_currentActiveArea = null;
+    }
 
     // ... proceed with animation
     if (m_animationPlayer != null && !string.IsNullOrEmpty(AttackAnimationName))
@@ -164,9 +159,12 @@ public partial class AttackController : Node
   public void ExecuteAttackHit()
   {
     // Ensure we are still in a valid state
-    if (!IsAttacking || !GodotObject.IsInstanceValid(m_currentActiveArea)) return;
+    if (!IsAttacking) return;
 
     EmitSignal(SignalName.AttackActionTriggered);
+
+    // Ranged units or units without specific hitboxes will have m_currentActiveArea as null
+    if (!GodotObject.IsInstanceValid(m_currentActiveArea)) return;
 
     m_currentActiveArea.Monitoring = true;
 
