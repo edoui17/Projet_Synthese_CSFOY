@@ -122,28 +122,16 @@ public partial class StateMachine : State
                     var target = aggNpc.GetTarget();
                     if (target != null)
                     {
-                        float distSquared = NpcContext.GlobalPosition.DistanceSquaredTo(target.GlobalPosition);
-
-                        bool isRanged = NpcContext is IslandSurvivor.Scenes.NPC.Aggressive.RangedAggressiveNpcBase;
-                        float checkRange = isRanged ? MaxAttackRange : AttackRange;
-
-                        if (distSquared <= checkRange * checkRange)
-                        {
-                            nextStateName = GetCombatDecisionState();
-                        }
-                        else
-                        {
-                            nextStateName = new StringName("ChaseState");
-                        }
+                        nextStateName = GetCombatDecisionState();
                     }
                     else
                     {
-                        nextStateName = new StringName("ChaseState");
+                        nextStateName = new StringName("IdleState");
                     }
                 }
                 else
                 {
-                    nextStateName = new StringName("ChaseState");
+                    nextStateName = new StringName("IdleState");
                 }
                 break;
 
@@ -212,37 +200,41 @@ public partial class StateMachine : State
     private StringName GetPostGuardState()
     {
         if (NpcContext is not IslandSurvivor.Scenes.NPC.Aggressive.AggressiveNpcBase aggNpcGuard)
-            return new StringName("ChaseState");
+            return new StringName("IdleState");
 
         var target = aggNpcGuard.GetTarget();
         if (target == null)
             return new StringName("IdleState");
 
-        float distSquared = NpcContext.GlobalPosition.DistanceSquaredTo(target.GlobalPosition);
-
-        bool isRanged = NpcContext is IslandSurvivor.Scenes.NPC.Aggressive.RangedAggressiveNpcBase;
-        float checkRange = isRanged ? MaxAttackRange : AttackRange;
-
-        if (distSquared <= checkRange * checkRange)
-            return GetCombatDecisionState();
-
-        return new StringName("ChaseState");
+        return GetCombatDecisionState();
     }
 
     private StringName GetCombatDecisionState()
     {
-        if (NpcContext is IslandSurvivor.Scenes.NPC.Aggressive.RangedAggressiveNpcBase rangedNpc)
+        var aggressiveNpc = NpcContext as IslandSurvivor.Scenes.NPC.Aggressive.AggressiveNpcBase;
+        if (aggressiveNpc == null)
+            return new StringName("IdleState");
+
+        var target = aggressiveNpc.GetTarget();
+        if (target == null)
+            return new StringName("IdleState");
+
+        float distSquared = NpcContext.GlobalPosition.DistanceSquaredTo(target.GlobalPosition);
+        bool isRanged = NpcContext is IslandSurvivor.Scenes.NPC.Aggressive.RangedAggressiveNpcBase;
+        float checkRange = isRanged ? MaxAttackRange : AttackRange;
+
+        if (distSquared > checkRange * checkRange)
         {
-            var target = rangedNpc.GetTarget();
-            if (target != null)
+            return new StringName("ChaseState");
+        }
+
+        if (isRanged)
+        {
+            if (distSquared < MinAttackRange * MinAttackRange)
             {
-                float distSquared = NpcContext.GlobalPosition.DistanceSquaredTo(target.GlobalPosition);
-                if (distSquared < MinAttackRange * MinAttackRange)
+                if (m_states.ContainsKey(new StringName("RepositionState")))
                 {
-                    if (m_states.ContainsKey(new StringName("RepositionState")))
-                    {
-                        return new StringName("RepositionState");
-                    }
+                    return new StringName("RepositionState");
                 }
             }
         }
@@ -251,7 +243,7 @@ public partial class StateMachine : State
 
         if (attackController != null && attackController.CanAttack)
         {
-            if (NpcContext is IslandSurvivor.Scenes.NPC.Aggressive.AggressiveNpcBase aggressiveNpc && aggressiveNpc.CanGuard && GD.Randf() <= GuardChance)
+            if (aggressiveNpc.CanGuard && GD.Randf() <= GuardChance)
             {
                 return new StringName("GuardState");
             }
@@ -260,7 +252,7 @@ public partial class StateMachine : State
         }
         else
         {
-            if (NpcContext is IslandSurvivor.Scenes.NPC.Aggressive.AggressiveNpcBase aggNpc && aggNpc.CanGuard)
+            if (aggressiveNpc.CanGuard)
             {
                 return new StringName("GuardState");
             }
