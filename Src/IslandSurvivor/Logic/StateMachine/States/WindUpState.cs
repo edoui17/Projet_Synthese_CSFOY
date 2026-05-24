@@ -12,6 +12,8 @@ public partial class WindUpState : State
     [Export] public string AnimationName { get; set; } = "WindUp";
     [Export] public string FallbackAnimationName { get; set; } = "Idle";
 
+    public override bool IsActionState => true;
+
     private AnimationPlayer m_animationPlayer = null!;
     private float m_timer;
     private Sprite2D m_sprite = null!;

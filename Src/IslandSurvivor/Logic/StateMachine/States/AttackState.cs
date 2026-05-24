@@ -7,6 +7,8 @@ public partial class AttackState : State
 {
     [Export] public string AttackAnimationName { get; set; } = "Attack";
 
+    public override bool IsActionState => true;
+
     private IslandSurvivor.Nodes.Combat.AttackController m_attackController = null!;
     private Sprite2D m_sprite = null!;
     private bool m_hasCompleted = false;
