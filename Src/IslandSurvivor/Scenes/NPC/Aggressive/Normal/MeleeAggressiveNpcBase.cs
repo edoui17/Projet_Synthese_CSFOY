@@ -6,6 +6,8 @@ public partial class MeleeAggressiveNpcBase : AggressiveNpcBase
 {
     protected Area2D? m_hitboxAreaRight;
     protected Area2D? m_hitboxAreaLeft;
+    protected Area2D? m_hitboxAreaUp;
+    protected Area2D? m_hitboxAreaDown;
 
     public override void _Ready()
     {
@@ -13,6 +15,8 @@ public partial class MeleeAggressiveNpcBase : AggressiveNpcBase
 
         m_hitboxAreaRight = GetNodeOrNull<Area2D>("HitboxAreaRight");
         m_hitboxAreaLeft = GetNodeOrNull<Area2D>("HitboxAreaLeft");
+        m_hitboxAreaUp = GetNodeOrNull<Area2D>("HitboxAreaUp");
+        m_hitboxAreaDown = GetNodeOrNull<Area2D>("HitboxAreaDown");
 
         if (m_attackController != null)
         {
@@ -21,6 +25,8 @@ public partial class MeleeAggressiveNpcBase : AggressiveNpcBase
 
             if (m_hitboxAreaRight != null) m_attackController.RegisterArea("Right", m_hitboxAreaRight);
             if (m_hitboxAreaLeft != null) m_attackController.RegisterArea("Left", m_hitboxAreaLeft);
+            if (m_hitboxAreaUp != null) m_attackController.RegisterArea("Up", m_hitboxAreaUp);
+            if (m_hitboxAreaDown != null) m_attackController.RegisterArea("Down", m_hitboxAreaDown);
 
             m_attackController.AttackStarted += OnAttackStarted;
         }
