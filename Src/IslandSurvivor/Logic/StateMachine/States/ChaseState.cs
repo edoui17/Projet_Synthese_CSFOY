@@ -27,6 +27,7 @@ public partial class ChaseState : State
 
     public override void Enter()
     {
+        base.Enter();
         if (m_animationPlayer != null)
         {
             if (m_animationPlayer.HasAnimation(AnimationName))

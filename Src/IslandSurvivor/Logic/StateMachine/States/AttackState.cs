@@ -19,6 +19,7 @@ public partial class AttackState : State
 
     public override void Enter()
     {
+        base.Enter();
         if (NpcContext is IslandSurvivor.Scenes.NPC.NpcBase npc)
         {
             npc.Velocity = Vector2.Zero;

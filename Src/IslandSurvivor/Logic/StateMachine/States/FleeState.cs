@@ -24,6 +24,7 @@ public partial class FleeState : State
 
     public override void Enter()
     {
+        base.Enter();
         m_timer = FleeDuration;
 
         if (m_animationPlayer != null)

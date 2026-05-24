@@ -47,6 +47,11 @@ public partial class StateMachine : State
             m_currentState = enumerator.Current.Value;
             m_currentState.Enter();
         }
+
+        if (NpcContext != null && Engine.IsEditorHint() == false)
+        {
+            GD.Print($"[Frame: {Engine.GetPhysicsFrames()}] [{NpcContext.Name}] [StateMachine] INITIALIZED. Total States: {m_states.Count}. Starting State: {m_currentState?.Name}");
+        }
     }
 
     public override void Enter()
@@ -164,7 +169,18 @@ public partial class StateMachine : State
 
         if (!nextStateName.IsEmpty && m_states.ContainsKey(nextStateName))
         {
+            if (NpcContext != null && Engine.IsEditorHint() == false)
+            {
+                GD.Print($"[Frame: {Engine.GetPhysicsFrames()}] [{NpcContext.Name}] [StateMachine] TRANSITION: {p_sourceState.Name} -> {nextStateName}");
+            }
             ForceTransition(nextStateName.ToString());
+        }
+        else if (!nextStateName.IsEmpty)
+        {
+            if (NpcContext != null && Engine.IsEditorHint() == false)
+            {
+                GD.PushWarning($"[Frame: {Engine.GetPhysicsFrames()}] [{NpcContext.Name}] [StateMachine] WARNING: Attempted to transition to unknown state '{nextStateName}'");
+            }
         }
     }
 

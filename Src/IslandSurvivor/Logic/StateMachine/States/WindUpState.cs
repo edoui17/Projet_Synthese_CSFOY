@@ -25,6 +25,7 @@ public partial class WindUpState : State
 
     public override void Enter()
     {
+        base.Enter();
         m_timer = WindUpDuration;
 
         if (NpcContext is IslandSurvivor.Scenes.NPC.NpcBase npc)
