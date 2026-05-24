@@ -23,6 +23,24 @@ public partial class ChaseState : State
         base.Initialize(p_stateMachine, p_npcContext);
         m_animationPlayer = NpcContext.GetNodeOrNull<AnimationPlayer>("AnimationPlayer");
         m_sprite = NpcContext.GetNodeOrNull<Sprite2D>("Sprite2D");
+
+        if (NpcContext != null)
+        {
+            Area2D? detectionArea = NpcContext.GetNodeOrNull<Area2D>("DetectionArea");
+            if (detectionArea != null)
+            {
+                var collisionShape = detectionArea.GetNodeOrNull<CollisionShape2D>("CollisionShape2D");
+                if (collisionShape != null && collisionShape.Shape is CircleShape2D circleShape)
+                {
+                    float detectionRadius = circleShape.Radius;
+                    if (LoseInterestRange <= detectionRadius)
+                    {
+                        GD.PushWarning($"[{NpcContext.Name}] LoseInterestRange ({LoseInterestRange}) is too small compared to DetectionRadius ({detectionRadius})! Auto-adjusting to prevent logic loops.");
+                        LoseInterestRange = detectionRadius * 2.0f;
+                    }
+                }
+            }
+        }
     }
 
     public override void Enter()
