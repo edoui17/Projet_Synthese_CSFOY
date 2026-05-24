@@ -7,7 +7,6 @@ public partial class FleeState : State
 {
     [ExportGroup("State Configuration")]
     [Export] public float FleeDuration { get; set; } = 3.0f;
-    [Export] public string TargetStateOnStop { get; set; } = "IdleState";
 
     [ExportGroup("State Animations")]
     [Export] public string AnimationName { get; set; } = "Flee";
@@ -57,7 +56,7 @@ public partial class FleeState : State
 
         if (m_timer <= 0)
         {
-            TransitionTo(TargetStateOnStop);
+            CompleteState(StateExitReason.Finished);
             return;
         }
 

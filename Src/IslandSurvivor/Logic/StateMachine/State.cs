@@ -6,7 +6,7 @@ using Godot;
 public partial class State : Node
 {
     [Signal]
-    public delegate void TransitionRequestedEventHandler(State p_sourceState, StringName p_targetStateName);
+    public delegate void StateFinishedEventHandler(State p_sourceState, StateExitReason p_reason);
 
     public StateMachine StateMachine { get; protected set; }
     public CharacterBody2D NpcContext { get; protected set; }
@@ -22,8 +22,8 @@ public partial class State : Node
     public virtual void Update(double p_delta) { }
     public virtual void PhysicsUpdate(double p_delta) { }
 
-    protected void TransitionTo(string p_targetStateName)
+    protected void CompleteState(StateExitReason p_reason)
     {
-        EmitSignal(SignalName.TransitionRequested, this, new StringName(p_targetStateName));
+        EmitSignal(SignalName.StateFinished, this, Variant.From(p_reason));
     }
 }

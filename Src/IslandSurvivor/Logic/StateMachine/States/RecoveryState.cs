@@ -7,7 +7,6 @@ public partial class RecoveryState : State
 {
     [ExportGroup("State Configuration")]
     [Export] public float RecoveryDuration { get; set; } = 1.0f;
-    [Export] public string TargetStateOnComplete { get; set; } = "IdleState";
 
     [ExportGroup("State Animations")]
     [Export] public string AnimationName { get; set; } = "Idle";
@@ -50,7 +49,7 @@ public partial class RecoveryState : State
 
         if (m_timer <= 0)
         {
-            TransitionTo(TargetStateOnComplete);
+            CompleteState(StateExitReason.Finished);
         }
     }
 }

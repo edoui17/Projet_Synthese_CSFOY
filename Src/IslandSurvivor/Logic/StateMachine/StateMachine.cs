@@ -30,7 +30,7 @@ public partial class StateMachine : State
             {
                 m_states[new StringName(child.Name)] = state;
                 state.Initialize(this, p_npcContext);
-                state.TransitionRequested += OnTransitionRequested;
+                state.StateFinished += OnStateFinished;
             }
         }
 
@@ -73,19 +73,99 @@ public partial class StateMachine : State
         m_currentState?.PhysicsUpdate(p_delta);
     }
 
-    private void OnTransitionRequested(State p_sourceState, StringName p_targetStateName)
+    private void OnStateFinished(State p_sourceState, StateExitReason p_reason)
     {
         if (p_sourceState != m_currentState) return;
 
-        if (!m_states.ContainsKey(p_targetStateName))
+        StringName nextStateName = new StringName();
+
+        switch (p_sourceState.Name.ToString())
         {
-            GD.PushWarning($"StateMachine '{Name}' trying to transition to unknown state: {p_targetStateName}");
-            return;
+            case "IdleState":
+                if (p_reason == StateExitReason.TargetDetected)
+                {
+                    nextStateName = new StringName("ChaseState");
+                }
+                break;
+
+            case "ChaseState":
+                if (p_reason == StateExitReason.TargetLost)
+                {
+                    nextStateName = new StringName("IdleState");
+                }
+                else if (p_reason == StateExitReason.TargetReached)
+                {
+                    var attackController = NpcContext.GetNodeOrNull<IslandSurvivor.Nodes.Combat.AttackController>("AttackController");
+                    if (attackController != null && attackController.CanAttack)
+                    {
+                        nextStateName = new StringName("AttackState");
+                    }
+                    else
+                    {
+                        float guardChance = 0.0f;
+                        if (p_sourceState is IslandSurvivor.Logic.StateMachine.States.ChaseState chaseState)
+                        {
+                            guardChance = chaseState.GuardChance;
+                        }
+
+                        if (NpcContext is IslandSurvivor.Scenes.NPC.Aggressive.AggressiveNpcBase aggNpc && aggNpc.CanGuard && GD.Randf() <= guardChance)
+                        {
+                            nextStateName = new StringName("GuardState");
+                        }
+                        else
+                        {
+                            nextStateName = new StringName("IdleState");
+                        }
+                    }
+                }
+                break;
+
+            case "AttackState":
+                nextStateName = new StringName("ChaseState");
+                break;
+
+            case "WindUpState":
+                if (p_reason == StateExitReason.Finished)
+                {
+                    nextStateName = new StringName("DashState"); // Or "AttackState", depending on the NPC. Lancer uses DashState after WindUp. Wait, this needs to be specific.
+                    // For the Lancer, WindUp goes to DashState.
+                    // Let's assume it goes to AttackState by default, but if it has DashState, it goes to DashState?
+                    // Let me check if DashState is present.
+                    if (m_states.ContainsKey(new StringName("DashState")))
+                        nextStateName = new StringName("DashState");
+                    else
+                        nextStateName = new StringName("AttackState");
+                }
+                break;
+
+            case "DashState":
+                nextStateName = new StringName("RecoveryState");
+                break;
+
+            case "RecoveryState":
+                nextStateName = new StringName("IdleState");
+                break;
+
+            case "FleeState":
+                if (p_reason == StateExitReason.Finished)
+                {
+                    nextStateName = new StringName("IdleState");
+                }
+                break;
+
+            case "GuardState":
+                nextStateName = new StringName("ChaseState");
+                break;
+
+            case "DeathState":
+                // No transitions out of DeathState
+                return;
         }
 
-        m_currentState?.Exit();
-        m_currentState = m_states[p_targetStateName];
-        m_currentState.Enter();
+        if (!nextStateName.IsEmpty && m_states.ContainsKey(nextStateName))
+        {
+            ForceTransition(nextStateName.ToString());
+        }
     }
 
     public void ForceTransition(string p_targetStateName)

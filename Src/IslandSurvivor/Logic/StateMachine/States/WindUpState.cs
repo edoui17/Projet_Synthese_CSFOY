@@ -7,8 +7,6 @@ public partial class WindUpState : State
 {
     [ExportGroup("State Configuration")]
     [Export] public float WindUpDuration { get; set; } = 0.75f;
-    [Export] public string NextStateAfterWindup { get; set; } = "AttackState";
-    [Export] public string TargetStateOnLoseSight { get; set; } = "IdleState";
 
     [ExportGroup("State Animations")]
     [Export] public string AnimationName { get; set; } = "WindUp";
@@ -17,9 +15,6 @@ public partial class WindUpState : State
     private AnimationPlayer m_animationPlayer = null!;
     private float m_timer;
     private Sprite2D m_sprite = null!;
-
-    // We store the locked direction so the subsequent DashState can potentially use it.
-    public Vector2 LockedDirection { get; private set; } = Vector2.Zero;
 
     public override void Initialize(StateMachine p_stateMachine, CharacterBody2D p_npcContext)
     {
@@ -55,10 +50,10 @@ public partial class WindUpState : State
             var target = aggNpc.GetTarget();
             if (target != null)
             {
-                LockedDirection = (target.GlobalPosition - NpcContext.GlobalPosition).Normalized();
-                if (m_sprite != null && LockedDirection.X != 0)
+                aggNpc.LockedDirection = (target.GlobalPosition - NpcContext.GlobalPosition).Normalized();
+                if (m_sprite != null && aggNpc.LockedDirection.X != 0)
                 {
-                    m_sprite.FlipH = LockedDirection.X < 0;
+                    m_sprite.FlipH = aggNpc.LockedDirection.X < 0;
                 }
             }
         }
@@ -70,7 +65,7 @@ public partial class WindUpState : State
 
         if (m_timer <= 0)
         {
-            TransitionTo(NextStateAfterWindup);
+            CompleteState(StateExitReason.Finished);
         }
     }
 }
