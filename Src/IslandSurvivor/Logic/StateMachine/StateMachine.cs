@@ -103,6 +103,10 @@ public partial class StateMachine : State
                 {
                     nextStateName = GetCombatDecisionState();
                 }
+                else if (p_reason == StateExitReason.Finished)
+                {
+                    nextStateName = GetCombatDecisionState();
+                }
                 break;
 
             case StateConstants.ChaseState:
@@ -178,6 +182,17 @@ public partial class StateMachine : State
             case StateConstants.DeathState:
                 // No transitions out of DeathState
                 return;
+
+            case StateConstants.WanderState:
+                if (p_reason == StateExitReason.TargetDetected)
+                {
+                    nextStateName = StateConstants.ChaseStateName;
+                }
+                else if (p_reason == StateExitReason.Finished)
+                {
+                    nextStateName = StateConstants.IdleStateName;
+                }
+                break;
         }
 
         if (nextStateName != null && m_states.ContainsKey(nextStateName))
@@ -228,7 +243,16 @@ public partial class StateMachine : State
 
         var target = aggressiveNpc.GetTarget();
         if (target == null)
+        {
+            if (m_states.TryGetValue(StateConstants.IdleStateName, out State idleStateNode) && idleStateNode is IslandSurvivor.Logic.StateMachine.States.IdleState idleState)
+            {
+                if (idleState.IsWanderCooldownElapsed && m_states.ContainsKey(StateConstants.WanderStateName))
+                {
+                    return StateConstants.WanderStateName;
+                }
+            }
             return StateConstants.IdleStateName;
+        }
 
         float distSquared = NpcContext.GlobalPosition.DistanceSquaredTo(target.GlobalPosition);
         bool isRanged = NpcContext is IslandSurvivor.Scenes.NPC.Aggressive.RangedAggressiveNpcBase;
