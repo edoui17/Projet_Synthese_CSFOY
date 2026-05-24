@@ -12,7 +12,7 @@
 [ext_resource type="PackedScene" uid="uid://tv17dq11ra3eo" path="res://Nodes/State/Combat/AttackState.tscn" id="state_AttackState"]
 [ext_resource type="PackedScene" uid="uid://knhcnif6felbl" path="res://Nodes/State/Combat/RecoveryState.tscn" id="state_RecoveryState"]
 [ext_resource type="PackedScene" uid="uid://sl1st4eaw0nji" path="res://Nodes/State/Core/DeathState.tscn" id="state_DeathState"]
-[ext_resource type="PackedScene" uid="uid://a866a9c1b5164" path="res://Nodes/State/Movement/WanderState.tscn" id="state_WanderState"]
+[ext_resource type="PackedScene" uid="uid://5xki3ncmne9fg" path="res://Nodes/State/Movement/WanderState.tscn" id="state_WanderState"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_c0sqb"]
 atlas = ExtResource("2_dp46e")

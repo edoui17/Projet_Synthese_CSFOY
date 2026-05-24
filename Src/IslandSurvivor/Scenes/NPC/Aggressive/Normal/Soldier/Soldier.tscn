@@ -13,7 +13,7 @@
 [ext_resource type="PackedScene" uid="uid://c5fchvpan65ig" path="res://Nodes/State/Core/DeathState.tscn" id="state_DeathState"]
 [ext_resource type="Script" uid="uid://bf0qw7vijbet6" path="res://Logic/StateMachine/States/GuardState.cs" id="state_GuardState"]
 [ext_resource type="PackedScene" uid="uid://dhogbp2sdg1fm" path="res://Nodes/State/Movement/IdleState.tscn" id="state_IdleState"]
-[ext_resource type="PackedScene" uid="uid://a866a9c1b5164" path="res://Nodes/State/Movement/WanderState.tscn" id="state_WanderState"]
+[ext_resource type="PackedScene" uid="uid://5xki3ncmne9fg" path="res://Nodes/State/Movement/WanderState.tscn" id="state_WanderState"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_e1oyk"]
 radius = 21.986078
