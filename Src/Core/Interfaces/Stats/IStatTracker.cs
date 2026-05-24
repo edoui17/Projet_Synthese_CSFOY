@@ -14,4 +14,5 @@ public interface IStatTracker
     void AddPermanentBonus(Managers.Stats.StatType p_statType, float p_amount);
     void AddExperience(float p_amount);
     float CalculateRequiredXp(int p_level);
+    void ResetStats();
 }

@@ -334,3 +334,8 @@ For instant line-of-sight validation (e.g., preventing melee attacks or detectio
 - **Node Injection without Destruction:** Refactored complex Godot scenes (`.tscn`) to replace `AnimatedSprite2D` with `Sprite2D` and `AnimationPlayer`. Modified scenes via controlled script injection to preserve legacy scene configurations, avoiding destructive text-replacements on complex resources like `SpriteFrames`.
 - **Animation Fallbacks:** Implemented an `AnimationPlayer.HasAnimation` fallback logic inside State nodes. If the required `AnimationName` isn't configured, it safely defaults to `FallbackAnimationName` (e.g. `"Error"`), avoiding game crashes when designers miss an animation setup.
 - **Centralized Visual State:** Moved sprite flipping (`FlipH`) logic out of individual behaviors and centralized it within the `MovementController.Move()` method, tying visual orientation directly to the physics vector.
+
+## Session Lifecycle Management
+Discovered that without a dedicated Godot `WorldManager`, `Autoload`s effectively serve as lifecycle hooks. By attaching a single `SessionManager` autoload solely dedicated to listening for `SessionEnded`, we can isolate state-reset behavior away from the Main Menu, ensuring that navigation between menus doesn't inadvertently wipe state unless explicitly broadcasted.
+
+Additionally, when implementing `ResetStats` on `StatTracker`, it's critical to restore `Health` specifically to its `EffectiveMaxValue` (using `SetCurrentValue`) rather than `0`, while other volatile stats (Speed, Attack modifiers) revert to `0`.
