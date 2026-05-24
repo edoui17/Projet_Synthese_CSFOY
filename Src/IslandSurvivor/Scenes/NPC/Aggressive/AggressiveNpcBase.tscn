@@ -5,14 +5,14 @@
 [ext_resource type="AudioStream" uid="uid://c3jjna55qsax6" path="res://Assets/Audio/kenney_impact-sounds/Audio/jofae-swing-whoosh-110410.mp3" id="attack_stream"]
 [ext_resource type="AudioStream" uid="uid://b2l1i3sytynb8" path="res://Assets/Audio/kenney_impact-sounds/Audio/impactGlass_medium_003.ogg" id="hurt_stream"]
 [ext_resource type="Script" uid="uid://bhrvrxhl1h86p" path="res://Nodes/Combat/AttackController.cs" id="4_attack"]
+[ext_resource type="PackedScene" uid="uid://dhogbp2sdg1fm" path="res://Nodes/State/Movement/IdleState.tscn" id="state_IdleState"]
+[ext_resource type="PackedScene" uid="uid://dvpfx8vuoy433" path="res://Nodes/State/Movement/WanderState.tscn" id="state_WanderState"]
+[ext_resource type="PackedScene" uid="uid://6ct74ht3u7xs" path="res://Nodes/State/Movement/ChaseState.tscn" id="state_ChaseState"]
+[ext_resource type="PackedScene" uid="uid://k0ufhgrxaplu" path="res://Nodes/State/Combat/AttackState.tscn" id="state_AttackState"]
+[ext_resource type="PackedScene" uid="uid://cwnlheloaytr2" path="res://Nodes/State/Combat/RecoveryState.tscn" id="state_RecoveryState"]
+[ext_resource type="PackedScene" uid="uid://dos0ijyia15w6" path="res://Nodes/State/Combat/WindUpState.tscn" id="state_WindUpState"]
+[ext_resource type="PackedScene" uid="uid://c5fchvpan65ig" path="res://Nodes/State/Core/DeathState.tscn" id="state_DeathState"]
 
-[ext_resource type="PackedScene" path="res://Nodes/State/Core/States/IdleState.tscn" id="state_IdleState"]
-[ext_resource type="PackedScene" path="res://Nodes/State/Core/States/WanderState.tscn" id="state_WanderState"]
-[ext_resource type="PackedScene" path="res://Nodes/State/Core/States/ChaseState.tscn" id="state_ChaseState"]
-[ext_resource type="PackedScene" path="res://Nodes/State/Core/States/AttackState.tscn" id="state_AttackState"]
-[ext_resource type="PackedScene" path="res://Nodes/State/Core/States/RecoveryState.tscn" id="state_RecoveryState"]
-[ext_resource type="PackedScene" path="res://Nodes/State/Core/States/WindUpState.tscn" id="state_WindUpState"]
-[ext_resource type="PackedScene" path="res://Nodes/State/Core/States/DeathState.tscn" id="state_DeathState"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_base"]
 radius = 15.0
