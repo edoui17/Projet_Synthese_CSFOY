@@ -27,6 +27,8 @@ DeathSound = null
 
 [node name="Sheep" parent="Entities" unique_id=789769840 instance=ExtResource("4_sheep")]
 position = Vector2(700, 300)
+collision_layer = 4
+collision_mask = 1
 IdleSound = null
 
 [node name="Gold" parent="Entities" unique_id=669946831 instance=ExtResource("5_gold")]

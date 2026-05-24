@@ -754,22 +754,23 @@ script = ExtResource("1_x8y9z")
 DashSpeedMultiplier = 4.0
 DashThreshold = 100.0
 ChaseSpeed = 100.0
-StoppingDistance = 40.0
+StoppingDistance = 100.0
 LevelIndex = 1
 BaseXp = 30.0
 XpMultiplier = 0.2
 AttackSoundKey = "Enemy_Swing_Default"
 AttackVolume = 1.0
 AttackRange = 60.0
-GuardChance = 0.3
+GuardChance = 0.0
 MinAttackRange = 80.0
 MaxAttackRange = 350.0
 HurtSound = ExtResource("3_u3wq2")
 DeathSound = ExtResource("4_hesqx")
 
 [node name="Sprite2D" parent="." index="0" unique_id=1104255030]
-texture = ExtResource("3_qp1c1")
-hframes = 6
+texture = ExtResource("2_lryv6")
+hframes = 12
+frame = 11
 
 [node name="CollisionShape2D" parent="." index="1" unique_id=1322914286]
 visible = false

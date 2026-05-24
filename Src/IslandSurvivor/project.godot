@@ -26,7 +26,7 @@ InventoryNode="*uid://dr3trnrux3qtu"
 ProgressionManager="*res://Managers/ProgressionManager.cs"
 AudioManager="*uid://ccgt7urf64l7y"
 SceneLoadingManager="*res://Managers/SceneLoadingManager.cs"
-SessionManager="*uid://test_uid_session_manager"
+SessionManager="*res://Managers/SessionManager.cs"
 
 [display]
 
