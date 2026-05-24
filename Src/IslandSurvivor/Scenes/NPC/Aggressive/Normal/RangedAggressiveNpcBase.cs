@@ -11,6 +11,29 @@ public partial class RangedAggressiveNpcBase : AggressiveNpcBase
     [ExportGroup("Animations")]
     [Export] public string AttackAnimationName { get; set; } = "Attack";
 
+    protected override Godot.StringName GetCombatDecisionState(float distanceSquared, float attackRangeSquared)
+    {
+        float maxAttackRangeSquared = MaxAttackRange * MaxAttackRange;
+        float minAttackRangeSquared = MinAttackRange * MinAttackRange;
+
+        if (distanceSquared > maxAttackRangeSquared)
+        {
+            return IslandSurvivor.Logic.StateMachine.StateConstants.ChaseStateName;
+        }
+
+        if (distanceSquared < minAttackRangeSquared)
+        {
+            return IslandSurvivor.Logic.StateMachine.StateConstants.RepositionStateName;
+        }
+
+        if (m_attackController != null && m_attackController.CanAttack)
+        {
+            return IslandSurvivor.Logic.StateMachine.StateConstants.AttackStateName;
+        }
+
+        return IslandSurvivor.Logic.StateMachine.StateConstants.IdleStateName;
+    }
+
     public override void _Ready()
     {
         base._Ready();

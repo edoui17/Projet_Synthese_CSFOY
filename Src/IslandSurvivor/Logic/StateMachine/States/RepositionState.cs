@@ -94,7 +94,7 @@ public partial class RepositionState : State
             {
                 float distSquared = NpcContext.GlobalPosition.DistanceSquaredTo(target.GlobalPosition);
                 // Stop repositioning early if we are comfortably out of the minimum range (e.g., halfway to max range)
-                float idealRangeSquared = (StateMachine.MinAttackRange + (StateMachine.MaxAttackRange - StateMachine.MinAttackRange) / 2.0f);
+                float idealRangeSquared = (((IslandSurvivor.Scenes.NPC.Aggressive.AggressiveNpcBase)NpcContext).MinAttackRange + (((IslandSurvivor.Scenes.NPC.Aggressive.AggressiveNpcBase)NpcContext).MaxAttackRange - ((IslandSurvivor.Scenes.NPC.Aggressive.AggressiveNpcBase)NpcContext).MinAttackRange) / 2.0f);
                 idealRangeSquared *= idealRangeSquared;
 
                 if (distSquared >= idealRangeSquared)

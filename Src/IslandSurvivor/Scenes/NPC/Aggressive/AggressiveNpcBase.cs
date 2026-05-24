@@ -17,6 +17,14 @@ public partial class AggressiveNpcBase : NpcBase
     [Export] public string AttackSoundKey { get; set; } = string.Empty;
     [Export] public float AttackVolume { get; set; } = 1.0f;
 
+    [ExportGroup("Melee Configuration")]
+    [Export] public float AttackRange { get; set; } = 60.0f;
+    [Export] public float GuardChance { get; set; } = 0.3f;
+
+    [ExportGroup("Ranged Configuration")]
+    [Export] public float MinAttackRange { get; set; } = 80.0f;
+    [Export] public float MaxAttackRange { get; set; } = 350.0f;
+
     protected Node2D? m_targetPlayer;
     // protected IAgressorController m_agressorController = null!;
     protected IslandSurvivor.Nodes.Combat.AttackController? m_attackController;
@@ -33,6 +41,48 @@ public partial class AggressiveNpcBase : NpcBase
     protected float m_guardCooldownTimer = 0.0f;
 
     public virtual bool CanGuard => false;
+
+    public override Godot.StringName GetDecisionState(Node2D target)
+    {
+        if (target == null)
+        {
+            if (m_stateMachine != null)
+            {
+                if (m_stateMachine.HasState(IslandSurvivor.Logic.StateMachine.StateConstants.IdleStateName))
+                {
+                    var idleStateNode = m_stateMachine.GetState(IslandSurvivor.Logic.StateMachine.StateConstants.IdleStateName);
+                    if (idleStateNode is IslandSurvivor.Logic.StateMachine.States.IdleState idleState)
+                    {
+                        if (idleState.IsWanderCooldownElapsed && m_stateMachine.HasState(IslandSurvivor.Logic.StateMachine.StateConstants.WanderStateName))
+                        {
+                            return IslandSurvivor.Logic.StateMachine.StateConstants.WanderStateName;
+                        }
+                    }
+                }
+            }
+            return IslandSurvivor.Logic.StateMachine.StateConstants.IdleStateName;
+        }
+
+        float distanceSquared = GlobalPosition.DistanceSquaredTo(target.GlobalPosition);
+        float attackRangeSquared = AttackRange * AttackRange;
+
+        return GetCombatDecisionState(distanceSquared, attackRangeSquared);
+    }
+
+    protected virtual Godot.StringName GetCombatDecisionState(float distanceSquared, float attackRangeSquared)
+    {
+        if (distanceSquared > attackRangeSquared)
+        {
+            return IslandSurvivor.Logic.StateMachine.StateConstants.ChaseStateName;
+        }
+
+        if (m_attackController != null && m_attackController.CanAttack)
+        {
+            return IslandSurvivor.Logic.StateMachine.StateConstants.AttackStateName;
+        }
+
+        return IslandSurvivor.Logic.StateMachine.StateConstants.IdleStateName;
+    }
 
     public void SetGuardState(bool isGuarding, string direction, float multiplier)
     {

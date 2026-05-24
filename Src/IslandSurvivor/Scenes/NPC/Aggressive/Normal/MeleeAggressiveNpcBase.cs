@@ -6,6 +6,35 @@ public partial class MeleeAggressiveNpcBase : AggressiveNpcBase
 {
     public override bool CanGuard => !m_isGuarding && m_guardCooldownTimer <= 0.0f;
 
+    protected override Godot.StringName GetCombatDecisionState(float distanceSquared, float attackRangeSquared)
+    {
+        if (distanceSquared > attackRangeSquared)
+        {
+            return IslandSurvivor.Logic.StateMachine.StateConstants.ChaseStateName;
+        }
+
+        if (m_attackController != null && m_attackController.CanAttack)
+        {
+            if (CanGuard && GD.Randf() <= GuardChance)
+            {
+                return IslandSurvivor.Logic.StateMachine.StateConstants.GuardStateName;
+            }
+
+            return IslandSurvivor.Logic.StateMachine.StateConstants.AttackStateName;
+        }
+        else
+        {
+            if (CanGuard)
+            {
+                return IslandSurvivor.Logic.StateMachine.StateConstants.GuardStateName;
+            }
+            else
+            {
+                return IslandSurvivor.Logic.StateMachine.StateConstants.IdleStateName;
+            }
+        }
+    }
+
     protected Area2D? m_hitboxAreaRight;
     protected Area2D? m_hitboxAreaLeft;
     protected Area2D? m_hitboxAreaUp;
