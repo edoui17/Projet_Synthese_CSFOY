@@ -31,7 +31,7 @@ public partial class AggressiveNpcBase : NpcBase
     protected string m_guardDirection = "";
     protected float m_guardDamageMultiplier = 1.0f;
     protected float m_guardCooldownTimer = 0.0f;
-    public bool CanGuard => !m_isGuarding && m_guardCooldownTimer <= 0.0f;
+    public virtual bool CanGuard => false;
 
     public void SetGuardState(bool isGuarding, string direction, float multiplier)
     {
