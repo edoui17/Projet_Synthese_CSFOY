@@ -25,6 +25,7 @@ public partial class DashState : State
 
     public override void Enter()
     {
+        base.Enter();
         m_timer = DashDuration;
 
         if (m_animationPlayer != null)

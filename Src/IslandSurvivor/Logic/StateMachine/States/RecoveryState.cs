@@ -23,6 +23,7 @@ public partial class RecoveryState : State
 
     public override void Enter()
     {
+        base.Enter();
         m_timer = RecoveryDuration;
 
         if (NpcContext is IslandSurvivor.Scenes.NPC.NpcBase npc)

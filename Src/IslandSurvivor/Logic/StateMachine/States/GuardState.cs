@@ -27,6 +27,7 @@ public partial class GuardState : State
 
     public override void Enter()
     {
+        base.Enter();
         m_guardTimer = GuardDuration;
 
         if (NpcContext is IslandSurvivor.Scenes.NPC.NpcBase npc)

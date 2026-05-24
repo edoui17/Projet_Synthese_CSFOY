@@ -25,6 +25,7 @@ public partial class IdleState : State
 
     public override void Enter()
     {
+        base.Enter();
         m_timer = WaitTime;
 
         if (m_animationPlayer != null)

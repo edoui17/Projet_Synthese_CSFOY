@@ -15,15 +15,34 @@ public partial class State : Node
     {
         StateMachine = p_stateMachine;
         NpcContext = p_npcContext;
+        // Do not spam Initialization print here, StateMachine handles it.
     }
 
-    public virtual void Enter() { }
-    public virtual void Exit() { }
+    public virtual void Enter()
+    {
+        if (NpcContext != null && Engine.IsEditorHint() == false)
+        {
+            GD.Print($"[Frame: {Engine.GetPhysicsFrames()}] [{NpcContext.Name}] [{Name}] ENTERED");
+        }
+    }
+
+    public virtual void Exit()
+    {
+        if (NpcContext != null && Engine.IsEditorHint() == false)
+        {
+            GD.Print($"[Frame: {Engine.GetPhysicsFrames()}] [{NpcContext.Name}] [{Name}] EXITED");
+        }
+    }
+
     public virtual void Update(double p_delta) { }
     public virtual void PhysicsUpdate(double p_delta) { }
 
     protected void CompleteState(StateExitReason p_reason)
     {
+        if (NpcContext != null && Engine.IsEditorHint() == false)
+        {
+            GD.Print($"[Frame: {Engine.GetPhysicsFrames()}] [{NpcContext.Name}] [{Name}] COMPLETED. Reason: {p_reason}");
+        }
         EmitSignal(SignalName.StateFinished, this, Variant.From(p_reason));
     }
 }
