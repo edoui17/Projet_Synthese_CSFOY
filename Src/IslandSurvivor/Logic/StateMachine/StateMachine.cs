@@ -3,16 +3,19 @@ namespace IslandSurvivor.Logic.StateMachine;
 using Godot;
 using System.Collections.Generic;
 
+[Tool]
 [GlobalClass]
 public partial class StateMachine : State
 {
     [Export] public State InitialState { get; set; } = null!;
 
-    [ExportGroup("Combat Configuration")]
+    [ExportGroup("Melee Configuration")]
     [Export] public float AttackRange { get; set; } = 60.0f;
     [Export] public float GuardChance { get; set; } = 0.3f;
-    [Export] public float MinAttackRange { get; set; } = 40.0f;
-    [Export] public float MaxAttackRange { get; set; } = 150.0f;
+
+    [ExportGroup("Ranged Configuration")]
+    [Export] public float MinAttackRange { get; set; } = 80.0f;
+    [Export] public float MaxAttackRange { get; set; } = 350.0f;
 
     private Dictionary<StringName, State> m_states = new Dictionary<StringName, State>();
     private State? m_currentState;
@@ -23,6 +26,35 @@ public partial class StateMachine : State
     {
         SetProcess(false);
         SetPhysicsProcess(false);
+    }
+
+    public override void _ValidateProperty(Godot.Collections.Dictionary property)
+    {
+        base._ValidateProperty(property);
+
+        var parent = GetParent();
+        if (parent == null) return;
+
+        string propertyName = property["name"].AsString();
+
+        if (parent is IslandSurvivor.Scenes.NPC.Aggressive.MeleeAggressiveNpcBase)
+        {
+            if (propertyName == "MinAttackRange" || propertyName == "MaxAttackRange")
+            {
+                var usage = (PropertyUsageFlags)property["usage"].AsInt32();
+                usage &= ~PropertyUsageFlags.Editor;
+                property["usage"] = (int)usage;
+            }
+        }
+        else if (parent is IslandSurvivor.Scenes.NPC.Aggressive.RangedAggressiveNpcBase)
+        {
+            if (propertyName == "AttackRange" || propertyName == "GuardChance")
+            {
+                var usage = (PropertyUsageFlags)property["usage"].AsInt32();
+                usage &= ~PropertyUsageFlags.Editor;
+                property["usage"] = (int)usage;
+            }
+        }
     }
 
     public override void Initialize(StateMachine p_parentMachine, CharacterBody2D p_npcContext)
