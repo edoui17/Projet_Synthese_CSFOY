@@ -7,7 +7,7 @@ using IslandSurvivor.Logic.Entities;
 public partial class Lancer : MeleeAggressiveNpcBase
 {
     [Export] public float DashSpeedMultiplier { get; set; } = 3.0f;
-    [Export] public float MinDashDistance { get; set; } = 150.0f;
+    [Export] public float DashThreshold { get; set; } = 150.0f;
 
     public override void _Ready()
     {
