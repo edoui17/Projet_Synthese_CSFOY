@@ -3,7 +3,6 @@ namespace IslandSurvivor.Logic.StateMachine;
 using Godot;
 using System.Collections.Generic;
 
-[Tool]
 [GlobalClass]
 public partial class StateMachine : State
 {
@@ -26,35 +25,6 @@ public partial class StateMachine : State
     {
         SetProcess(false);
         SetPhysicsProcess(false);
-    }
-
-    public override void _ValidateProperty(Godot.Collections.Dictionary property)
-    {
-        base._ValidateProperty(property);
-
-        var parent = GetParent();
-        if (parent == null) return;
-
-        string propertyName = property["name"].AsString();
-
-        if (parent is IslandSurvivor.Scenes.NPC.Aggressive.MeleeAggressiveNpcBase)
-        {
-            if (propertyName == "MinAttackRange" || propertyName == "MaxAttackRange")
-            {
-                var usage = (PropertyUsageFlags)property["usage"].AsInt32();
-                usage &= ~PropertyUsageFlags.Editor;
-                property["usage"] = (int)usage;
-            }
-        }
-        else if (parent is IslandSurvivor.Scenes.NPC.Aggressive.RangedAggressiveNpcBase)
-        {
-            if (propertyName == "AttackRange" || propertyName == "GuardChance")
-            {
-                var usage = (PropertyUsageFlags)property["usage"].AsInt32();
-                usage &= ~PropertyUsageFlags.Editor;
-                property["usage"] = (int)usage;
-            }
-        }
     }
 
     public override void Initialize(StateMachine p_parentMachine, CharacterBody2D p_npcContext)
