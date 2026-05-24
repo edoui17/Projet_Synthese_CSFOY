@@ -144,4 +144,37 @@ public class StatTracker : IStatTracker
             stat.AddBonus(p_amount);
         }
     }
+
+    public void ResetStats()
+    {
+        if (m_stats.TryGetValue(StatType.Health, out IStat? healthStat))
+        {
+            healthStat.SetCurrentValue(healthStat.EffectiveMaxValue);
+        }
+
+        if (m_stats.TryGetValue(StatType.Attack, out IStat? attackStat))
+        {
+            attackStat.SetCurrentValue(0f);
+        }
+
+        if (m_stats.TryGetValue(StatType.Speed, out IStat? speedStat))
+        {
+            speedStat.SetCurrentValue(0f);
+        }
+
+        if (m_stats.TryGetValue(StatType.Luck, out IStat? luckStat))
+        {
+            luckStat.SetCurrentValue(0f);
+        }
+
+        if (m_stats.TryGetValue(StatType.Level, out IStat? levelStat))
+        {
+            levelStat.SetCurrentValue(1f);
+        }
+
+        if (m_stats.TryGetValue(StatType.Experience, out IStat? xpStat))
+        {
+            xpStat.SetCurrentValue(0f);
+        }
+    }
 }
