@@ -166,8 +166,37 @@ public partial class DashState : State
                 for (int i = 0; i < npc.GetSlideCollisionCount(); i++)
                 {
                     KinematicCollision2D collision = npc.GetSlideCollision(i);
-                    if (collision.GetCollider() is StaticBody2D or TileMapLayer)
+                    var collider = collision.GetCollider();
+                    if (collider is StaticBody2D or TileMapLayer)
                     {
+                        if (m_attackController != null && m_attackController.IsAttacking)
+                        {
+                            m_attackController.CancelAttack();
+                        }
+                        m_hasCompleted = true;
+                        CompleteState(StateExitReason.CollisionDetected);
+                        return;
+                    }
+                    else if (collider is Node targetNode && targetNode.IsInGroup("Player"))
+                    {
+                        if (NpcContext is IslandSurvivor.Scenes.NPC.Aggressive.AggressiveNpcBase aggNpc)
+                        {
+                            if (aggNpc.Stats != null)
+                            {
+                                float baseDamage = aggNpc.Stats.BaseAttackValue;
+                                int finalDamage = Mathf.RoundToInt(baseDamage * DashDamageMultiplier);
+
+                                if (targetNode is Core.Interfaces.Stats.IDamageable damageable)
+                                {
+                                    damageable.TakeDamage(finalDamage, NpcContext);
+                                }
+                                else if (targetNode.HasMethod("TakeDamage"))
+                                {
+                                    targetNode.Call("TakeDamage", finalDamage, NpcContext);
+                                }
+                            }
+                        }
+
                         if (m_attackController != null && m_attackController.IsAttacking)
                         {
                             m_attackController.CancelAttack();

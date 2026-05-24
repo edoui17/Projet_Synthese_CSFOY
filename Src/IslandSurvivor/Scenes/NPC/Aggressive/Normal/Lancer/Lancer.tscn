@@ -694,7 +694,7 @@ visible = false
 visible = false
 shape = SubResource("CircleShape2D_lancer_detection")
 
-[node name="HitboxAreaRight" parent="." index="7"]
+[node name="HitboxAreaRight" parent="." index="9"]
 visible = false
 
 [node name="CollisionShape2D" parent="HitboxAreaRight" index="0"]
@@ -702,36 +702,12 @@ position = Vector2(73.000015, 14.000002)
 rotation = 1.567259
 shape = SubResource("CapsuleShape2D_lancer_hitbox")
 
-[node name="HitboxAreaLeft" parent="." index="8"]
+[node name="HitboxAreaLeft" parent="." index="10"]
 visible = false
 
 [node name="CollisionShape2D" parent="HitboxAreaLeft" index="0"]
 position = Vector2(-4.9999847, 12)
 rotation = 1.5765897
-shape = SubResource("CapsuleShape2D_lancer_hitbox")
-
-[node name="HitboxAreaUp" type="Area2D" parent="." index="9" unique_id=1270616998]
-visible = false
-position = Vector2(-136, 0)
-rotation = -1.5707964
-collision_layer = 0
-collision_mask = 4
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxAreaUp" index="0" unique_id=1828660220]
-position = Vector2(79, 140)
-rotation = 1.5707964
-shape = SubResource("CapsuleShape2D_lancer_hitbox")
-
-[node name="HitboxAreaDown" type="Area2D" parent="." index="10" unique_id=1136700618]
-visible = false
-position = Vector2(-68, 0)
-rotation = 1.5707964
-collision_layer = 0
-collision_mask = 4
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxAreaDown" index="0" unique_id=873683685]
-position = Vector2(85.999985, -72)
-rotation = 1.567259
 shape = SubResource("CapsuleShape2D_lancer_hitbox")
 
 [node name="AnimationPlayer" parent="." index="11" unique_id=1869571986]

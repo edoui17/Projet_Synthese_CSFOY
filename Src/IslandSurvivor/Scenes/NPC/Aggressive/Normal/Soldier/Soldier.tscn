@@ -530,24 +530,6 @@ AttackVolume = 1.0
 HurtSound = ExtResource("2_pxe8l")
 DeathSound = ExtResource("3_xyyhd")
 
-[node name="HitboxAreaUp" type="Area2D" parent="." index="0" unique_id=1056784491]
-collision_layer = 0
-collision_mask = 4
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxAreaUp" index="0" unique_id=735860196]
-position = Vector2(0.99999976, -48)
-rotation = 1.5352188
-shape = SubResource("CapsuleShape2D_e1oyk")
-
-[node name="HitboxAreaDown" type="Area2D" parent="." index="1" unique_id=1142129442]
-collision_layer = 0
-collision_mask = 4
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxAreaDown" index="0" unique_id=1429564777]
-position = Vector2(1, 38)
-rotation = 1.5352188
-shape = SubResource("CapsuleShape2D_e1oyk")
-
 [node name="Sprite2D" parent="." index="2" unique_id=1104255030]
 texture = ExtResource("5_pxe8l")
 hframes = 6
