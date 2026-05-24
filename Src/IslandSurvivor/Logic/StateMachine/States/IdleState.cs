@@ -59,8 +59,28 @@ public partial class IdleState : State
         {
             if (aggressiveNpc.HasTargetAndLineOfSight())
             {
-                CompleteState(StateExitReason.TargetDetected);
-                return;
+                var target = aggressiveNpc.GetTarget();
+                if (target != null)
+                {
+                    float distSquared = NpcContext.GlobalPosition.DistanceSquaredTo(target.GlobalPosition);
+                    if (distSquared <= StateMachine.AttackRange * StateMachine.AttackRange)
+                    {
+                        var attackController = NpcContext.GetNodeOrNull<IslandSurvivor.Nodes.Combat.AttackController>("AttackController");
+                        bool canAttack = attackController != null && attackController.CanAttack;
+                        bool canGuard = aggressiveNpc.CanGuard;
+
+                        if (canAttack || canGuard)
+                        {
+                            CompleteState(StateExitReason.CooldownFinished);
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        CompleteState(StateExitReason.TargetDetected);
+                        return;
+                    }
+                }
             }
         }
 
