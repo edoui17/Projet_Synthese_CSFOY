@@ -14,7 +14,8 @@
 [ext_resource type="PackedScene" uid="uid://dhogbp2sdg1fm" path="res://Nodes/State/Movement/IdleState.tscn" id="state_IdleState"]
 [ext_resource type="PackedScene" uid="uid://ca8u8dmqxyiib" path="res://Nodes/State/Movement/RepositionState.tscn" id="state_RepositionState"]
 [ext_resource type="PackedScene" uid="uid://dos0ijyia15w6" path="res://Nodes/State/Combat/WindUpState.tscn" id="state_WindUpState"]
-[ext_resource type="PackedScene" uid="uid://a866a9c1b5164" path="res://Nodes/State/Movement/WanderState.tscn" id="state_WanderState"]
+[ext_resource type="PackedScene" uid="uid://866bac1b5164" path="res://Nodes/State/Movement/WanderState.tscn" id="state_WanderState"]
+
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_arch"]
 radius = 300.0
