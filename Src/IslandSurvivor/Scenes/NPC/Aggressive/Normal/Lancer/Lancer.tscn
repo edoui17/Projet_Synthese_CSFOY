@@ -750,6 +750,7 @@ InitialState = NodePath("IdleState")
 [node name="WanderState" parent="StateMachine" instance=ExtResource("state_WanderState")]
 
 [node name="ChaseState" parent="StateMachine" index="1" unique_id=1324818458 instance=ExtResource("state_ChaseState")]
+LoseInterestRange = 500.0
 TargetStateOnStop = "WindUpState"
 
 [node name="WindUpState" parent="StateMachine" index="2" unique_id=1252753227 instance=ExtResource("state_WindUpState")]
