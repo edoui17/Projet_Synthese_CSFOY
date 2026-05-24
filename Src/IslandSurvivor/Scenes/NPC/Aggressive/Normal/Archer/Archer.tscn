@@ -12,8 +12,8 @@
 [ext_resource type="PackedScene" uid="uid://6ct74ht3u7xs" path="res://Nodes/State/Movement/ChaseState.tscn" id="state_ChaseState"]
 [ext_resource type="PackedScene" uid="uid://c5fchvpan65ig" path="res://Nodes/State/Core/DeathState.tscn" id="state_DeathState"]
 [ext_resource type="PackedScene" uid="uid://dhogbp2sdg1fm" path="res://Nodes/State/Movement/IdleState.tscn" id="state_IdleState"]
+[ext_resource type="PackedScene" uid="uid://ca8u8dmqxyiib" path="res://Nodes/State/Movement/RepositionState.tscn" id="state_RepositionState"]
 [ext_resource type="PackedScene" uid="uid://dos0ijyia15w6" path="res://Nodes/State/Combat/WindUpState.tscn" id="state_WindUpState"]
-[ext_resource type="PackedScene" uid="uid://c111reposition" path="res://Nodes/State/Movement/RepositionState.tscn" id="state_RepositionState"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_arch"]
 radius = 300.0
@@ -555,6 +555,6 @@ InitialState = NodePath("IdleState")
 
 [node name="AttackState" parent="StateMachine" index="3" unique_id=1764309944 instance=ExtResource("state_AttackState")]
 
-[node name="RepositionState" parent="StateMachine" index="4" unique_id=999999999 instance=ExtResource("state_RepositionState")]
-
 [node name="DeathState" parent="StateMachine" index="4" unique_id=1320812656 instance=ExtResource("state_DeathState")]
+
+[node name="RepositionState" parent="StateMachine" index="5" unique_id=999999999 instance=ExtResource("state_RepositionState")]

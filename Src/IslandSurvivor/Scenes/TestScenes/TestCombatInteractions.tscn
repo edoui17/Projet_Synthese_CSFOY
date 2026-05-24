@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://cs7lisiu7vc7y" path="res://Scenes/Ressources/Rock/Rock.tscn" id="6_rock"]
 [ext_resource type="PackedScene" uid="uid://ms5y206nvi0v" path="res://Scenes/NPC/Aggressive/Normal/Archer/Archer.tscn" id="7_4djp5"]
 [ext_resource type="PackedScene" uid="uid://rtx0k5qfaymn" path="res://Scenes/Ressources/Tree/ConiferTree.tscn" id="7_tree"]
+[ext_resource type="PackedScene" uid="uid://dyxx1q578y7t0" path="res://Scenes/NPC/Aggressive/Normal/Soldier/Soldier.tscn" id="8_gxrs4"]
 
 [node name="TestCombatInteractions" type="Node2D" unique_id=729654025]
 
@@ -38,3 +39,6 @@ position = Vector2(350, 450)
 position = Vector2(650, 450)
 
 [node name="Archer" parent="Entities" unique_id=61408674 instance=ExtResource("7_4djp5")]
+
+[node name="Soldier" parent="Entities" unique_id=666187867 instance=ExtResource("8_gxrs4")]
+position = Vector2(1102, -23)
