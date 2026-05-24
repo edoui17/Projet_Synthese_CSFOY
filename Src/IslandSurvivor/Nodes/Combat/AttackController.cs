@@ -183,6 +183,11 @@ public partial class AttackController : Node
         }
     }
 
+    public void ResetCooldown()
+    {
+        m_cooldownTimer = 0f;
+    }
+
     private void EndAttack()
     {
         IsAttacking = false;
