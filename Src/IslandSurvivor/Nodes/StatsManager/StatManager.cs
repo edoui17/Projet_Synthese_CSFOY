@@ -166,9 +166,9 @@ public partial class StatManager : Node2D
         m_statTracker.SetCurrentValue(p_statType, p_value);
     }
 
-    public void AddPermanentBonus(StatType p_statType, float p_amount)
+    public void AddSessionBonus(StatType p_statType, float p_amount)
     {
-        m_statTracker.AddPermanentBonus(p_statType, p_amount);
+        m_statTracker.AddSessionBonus(p_statType, p_amount);
     }
 
     private void OnStatUpgradePurchased(int p_statType)
@@ -176,7 +176,7 @@ public partial class StatManager : Node2D
         StatType type = (StatType)p_statType;
         float amount = type == StatType.Health ? 10f : 1f;
 
-        AddPermanentBonus(type, amount);
+        AddSessionBonus(type, amount);
         GD.Print($"[StatManager] Received StatUpgradePurchased for {type}. Adding +{amount} permanent bonus.");
     }
 
