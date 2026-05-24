@@ -11,7 +11,7 @@ public interface IStatTracker
     float GetEffectiveMaxValue(Managers.Stats.StatType p_statType);
     void ModifyCurrentValue(Managers.Stats.StatType p_statType, float p_amount);
     void SetCurrentValue(Managers.Stats.StatType p_statType, float p_value);
-    void AddPermanentBonus(Managers.Stats.StatType p_statType, float p_amount);
+    void AddSessionBonus(Managers.Stats.StatType p_statType, float p_amount);
     void AddExperience(float p_amount);
     float CalculateRequiredXp(int p_level);
     void ResetStats();
