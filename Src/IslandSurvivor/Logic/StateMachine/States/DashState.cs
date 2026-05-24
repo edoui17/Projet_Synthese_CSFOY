@@ -19,6 +19,7 @@ public partial class DashState : State
     private IslandSurvivor.Nodes.Combat.AttackController m_attackController = null!;
     private Sprite2D m_sprite = null!;
     private bool m_hasCompleted = false;
+    private bool _hasDealtDashDamage = false;
     private float m_timer;
     private Vector2 m_dashDirection = Vector2.Zero;
 
@@ -33,6 +34,7 @@ public partial class DashState : State
     {
         base.Enter();
         m_hasCompleted = false;
+        _hasDealtDashDamage = false;
         m_timer = DashDuration;
 
         if (NpcContext is IslandSurvivor.Scenes.NPC.Aggressive.AggressiveNpcBase aggNpc)
@@ -179,22 +181,26 @@ public partial class DashState : State
                     }
                     else if (collider is Node targetNode && targetNode.IsInGroup("Player"))
                     {
-                        if (NpcContext is IslandSurvivor.Scenes.NPC.Aggressive.AggressiveNpcBase aggNpc)
+                        if (!_hasDealtDashDamage)
                         {
-                            if (aggNpc.Stats != null)
+                            if (NpcContext is IslandSurvivor.Scenes.NPC.Aggressive.AggressiveNpcBase aggNpc)
                             {
-                                float baseDamage = aggNpc.Stats.BaseAttackValue;
-                                int finalDamage = Mathf.RoundToInt(baseDamage * DashDamageMultiplier);
+                                if (aggNpc.Stats != null)
+                                {
+                                    float baseDamage = aggNpc.Stats.BaseAttackValue;
+                                    int finalDamage = Mathf.RoundToInt(baseDamage * DashDamageMultiplier);
 
-                                if (targetNode is Core.Interfaces.Stats.IDamageable damageable)
-                                {
-                                    damageable.TakeDamage(finalDamage, NpcContext);
-                                }
-                                else if (targetNode.HasMethod("TakeDamage"))
-                                {
-                                    targetNode.Call("TakeDamage", finalDamage, NpcContext);
+                                    if (targetNode is Core.Interfaces.Stats.IDamageable damageable)
+                                    {
+                                        damageable.TakeDamage(finalDamage, NpcContext);
+                                    }
+                                    else if (targetNode.HasMethod("TakeDamage"))
+                                    {
+                                        targetNode.Call("TakeDamage", finalDamage, NpcContext);
+                                    }
                                 }
                             }
+                            _hasDealtDashDamage = true;
                         }
 
                         if (m_attackController != null && m_attackController.IsAttacking)
