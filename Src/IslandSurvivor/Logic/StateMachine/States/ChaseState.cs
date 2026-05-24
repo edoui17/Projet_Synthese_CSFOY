@@ -83,50 +83,65 @@ public partial class ChaseState : State
                     aggressiveNpc.Velocity = Vector2.Zero;
                     CompleteState(StateExitReason.TargetLost);
                 }
-                else if (distSquared <= StateMachine.AttackRange * StateMachine.AttackRange)
-                {
-                    aggressiveNpc.Velocity = Vector2.Zero;
-
-                    var attackController = NpcContext.GetNodeOrNull<IslandSurvivor.Nodes.Combat.AttackController>("AttackController");
-
-                    if (attackController != null && attackController.CanAttack)
-                    {
-                        CompleteState(StateExitReason.TargetReached);
-                    }
-                    else
-                    {
-                        if (m_animationPlayer != null && m_animationPlayer.HasAnimation("Idle"))
-                        {
-                            m_animationPlayer.Play("Idle");
-                        }
-                    }
-                }
                 else
                 {
-                    if (m_animationPlayer != null && m_animationPlayer.HasAnimation(AnimationName))
+                    bool isRanged = NpcContext is IslandSurvivor.Scenes.NPC.Aggressive.RangedAggressiveNpcBase;
+                    bool inAttackRange = false;
+
+                    if (isRanged)
                     {
-                        m_animationPlayer.Play(AnimationName);
+                        inAttackRange = distSquared <= StateMachine.MaxAttackRange * StateMachine.MaxAttackRange;
+                    }
+                    else
+                    {
+                        inAttackRange = distSquared <= StateMachine.AttackRange * StateMachine.AttackRange;
                     }
 
-                    Vector2 direction = (target.GlobalPosition - NpcContext.GlobalPosition).Normalized();
-
-                    if (aggressiveNpc.MovementController != null)
+                    if (inAttackRange)
                     {
-                        aggressiveNpc.MovementController.Move(direction, ChaseSpeed);
+                        aggressiveNpc.Velocity = Vector2.Zero;
 
-                        if (m_sprite != null && direction.X != 0)
+                        var attackController = NpcContext.GetNodeOrNull<IslandSurvivor.Nodes.Combat.AttackController>("AttackController");
+
+                        if (attackController != null && attackController.CanAttack)
                         {
-                            m_sprite.FlipH = direction.X < 0;
+                            CompleteState(StateExitReason.TargetReached);
+                        }
+                        else
+                        {
+                            if (m_animationPlayer != null && m_animationPlayer.HasAnimation("Idle"))
+                            {
+                                m_animationPlayer.Play("Idle");
+                            }
                         }
                     }
                     else
                     {
-                        aggressiveNpc.Velocity = direction * ChaseSpeed;
-                        aggressiveNpc.MoveAndSlide();
-
-                        if (m_sprite != null && direction.X != 0)
+                        if (m_animationPlayer != null && m_animationPlayer.HasAnimation(AnimationName))
                         {
-                            m_sprite.FlipH = direction.X < 0;
+                            m_animationPlayer.Play(AnimationName);
+                        }
+
+                        Vector2 direction = (target.GlobalPosition - NpcContext.GlobalPosition).Normalized();
+
+                        if (aggressiveNpc.MovementController != null)
+                        {
+                            aggressiveNpc.MovementController.Move(direction, ChaseSpeed);
+
+                            if (m_sprite != null && direction.X != 0)
+                            {
+                                m_sprite.FlipH = direction.X < 0;
+                            }
+                        }
+                        else
+                        {
+                            aggressiveNpc.Velocity = direction * ChaseSpeed;
+                            aggressiveNpc.MoveAndSlide();
+
+                            if (m_sprite != null && direction.X != 0)
+                            {
+                                m_sprite.FlipH = direction.X < 0;
+                            }
                         }
                     }
                 }

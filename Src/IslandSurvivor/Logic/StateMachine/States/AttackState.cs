@@ -9,6 +9,7 @@ public partial class AttackState : State
 
     private IslandSurvivor.Nodes.Combat.AttackController m_attackController = null!;
     private Sprite2D m_sprite = null!;
+    private bool m_hasCompleted = false;
 
     public override void Initialize(StateMachine p_stateMachine, CharacterBody2D p_npcContext)
     {
@@ -20,6 +21,8 @@ public partial class AttackState : State
     public override void Enter()
     {
         base.Enter();
+        m_hasCompleted = false;
+
         if (NpcContext is IslandSurvivor.Scenes.NPC.NpcBase npc)
         {
             npc.Velocity = Vector2.Zero;
@@ -85,21 +88,29 @@ public partial class AttackState : State
         }
         else
         {
-            CompleteState(StateExitReason.Finished);
+            if (!m_hasCompleted)
+            {
+                m_hasCompleted = true;
+                CompleteState(StateExitReason.Finished);
+            }
         }
     }
 
     public override void Update(double p_delta)
     {
+        if (m_hasCompleted) return;
+
         if (m_attackController != null)
         {
             if (!m_attackController.IsAttacking)
             {
+                m_hasCompleted = true;
                 CompleteState(StateExitReason.Finished);
             }
         }
         else
         {
+            m_hasCompleted = true;
             CompleteState(StateExitReason.Finished);
         }
     }
