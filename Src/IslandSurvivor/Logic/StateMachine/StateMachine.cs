@@ -96,7 +96,15 @@ public partial class StateMachine : State
             case StateConstants.IdleState:
                 if (p_reason == StateExitReason.TargetDetected)
                 {
-                    nextStateName = StateConstants.ChaseStateName;
+                    if (NpcContext is IslandSurvivor.Scenes.NPC.NpcBase npc)
+                    {
+                        var target = (npc as IslandSurvivor.Scenes.NPC.Aggressive.AggressiveNpcBase)?.GetTarget();
+                        nextStateName = npc.GetDecisionState(target);
+                    }
+                    else
+                    {
+                        nextStateName = StateConstants.ChaseStateName;
+                    }
                 }
                 else if (p_reason == StateExitReason.CooldownFinished)
                 {

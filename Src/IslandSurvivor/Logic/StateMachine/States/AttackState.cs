@@ -35,13 +35,19 @@ public partial class AttackState : State
             string animSuffix = "_Side";
             string direction = "Right";
 
+            bool handledTargetDirection = false;
+
             if (NpcContext is IslandSurvivor.Scenes.NPC.Aggressive.AggressiveNpcBase aggNpc)
             {
                 var target = aggNpc.GetTarget();
-                if (target != null)
+                if (GodotObject.IsInstanceValid(target))
                 {
                     // Lock direction toward target immediately to prevent jitter during attack animation
-                    aggNpc.LockedDirection = (target.GlobalPosition - NpcContext.GlobalPosition).Normalized();
+                    Vector2 safeDir = NpcContext.GlobalPosition.DirectionTo(target.GlobalPosition);
+                    if (safeDir != Vector2.Zero)
+                    {
+                        aggNpc.LockedDirection = safeDir;
+                    }
                     Vector2 toTarget = aggNpc.LockedDirection;
 
                     if (System.Math.Abs(toTarget.Y) > System.Math.Abs(toTarget.X))
@@ -66,9 +72,12 @@ public partial class AttackState : State
                             m_sprite.FlipH = toTarget.X < 0;
                         }
                     }
+
+                    handledTargetDirection = true;
                 }
             }
-            else
+
+            if (!handledTargetDirection)
             {
                 // Fallback for non-aggressive NPCs or missing target
                 if (m_sprite != null)
