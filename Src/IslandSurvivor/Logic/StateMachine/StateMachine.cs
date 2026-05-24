@@ -36,7 +36,7 @@ public partial class StateMachine : State
         {
             if (child is State state)
             {
-                m_states[new StringName(child.Name)] = state;
+                m_states[state.Name] = state;
                 state.Initialize(this, p_npcContext);
                 state.StateFinished += OnStateFinished;
             }
@@ -90,7 +90,7 @@ public partial class StateMachine : State
     {
         if (p_sourceState != m_currentState) return;
 
-        StringName nextStateName = new StringName();
+        StringName nextStateName = null;
 
         switch (p_sourceState.Name.ToString())
         {
@@ -180,15 +180,23 @@ public partial class StateMachine : State
                 return;
         }
 
-        if (!nextStateName.IsEmpty && m_states.ContainsKey(nextStateName))
+        if (nextStateName != null && m_states.ContainsKey(nextStateName))
         {
             if (NpcContext != null && Engine.IsEditorHint() == false)
             {
                 GD.Print($"[Frame: {Engine.GetPhysicsFrames()}] [{NpcContext.Name}] [StateMachine] TRANSITION: {p_sourceState.Name} -> {nextStateName}");
             }
-            ForceTransition(nextStateName.ToString());
+
+            if (m_currentState?.Name == nextStateName)
+            {
+                m_currentState.Exit();
+                m_currentState.Enter();
+                return;
+            }
+
+            ForceTransition(nextStateName);
         }
-        else if (!nextStateName.IsEmpty)
+        else if (nextStateName != null)
         {
             if (NpcContext != null && Engine.IsEditorHint() == false)
             {
@@ -232,10 +240,7 @@ public partial class StateMachine : State
         {
             if (distSquared < MinAttackRange * MinAttackRange)
             {
-                if (m_states.ContainsKey(StateConstants.RepositionStateName))
-                {
-                    return StateConstants.RepositionStateName;
-                }
+                return StateConstants.RepositionStateName;
             }
         }
 
@@ -263,12 +268,11 @@ public partial class StateMachine : State
         }
     }
 
-    public void ForceTransition(string p_targetStateName)
+    public void ForceTransition(StringName p_targetStateName)
     {
-        StringName targetName = new StringName(p_targetStateName);
-        if (!m_states.ContainsKey(targetName)) return;
+        if (!m_states.ContainsKey(p_targetStateName)) return;
 
-        if (m_currentState?.Name == targetName)
+        if (m_currentState?.Name == p_targetStateName)
         {
             m_currentState.Exit();
             m_currentState.Enter();
@@ -276,7 +280,7 @@ public partial class StateMachine : State
         }
 
         m_currentState?.Exit();
-        m_currentState = m_states[targetName];
+        m_currentState = m_states[p_targetStateName];
         m_currentState.Enter();
     }
 }
