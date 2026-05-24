@@ -156,7 +156,7 @@ public partial class AttackController : Node
 
         EmitSignal(SignalName.AttackActionTriggered);
 
-        if (m_currentActiveArea != null)
+        if (GodotObject.IsInstanceValid(m_currentActiveArea))
         {
             m_currentActiveArea.Monitoring = true;
 
@@ -191,11 +191,11 @@ public partial class AttackController : Node
     private void EndAttack()
     {
         IsAttacking = false;
-        if (m_currentActiveArea != null)
+        if (GodotObject.IsInstanceValid(m_currentActiveArea))
         {
             m_currentActiveArea.Monitoring = false;
-            m_currentActiveArea = null;
         }
+        m_currentActiveArea = null;
         m_hitTargetsThisAttack.Clear();
         EmitSignal(SignalName.AttackFinished);
     }
