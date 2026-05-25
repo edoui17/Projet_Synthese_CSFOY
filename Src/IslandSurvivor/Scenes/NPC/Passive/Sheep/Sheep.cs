@@ -1,15 +1,12 @@
-using Godot;
-using System;
-using Core.Domain;
+namespace IslandSurvivor.Scenes.NPC.Passive;
+
 using IslandSurvivor.Logic.Entities;
-using IslandSurvivor.Interfaces;
-using IslandSurvivor.Nodes.Movement;
-using Core.Interfaces;
-using Core.Interfaces.Stats;
-using IslandSurvivor.Nodes;
+using Core.Domain;
 using Core.Managers.Stats;
-using IslandSurvivor.Scenes.NPC.Passive;
+using Godot;
 using IslandSurvivor.Globals;
+using IslandSurvivor.Nodes;
+using System;
 
 public partial class Sheep : PassiveNpcBase
 {
@@ -40,7 +37,7 @@ public partial class Sheep : PassiveNpcBase
 
     private void OnIdleSoundTimeout()
     {
-        if (CurrentState != NpcStates.DEAD)
+        if (CurrentState != IslandSurvivor.Logic.StateMachine.StateConstants.DeathStateName)
         {
             if (IdleSound != null)
                 AudioManager.Instance?.PlaySound2D(IdleSound, GlobalPosition, p_volumeLinear: IdleVolume, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
@@ -50,10 +47,9 @@ public partial class Sheep : PassiveNpcBase
             m_idleSoundTimer!.WaitTime = new Random().Next(5, 20);
         }
     }
-
     protected override void HandleDeath(object? p_attacker = null)
     {
-        m_passiveController.SetDead();
+        m_stateMachine?.ForceTransition(IslandSurvivor.Logic.StateMachine.StateConstants.DeathStateName);
 
         if (ServiceRegistry.Instance != null)
         {
@@ -62,19 +58,58 @@ public partial class Sheep : PassiveNpcBase
 
         if (m_wasKilledByPlayer)
         {
-            int baseMeatAmount = (int)(GD.Randi() % 3) + 1; // 1 to 3 meat
-            int meatAmount = IslandSurvivor.Logic.ResourceUtils.CalculateYield(baseMeatAmount, p_attacker);
+            Random random = new();
+            int meatAmount = random.Next(1, 4);
 
-            ResourceItem meatResource = new ResourceItem("meat_01", "Viande", "Meat", "res://Assets/TinySwords/TinySwords(Update010)/Deco/17.png");
-
-            if (SignalManager.Instance != null)
+            float luck = 0f;
+            if (p_attacker is Node godotAttacker)
             {
-                SignalManager.Instance.EmitMaterialDestroyed(this, meatResource, meatAmount);
-                GD.Print($"Sheep died. Sent {meatAmount} meat to inventory.");
+                StatManager attackerStats = godotAttacker.GetNodeOrNull<StatManager>("StatManager");
+                if (attackerStats != null)
+                {
+                    luck = attackerStats.GetCurrentValue(StatType.Luck);
+                }
+            }
+
+            float bonusChance = luck * 0.05f;
+            int bonusQuantity = (int)bonusChance;
+            float fractionalChance = bonusChance - bonusQuantity;
+
+            if (random.NextDouble() < fractionalChance)
+            {
+                bonusQuantity++;
+            }
+
+            meatAmount += bonusQuantity;
+
+            ResourceItem meatResource = new ResourceItem("meat_01", "Viande", "Meat", "res://Assets/TinySwords/Terrain/Meat Resource/Meat Resource.png");
+
+            Node2D? targetNode = p_attacker as Node2D;
+            Vector2 fallbackPosition = targetNode != null ? targetNode.GlobalPosition : GlobalPosition;
+
+            PackedScene dropScene = GD.Load<PackedScene>("res://Scenes/Ressources/ResourceDrop.tscn");
+            if (dropScene != null)
+            {
+                for (int i = 0; i < meatAmount; i++)
+                {
+                    if (dropScene.Instantiate() is IslandSurvivor.Scenes.Ressources.ResourceDrop drop)
+                    {
+                        drop.Initialize(meatResource, 1, GlobalPosition, targetNode, fallbackPosition);
+                        GetParent().AddChild(drop);
+                    }
+                }
             }
             else
             {
-                GD.PrintErr("SignalManager is not available.");
+                if (SignalManager.Instance != null)
+                {
+                    SignalManager.Instance.EmitMaterialDestroyed(this, meatResource, meatAmount);
+                    GD.Print($"Sheep died. Sent {meatAmount} meat to inventory via SignalManager.");
+                }
+                else
+                {
+                    GD.PrintErr("SignalManager is not available.");
+                }
             }
         }
 
@@ -84,7 +119,7 @@ public partial class Sheep : PassiveNpcBase
             AudioManager.Instance?.PlaySound2D(DeathSoundKey, GlobalPosition, p_volumeLinear: DeathVolume, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
 
 
-        QueueFree();
+
     }
     protected override void OnDamageTaken(Node2D p_attacker)
     {

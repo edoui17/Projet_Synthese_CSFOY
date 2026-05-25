@@ -75,6 +75,10 @@ public partial class DefeatMenu : CanvasLayer
     public void _on_return_menu_btn_pressed()
     {
         GetTree().Paused = false;
+
+        // Notify the SessionManager to clean up state before transitioning
+        SignalManager.Instance?.EmitSignal(SignalManager.SignalName.SessionEnded, false);
+
         GetTree().ChangeSceneToFile("res://Scenes/MainMenu/MainMenu/MainMenu.tscn");
     }
 

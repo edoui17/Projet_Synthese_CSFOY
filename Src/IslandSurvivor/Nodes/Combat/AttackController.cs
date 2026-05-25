@@ -1,79 +1,70 @@
+namespace IslandSurvivor.Nodes.Combat;
+
 using Godot;
-using System.Collections.Generic;
-using Core.Interfaces.Stats;
-using Core.Managers.Stats;
 using IslandSurvivor.Enums;
 using IslandSurvivor.Interfaces;
 using IslandSurvivor.Logic;
-
-namespace IslandSurvivor.Nodes.Combat;
+using Core.Interfaces.Stats;
+using Core.Managers.Stats;
+using System.Collections.Generic;
 
 [GlobalClass]
 public partial class AttackController : Node
 {
-    [Signal]
-    public delegate void AttackStartedEventHandler();
-
-    [Signal]
-    public delegate void TargetHitEventHandler(Node p_target, int p_damageDealt);
-
-    [Signal]
-    public delegate void AttackFinishedEventHandler();
-
-    [Signal]
-    public delegate void AttackActionTriggeredEventHandler();
-
-    [Export] public StatManager? Stats { get; set; }
-    [Export] public EntityFaction Faction { get; set; } = EntityFaction.None;
+    [Signal] public delegate void AttackStartedEventHandler();
+    [Signal] public delegate void AttackFinishedEventHandler();
+    [Signal] public delegate void AttackActionTriggeredEventHandler();
+    [Signal] public delegate void TargetHitEventHandler(Node p_target, int p_damage);
 
     [Export] public float BaseAttackCooldown { get; set; } = 1.0f;
-
+    [Export] public EntityFaction Faction { get; set; } = EntityFaction.Player;
     [Export] public string AttackAnimationName { get; set; } = "Attack";
-    private StringName m_cachedAttackAnimationName = null!;
 
-    public void SetAttackAnimation(string p_animationName)
+    public StatManager? Stats { get; set; }
+
+    private StringName m_cachedAttackAnimationName = new StringName();
+
+    public void SetAttackAnimation(string p_animName)
     {
-        AttackAnimationName = p_animationName;
-        m_cachedAttackAnimationName = new StringName(AttackAnimationName);
+        AttackAnimationName = p_animName;
+        m_cachedAttackAnimationName = new StringName(p_animName);
     }
 
-    private AnimatedSprite2D? m_attackSprite;
-    public AnimatedSprite2D? AttackSprite
+    // Unused, keeping for API compatibility if something binds to it, but it no longer drives frame events.
+    private Sprite2D? m_attackSprite;
+    public Sprite2D? AttackSprite
     {
         get => m_attackSprite;
+        set => m_attackSprite = value;
+    }
+
+    private AnimationPlayer? m_animationPlayer;
+    public AnimationPlayer? AttackAnimationPlayer
+    {
+        get => m_animationPlayer;
         set
         {
-            if (m_attackSprite != null)
+            if (m_animationPlayer != null)
             {
-                if (m_attackSprite.IsConnected(AnimatedSprite2D.SignalName.FrameChanged, new Callable(this, MethodName.OnFrameChanged)))
+                if (m_animationPlayer.IsConnected(AnimationPlayer.SignalName.AnimationFinished, new Callable(this, MethodName.OnAnimationFinished)))
                 {
-                    m_attackSprite.Disconnect(AnimatedSprite2D.SignalName.FrameChanged, new Callable(this, MethodName.OnFrameChanged));
-                }
-                if (m_attackSprite.IsConnected(AnimatedSprite2D.SignalName.AnimationFinished, new Callable(this, MethodName.OnAnimationFinished)))
-                {
-                    m_attackSprite.Disconnect(AnimatedSprite2D.SignalName.AnimationFinished, new Callable(this, MethodName.OnAnimationFinished));
+                    m_animationPlayer.Disconnect(AnimationPlayer.SignalName.AnimationFinished, new Callable(this, MethodName.OnAnimationFinished));
                 }
             }
-
-            m_attackSprite = value;
-
-            if (m_attackSprite != null)
+            m_animationPlayer = value;
+            if (m_animationPlayer != null)
             {
-                m_attackSprite.Connect(AnimatedSprite2D.SignalName.FrameChanged, new Callable(this, MethodName.OnFrameChanged));
-                m_attackSprite.Connect(AnimatedSprite2D.SignalName.AnimationFinished, new Callable(this, MethodName.OnAnimationFinished));
+                m_animationPlayer.Connect(AnimationPlayer.SignalName.AnimationFinished, new Callable(this, MethodName.OnAnimationFinished));
             }
         }
     }
 
-    [Export] public int ActionFrame { get; set; } = 2;
-
     private float m_cooldownTimer = 0f;
-    private bool m_hasTriggeredAction = false;
 
     public bool IsAttacking { get; private set; } = false;
     public bool CanAttack => !IsAttacking && m_cooldownTimer <= 0f;
 
-    private System.Collections.Generic.Dictionary<string, Area2D> m_directionAreas = new();
+    private Dictionary<string, Area2D> m_directionAreas = new();
     private HashSet<object> m_hitTargetsThisAttack = new();
     private Area2D? m_currentActiveArea;
     private Node? m_owner;
@@ -92,23 +83,11 @@ public partial class AttackController : Node
         }
     }
 
-    private void OnFrameChanged()
+    private void OnAnimationFinished(Godot.StringName p_animName)
     {
-        if (AttackSprite == null || !IsAttacking) return;
+        if (!IsAttacking) return;
 
-        if (AttackSprite.Animation == m_cachedAttackAnimationName && AttackSprite.Frame >= ActionFrame && !m_hasTriggeredAction)
-        {
-            ExecuteAttackHit();
-            EmitSignal(SignalName.AttackActionTriggered);
-            m_hasTriggeredAction = true;
-        }
-    }
-
-    private void OnAnimationFinished()
-    {
-        if (AttackSprite == null || !IsAttacking) return;
-
-        if (AttackSprite.Animation == m_cachedAttackAnimationName)
+        if (p_animName == m_cachedAttackAnimationName)
         {
             CancelAttack();
         }
@@ -124,7 +103,6 @@ public partial class AttackController : Node
         {
             m_cooldownTimer -= delta;
         }
-
     }
 
     public void RegisterArea(string p_direction, Area2D p_area)
@@ -132,7 +110,6 @@ public partial class AttackController : Node
         m_directionAreas[p_direction] = p_area;
         p_area.Monitoring = false;
 
-        // Remove existing connections to prevent duplicates
         if (p_area.IsConnected(Area2D.SignalName.AreaEntered, new Callable(this, MethodName.OnAreaEntered)))
         {
             p_area.Disconnect(Area2D.SignalName.AreaEntered, new Callable(this, MethodName.OnAreaEntered));
@@ -146,76 +123,98 @@ public partial class AttackController : Node
         p_area.Connect(Area2D.SignalName.BodyEntered, new Callable(this, MethodName.OnBodyEntered));
     }
 
-    public bool TryAttack(string p_direction)
+  public bool TryAttack(string p_direction)
+  {
+    // 1. Force a clean state before starting
+    if (IsAttacking)
     {
-        if (!CanAttack) return false;
-
-        Area2D? area = null;
-        m_directionAreas.TryGetValue(p_direction, out area);
-
-        // For ranged enemies, they might not have areas registered, so we allow it to proceed without one.
-
-        IsAttacking = true;
-        m_hasTriggeredAction = false;
-        m_hitTargetsThisAttack.Clear();
-
-        float speedStat = Stats?.GetCurrentValue(StatType.Speed) ?? 0f;
-
-        // Ensure cooldown scales with speed, but attacks are exclusively animation-driven
-        float cooldown = CombatMath.CalculateTime(BaseAttackCooldown, speedStat, 0.2f);
-        m_cooldownTimer = cooldown;
-
-        m_currentActiveArea = area;
-
-        EmitSignal(SignalName.AttackStarted);
-        return true;
+      GD.PushWarning("TryAttack called while already attacking. Forcing cleanup.");
+      EndAttack();
     }
 
-    public void ExecuteAttackHit()
+    if (!CanAttack) return false;
+
+    IsAttacking = true;
+    m_hitTargetsThisAttack.Clear();
+
+    // 2. Try getting a registered hitbox. If none exist (e.g., Archer), that's fine.
+    if (m_directionAreas.TryGetValue(p_direction, out Area2D? area) && GodotObject.IsInstanceValid(area))
     {
-        if (!IsAttacking) return;
-
-        if (m_currentActiveArea != null)
-        {
-            m_currentActiveArea.Monitoring = true;
-
-            // Manually check for already overlapping bodies and areas to prevent missed hits
-            var overlappingBodies = m_currentActiveArea.GetOverlappingBodies();
-            foreach (var body in overlappingBodies)
-            {
-                ProcessHit(body);
-            }
-
-            var overlappingAreas = m_currentActiveArea.GetOverlappingAreas();
-            foreach (var area in overlappingAreas)
-            {
-                ProcessHit(area);
-                ProcessHit(area.GetParent());
-            }
-        }
+      m_currentActiveArea = area;
+    }
+    else
+    {
+      m_currentActiveArea = null;
     }
 
-    public void CancelAttack()
+    // ... proceed with animation
+    if (m_animationPlayer != null && !string.IsNullOrEmpty(AttackAnimationName))
     {
-        if (IsAttacking)
-        {
-            EndAttack();
-        }
+      m_animationPlayer.Play(AttackAnimationName);
+    }
+    return true;
+  }
+
+  // Public method intended to be called exclusively by the Godot AnimationPlayer via a Method Track
+  public void ExecuteAttackHit()
+  {
+    // Ensure we are still in a valid state
+    if (!IsAttacking) return;
+
+    EmitSignal(SignalName.AttackActionTriggered);
+
+    // Ranged units or units without specific hitboxes will have m_currentActiveArea as null
+    if (!GodotObject.IsInstanceValid(m_currentActiveArea)) return;
+
+    m_currentActiveArea.Monitoring = true;
+
+    // Use CallDeferred to ensure we aren't modifying physics state 
+    // mid-frame during an animation playback
+    Callable.From(() => {
+      if (!GodotObject.IsInstanceValid(m_currentActiveArea)) return;
+
+      var overlappingBodies = m_currentActiveArea.GetOverlappingBodies();
+      foreach (var body in overlappingBodies) ProcessHit(body);
+
+      var overlappingAreas = m_currentActiveArea.GetOverlappingAreas();
+      foreach (var area in overlappingAreas)
+      {
+        ProcessHit(area);
+        ProcessHit(area.GetParent());
+      }
+    }).CallDeferred();
+  }
+
+  public void CancelAttack()
+  {
+    // The previous EndAttack() method might be too aggressive.
+    // Let's make it null-safe and check if we are already finished.
+    if (!IsAttacking) return;
+
+    EndAttack();
+  }
+
+  public void ResetCooldown()
+    {
+        m_cooldownTimer = 0f;
     }
 
-    private void EndAttack()
+  private void EndAttack()
+  {
+    IsAttacking = false;
+
+    // Safety check: ensure we don't access a freed object
+    if (GodotObject.IsInstanceValid(m_currentActiveArea))
     {
-        IsAttacking = false;
-        if (m_currentActiveArea != null)
-        {
-            m_currentActiveArea.Monitoring = false;
-            m_currentActiveArea = null;
-        }
-        m_hitTargetsThisAttack.Clear();
-        EmitSignal(SignalName.AttackFinished);
+      m_currentActiveArea.Monitoring = false;
     }
 
-    private void OnAreaEntered(Area2D p_area)
+    m_currentActiveArea = null;
+    m_hitTargetsThisAttack.Clear();
+    EmitSignal(SignalName.AttackFinished);
+  }
+
+  private void OnAreaEntered(Area2D p_area)
     {
         ProcessHit(p_area);
         ProcessHit(p_area.GetParent());

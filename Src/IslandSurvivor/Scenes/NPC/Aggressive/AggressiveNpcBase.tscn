@@ -2,9 +2,17 @@
 
 [ext_resource type="PackedScene" uid="uid://npcbase12345" path="res://Scenes/NPC/NpcBase.tscn" id="1_scene"]
 [ext_resource type="Script" uid="uid://c6hbk85k2al80" path="res://Scenes/NPC/Aggressive/AggressiveNpcBase.cs" id="2_script"]
-[ext_resource type="AudioStream" uid="uid://p2h5of6j816k" path="res://Assets/Audio/kenney_impact-sounds/Audio/jofae-swing-whoosh-110410.mp3" id="attack_stream"]
-[ext_resource type="AudioStream" uid="uid://cx4x6l0u0r3v" path="res://Assets/Audio/kenney_impact-sounds/Audio/impactGlass_medium_003.ogg" id="hurt_stream"]
+[ext_resource type="AudioStream" uid="uid://c3jjna55qsax6" path="res://Assets/Audio/kenney_impact-sounds/Audio/jofae-swing-whoosh-110410.mp3" id="attack_stream"]
+[ext_resource type="AudioStream" uid="uid://b2l1i3sytynb8" path="res://Assets/Audio/kenney_impact-sounds/Audio/impactGlass_medium_003.ogg" id="hurt_stream"]
 [ext_resource type="Script" uid="uid://bhrvrxhl1h86p" path="res://Nodes/Combat/AttackController.cs" id="4_attack"]
+[ext_resource type="PackedScene" uid="uid://dhogbp2sdg1fm" path="res://Nodes/State/Movement/IdleState.tscn" id="state_IdleState"]
+[ext_resource type="PackedScene" uid="uid://dvpfx8vuoy433" path="res://Nodes/State/Movement/WanderState.tscn" id="state_WanderState"]
+[ext_resource type="PackedScene" uid="uid://6ct74ht3u7xs" path="res://Nodes/State/Movement/ChaseState.tscn" id="state_ChaseState"]
+[ext_resource type="PackedScene" uid="uid://k0ufhgrxaplu" path="res://Nodes/State/Combat/AttackState.tscn" id="state_AttackState"]
+[ext_resource type="PackedScene" uid="uid://cwnlheloaytr2" path="res://Nodes/State/Combat/RecoveryState.tscn" id="state_RecoveryState"]
+[ext_resource type="PackedScene" uid="uid://dos0ijyia15w6" path="res://Nodes/State/Combat/WindUpState.tscn" id="state_WindUpState"]
+[ext_resource type="PackedScene" uid="uid://c5fchvpan65ig" path="res://Nodes/State/Core/DeathState.tscn" id="state_DeathState"]
+
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_base"]
 radius = 15.0
@@ -41,3 +49,20 @@ script = ExtResource("4_attack")
 Stats = NodePath("../StatManager")
 Faction = 2
 BaseAttackCooldown = 2.0
+
+[node name="StateMachine" parent="." index="7"]
+InitialState = NodePath("IdleState")
+
+[node name="IdleState" parent="StateMachine" index="0" instance=ExtResource("state_IdleState")]
+
+[node name="WanderState" parent="StateMachine" index="1" instance=ExtResource("state_WanderState")]
+
+[node name="ChaseState" parent="StateMachine" index="2" instance=ExtResource("state_ChaseState")]
+
+[node name="WindUpState" parent="StateMachine" index="3" instance=ExtResource("state_WindUpState")]
+
+[node name="AttackState" parent="StateMachine" index="4" instance=ExtResource("state_AttackState")]
+
+[node name="RecoveryState" parent="StateMachine" index="5" instance=ExtResource("state_RecoveryState")]
+
+[node name="DeathState" parent="StateMachine" index="6" instance=ExtResource("state_DeathState")]

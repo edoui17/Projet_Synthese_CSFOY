@@ -137,11 +137,34 @@ public class StatTracker : IStatTracker
         }
     }
 
-    public void AddPermanentBonus(StatType p_statType, float p_amount)
+    public void AddSessionBonus(StatType p_statType, float p_amount)
     {
         if (m_stats.TryGetValue(p_statType, out IStat? stat))
         {
             stat.AddBonus(p_amount);
+        }
+    }
+
+    public void ResetStats()
+    {
+        foreach (IStat stat in m_stats.Values)
+        {
+            stat.ClearBonus();
+        }
+
+        if (m_stats.TryGetValue(StatType.Health, out IStat? healthStat))
+        {
+            healthStat.SetCurrentValue(healthStat.EffectiveMaxValue);
+        }
+
+        if (m_stats.TryGetValue(StatType.Level, out IStat? levelStat))
+        {
+            levelStat.SetCurrentValue(1f);
+        }
+
+        if (m_stats.TryGetValue(StatType.Experience, out IStat? xpStat))
+        {
+            xpStat.SetCurrentValue(0f);
         }
     }
 }

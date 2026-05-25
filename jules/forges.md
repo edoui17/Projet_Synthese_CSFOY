@@ -325,3 +325,17 @@ When triggering updates (e.g., UI upgrades emitting events to a decoupled compon
 - **Validation des Credentials** : Le flux de Login du jeu valide systématiquement les identifiants (Username/Password) auprès de l'endpoint d'authentification de l'API (`/api/auth/login`) avant d'autoriser l'accès aux fonctionnalités en ligne.
 - **Dépendance SQL Server** : Le serveur de base de données (SQL Server) doit être actif et accessible par l'API pour permettre l'authentification initiale et l'obtention du `SessionToken`.
 - **Gestion de l'Indisponibilité (503)** : Si la base de données est arrêtée ou inaccessible, l'API renvoie une erreur 503 (via `ExceptionHandlingMiddleware`). Le client intercepte cette erreur, lève une alerte visuelle et propose le basculement vers le mode hors ligne basé sur le cache local (`user://session.cfg` et `profile_cache.json`).
+
+## Godot Quirks & Line-of-Sight
+For instant line-of-sight validation (e.g., preventing melee attacks or detection through walls), prefer using `PhysicsRayQueryParameters2D` querying the `DirectSpaceState` against the map collision mask (Layer 1), rather than relying on `RayCast2D` nodes to avoid node-update and local-coordinate complexities.
+
+## 2026-05-30 - US 20.0.6 : Godot Node-Based State Machine Architecture
+- **Composition over Inheritance:** Replaced monolithic C# `_PhysicsProcess` controllers with Godot nodes using a strict Composition pattern. The `StateMachine` (parent) orchestrates `State` (child) nodes (e.g., `IdleState`, `ChaseState`), allowing designers to mix-and-match logic directly in the Inspector.
+- **Node Injection without Destruction:** Refactored complex Godot scenes (`.tscn`) to replace `AnimatedSprite2D` with `Sprite2D` and `AnimationPlayer`. Modified scenes via controlled script injection to preserve legacy scene configurations, avoiding destructive text-replacements on complex resources like `SpriteFrames`.
+- **Animation Fallbacks:** Implemented an `AnimationPlayer.HasAnimation` fallback logic inside State nodes. If the required `AnimationName` isn't configured, it safely defaults to `FallbackAnimationName` (e.g. `"Error"`), avoiding game crashes when designers miss an animation setup.
+- **Centralized Visual State:** Moved sprite flipping (`FlipH`) logic out of individual behaviors and centralized it within the `MovementController.Move()` method, tying visual orientation directly to the physics vector.
+
+## Session Lifecycle Management
+Discovered that without a dedicated Godot `WorldManager`, `Autoload`s effectively serve as lifecycle hooks. By attaching a single `SessionManager` autoload solely dedicated to listening for `SessionEnded`, we can isolate state-reset behavior away from the Main Menu, ensuring that navigation between menus doesn't inadvertently wipe state unless explicitly broadcasted.
+
+Additionally, when implementing `ResetStats` on `StatTracker`, it's critical to restore `Health` specifically to its `EffectiveMaxValue` (using `SetCurrentValue`) rather than `0`, while other volatile stats (Speed, Attack modifiers) revert to `0`.

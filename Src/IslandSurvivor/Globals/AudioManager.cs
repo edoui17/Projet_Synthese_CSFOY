@@ -60,7 +60,7 @@ public partial class AudioManager : Node
         // Enemy Sounds
         RegisterSound("Enemy_Swing_Default", "res://Assets/Audio/kenney_impact-sounds/Audio/jofae-swing-whoosh-110410.mp3");
         RegisterSound("Enemy_Hurt_Default", "res://Assets/Audio/kenney_impact-sounds/Audio/impactGlass_medium_003.ogg");
-        RegisterSound("Enemy_Death_Default", "res://Assets/Sounds/Combat/enemy_death.wav");
+        RegisterSound("Enemy_Death_Default", "res://Assets/Audio/kenney_impact-sounds/Audio/001_we-lost.wav");
 
         // Specific Enemy Sounds (demonstrating separation)
         RegisterSound("Lancer_Attack", "res://Assets/Audio/kenney_impact-sounds/Audio/jofae-swing-whoosh-110410.mp3", -2f); // Slightly quieter
@@ -69,7 +69,7 @@ public partial class AudioManager : Node
 
         // Player Sounds
         RegisterSound("Player_Swing", "res://Assets/Audio/kenney_impact-sounds/Audio/jofae-swing-whoosh-110410.mp3");
-        RegisterSound("Player_Hurt", "res://Assets/Audio/kenney_impact-sounds/Audio/freesound_community-alphascream001-98301.mp3");
+        RegisterSound("Player_Hurt", "res://Assets/Audio/kenney_impact-sounds/Audio/002_meow.wav");
         RegisterSound("Player_Death", "res://Assets/Audio/kenney_impact-sounds/Audio/stickypix7996-bell-toll-407826.mp3");
         RegisterSound("Level_Up", "res://Assets/Audio/kenney_impact-sounds/Audio/floraphonic-cute-level-up-2-189851.mp3");
 
@@ -85,7 +85,7 @@ public partial class AudioManager : Node
 
         // NPC Sounds
         RegisterSound("Sheep_Hurt", "res://Assets/Audio/kenney_impact-sounds/Audio/scottishperson-sound-effect-woman-scream-236488.mp3");
-        RegisterSound("Sheep_Idle", "res://Assets/Audio/kenney_impact-sounds/Audio/stu9-monsheep-352819.mp3"); 
+        RegisterSound("Sheep_Idle", "res://Assets/Audio/kenney_impact-sounds/Audio/stu9-monsheep-352819.mp3");
     }
 
     private void RegisterSound(string p_key, string p_path, float p_defaultVolumeDb = 0f, float p_defaultPitchScale = 1f)

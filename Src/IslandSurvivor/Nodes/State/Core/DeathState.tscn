@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://sl1st4eaw0nji"]
+
+[ext_resource type="Script" uid="uid://y8k9s7gwlk22b" path="res://Logic/StateMachine/States/DeathState.cs" id="1_script"]
+
+[node name="DeathState" type="Node"]
+script = ExtResource("1_script")

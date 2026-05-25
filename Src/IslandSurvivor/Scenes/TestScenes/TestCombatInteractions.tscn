@@ -5,8 +5,10 @@
 [ext_resource type="PackedScene" uid="uid://mqagd60eodos" path="res://Scenes/NPC/Passive/Sheep/Sheep.tscn" id="4_sheep"]
 [ext_resource type="PackedScene" uid="uid://cxftj0qybs1cs" path="res://Scenes/Ressources/Gold/Gold.tscn" id="5_gold"]
 [ext_resource type="PackedScene" uid="uid://cs7lisiu7vc7y" path="res://Scenes/Ressources/Rock/Rock.tscn" id="6_rock"]
+[ext_resource type="PackedScene" uid="uid://bt5vis3qswuxb" path="res://Scenes/NPC/Aggressive/Normal/Lancer/Lancer.tscn" id="7_4djp5"]
 [ext_resource type="PackedScene" uid="uid://rtx0k5qfaymn" path="res://Scenes/Ressources/Tree/ConiferTree.tscn" id="7_tree"]
-[ext_resource type="PackedScene" uid="uid://bt5vis3qswuxb" path="res://Scenes/NPC/Aggressive/Normal/Lancer/Lancer.tscn" id="9_crhun"]
+[ext_resource type="PackedScene" uid="uid://dyxx1q578y7t0" path="res://Scenes/NPC/Aggressive/Normal/Soldier/Soldier.tscn" id="8_crhun"]
+[ext_resource type="PackedScene" uid="uid://ms5y206nvi0v" path="res://Scenes/NPC/Aggressive/Normal/Archer/Archer.tscn" id="9_vji2q"]
 
 [node name="TestCombatInteractions" type="Node2D" unique_id=729654025]
 
@@ -19,12 +21,13 @@ y_sort_enabled = true
 
 [node name="Player" parent="Entities" unique_id=1193818014 instance=ExtResource("1_player")]
 position = Vector2(500, 300)
-
-[node name="Sheep" parent="Entities" unique_id=789769840 instance=ExtResource("4_sheep")]
-position = Vector2(700, 300)
+AttackSound = null
+HurtSound = null
+DeathSound = null
 
 [node name="Gold" parent="Entities" unique_id=669946831 instance=ExtResource("5_gold")]
 position = Vector2(500, 150)
+IconPath = ""
 
 [node name="Rock" parent="Entities" unique_id=6638947 instance=ExtResource("6_rock")]
 position = Vector2(350, 450)
@@ -32,4 +35,17 @@ position = Vector2(350, 450)
 [node name="ConiferTree" parent="Entities" unique_id=1434657654 instance=ExtResource("7_tree")]
 position = Vector2(650, 450)
 
-[node name="Lancer" parent="Entities" unique_id=1880312545 instance=ExtResource("9_crhun")]
+[node name="Lancer" parent="Entities" unique_id=1880312545 instance=ExtResource("7_4djp5")]
+
+[node name="Soldier" parent="Entities" unique_id=666187867 instance=ExtResource("8_crhun")]
+position = Vector2(1067, 8)
+
+[node name="Archer" parent="Entities" unique_id=61408674 instance=ExtResource("9_vji2q")]
+position = Vector2(536, 716)
+AttackRange = 60.0
+GuardChance = 0.3
+MinAttackRange = 80.0
+MaxAttackRange = 350.0
+
+[node name="Sheep" parent="Entities" unique_id=724644528 instance=ExtResource("4_sheep")]
+position = Vector2(609, 289)

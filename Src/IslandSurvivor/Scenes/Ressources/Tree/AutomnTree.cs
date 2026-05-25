@@ -16,13 +16,8 @@ public partial class AutomnTree : Area2D, ITree, IDamageable
 
     [Export] public string MaterialName { get; set; } = "Bois d'automne";
     [Export] public string MaterialType { get; set; } = "Wood";
-    [Export] public string IconPath { get; set; } = "res://Assets/TinySwords(FreePack)/TinySwords(FreePack)/Terrain/Resources/Wood/Trees/Tree4.png";
-
-    [ExportGroup("Audio")]
-    [Export] public float AudioMaxDistance { get; set; } = 2000f;
-    [Export] public float AudioAttenuation { get; set; } = 1f;
-    [Export] public float ImpactVolume { get; set; } = 1.0f;
-    [Export] public float DestroyVolume { get; set; } = 1.0f;
+    [Export] public string IconPath { get; set; } = "res://Assets/TinySwords/Terrain/Wood Resource/Wood Resource.png";
+    public string NpcType { get; set; } = "AutomnTree";
 
     private object? m_lastAttacker;
 
@@ -66,7 +61,31 @@ public partial class AutomnTree : Area2D, ITree, IDamageable
         int quantity = IslandSurvivor.Logic.ResourceUtils.CalculateYield(baseQuantity, p_attacker);
 
         var item = new Core.Domain.ResourceItem(EntityId, MaterialName, MaterialType, IconPath);
-        SignalManager.Instance.EmitMaterialDestroyed(this, item, quantity);
+
+        // Target is the player who mined it
+        Node2D targetNode = p_attacker as Node2D;
+        Vector2 fallbackPosition = targetNode != null ? targetNode.GlobalPosition : GlobalPosition;
+
+        // Spawn Resource Drops for tweening
+        PackedScene dropScene = GD.Load<PackedScene>("res://Scenes/Ressources/ResourceDrop.tscn");
+        if (dropScene != null)
+        {
+            for (int i = 0; i < quantity; i++)
+            {
+                if (dropScene.Instantiate() is IslandSurvivor.Scenes.Ressources.ResourceDrop drop)
+                {
+                    // Pass quantity 1 for each individual drop
+                    drop.Initialize(item, 1, GlobalPosition, targetNode, fallbackPosition);
+                    GetParent().AddChild(drop);
+                }
+            }
+        }
+        else
+        {
+            // Fallback if scene is not yet setup
+            SignalManager.Instance.EmitMaterialDestroyed(this, item, quantity);
+        }
+
         // Detach and play particles if they exist
         GpuParticles2D particles = GetNodeOrNull<GpuParticles2D>("DestructionParticles");
         if (particles != null)
@@ -83,8 +102,12 @@ public partial class AutomnTree : Area2D, ITree, IDamageable
             };
         }
 
-        // Try to play destroy sound 
-        AudioManager.Instance?.PlaySound2D("Resource_Rustling", GlobalPosition, p_volumeLinear: DestroyVolume, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
+        // Try to play destroy sound
+        AudioStream destroyStream = GD.Load<AudioStream>("res://Assets/Audio/kenney_impact-sounds/Audio/nematoki-old-tree-falls-493329.mp3");
+        if (destroyStream != null)
+        {
+            AudioManager.Instance?.PlaySound2D(destroyStream, GlobalPosition);
+        }
 
         QueueFree();
     }
@@ -99,10 +122,11 @@ public partial class AutomnTree : Area2D, ITree, IDamageable
         this.PlayHitFlash();
         this.PlayShake();
 
-        //Try to play impact sound
-        if (Stats.GetCurrentValue(StatType.Health) > 0)
+        // Try to play impact sound
+        AudioStream impactStream = GD.Load<AudioStream>("res://Assets/Audio/kenney_impact-sounds/Audio/impactWood_medium_000.ogg");
+        if (impactStream != null)
         {
-            AudioManager.Instance?.PlaySound2D("Impact_Wood_Light", GlobalPosition, p_volumeLinear: ImpactVolume, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
+            AudioManager.Instance?.PlaySound2D(impactStream, GlobalPosition);
         }
     }
 }

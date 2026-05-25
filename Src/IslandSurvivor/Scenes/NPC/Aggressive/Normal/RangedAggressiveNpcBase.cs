@@ -11,6 +11,29 @@ public partial class RangedAggressiveNpcBase : AggressiveNpcBase
     [ExportGroup("Animations")]
     [Export] public string AttackAnimationName { get; set; } = "Attack";
 
+    protected override Godot.StringName GetCombatDecisionState(float distanceSquared, float attackRangeSquared)
+    {
+        float maxAttackRangeSquared = MaxAttackRange * MaxAttackRange;
+        float minAttackRangeSquared = MinAttackRange * MinAttackRange;
+
+        if (distanceSquared > maxAttackRangeSquared)
+        {
+            return IslandSurvivor.Logic.StateMachine.StateConstants.ChaseStateName;
+        }
+
+        if (distanceSquared < minAttackRangeSquared)
+        {
+            return IslandSurvivor.Logic.StateMachine.StateConstants.RepositionStateName;
+        }
+
+        if (m_attackController != null && m_attackController.CanAttack)
+        {
+            return IslandSurvivor.Logic.StateMachine.StateConstants.WindUpStateName;
+        }
+
+        return IslandSurvivor.Logic.StateMachine.StateConstants.IdleStateName;
+    }
+
     public override void _Ready()
     {
         base._Ready();
@@ -19,8 +42,6 @@ public partial class RangedAggressiveNpcBase : AggressiveNpcBase
         {
             m_attackController.Stats = Stats;
             m_attackController.Faction = IslandSurvivor.Enums.EntityFaction.Enemy;
-            m_attackController.AttackSprite = m_animatedSprite;
-            m_attackController.ActionFrame = 5; // Arrow release frame
 
             m_attackController.AttackStarted += OnAttackStarted;
             m_attackController.AttackActionTriggered += ShootProjectile;
@@ -31,36 +52,8 @@ public partial class RangedAggressiveNpcBase : AggressiveNpcBase
         }
     }
 
-    protected override void InitializeController()
-    {
-        StoppingDistance = 250.0f;
-        m_agressorController = new RangedController(StoppingDistance);
-    }
-
-    protected override void HandleAttackState()
-    {
-        if (m_targetPlayer != null && m_attackController != null && m_attackController.CanAttack)
-        {
-            float distanceSquaredToPlayer = GlobalPosition.DistanceSquaredTo(m_targetPlayer.GlobalPosition);
-
-            if (distanceSquaredToPlayer <= StoppingDistance * StoppingDistance)
-            {
-                if (CheckLineOfSight())
-                {
-                    if (m_animatedSprite != null)
-                    {
-                        m_animatedSprite.FlipH = m_targetPlayer.GlobalPosition.X < GlobalPosition.X;
-                    }
-                    string direction = (m_animatedSprite != null && m_animatedSprite.FlipH) ? "Left" : "Right";
-                    m_attackController.TryAttack(direction);
-                }
-            }
-        }
-    }
-
     protected virtual void OnAttackStarted()
     {
-        PlayAttackAnimation(AttackAnimationName);
     }
 
     protected virtual void ShootProjectile()

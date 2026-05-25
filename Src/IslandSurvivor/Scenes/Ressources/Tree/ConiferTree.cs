@@ -17,6 +17,7 @@ public partial class ConiferTree : Area2D, ITree, IDamageable
     [Export] public string MaterialName { get; set; } = "Conifère";
     [Export] public string MaterialType { get; set; } = "Wood";
     [Export] public string IconPath { get; set; } = "res://Assets/Tiny Swords/Tiny Swords (Update 010)/Resources/Trees/Tree.png";
+    public string NpcType { get; set; } = "ConiferTree";
 
     [ExportGroup("Audio")]
     [Export] public float AudioMaxDistance { get; set; } = 2000f;
@@ -66,9 +67,52 @@ public partial class ConiferTree : Area2D, ITree, IDamageable
         int quantity = IslandSurvivor.Logic.ResourceUtils.CalculateYield(baseQuantity, p_attacker);
 
         var item = new Core.Domain.ResourceItem(EntityId, MaterialName, MaterialType, IconPath);
-        SignalManager.Instance.EmitMaterialDestroyed(this, item, quantity);
-        
-        AudioManager.Instance?.PlaySound2D("Resource_Rustling", GlobalPosition, p_volumeLinear: DestroyVolume, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
+
+        // Target is the player who mined it
+        Node2D targetNode = p_attacker as Node2D;
+        Vector2 fallbackPosition = targetNode != null ? targetNode.GlobalPosition : GlobalPosition;
+
+        // Spawn Resource Drops for tweening
+        PackedScene dropScene = GD.Load<PackedScene>("res://Scenes/Ressources/ResourceDrop.tscn");
+        if (dropScene != null)
+        {
+            for (int i = 0; i < quantity; i++)
+            {
+                if (dropScene.Instantiate() is IslandSurvivor.Scenes.Ressources.ResourceDrop drop)
+                {
+                    // Pass quantity 1 for each individual drop
+                    drop.Initialize(item, 1, GlobalPosition, targetNode, fallbackPosition);
+                    GetParent().AddChild(drop);
+                }
+            }
+        }
+        else
+        {
+            // Fallback if scene is not yet setup
+            SignalManager.Instance.EmitMaterialDestroyed(this, item, quantity);
+        }
+        // Detach and play particles if they exist
+        GpuParticles2D particles = GetNodeOrNull<GpuParticles2D>("DestructionParticles");
+        if (particles != null)
+        {
+            RemoveChild(particles);
+            GetParent().AddChild(particles);
+            particles.GlobalPosition = GlobalPosition;
+            particles.Emitting = true;
+            // Free particles after they finish (assume 2 seconds is enough)
+            GetTree().CreateTimer(2.0f).Timeout += () =>
+            {
+                if (GodotObject.IsInstanceValid(particles))
+                    particles.QueueFree();
+            };
+        }
+
+        // Try to play destroy sound
+        AudioStream destroyStream = GD.Load<AudioStream>("res://Assets/Audio/kenney_impact-sounds/Audio/nematoki-old-tree-falls-493329.mp3");
+        if (destroyStream != null)
+        {
+            AudioManager.Instance?.PlaySound2D(destroyStream, GlobalPosition);
+        }
 
         QueueFree();
     }
@@ -86,5 +130,13 @@ public partial class ConiferTree : Area2D, ITree, IDamageable
         }
 
         this.PlayHitFlash();
+        this.PlayShake();
+
+        // Try to play impact sound
+        AudioStream impactStream = GD.Load<AudioStream>("res://Assets/Audio/kenney_impact-sounds/Audio/impactWood_medium_000.ogg");
+        if (impactStream != null)
+        {
+            AudioManager.Instance?.PlaySound2D(impactStream, GlobalPosition);
+        }
     }
 }
