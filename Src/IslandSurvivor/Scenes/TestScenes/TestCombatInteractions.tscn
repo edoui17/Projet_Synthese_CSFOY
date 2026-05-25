@@ -25,15 +25,9 @@ AttackSound = null
 HurtSound = null
 DeathSound = null
 
-[node name="Sheep" parent="Entities" unique_id=789769840 instance=ExtResource("4_sheep")]
-position = Vector2(700, 300)
-collision_layer = 4
-collision_mask = 1
-IdleSound = null
-
 [node name="Gold" parent="Entities" unique_id=669946831 instance=ExtResource("5_gold")]
 position = Vector2(500, 150)
-IconPath = "sera a valider"
+IconPath = ""
 
 [node name="Rock" parent="Entities" unique_id=6638947 instance=ExtResource("6_rock")]
 position = Vector2(350, 450)
@@ -52,3 +46,6 @@ AttackRange = 60.0
 GuardChance = 0.3
 MinAttackRange = 80.0
 MaxAttackRange = 350.0
+
+[node name="Sheep" parent="Entities" unique_id=724644528 instance=ExtResource("4_sheep")]
+position = Vector2(609, 289)
