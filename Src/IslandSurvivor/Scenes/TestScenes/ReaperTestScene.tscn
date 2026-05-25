@@ -10,9 +10,3 @@ position = Vector2(200, 200)
 
 [node name="Reaper" parent="." unique_id=282848357 instance=ExtResource("2_reaper")]
 position = Vector2(500, 200)
-AttackSoundKey = ""
-AttackVolume = 1.0
-AttackRange = 60.0
-GuardChance = 0.3
-MinAttackRange = 80.0
-MaxAttackRange = 350.0

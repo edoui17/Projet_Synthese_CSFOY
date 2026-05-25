@@ -121,6 +121,30 @@ text = "Options"
 horizontal_alignment = 1
 vertical_alignment = 1
 
+[node name="LogoutBtn" type="TextureButton" parent="Panel/MenuTab/VBoxContainer" unique_id=2057456998]
+custom_minimum_size = Vector2(60, 120)
+layout_mode = 2
+texture_normal = ExtResource("3_o70k1")
+texture_pressed = ExtResource("4_kj5tk")
+texture_hover = ExtResource("5_k7m34")
+stretch_mode = 0
+
+[node name="LogoutLabel" type="Label" parent="Panel/MenuTab/VBoxContainer/LogoutBtn" unique_id=1342714579]
+custom_minimum_size = Vector2(0, 110)
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = -0.5
+offset_top = -15.5
+offset_right = -2.0
+offset_bottom = 94.5
+grow_horizontal = 2
+theme_override_fonts/font = SubResource("SystemFont_o70k1")
+theme_override_font_sizes/font_size = 50
+text = "Logout"
+horizontal_alignment = 1
+vertical_alignment = 1
+
 [node name="QuitGameBtn" type="TextureButton" parent="Panel/MenuTab/VBoxContainer" unique_id=2057456997]
 custom_minimum_size = Vector2(60, 120)
 layout_mode = 2
@@ -148,4 +172,5 @@ vertical_alignment = 1
 [connection signal="pressed" from="Panel/MenuTab/VBoxContainer/StartGameBtn" to="." method="_on_start_game_btn_pressed"]
 [connection signal="pressed" from="Panel/MenuTab/VBoxContainer/ScoreboardBtn" to="." method="_on_scoreboard_btn_pressed"]
 [connection signal="pressed" from="Panel/MenuTab/VBoxContainer/OptionsBtn" to="." method="_on_options_btn_pressed"]
+[connection signal="pressed" from="Panel/MenuTab/VBoxContainer/LogoutBtn" to="." method="_on_logout_btn_pressed"]
 [connection signal="pressed" from="Panel/MenuTab/VBoxContainer/QuitGameBtn" to="." method="_on_quit_game_btn_pressed"]
