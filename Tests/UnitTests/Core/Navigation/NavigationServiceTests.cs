@@ -36,7 +36,7 @@ public class NavigationServiceTests
         {
             Assert.False(string.IsNullOrEmpty(dest.Id));
             Assert.False(string.IsNullOrEmpty(dest.Biome));
-            Assert.True(dest.Difficulty > 0);
+            Assert.True(dest.Difficulty >= 0); // Poor difficulty maps to 0
             Assert.True(dest.ResourceCost >= 0); // The free island has 0 cost
         }
     }

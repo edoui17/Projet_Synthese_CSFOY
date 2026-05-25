@@ -1,6 +1,0 @@
-[gd_scene load_steps=2 format=3 uid="uid://tv17dq11ra3eo"]
-
-[ext_resource type="Script" uid="uid://gzzdp4e0bsiio" path="res://Logic/StateMachine/States/AttackState.cs" id="1_script"]
-
-[node name="AttackState" type="Node"]
-script = ExtResource("1_script")

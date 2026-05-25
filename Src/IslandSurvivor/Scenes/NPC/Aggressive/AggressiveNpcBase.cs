@@ -78,6 +78,11 @@ public partial class AggressiveNpcBase : NpcBase
 
         if (m_attackController != null && m_attackController.CanAttack)
         {
+            var windUp = m_stateMachine?.GetState(IslandSurvivor.Logic.StateMachine.StateConstants.WindUpStateName) as IslandSurvivor.Logic.StateMachine.States.WindUpState;
+            if (windUp != null)
+            {
+                // State routing is handled by specific NpcBase
+            }
             return IslandSurvivor.Logic.StateMachine.StateConstants.WindUpStateName;
         }
 
@@ -146,6 +151,12 @@ public partial class AggressiveNpcBase : NpcBase
         {
             ApplyLevelScaling();
         }
+
+        var levelLabel = GetNodeOrNull<Label>("LevelLabel");
+        if (levelLabel != null)
+        {
+            levelLabel.Text = $"Lvl {LevelIndex}";
+        }
     }
 
     protected virtual void InitializeController()
@@ -155,13 +166,9 @@ public partial class AggressiveNpcBase : NpcBase
 
     protected virtual void ApplyLevelScaling()
     {
-        float scalingFactor = 1.0f + 0.2f * (LevelIndex - 1);
-
-        float maxHealth = Stats.MaxHealth * scalingFactor;
-        float baseDamage = Stats.BaseAttackValue * scalingFactor;
-
-        IdleSpeed *= scalingFactor;
-        ChaseSpeed *= scalingFactor;
+        // Stats scaling is now purely handled by the EnemyStatsHandler Decorator
+        // using the Global Threat Score system. We only apply the color modulation here
+        // as a visual indicator of the enemy's raw level before map multipliers.
 
         if (m_sprite != null)
         {
@@ -173,10 +180,6 @@ public partial class AggressiveNpcBase : NpcBase
 
             m_sprite.SelfModulate = modulateColor;
         }
-
-        Stats.MaxHealth = maxHealth;
-        Stats.SetCurrentValue(Core.Managers.Stats.StatType.Health, maxHealth);
-        Stats.BaseAttackValue = baseDamage;
     }
 
     public override void _PhysicsProcess(double p_delta)

@@ -7,6 +7,7 @@ public partial class WindUpState : State
 {
     [ExportGroup("State Configuration")]
     [Export] public float WindUpDuration { get; set; } = 0.75f;
+    [Export] public StringName NextStateAfterWindup { get; set; } = StateConstants.MeleeAttackStateName;
 
     [ExportGroup("State Animations")]
     [Export] public string AnimationName { get; set; } = "WindUp";
