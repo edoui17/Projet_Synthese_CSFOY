@@ -70,7 +70,29 @@ public partial class NavigationMenu : Control
 
         if (isHome)
         {
-            // Add Boss Island Option
+            // Generate 2 random islands (1 Poor, 1 Normal/Hard)
+            m_currentOptions = m_navigationService.GenerateDestinations(2);
+
+            foreach (var destination in m_currentOptions)
+            {
+                var btn = new Button();
+                if (destination.ResourceCost == 0)
+                {
+                    btn.Text = $"Test Island {destination.Id.Substring(0, 5)} (Cost: 0, Type: {destination.Biome})";
+                }
+                else
+                {
+                    btn.Text = $"Island {destination.Id.Substring(0, 5)} (Cost: {destination.ResourceCost} Wood, {destination.ResourceCost} Stone, {destination.ResourceCost} Meat, {destination.ResourceCost} Gold | Type: {destination.Biome})";
+                }
+
+                // Local copy for the closure
+                IslandDestination destCopy = destination;
+                btn.Pressed += () => OnDestinationSelected(destCopy);
+
+                m_destinationsContainer.AddChild(btn);
+            }
+
+            // Add Boss Island Option at the bottom
             bool isBossReady = Managers.ProgressionManager.Instance.IsBossReady();
             int bossRequirement = Managers.ProgressionManager.Instance.Requirement != null
                 ? Managers.ProgressionManager.Instance.Requirement.BossLevelRequirement
@@ -100,28 +122,6 @@ public partial class NavigationMenu : Control
                 bossBtn.Disabled = true;
             }
             m_destinationsContainer.AddChild(bossBtn);
-
-            // Generate 5 random islands
-            m_currentOptions = m_navigationService.GenerateDestinations(5);
-
-            foreach (var destination in m_currentOptions)
-            {
-                var btn = new Button();
-                if (destination.ResourceCost == 0)
-                {
-                    btn.Text = $"Test Island {destination.Id.Substring(0, 5)} (Cost: 0, Type: {destination.Biome})";
-                }
-                else
-                {
-                    btn.Text = $"Island {destination.Id.Substring(0, 5)} (Cost: {destination.ResourceCost} Wood, {destination.ResourceCost} Stone, {destination.ResourceCost} Meat, {destination.ResourceCost} Gold | Type: {destination.Biome})";
-                }
-
-                // Local copy for the closure
-                IslandDestination destCopy = destination;
-                btn.Pressed += () => OnDestinationSelected(destCopy);
-
-                m_destinationsContainer.AddChild(btn);
-            }
         }
         else
         {
