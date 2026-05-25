@@ -8,6 +8,8 @@
 radius = 21.986078
 height = 70.16913
 
+[ext_resource type="PackedScene" uid="uid://cx6r1g1g1g1g1" path="res://Nodes/State/Combat/MeleeAttackState.tscn" id="state_MeleeAttackState"]
+
 [node name="MeleeAggressiveNpcBase" instance=ExtResource("1_scene")]
 script = ExtResource("2_script")
 
@@ -47,3 +49,4 @@ collision_mask = 4
 position = Vector2(30, 6)
 rotation = 1.5352188
 shape = SubResource("CapsuleShape2D_hitbox")
+[node name="MeleeAttackState" parent="StateMachine" index="4" instance=ExtResource("state_MeleeAttackState")]
