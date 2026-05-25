@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Core.Domain.Models;
 using Core.Events;
 using Core.Interfaces;
@@ -42,6 +43,20 @@ public class NavigationService : INavigationService
         {
             IslandDifficulty islandDifficulty = difficulties[m_random.Next(difficulties.Length)];
 
+            // When exactly 2 are requested (Poor + Normal/Hard), enforce it
+            if (p_count == 2)
+            {
+                if (i == 0)
+                {
+                    islandDifficulty = IslandDifficulty.Poor;
+                }
+                else
+                {
+                    IslandDifficulty[] paidDifficulties = { IslandDifficulty.Normal, IslandDifficulty.Hard };
+                    islandDifficulty = paidDifficulties[m_random.Next(paidDifficulties.Length)];
+                }
+            }
+
             // Adjust costs based on difficulty, as requested
             int resourceCost = 0;
             string biome = "Poor";
@@ -83,7 +98,8 @@ public class NavigationService : INavigationService
                 DangerLevel: dangerLevel
             ));
         }
-        return destinations.AsReadOnly();
+
+        return destinations.OrderBy(d => d.ResourceCost).ToList().AsReadOnly();
     }
 
     public bool TryNavigate(IslandDestination p_destination)
