@@ -201,6 +201,15 @@ public partial class EnemySpawnZone : Node2D, IEnemySpawnZone
         Node instance = p_scene.Instantiate();
         if (instance is AggressiveNpcBase enemyInstance)
         {
+            // Sync enemy level to player level via StatTracker BEFORE adding to tree
+            // so that AggressiveNpcBase._Ready() sees the correct level for coloring.
+            var statTracker = Globals.ServiceRegistry.Instance?.StatTracker;
+            if (statTracker != null)
+            {
+                enemyInstance.LevelIndex = (int)statTracker.GetCurrentValue(Core.Managers.Stats.StatType.Level);
+                if (enemyInstance.LevelIndex <= 0) enemyInstance.LevelIndex = 1;
+            }
+
             AddChild(enemyInstance);
             enemyInstance.Position = p_localPos;
             enemyInstance.Visible = true;
@@ -216,14 +225,6 @@ public partial class EnemySpawnZone : Node2D, IEnemySpawnZone
                 {
                     isElite = GD.Randf() <= 0.20f;
                 }
-            }
-
-            // Sync enemy level to player level via StatTracker
-            var statTracker = Globals.ServiceRegistry.Instance?.StatTracker;
-            if (statTracker != null)
-            {
-                enemyInstance.LevelIndex = (int)statTracker.GetCurrentValue(Core.Managers.Stats.StatType.Level);
-                if (enemyInstance.LevelIndex <= 0) enemyInstance.LevelIndex = 1;
             }
 
             // Try to find the EnemyStatsHandler decorator to apply the threat scaling
