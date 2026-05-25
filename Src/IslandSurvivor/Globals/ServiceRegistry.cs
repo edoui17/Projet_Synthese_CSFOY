@@ -23,6 +23,7 @@ public partial class ServiceRegistry : Node
     public IApiService ApiService { get; private set; } = null!;
     public IStatTracker StatTracker { get; private set; } = null!;
     public ISaveService SaveService { get; private set; } = null!;
+    public IDifficultyManager DifficultyManager { get; private set; } = null!;
 
     public override void _EnterTree()
     {
@@ -48,6 +49,8 @@ public partial class ServiceRegistry : Node
 
         string apiKey = ProjectSettings.GetSetting("network/api/api_key").AsString();
         ApiService = new ApiService(SaveService, apiKey);
+
+        DifficultyManager = GetNodeOrNull<IDifficultyManager>("/root/DifficultyManager");
     }
 
     public override void _Ready()

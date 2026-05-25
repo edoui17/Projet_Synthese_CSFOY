@@ -17,15 +17,23 @@ namespace IslandSurvivor.Nodes.Zones;
 /// </summary>
 public partial class EnemySpawnZone : Node2D, IEnemySpawnZone
 {
+    [ExportGroup("General Settings")]
     [Export] public Godot.Collections.Array<EnemySpawnConfig> EnemyConfigs { get; set; } = new();
 
     [Export] public int MaxEnemies { get; set; } = 5;
 
+    [ExportGroup("Zone Mapping")]
     [Export] public Polygon2D SpawningArea { get; set; } = null!;
     [Export] public TileMapLayer WaterTileMap { get; set; } = null!;
 
+    [ExportGroup("Spawn Settings")]
     [Export] public float MinDistanceBetweenEnemies { get; set; } = 100f;
-    [Export] public float RespawnInterval { get; set; } = 60f;
+
+    [Export(PropertyHint.Range, "1,120")]
+    public float BaseInterval { get; set; } = 60f;
+
+    [Export(PropertyHint.Range, "1,20")]
+    public int BaseCount { get; set; } = 5;
 
     private readonly List<AggressiveNpcBase> m_activeEnemies = new();
     private float m_respawnTimer = 0f;
@@ -51,15 +59,49 @@ public partial class EnemySpawnZone : Node2D, IEnemySpawnZone
         SpawnEnemies();
     }
 
+    /// <summary>
+    /// Gets dynamic spawn parameters by querying the DifficultyManager.
+    /// Item1: waveInterval
+    /// Item2: waveCount
+    /// Item3: threatScore
+    /// </summary>
+    private (float interval, int count, float threatScore) GetSpawnParameters()
+    {
+        var difficultyManager = Globals.ServiceRegistry.Instance?.DifficultyManager;
+        var statTracker = Globals.ServiceRegistry.Instance?.StatTracker;
+
+        float threatScore = 1.0f;
+
+        if (difficultyManager != null && statTracker != null)
+        {
+            int playerLevel = (int)statTracker.GetCurrentValue(Core.Managers.Stats.StatType.Level);
+            if (playerLevel <= 0) playerLevel = 1; // Safeguard
+
+            threatScore = difficultyManager.GetGlobalThreatScore(playerLevel);
+        }
+
+        // Interval gets shorter as threat goes up, minimum of 0.5s
+        float waveInterval = Mathf.Max(0.5f, BaseInterval / threatScore);
+
+        // Count goes up as threat goes up
+        int waveCount = Mathf.RoundToInt(BaseCount * threatScore);
+
+        return (waveInterval, waveCount, threatScore);
+    }
+
     public override void _Process(double p_delta)
     {
         if (SpawningArea == null || SpawningArea.Polygon.Length < 3) return;
 
         m_respawnTimer += (float)p_delta;
-        if (m_respawnTimer >= RespawnInterval)
+
+        var (interval, count, threatScore) = GetSpawnParameters();
+
+        // Use the dynamically calculated interval
+        if (m_respawnTimer >= interval)
         {
             m_respawnTimer = 0f;
-            CheckAndRespawn();
+            CheckAndRespawn(count, threatScore);
         }
     }
 
@@ -74,26 +116,28 @@ public partial class EnemySpawnZone : Node2D, IEnemySpawnZone
             return;
         }
 
-        int toSpawn = MaxEnemies - m_activeEnemies.Count;
+        var (_, count, threatScore) = GetSpawnParameters();
+
+        int toSpawn = count - m_activeEnemies.Count;
 
         for (int i = 0; i < toSpawn; i++)
         {
-            TrySpawnWeightedEnemy();
+            TrySpawnWeightedEnemy(threatScore);
         }
 
         GD.Print($"[EnemySpawnZone][Gameplay] {Name} spawned enemies. Total active: {m_activeEnemies.Count}");
     }
 
-    private void CheckAndRespawn()
+    private void CheckAndRespawn(int p_waveCount, float p_threatScore)
     {
-        int toSpawn = MaxEnemies - m_activeEnemies.Count;
+        int toSpawn = p_waveCount - m_activeEnemies.Count;
         for (int i = 0; i < toSpawn; i++)
         {
-            if (!TrySpawnWeightedEnemy()) break;
+            if (!TrySpawnWeightedEnemy(p_threatScore)) break;
         }
     }
 
-    private bool TrySpawnWeightedEnemy()
+    private bool TrySpawnWeightedEnemy(float p_threatScore)
     {
         var config = m_weightedSelector.SelectRandom(EnemyConfigs);
         if (config == null || config.EnemyScene == null) return false;
@@ -110,7 +154,7 @@ public partial class EnemySpawnZone : Node2D, IEnemySpawnZone
             if (IsOnWater(localPos)) continue;
             if (IsTooCloseToOtherEnemies(localPos)) continue;
 
-            SpawnEnemy(config.EnemyScene, localPos);
+            SpawnEnemy(config.EnemyScene, localPos, p_threatScore);
             return true;
         }
         return false;
@@ -150,7 +194,7 @@ public partial class EnemySpawnZone : Node2D, IEnemySpawnZone
         return false;
     }
 
-    private void SpawnEnemy(PackedScene p_scene, Vector2 p_localPos)
+    private void SpawnEnemy(PackedScene p_scene, Vector2 p_localPos, float p_threatScore)
     {
         if (p_scene == null) return;
 
@@ -162,6 +206,33 @@ public partial class EnemySpawnZone : Node2D, IEnemySpawnZone
             enemyInstance.Visible = true;
             enemyInstance.YSortEnabled = true;
 
+            // Determine if elite based on scenario 3: 20% after 15 mins
+            bool isElite = false;
+            var difficultyManager = Globals.ServiceRegistry.Instance?.DifficultyManager;
+            if (difficultyManager != null)
+            {
+                float minsElapsed = difficultyManager.TimeElapsed / 60f;
+                if (minsElapsed >= 15f)
+                {
+                    isElite = GD.Randf() <= 0.20f;
+                }
+            }
+
+            // Sync enemy level to player level via StatTracker
+            var statTracker = Globals.ServiceRegistry.Instance?.StatTracker;
+            if (statTracker != null)
+            {
+                enemyInstance.LevelIndex = (int)statTracker.GetCurrentValue(Core.Managers.Stats.StatType.Level);
+                if (enemyInstance.LevelIndex <= 0) enemyInstance.LevelIndex = 1;
+            }
+
+            // Try to find the EnemyStatsHandler decorator to apply the threat scaling
+            var statsHandler = enemyInstance.GetNodeOrNull<IslandSurvivor.Nodes.Combat.EnemyStatsHandler>("EnemyStatsHandler");
+            if (statsHandler != null)
+            {
+                // We call it on next frame to ensure NpcBase _Ready & InitializeController has run
+                CallDeferred(MethodName.DeferredInitializeStats, statsHandler, p_threatScore, isElite);
+            }
 
             enemyInstance.TreeExited += () => m_activeEnemies.Remove(enemyInstance);
 
@@ -192,5 +263,13 @@ public partial class EnemySpawnZone : Node2D, IEnemySpawnZone
         }
 
         return new Rect2(minX, minY, maxX - minX, maxY - minY);
+    }
+
+    private void DeferredInitializeStats(IslandSurvivor.Nodes.Combat.EnemyStatsHandler p_handler, float p_threatScore, bool p_isElite)
+    {
+        if (IsInstanceValid(p_handler))
+        {
+            p_handler.InitializeStats(p_threatScore, p_isElite);
+        }
     }
 }
