@@ -7,8 +7,12 @@
 [ext_resource type="PackedScene" uid="uid://du6mrtfohbxi8" path="res://Scenes/GameMaterialsPlanner/MaterialsMenuPlanner.tscn" id="5_mat"]
 [ext_resource type="PackedScene" uid="uid://cxab32" path="res://Scenes/MainMenu/DefeatMenu/DefeatMenu.tscn" id="6_defeat"]
 [ext_resource type="PackedScene" uid="uid://ovqyuvxdanjnk" path="res://Scenes/MainMenu/VictoryMenu/VictoryMenu.tscn" id="7_victory"]
+[ext_resource type="Script" uid="uid://test_uid_level_controller" path="res://Scenes/Level/LevelController.cs" id="1_controller"]
+[ext_resource type="Resource" uid="uid://test_uid_level_base_config" path="res://Scenes/Level/LevelBase.tres" id="2_config"]
 
 [node name="Main" type="Node2D" unique_id=376045740]
+script = ExtResource("1_controller")
+Config = ExtResource("2_config")
 
 [node name="MapContainer" type="Node2D" parent="." unique_id=179494246]
 
