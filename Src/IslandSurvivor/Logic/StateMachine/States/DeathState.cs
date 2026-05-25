@@ -27,8 +27,12 @@ public partial class DeathState : State
 
         if (m_animationPlayer != null)
         {
-            m_animationPlayer.AnimationFinished -= OnAnimationFinished;
-            m_animationPlayer.AnimationFinished += OnAnimationFinished;
+            var callable = new Callable(this, nameof(OnAnimationFinished));
+            if (m_animationPlayer.IsConnected(AnimationPlayer.SignalName.AnimationFinished, callable))
+            {
+                m_animationPlayer.Disconnect(AnimationPlayer.SignalName.AnimationFinished, callable);
+            }
+            m_animationPlayer.Connect(AnimationPlayer.SignalName.AnimationFinished, callable);
 
             if (m_animationPlayer.HasAnimation(AnimationName))
             {
@@ -56,7 +60,11 @@ public partial class DeathState : State
         {
             if (m_animationPlayer != null)
             {
-                m_animationPlayer.AnimationFinished -= OnAnimationFinished;
+                var callable = new Callable(this, nameof(OnAnimationFinished));
+                if (m_animationPlayer.IsConnected(AnimationPlayer.SignalName.AnimationFinished, callable))
+                {
+                    m_animationPlayer.Disconnect(AnimationPlayer.SignalName.AnimationFinished, callable);
+                }
             }
             CompleteState(StateExitReason.Finished);
         }
