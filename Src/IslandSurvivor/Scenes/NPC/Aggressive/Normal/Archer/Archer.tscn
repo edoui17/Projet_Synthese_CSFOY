@@ -543,10 +543,10 @@ BaseAttackCooldown = 1.5
 [node name="HitboxArea" parent="." index="7"]
 visible = false
 
-[node name="AnimationPlayer" parent="." index="9" unique_id=1869571986]
+[node name="AnimationPlayer" parent="." index="10" unique_id=1869571986]
 libraries/ = SubResource("AnimationLibrary_do8kw")
 
-[node name="StateMachine" parent="." index="10" unique_id=402971195 node_paths=PackedStringArray("InitialState")]
+[node name="StateMachine" parent="." index="11" unique_id=402971195 node_paths=PackedStringArray("InitialState")]
 InitialState = NodePath("IdleState")
 
 [node name="IdleState" parent="StateMachine" index="0"]
