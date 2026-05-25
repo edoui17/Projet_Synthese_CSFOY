@@ -18,7 +18,7 @@ public partial class EnemyStatsHandler : Node
     [Export] public float EliteHealthMultiplier { get; set; } = 2.0f;
     [Export] public float EliteDamageMultiplier { get; set; } = 1.5f;
     [Export] public float EliteScaleMultiplier { get; set; } = 1.25f;
-    [Export] public Color EliteGlowColor { get; set; } = new Color(1.5f, 0.5f, 0.5f, 1f);
+    [Export] public Color EliteGlowColor { get; set; } = new Color(0.8f, 1.2f, 1.5f, 1f); // Blue/White Glow
 
     private bool m_isElite = false;
     public bool IsElite => m_isElite;
@@ -60,7 +60,7 @@ public partial class EnemyStatsHandler : Node
                 if (sprite != null)
                 {
                     sprite.Scale *= EliteScaleMultiplier; // Slightly larger
-                    sprite.Modulate = EliteGlowColor; // Reddish glow
+                    sprite.Modulate = EliteGlowColor; // Blue/White glow
                 }
             }
         }
