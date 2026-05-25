@@ -97,4 +97,14 @@ public partial class BossBase : AggressiveNpcBase
             projectile.Fire();
         }
     }
+
+    protected override void HandleDeath(object? p_attacker = null)
+    {
+        base.HandleDeath(p_attacker);
+
+        if (IslandSurvivor.Globals.ServiceRegistry.Instance != null && IslandSurvivor.Globals.ServiceRegistry.Instance.EventBus != null)
+        {
+            IslandSurvivor.Globals.ServiceRegistry.Instance.EventBus.Publish(new Core.Events.BossDiedEvent(Name, EnemyType));
+        }
+    }
 }

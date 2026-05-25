@@ -1,0 +1,97 @@
+[gd_scene format=3 uid="uid://cxab32"]
+
+[ext_resource type="Script" uid="uid://hqa70sv9r96y6" path="res://Scenes/MainMenu/VictoryMenu/VictoryMenu.cs" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://cjouk04gbw7xc" path="res://Assets/TinySwords/UI/Buttons/Blue/Button_Blue_3Slides.png" id="2_o70k1"]
+[ext_resource type="Texture2D" uid="uid://bnp7dxk6oa0lo" path="res://Assets/TinySwords/UI/Buttons/Blue/Button_Blue_3Slides_Pressed.png" id="3_kj5tk"]
+[ext_resource type="Texture2D" uid="uid://di2vsmrnmsf0o" path="res://Assets/TinySwords/UI/Buttons/Utils/Button_Hover_3Slides.png" id="4_k7m34"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bg"]
+bg_color = Color(0, 0, 0, 0.705882)
+
+[sub_resource type="SystemFont" id="SystemFont_o70k1"]
+
+[node name="VictoryMenu" type="CanvasLayer" unique_id=1805269003]
+process_mode = 3
+layer = 10
+script = ExtResource("1_script")
+
+[node name="PanelContainer" type="PanelContainer" parent="." unique_id=1777462607]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_bg")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer" unique_id=832644559]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_constants/separation = 15
+
+[node name="DefeatLabel" type="Label" parent="PanelContainer/VBoxContainer" unique_id=572917618]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.14902, 0.862745, 0.14902, 1)
+theme_override_font_sizes/font_size = 80
+text = "VICTORY"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="PanelContainer/VBoxContainer" unique_id=157405591]
+layout_mode = 2
+
+[node name="ScoreLabel" type="Label" parent="PanelContainer/VBoxContainer" unique_id=867473297]
+layout_mode = 2
+theme_override_font_sizes/font_size = 40
+text = "Score: 0"
+horizontal_alignment = 1
+
+[node name="HighScoreLabel" type="Label" parent="PanelContainer/VBoxContainer" unique_id=1471978949]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "High Score: 0"
+horizontal_alignment = 1
+
+[node name="MapsClearedLabel" type="Label" parent="PanelContainer/VBoxContainer" unique_id=453483569]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "Maps Cleared: 0"
+horizontal_alignment = 1
+
+[node name="PlayerStatsLabel" type="Label" parent="PanelContainer/VBoxContainer" unique_id=1522426482]
+layout_mode = 2
+theme_override_font_sizes/font_size = 25
+text = "Stats:
+Level 0
+Max Health: 0
+Attack: 0
+Speed: 0
+Luck: 0"
+horizontal_alignment = 1
+
+[node name="HSeparator2" type="HSeparator" parent="PanelContainer/VBoxContainer" unique_id=2134451456]
+layout_mode = 2
+
+[node name="ReturnMenuBtn" type="TextureButton" parent="PanelContainer/VBoxContainer" unique_id=1723535978]
+custom_minimum_size = Vector2(300, 100)
+layout_mode = 2
+size_flags_horizontal = 4
+texture_normal = ExtResource("2_o70k1")
+texture_pressed = ExtResource("3_kj5tk")
+texture_hover = ExtResource("4_k7m34")
+stretch_mode = 0
+
+[node name="Label" type="Label" parent="PanelContainer/VBoxContainer/ReturnMenuBtn" unique_id=1004947530]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -10.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/font = SubResource("SystemFont_o70k1")
+theme_override_font_sizes/font_size = 35
+text = "Return Menu"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[connection signal="pressed" from="PanelContainer/VBoxContainer/ReturnMenuBtn" to="." method="_on_return_menu_btn_pressed"]
