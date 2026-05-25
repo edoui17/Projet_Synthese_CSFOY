@@ -4,12 +4,11 @@
 [ext_resource type="Script" uid="uid://bbrba0kvch7b6" path="res://Scenes/NPC/Aggressive/Normal/RangedAggressiveNpcBase.cs" id="2_script"]
 [ext_resource type="PackedScene" uid="uid://crca7kdilqogk" path="res://Scenes/Projectiles/Arrow/Arrow.tscn" id="3_arrow"]
 [ext_resource type="PackedScene" uid="uid://ca8u8dmqxyiib" path="res://Nodes/State/Movement/RepositionState.tscn" id="state_RepositionState"]
+[ext_resource type="PackedScene" uid="uid://cx6r1g1g1g1g2" path="res://Nodes/State/Combat/RangedAttackState.tscn" id="state_RangedAttackState"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_hitbox_ranged"]
 radius = 21.986078
 height = 70.16913
-
-[ext_resource type="PackedScene" uid="uid://cx6r1g1g1g1g2" path="res://Nodes/State/Combat/RangedAttackState.tscn" id="state_RangedAttackState"]
 
 [node name="RangedAggressiveNpcBase" instance=ExtResource("1_scene")]
 script = ExtResource("2_script")
