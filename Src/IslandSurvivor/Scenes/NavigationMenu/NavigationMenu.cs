@@ -72,11 +72,15 @@ public partial class NavigationMenu : Control
         {
             // Add Boss Island Option
             bool isBossReady = Managers.ProgressionManager.Instance.IsBossReady();
+            int bossRequirement = Managers.ProgressionManager.Instance.Requirement != null
+                ? Managers.ProgressionManager.Instance.Requirement.BossLevelRequirement
+                : 10;
+
             var bossBtn = new Button();
 
             if (isBossReady)
             {
-                bossBtn.Text = "Boss Island (Level 4) [Danger: Extreme]";
+                bossBtn.Text = "Boss Island [Danger: Extreme]";
                 bossBtn.Modulate = new Color(1, 0, 0); // Red for danger
 
                 var bossDestination = new IslandDestination(
@@ -92,7 +96,7 @@ public partial class NavigationMenu : Control
             }
             else
             {
-                bossBtn.Text = "Boss Island (Locked - Level 10 required)";
+                bossBtn.Text = $"Boss Island (Locked - Level {bossRequirement} required)";
                 bossBtn.Disabled = true;
             }
             m_destinationsContainer.AddChild(bossBtn);
