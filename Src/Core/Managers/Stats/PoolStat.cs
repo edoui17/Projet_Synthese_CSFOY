@@ -53,6 +53,13 @@ public class PoolStat : IStat
         NotifyStatChanged();
     }
 
+    public void ClearBonus()
+    {
+        m_additionalValue = 0f;
+        ClampCurrentValue();
+        NotifyStatChanged();
+    }
+
     private void ClampCurrentValue()
     {
         if (m_currentValue < 0f)

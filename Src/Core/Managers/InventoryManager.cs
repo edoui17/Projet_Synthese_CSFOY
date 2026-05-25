@@ -160,4 +160,14 @@ public class InventoryManager : IInventoryManager
             }
         }
     }
+
+    public void ClearInventory()
+    {
+        var keys = m_slots.Keys.ToList();
+        m_slots.Clear();
+        foreach (var key in keys)
+        {
+            m_eventBus.Publish(new InventoryChangedEvent(key, 0));
+        }
+    }
 }

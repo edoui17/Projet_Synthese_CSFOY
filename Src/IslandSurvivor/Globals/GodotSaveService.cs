@@ -142,6 +142,25 @@ public class GodotSaveService : ISaveService
         return content;
     }
 
+    public void DeleteData(string p_fileName)
+    {
+        string safeFileName = System.IO.Path.GetFileName(p_fileName);
+        string path = System.IO.Path.Combine(m_saveDir, safeFileName);
+        string checksumPath = path + ".sig";
+
+        if (FileAccess.FileExists(path))
+        {
+            DirAccess.RemoveAbsolute(path);
+            GD.Print($"GodotSaveService: Deleted '{path}'.");
+        }
+
+        if (FileAccess.FileExists(checksumPath))
+        {
+            DirAccess.RemoveAbsolute(checksumPath);
+            GD.Print($"GodotSaveService: Deleted checksum '{checksumPath}'.");
+        }
+    }
+
     private static string ComputeChecksum(string p_data)
     {
         using (SHA256 sha256 = SHA256.Create())

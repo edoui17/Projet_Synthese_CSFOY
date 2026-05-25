@@ -29,10 +29,13 @@ public partial class ResourceDrop : Node2D
         m_sprite = new Sprite2D();
 
         // Try to load the texture, fallback to an icon if not found
-        Texture2D texture = GD.Load<Texture2D>(m_item.IconPath);
-        if (texture != null)
+        if (!string.IsNullOrEmpty(m_item.IconPath) && ResourceLoader.Exists(m_item.IconPath))
         {
-            m_sprite.Texture = texture;
+            Texture2D texture = GD.Load<Texture2D>(m_item.IconPath);
+            if (texture != null)
+            {
+                m_sprite.Texture = texture;
+            }
         }
 
         AddChild(m_sprite);
