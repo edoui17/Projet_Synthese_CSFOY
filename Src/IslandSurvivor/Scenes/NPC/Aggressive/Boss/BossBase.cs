@@ -101,10 +101,18 @@ public partial class BossBase : AggressiveNpcBase
     protected override void HandleDeath(object? p_attacker = null)
     {
         base.HandleDeath(p_attacker);
+    }
 
-        if (IslandSurvivor.Globals.ServiceRegistry.Instance != null && IslandSurvivor.Globals.ServiceRegistry.Instance.EventBus != null)
+    protected override void OnDeathStateFinished(IslandSurvivor.Logic.StateMachine.State p_sourceState, IslandSurvivor.Logic.StateMachine.StateExitReason p_reason)
+    {
+        if (p_reason == IslandSurvivor.Logic.StateMachine.StateExitReason.Finished)
         {
-            IslandSurvivor.Globals.ServiceRegistry.Instance.EventBus.Publish(new Core.Events.BossDiedEvent(Name, EnemyType));
+            if (IslandSurvivor.Globals.ServiceRegistry.Instance != null && IslandSurvivor.Globals.ServiceRegistry.Instance.EventBus != null)
+            {
+                IslandSurvivor.Globals.ServiceRegistry.Instance.EventBus.Publish(new Core.Events.BossDiedEvent(Name, EnemyType));
+            }
         }
+
+        base.OnDeathStateFinished(p_sourceState, p_reason);
     }
 }
