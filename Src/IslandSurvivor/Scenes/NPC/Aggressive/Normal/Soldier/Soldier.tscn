@@ -557,6 +557,10 @@ shape = SubResource("CapsuleShape2D_e1oyk")
 [node name="AnimationPlayer" parent="." index="11" unique_id=1869571986]
 libraries/ = SubResource("AnimationLibrary_kuixf")
 
+[node name="WanderState" parent="StateMachine" parent_id_path=PackedInt32Array(402971195) index="1"]
+WanderRadius = 400.0
+WanderSpeed = 75.0
+
 [node name="ChaseState" parent="StateMachine" parent_id_path=PackedInt32Array(402971195) index="2"]
 LoseInterestRange = 500.0
 
