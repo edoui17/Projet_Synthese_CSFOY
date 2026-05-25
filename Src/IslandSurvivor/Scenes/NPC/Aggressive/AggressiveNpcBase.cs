@@ -335,6 +335,6 @@ public partial class AggressiveNpcBase : NpcBase
             GD.Print($"[AggressiveNpcBase] Enemy died. Sent {scoreToAward} points to ScoreManager and published {xpEarned} XP.");
         }
 
-        QueueFree();
+
     }
 }
