@@ -9,6 +9,7 @@ public partial class WanderState : State
     [ExportGroup("State Configuration")]
     [Export] public float WanderRadius { get; set; } = 100.0f;
     [Export] public float WanderSpeed { get; set; } = 50.0f;
+    [Export] public float StuckWaitTime { get; set; } = 0.5f;
 
     [ExportGroup("State Animations")]
     [Export] public string AnimationName { get; set; } = "Moving";
@@ -19,6 +20,8 @@ public partial class WanderState : State
     private AnimationPlayer? m_animationPlayer;
     private Sprite2D? m_sprite;
     private bool m_hasCompleted = false;
+    private bool m_isStuck = false;
+    private float m_stuckTimer = 0.0f;
 
     private readonly Random m_random = new Random();
 
@@ -36,10 +39,19 @@ public partial class WanderState : State
         }
     }
 
+    private void SetNewTargetPosition()
+    {
+        float angle = (float)(m_random.NextDouble() * Math.PI * 2);
+        float distance = (float)(m_random.NextDouble() * WanderRadius);
+        m_targetPosition = m_spawnPosition + new Vector2((float)Math.Cos(angle), (float)Math.Sin(angle)) * distance;
+    }
+
     public override void Enter()
     {
         base.Enter();
         m_hasCompleted = false;
+        m_isStuck = false;
+        m_stuckTimer = 0.0f;
 
         if (m_animationPlayer != null)
         {
@@ -54,15 +66,28 @@ public partial class WanderState : State
             }
         }
 
-        // Pick a random target position within WanderRadius from the spawn position
-        float angle = (float)(m_random.NextDouble() * Math.PI * 2);
-        float distance = (float)(m_random.NextDouble() * WanderRadius);
-        m_targetPosition = m_spawnPosition + new Vector2((float)Math.Cos(angle), (float)Math.Sin(angle)) * distance;
+        SetNewTargetPosition();
     }
 
     public override void PhysicsUpdate(double p_delta)
     {
         if (m_hasCompleted || NpcContext == null) return;
+
+        if (m_isStuck)
+        {
+            m_stuckTimer -= (float)p_delta;
+            if (m_stuckTimer <= 0)
+            {
+                m_isStuck = false;
+                SetNewTargetPosition();
+
+                if (m_animationPlayer != null && m_animationPlayer.HasAnimation(AnimationName))
+                {
+                    m_animationPlayer.Play(AnimationName);
+                }
+            }
+            return;
+        }
 
         if (NpcContext is IslandSurvivor.Scenes.NPC.Aggressive.AggressiveNpcBase aggressiveNpc)
         {
@@ -114,15 +139,22 @@ public partial class WanderState : State
             }
         }
 
-        // Failsafe: if character is completely stuck (not moving), we should probably finish wander
+        // Failsafe: if character is completely stuck (not moving), we pause and pick a new direction
         if (NpcContext.GetSlideCollisionCount() > 0)
         {
-            m_hasCompleted = true;
+            m_isStuck = true;
+            m_stuckTimer = StuckWaitTime;
+
             if (NpcContext is IslandSurvivor.Scenes.NPC.NpcBase npcBaseCollision)
             {
                 npcBaseCollision.Velocity = Vector2.Zero;
+                if (m_animationPlayer != null && m_animationPlayer.HasAnimation("Idle"))
+                {
+                     m_animationPlayer.Play("Idle"); // Or just stop current animation.
+                } else if (m_animationPlayer != null) {
+                    m_animationPlayer.Stop();
+                }
             }
-            CompleteState(StateExitReason.Finished);
         }
     }
 }
