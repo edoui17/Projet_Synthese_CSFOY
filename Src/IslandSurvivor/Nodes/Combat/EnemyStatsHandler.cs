@@ -11,7 +11,14 @@ namespace IslandSurvivor.Nodes.Combat;
 /// </summary>
 public partial class EnemyStatsHandler : Node
 {
+    [ExportGroup("Base References")]
     [Export] public StatManager Stats { get; set; } = null!;
+
+    [ExportGroup("Elite Multipliers")]
+    [Export] public float EliteHealthMultiplier { get; set; } = 2.0f;
+    [Export] public float EliteDamageMultiplier { get; set; } = 1.5f;
+    [Export] public float EliteScaleMultiplier { get; set; } = 1.25f;
+    [Export] public Color EliteGlowColor { get; set; } = new Color(1.5f, 0.5f, 0.5f, 1f);
 
     private bool m_isElite = false;
     public bool IsElite => m_isElite;
@@ -43,8 +50,8 @@ public partial class EnemyStatsHandler : Node
 
         if (m_isElite)
         {
-            newMaxHealth *= 2.0f;
-            newBaseAttack *= 1.5f;
+            newMaxHealth *= EliteHealthMultiplier;
+            newBaseAttack *= EliteDamageMultiplier;
 
             // Visual feedback for elites
             if (GetParent() is Node2D parent2D)
@@ -52,8 +59,8 @@ public partial class EnemyStatsHandler : Node
                 var sprite = parent2D.GetNodeOrNull<Sprite2D>("Sprite2D");
                 if (sprite != null)
                 {
-                    sprite.Scale *= 1.25f; // Slightly larger
-                    sprite.Modulate = new Color(1.5f, 0.5f, 0.5f, 1f); // Reddish glow
+                    sprite.Scale *= EliteScaleMultiplier; // Slightly larger
+                    sprite.Modulate = EliteGlowColor; // Reddish glow
                 }
             }
         }
