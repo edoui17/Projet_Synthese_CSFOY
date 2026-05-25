@@ -16,6 +16,8 @@ public partial class RepositionState : State
     private Sprite2D? m_sprite;
     private float m_timer;
     private Vector2 m_repositionDirection;
+    private int m_collisionCount;
+    private float m_lastCollisionTime;
 
     public override void Initialize(StateMachine p_stateMachine, CharacterBody2D p_npcContext)
     {
@@ -28,6 +30,8 @@ public partial class RepositionState : State
     {
         base.Enter();
         m_timer = RepositionDuration;
+        m_collisionCount = 0;
+        m_lastCollisionTime = 0;
 
         if (m_animationPlayer != null)
         {
@@ -74,18 +78,39 @@ public partial class RepositionState : State
             if (aggressiveNpc.MovementController != null)
             {
                 aggressiveNpc.MovementController.Move(m_repositionDirection, speed);
-                if (m_sprite != null && m_repositionDirection.X != 0)
-                {
-                    m_sprite.FlipH = m_repositionDirection.X < 0;
-                }
             }
             else
             {
                 aggressiveNpc.Velocity = m_repositionDirection * speed;
                 aggressiveNpc.MoveAndSlide();
-                if (m_sprite != null && m_repositionDirection.X != 0)
+            }
+
+            if (m_sprite != null && m_repositionDirection.X != 0)
+            {
+                m_sprite.FlipH = m_repositionDirection.X < 0;
+            }
+
+            // Handle wall collisions by sliding / picking a perpendicular direction
+            if (NpcContext.GetSlideCollisionCount() > 0)
+            {
+                // Debounce collisions slightly so we don't spam direction changes every frame
+                if (m_timer < m_lastCollisionTime - 0.1f || m_lastCollisionTime == 0)
                 {
-                    m_sprite.FlipH = m_repositionDirection.X < 0;
+                    m_collisionCount++;
+                    m_lastCollisionTime = m_timer;
+
+                    if (m_collisionCount >= 3)
+                    {
+                        // Stuck in a corner or heavily hitting walls, stop repositioning
+                        NpcContext.Velocity = Vector2.Zero;
+                        CompleteState(StateExitReason.Finished);
+                        return;
+                    }
+
+                    // Pick a perpendicular direction. Rotate by 90 degrees (Pi/2)
+                    // Randomly choose left or right to avoid getting stuck in loops
+                    float rotation = GD.Randf() > 0.5f ? Mathf.Pi / 2.0f : -Mathf.Pi / 2.0f;
+                    m_repositionDirection = m_repositionDirection.Rotated(rotation).Normalized();
                 }
             }
 

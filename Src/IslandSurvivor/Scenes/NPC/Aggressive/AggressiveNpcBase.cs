@@ -151,6 +151,12 @@ public partial class AggressiveNpcBase : NpcBase
         {
             ApplyLevelScaling();
         }
+
+        var levelLabel = GetNodeOrNull<Label>("LevelLabel");
+        if (levelLabel != null)
+        {
+            levelLabel.Text = $"Lvl {LevelIndex}";
+        }
     }
 
     protected virtual void InitializeController()
