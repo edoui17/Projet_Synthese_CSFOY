@@ -32,6 +32,15 @@ public partial class EnemyStatsHandler : Node
         float newMaxHealth = currentMaxHealth * p_threatScore;
         float newBaseAttack = currentBaseAttack * p_threatScore;
 
+        float newIdleSpeed = 0f;
+        float newChaseSpeed = 0f;
+
+        if (GetParent() is IslandSurvivor.Scenes.NPC.Aggressive.AggressiveNpcBase aggressiveNpc)
+        {
+            newIdleSpeed = aggressiveNpc.IdleSpeed * p_threatScore;
+            newChaseSpeed = aggressiveNpc.ChaseSpeed * p_threatScore;
+        }
+
         if (m_isElite)
         {
             newMaxHealth *= 2.0f;
@@ -54,6 +63,12 @@ public partial class EnemyStatsHandler : Node
 
         // Ensure current health is topped up to the new max
         Stats.SetCurrentValue(StatType.Health, newMaxHealth);
+
+        if (GetParent() is IslandSurvivor.Scenes.NPC.Aggressive.AggressiveNpcBase aggressiveNpcFinal)
+        {
+            aggressiveNpcFinal.IdleSpeed = newIdleSpeed;
+            aggressiveNpcFinal.ChaseSpeed = newChaseSpeed;
+        }
 
         GD.Print($"[EnemyStatsHandler] {GetParent().Name} initialized. Threat: {p_threatScore:F2} | Elite: {p_isElite} | HP: {newMaxHealth:F1} | ATK: {newBaseAttack:F1}");
     }
