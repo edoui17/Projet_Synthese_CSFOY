@@ -9,6 +9,8 @@
 radius = 21.986078
 height = 70.16913
 
+[ext_resource type="PackedScene" uid="uid://cx6r1g1g1g1g2" path="res://Nodes/State/Combat/RangedAttackState.tscn" id="state_RangedAttackState"]
+
 [node name="RangedAggressiveNpcBase" instance=ExtResource("1_scene")]
 script = ExtResource("2_script")
 ProjectileScene = ExtResource("3_arrow")
@@ -28,3 +30,4 @@ position = Vector2(15, 0)
 [node name="StateMachine" parent="." index="9"]
 
 [node name="RepositionState" parent="StateMachine" index="7" instance=ExtResource("state_RepositionState")]
+[node name="RangedAttackState" parent="StateMachine" index="4" instance=ExtResource("state_RangedAttackState")]

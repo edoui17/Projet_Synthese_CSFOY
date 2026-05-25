@@ -8,7 +8,6 @@
 [ext_resource type="Texture2D" uid="uid://6ecpwabyxb30" path="res://Assets/TinySwords/Sprites/Archer/Blue/Archer_Blue.png" id="5_do8kw"]
 [ext_resource type="Animation" uid="uid://bjuop45u4ndx5" path="res://Animation/Error.res" id="6_dd3ir"]
 [ext_resource type="Animation" uid="uid://d0h1sx4b0jesm" path="res://Animation/Death_NPC.res" id="7_vfr0a"]
-[ext_resource type="PackedScene" uid="uid://cx6r1g1g1g1g2" path="res://Nodes/State/Combat/RangedAttackState.tscn" id="state_RangedAttackState"]
 [ext_resource type="PackedScene" uid="uid://cx6r1g1g1g1g3" path="res://Nodes/Combat/Shooter.tscn" id="Shooter"]
 [ext_resource type="PackedScene" uid="uid://6ct74ht3u7xs" path="res://Nodes/State/Movement/ChaseState.tscn" id="state_ChaseState"]
 [ext_resource type="PackedScene" uid="uid://c5fchvpan65ig" path="res://Nodes/State/Core/DeathState.tscn" id="state_DeathState"]
@@ -559,7 +558,6 @@ LoseInterestRange = 600.0
 
 [node name="WindUpState" parent="StateMachine" index="3"]
 
-[node name="AttackState" parent="StateMachine" index="4"]
 
 [node name="DeathState" parent="StateMachine" index="6"]
 
