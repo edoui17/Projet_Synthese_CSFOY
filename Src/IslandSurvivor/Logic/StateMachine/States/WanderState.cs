@@ -16,14 +16,13 @@ public partial class WanderState : State
     [Export] public string FallbackAnimationName { get; set; } = "Error";
 
     private Vector2 m_spawnPosition;
+    private bool m_isSpawnPositionSet = false;
     private Vector2 m_targetPosition;
     private AnimationPlayer? m_animationPlayer;
     private Sprite2D? m_sprite;
     private bool m_hasCompleted = false;
     private bool m_isStuck = false;
     private float m_stuckTimer = 0.0f;
-
-    private readonly Random m_random = new Random();
 
     public override bool IsActionState => false;
 
@@ -32,23 +31,25 @@ public partial class WanderState : State
         base.Initialize(p_stateMachine, p_npcContext);
         m_animationPlayer = NpcContext.GetNodeOrNull<AnimationPlayer>("AnimationPlayer");
         m_sprite = NpcContext.GetNodeOrNull<Sprite2D>("Sprite2D");
-
-        if (NpcContext != null)
-        {
-            m_spawnPosition = NpcContext.GlobalPosition;
-        }
     }
 
     private void SetNewTargetPosition()
     {
-        float angle = (float)(m_random.NextDouble() * Math.PI * 2);
-        float distance = (float)(m_random.NextDouble() * WanderRadius);
+        float angle = (float)(GD.Randf() * Math.PI * 2);
+        float distance = (float)(GD.Randf() * WanderRadius);
         m_targetPosition = m_spawnPosition + new Vector2((float)Math.Cos(angle), (float)Math.Sin(angle)) * distance;
     }
 
     public override void Enter()
     {
         base.Enter();
+
+        if (!m_isSpawnPositionSet && NpcContext != null)
+        {
+            m_spawnPosition = NpcContext.GlobalPosition;
+            m_isSpawnPositionSet = true;
+        }
+
         m_hasCompleted = false;
         m_isStuck = false;
         m_stuckTimer = 0.0f;
