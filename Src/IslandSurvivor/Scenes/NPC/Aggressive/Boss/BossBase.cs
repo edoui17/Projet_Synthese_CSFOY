@@ -5,8 +5,6 @@ using IslandSurvivor.Logic.Entities;
 
 public partial class BossBase : AggressiveNpcBase
 {
-    [Export] public PackedScene ProjectileScene { get; set; } = null!;
-
     [ExportGroup("Animations")]
     [Export] public string MeleeAttackAnimationName { get; set; } = "Attack_Melee";
     [Export] public string RangedAttackAnimationName { get; set; } = "Attack_Ranged";
@@ -73,29 +71,7 @@ public partial class BossBase : AggressiveNpcBase
     {
         // Melee attack action is handled automatically by the hitboxes in AttackController
         // Ranged attacks can trigger ShootProjectile()
-        ShootProjectile();
-    }
 
-    protected virtual void ShootProjectile()
-    {
-        if (ProjectileScene == null || m_targetPlayer == null) return;
-
-        Node projectileNode = ProjectileScene.Instantiate();
-        if (projectileNode is IProjectile projectile)
-        {
-            Godot.Vector2 directionGodot = (m_targetPlayer.GlobalPosition - GlobalPosition).Normalized();
-            Vector2 directionNumerics = new Vector2(directionGodot.X, directionGodot.Y);
-
-            Marker2D? spawnPosNode = GetNodeOrNull<Marker2D>("ProjectileSpawnPosition");
-            Godot.Vector2 spawnGodot = spawnPosNode != null ? spawnPosNode.GlobalPosition : GlobalPosition;
-            Vector2 startPositionNumerics = new Vector2(spawnGodot.X, spawnGodot.Y);
-
-            float damageAmount = Stats?.BaseAttackValue ?? 20.0f;
-
-            projectile.Initialize(startPositionNumerics, directionNumerics, damageAmount, this);
-            GetTree().CurrentScene.AddChild(projectileNode);
-            projectile.Fire();
-        }
     }
 
     protected override void HandleDeath(object? p_attacker = null)

@@ -7,7 +7,8 @@ public static class StateConstants
     // String constants for use in switch/case statements
     public const string IdleState = "IdleState";
     public const string ChaseState = "ChaseState";
-    public const string AttackState = "AttackState";
+    public const string MeleeAttackState = "MeleeAttackState";
+    public const string RangedAttackState = "RangedAttackState";
     public const string WindUpState = "WindUpState";
     public const string DashState = "DashState";
     public const string RecoveryState = "RecoveryState";
@@ -20,7 +21,8 @@ public static class StateConstants
     // StringName constants for performance and assignments
     public static readonly StringName IdleStateName = new StringName(IdleState);
     public static readonly StringName ChaseStateName = new StringName(ChaseState);
-    public static readonly StringName AttackStateName = new StringName(AttackState);
+    public static readonly StringName MeleeAttackStateName = new StringName(MeleeAttackState);
+    public static readonly StringName RangedAttackStateName = new StringName(RangedAttackState);
     public static readonly StringName WindUpStateName = new StringName(WindUpState);
     public static readonly StringName DashStateName = new StringName(DashState);
     public static readonly StringName RecoveryStateName = new StringName(RecoveryState);
