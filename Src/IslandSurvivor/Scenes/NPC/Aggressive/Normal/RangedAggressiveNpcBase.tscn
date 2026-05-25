@@ -3,8 +3,7 @@
 [ext_resource type="PackedScene" uid="uid://ebase12345" path="res://Scenes/NPC/Aggressive/AggressiveNpcBase.tscn" id="1_scene"]
 [ext_resource type="Script" uid="uid://bbrba0kvch7b6" path="res://Scenes/NPC/Aggressive/Normal/RangedAggressiveNpcBase.cs" id="2_script"]
 [ext_resource type="PackedScene" uid="uid://crca7kdilqogk" path="res://Scenes/Projectiles/Arrow/Arrow.tscn" id="3_arrow"]
-
-
+[ext_resource type="PackedScene" uid="uid://ca8u8dmqxyiib" path="res://Nodes/State/Movement/RepositionState.tscn" id="state_RepositionState"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_hitbox_ranged"]
 radius = 21.986078
@@ -25,3 +24,7 @@ shape = SubResource("CapsuleShape2D_hitbox_ranged")
 
 [node name="ProjectileSpawnPosition" type="Marker2D" parent="." index="8"]
 position = Vector2(15, 0)
+
+[node name="StateMachine" parent="." index="9"]
+
+[node name="RepositionState" parent="StateMachine" index="7" instance=ExtResource("state_RepositionState")]

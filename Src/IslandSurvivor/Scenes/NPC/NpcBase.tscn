@@ -3,8 +3,9 @@
 [ext_resource type="Script" uid="uid://dmj8y3jasw7qr" path="res://Scenes/NPC/NpcBase.cs" id="1_script"]
 [ext_resource type="PackedScene" path="res://Nodes/Movement/MovementController.tscn" id="2_movement"]
 [ext_resource type="PackedScene" uid="uid://biqhbrp7fjfyj" path="res://Nodes/StatsManager/StatsManager.tscn" id="3_stats"]
+[ext_resource type="PackedScene" uid="uid://cui3dv0aw0l38" path="res://Nodes/State/Core/StateMachine.tscn" id="4_state_machine"]
 
-[node name="NpcBase" type="CharacterBody2D" node_paths=PackedStringArray("Stats")]
+[node name="NpcBase" type="CharacterBody2D" unique_id=788136980 node_paths=PackedStringArray("Stats")]
 y_sort_enabled = true
 collision_layer = 17
 collision_mask = 9
@@ -12,14 +13,18 @@ motion_mode = 1
 script = ExtResource("1_script")
 Stats = NodePath("StatManager")
 
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1104255030]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1322914286]
 light_mask = 4
 z_index = 1
 y_sort_enabled = true
 
-[node name="StatManager" parent="." instance=ExtResource("3_stats")]
+[node name="StatManager" parent="." unique_id=990476419 instance=ExtResource("3_stats")]
 
-[node name="MovementController" parent="." node_paths=PackedStringArray("Stats") instance=ExtResource("2_movement")]
+[node name="MovementController" parent="." unique_id=2105972246 node_paths=PackedStringArray("Stats") instance=ExtResource("2_movement")]
 Stats = NodePath("../StatManager")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1869571986]
+
+[node name="StateMachine" parent="." unique_id=402971195 instance=ExtResource("4_state_machine")]

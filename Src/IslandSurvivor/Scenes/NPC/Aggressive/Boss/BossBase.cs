@@ -5,15 +5,20 @@ using IslandSurvivor.Logic.Entities;
 
 public partial class BossBase : AggressiveNpcBase
 {
-    [Export] public PackedScene ProjectileScene { get; set; }
+    [Export] public PackedScene ProjectileScene { get; set; } = null!;
 
     [ExportGroup("Animations")]
     [Export] public string MeleeAttackAnimationName { get; set; } = "Attack_Melee";
     [Export] public string RangedAttackAnimationName { get; set; } = "Attack_Ranged";
 
-    protected Area2D m_hitboxAreaRight;
-    protected Area2D m_hitboxAreaLeft;
-    protected IBossController m_bossController;
+    protected Area2D? m_hitboxAreaRight;
+    protected Area2D? m_hitboxAreaLeft;
+
+    protected override Godot.StringName GetCombatDecisionState(float distanceSquared, float attackRangeSquared)
+    {
+        // Future boss phases and AoE cooldown logic will be injected here.
+        return base.GetCombatDecisionState(distanceSquared, attackRangeSquared);
+    }
 
     public override void _Ready()
     {
@@ -26,8 +31,6 @@ public partial class BossBase : AggressiveNpcBase
         {
             m_attackController.Stats = Stats;
             m_attackController.Faction = IslandSurvivor.Enums.EntityFaction.Enemy;
-            m_attackController.AttackSprite = m_animatedSprite;
-            m_attackController.ActionFrame = 3; // Generic boss hit frame
 
             if (m_hitboxAreaRight != null) m_attackController.RegisterArea("Right", m_hitboxAreaRight);
             if (m_hitboxAreaLeft != null) m_attackController.RegisterArea("Left", m_hitboxAreaLeft);
@@ -43,9 +46,7 @@ public partial class BossBase : AggressiveNpcBase
 
     protected override void InitializeController()
     {
-        // Use the new BossController for phase management
-        m_bossController = new BossController(StoppingDistance);
-        m_agressorController = m_bossController;
+        // Controllers removed in favor of state machines.
     }
 
     protected override void ApplyLevelScaling()
@@ -63,119 +64,16 @@ public partial class BossBase : AggressiveNpcBase
         Stats.BaseAttackValue = baseDamage;
     }
 
-    public override void _PhysicsProcess(double p_delta)
-    {
-        if (m_agressorController.CurrentState == NpcStates.DEAD) return;
-
-        bool hasLineOfSight = CheckLineOfSight();
-
-        // Pass the health ratio to update boss phases
-        float healthRatio = 1.0f;
-        if (Stats != null && Stats.MaxHealth > 0)
-        {
-            healthRatio = Stats.GetCurrentValue(Core.Managers.Stats.StatType.Health) / Stats.MaxHealth;
-        }
-
-        m_bossController.UpdateBoss((float)p_delta, m_targetPlayer != null, hasLineOfSight, healthRatio);
-
-        // Always check if we can attack
-        HandleAttackState();
-
-        Vector2 direction = new Vector2(m_agressorController.CurrentDirection.X, m_agressorController.CurrentDirection.Y);
-        float targetSpeed = IdleSpeed;
-
-        if (m_attackController != null && m_attackController.IsAttacking)
-        {
-            targetSpeed = 0f;
-            direction = Vector2.Zero;
-        }
-        else if (m_agressorController.CurrentState == NpcStates.CHASE && m_targetPlayer != null)
-        {
-            float distanceSquaredToPlayer = GlobalPosition.DistanceSquaredTo(m_targetPlayer.GlobalPosition);
-            // Replaced DistanceTo with DistanceSquaredTo to eliminate square root calculation in hot path (_PhysicsProcess)
-            if (distanceSquaredToPlayer <= StoppingDistance * StoppingDistance)
-            {
-                targetSpeed = 0f;
-                direction = Vector2.Zero;
-            }
-            else
-            {
-                targetSpeed = ChaseSpeed;
-                Vector2 globalPos = GlobalPosition;
-                Vector2 targetPos = m_targetPlayer.GlobalPosition;
-                m_agressorController.UpdateChaseDirection(globalPos, targetPos);
-                direction = new Vector2(m_agressorController.CurrentDirection.X, m_agressorController.CurrentDirection.Y);
-            }
-        }
-
-        if (m_movementController != null)
-        {
-            m_movementController.Move(direction, targetSpeed);
-        }
-        else
-        {
-            Velocity = direction * targetSpeed;
-            MoveAndSlide();
-        }
-
-        if (m_agressorController.CurrentState == NpcStates.IDLE && GetSlideCollisionCount() > 0)
-        {
-            m_agressorController.ForceNewDirection();
-        }
-
-        UpdateAnimation(new Vector2(m_agressorController.CurrentDirection.X, m_agressorController.CurrentDirection.Y));
-    }
-
-    protected override void HandleAttackState()
-    {
-        if (m_attackController != null && m_attackController.CanAttack && m_targetPlayer != null)
-        {
-            float distanceSquaredToPlayer = GlobalPosition.DistanceSquaredTo(m_targetPlayer.GlobalPosition);
-
-            // Phase logic to decide between Melee and Ranged
-            if (m_bossController.CurrentPhase == BossPhase.Ranged)
-            {
-                // Ranged attack if in sight and within a reasonable distance
-                if (distanceSquaredToPlayer <= 400f * 400f && CheckLineOfSight())
-                {
-                    TryTriggerAttack("Ranged");
-                }
-            }
-            else
-            {
-                // Melee attack if close enough
-                if (distanceSquaredToPlayer <= 80f * 80f)
-                {
-                    TryTriggerAttack("Melee");
-                }
-            }
-        }
-    }
-
-    private void TryTriggerAttack(string p_attackType)
-    {
-        if (m_animatedSprite != null && m_targetPlayer != null)
-        {
-            m_animatedSprite.FlipH = m_targetPlayer.GlobalPosition.X < GlobalPosition.X;
-        }
-        string direction = (m_animatedSprite != null && m_animatedSprite.FlipH) ? "Left" : "Right";
-        m_attackController.TryAttack(direction);
-    }
-
     protected virtual void OnAttackStarted()
     {
-        string animName = m_bossController.CurrentPhase == BossPhase.Ranged ? RangedAttackAnimationName : MeleeAttackAnimationName;
-        PlayAttackAnimation(animName);
+        // Handled by state machine
     }
 
     protected virtual void OnAttackActionTriggered()
     {
-        // Ranged attack action
-        if (m_bossController.CurrentPhase == BossPhase.Ranged)
-        {
-            ShootProjectile();
-        }
         // Melee attack action is handled automatically by the hitboxes in AttackController
+        // Ranged attacks can trigger ShootProjectile()
+        ShootProjectile();
     }
 
     protected virtual void ShootProjectile()
@@ -188,7 +86,7 @@ public partial class BossBase : AggressiveNpcBase
             Godot.Vector2 directionGodot = (m_targetPlayer.GlobalPosition - GlobalPosition).Normalized();
             Vector2 directionNumerics = new Vector2(directionGodot.X, directionGodot.Y);
 
-            Marker2D spawnPosNode = GetNodeOrNull<Marker2D>("ProjectileSpawnPosition");
+            Marker2D? spawnPosNode = GetNodeOrNull<Marker2D>("ProjectileSpawnPosition");
             Godot.Vector2 spawnGodot = spawnPosNode != null ? spawnPosNode.GlobalPosition : GlobalPosition;
             Vector2 startPositionNumerics = new Vector2(spawnGodot.X, spawnGodot.Y);
 
@@ -198,5 +96,23 @@ public partial class BossBase : AggressiveNpcBase
             GetTree().CurrentScene.AddChild(projectileNode);
             projectile.Fire();
         }
+    }
+
+    protected override void HandleDeath(object? p_attacker = null)
+    {
+        base.HandleDeath(p_attacker);
+    }
+
+    protected override void OnDeathStateFinished(IslandSurvivor.Logic.StateMachine.State p_sourceState, IslandSurvivor.Logic.StateMachine.StateExitReason p_reason)
+    {
+        if (p_reason == IslandSurvivor.Logic.StateMachine.StateExitReason.Finished)
+        {
+            if (IslandSurvivor.Globals.ServiceRegistry.Instance != null && IslandSurvivor.Globals.ServiceRegistry.Instance.EventBus != null)
+            {
+                IslandSurvivor.Globals.ServiceRegistry.Instance.EventBus.Publish(new Core.Events.BossDiedEvent(Name, EnemyType));
+            }
+        }
+
+        base.OnDeathStateFinished(p_sourceState, p_reason);
     }
 }

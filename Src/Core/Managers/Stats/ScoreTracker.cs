@@ -41,6 +41,13 @@ public class ScoreTracker : IScoreTracker
         m_sessionState = new SessionState(p_initialScore, p_mapCount, p_characterId);
     }
 
+    public void ResetSession()
+    {
+        int previousScore = m_sessionState.Score;
+        m_sessionState = new SessionState();
+        m_eventBus.Publish(new ScoreChangedEvent(previousScore, 0));
+    }
+
     public void AddScore(int p_amount)
     {
         if (p_amount <= 0)
