@@ -119,7 +119,7 @@ public partial class Sheep : PassiveNpcBase
             AudioManager.Instance?.PlaySound2D(DeathSoundKey, GlobalPosition, p_volumeLinear: DeathVolume, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
 
 
-        QueueFree();
+
     }
     protected override void OnDamageTaken(Node2D p_attacker)
     {

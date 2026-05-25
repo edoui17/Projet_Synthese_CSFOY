@@ -751,7 +751,6 @@ _data = {
 
 [node name="Lancer" unique_id=1880312545 instance=ExtResource("1_gsctu")]
 script = ExtResource("1_x8y9z")
-DashSpeedMultiplier = 4.0
 DashThreshold = 100.0
 ChaseSpeed = 100.0
 StoppingDistance = 100.0

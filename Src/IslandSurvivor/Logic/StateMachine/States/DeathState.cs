@@ -27,6 +27,9 @@ public partial class DeathState : State
 
         if (m_animationPlayer != null)
         {
+            m_animationPlayer.AnimationFinished -= OnAnimationFinished;
+            m_animationPlayer.AnimationFinished += OnAnimationFinished;
+
             if (m_animationPlayer.HasAnimation(AnimationName))
             {
                 m_animationPlayer.Play(AnimationName);
@@ -36,6 +39,26 @@ public partial class DeathState : State
                 GD.PushWarning($"[DeathState] Animation '{AnimationName}' not found. Playing '{FallbackAnimationName}'.");
                 m_animationPlayer.Play(FallbackAnimationName);
             }
+            else
+            {
+                CompleteState(StateExitReason.Finished);
+            }
+        }
+        else
+        {
+            CompleteState(StateExitReason.Finished);
+        }
+    }
+
+    private void OnAnimationFinished(StringName p_animName)
+    {
+        if (p_animName == AnimationName || p_animName == FallbackAnimationName)
+        {
+            if (m_animationPlayer != null)
+            {
+                m_animationPlayer.AnimationFinished -= OnAnimationFinished;
+            }
+            CompleteState(StateExitReason.Finished);
         }
     }
 }
