@@ -5,21 +5,21 @@ using Godot;
 [GlobalClass]
 public partial class RangedAttackState : State
 {
-    [Export] public string AttackAnimationName { get; set; } = "Attack_Ranged";
+    [Export] public string AttackAnimationName { get; set; } = "Attack";
 
     public override bool IsActionState => true;
 
     private IslandSurvivor.Nodes.Combat.Shooter m_shooter = null!;
+    private IslandSurvivor.Nodes.Combat.AttackController m_attackController = null!;
     private Sprite2D m_sprite = null!;
-    private AnimationPlayer m_animationPlayer = null!;
     private bool m_hasCompleted = false;
 
     public override void Initialize(StateMachine p_stateMachine, CharacterBody2D p_npcContext)
     {
         base.Initialize(p_stateMachine, p_npcContext);
         m_shooter = NpcContext.GetNodeOrNull<IslandSurvivor.Nodes.Combat.Shooter>("Shooter");
+        m_attackController = NpcContext.GetNodeOrNull<IslandSurvivor.Nodes.Combat.AttackController>("AttackController");
         m_sprite = NpcContext.GetNodeOrNull<Sprite2D>("Sprite2D");
-        m_animationPlayer = NpcContext.GetNodeOrNull<AnimationPlayer>("AnimationPlayer");
     }
 
     public override void Enter()
@@ -32,52 +32,76 @@ public partial class RangedAttackState : State
             npc.Velocity = Vector2.Zero;
         }
 
-        if (m_shooter != null && m_shooter.CanShoot)
+        if (m_shooter != null && m_shooter.CanShoot && m_attackController != null && m_attackController.CanAttack)
         {
+            string animSuffix = "_Side";
+            string direction = "Right";
+            bool handledTargetDirection = false;
+
             if (NpcContext is IslandSurvivor.Scenes.NPC.Aggressive.AggressiveNpcBase aggNpc)
             {
                 var target = aggNpc.GetTarget();
                 if (GodotObject.IsInstanceValid(target))
                 {
-                    // Lock direction toward target
+                    // Lock direction toward target immediately to prevent jitter during attack animation
                     Vector2 safeDir = NpcContext.GlobalPosition.DirectionTo(target.GlobalPosition);
                     if (safeDir != Vector2.Zero)
                     {
                         aggNpc.LockedDirection = safeDir;
                     }
-                    if (m_sprite != null)
+                    Vector2 toTarget = aggNpc.LockedDirection;
+
+                    if (System.Math.Abs(toTarget.Y) > System.Math.Abs(toTarget.X))
                     {
-                        m_sprite.FlipH = aggNpc.LockedDirection.X < 0;
+                        if (toTarget.Y < 0)
+                        {
+                            animSuffix = "_Up";
+                            direction = "Up";
+                        }
+                        else
+                        {
+                            animSuffix = "_Down";
+                            direction = "Down";
+                        }
                     }
+                    else
+                    {
+                        animSuffix = "_Side";
+                        direction = toTarget.X < 0 ? "Left" : "Right";
+                        if (m_sprite != null)
+                        {
+                            m_sprite.FlipH = toTarget.X < 0;
+                        }
+                    }
+
+                    handledTargetDirection = true;
                 }
             }
 
-            if (m_animationPlayer != null)
+            if (!handledTargetDirection)
             {
-                var callable = new Callable(this, nameof(OnAnimationFinished));
-                if (m_animationPlayer.IsConnected(AnimationPlayer.SignalName.AnimationFinished, callable))
+                // Fallback for non-aggressive NPCs or missing target
+                if (m_sprite != null)
                 {
-                    m_animationPlayer.Disconnect(AnimationPlayer.SignalName.AnimationFinished, callable);
+                    direction = m_sprite.FlipH ? "Left" : "Right";
                 }
-                m_animationPlayer.Connect(AnimationPlayer.SignalName.AnimationFinished, callable);
+            }
 
-                if (m_animationPlayer.HasAnimation(AttackAnimationName))
-                {
-                    m_animationPlayer.Play(AttackAnimationName);
-                }
-                else
-                {
-                    m_shooter.Shoot();
-                    m_hasCompleted = true;
-                    CompleteState(StateExitReason.Finished);
-                }
-            }
-            else
+            string fullAnimName = $"{AttackAnimationName}{animSuffix}";
+
+            if (AttackAnimationName.EndsWith("_Side") || AttackAnimationName.EndsWith("_Up") || AttackAnimationName.EndsWith("_Down"))
             {
-                m_shooter.Shoot();
-                m_hasCompleted = true;
-                CompleteState(StateExitReason.Finished);
+                fullAnimName = AttackAnimationName;
             }
+
+            var callable = new Callable(this, nameof(OnAttackActionTriggered));
+            if (!m_attackController.IsConnected(IslandSurvivor.Nodes.Combat.AttackController.SignalName.AttackActionTriggered, callable))
+            {
+                m_attackController.Connect(IslandSurvivor.Nodes.Combat.AttackController.SignalName.AttackActionTriggered, callable);
+            }
+
+            m_attackController.SetAttackAnimation(fullAnimName);
+            m_attackController.TryAttack(direction);
         }
         else
         {
@@ -89,21 +113,41 @@ public partial class RangedAttackState : State
         }
     }
 
-    private void OnAnimationFinished(StringName p_animName)
+    public override void Exit()
     {
-        if (p_animName == AttackAnimationName)
+        base.Exit();
+        if (m_attackController != null)
         {
-            if (m_animationPlayer != null)
+            var callable = new Callable(this, nameof(OnAttackActionTriggered));
+            if (m_attackController.IsConnected(IslandSurvivor.Nodes.Combat.AttackController.SignalName.AttackActionTriggered, callable))
             {
-                var callable = new Callable(this, nameof(OnAnimationFinished));
-                if (m_animationPlayer.IsConnected(AnimationPlayer.SignalName.AnimationFinished, callable))
-                {
-                    m_animationPlayer.Disconnect(AnimationPlayer.SignalName.AnimationFinished, callable);
-                }
+                m_attackController.Disconnect(IslandSurvivor.Nodes.Combat.AttackController.SignalName.AttackActionTriggered, callable);
             }
+        }
+    }
+
+    public override void Update(double p_delta)
+    {
+        if (m_hasCompleted) return;
+
+        if (m_attackController != null)
+        {
+            if (!m_attackController.IsAttacking)
+            {
+                m_hasCompleted = true;
+                Callable.From(() => CompleteState(StateExitReason.Finished)).CallDeferred();
+            }
+        }
+        else
+        {
             m_hasCompleted = true;
             CompleteState(StateExitReason.Finished);
         }
+    }
+
+    private void OnAttackActionTriggered()
+    {
+        ExecuteShoot();
     }
 
     public void ExecuteShoot()
