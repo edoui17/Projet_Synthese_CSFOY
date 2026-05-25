@@ -3,19 +3,10 @@
 [ext_resource type="PackedScene" uid="uid://rbase12345" path="res://Scenes/NPC/Aggressive/Normal/RangedAggressiveNpcBase.tscn" id="1_scene"]
 [ext_resource type="Script" uid="uid://dgynmagnnb7ih" path="res://Scenes/NPC/Aggressive/Normal/Archer/Archer.cs" id="2_script"]
 [ext_resource type="AudioStream" uid="uid://bng0g5vtfxg8b" path="res://Assets/Audio/kenney_impact-sounds/Audio/hurtSound.mp3" id="3_febu1"]
-[ext_resource type="AudioStream" uid="uid://d3mi5a68pa0l5" path="res://Assets/Audio/kenney_impact-sounds/Audio/001_we-lost.wav" id="4_12urs"]
 [ext_resource type="Texture2D" uid="uid://biqd2djuomo3k" path="res://Assets/TinySwords/Misc/Icons/Icon_09.png" id="5_1opma"]
 [ext_resource type="Texture2D" uid="uid://6ecpwabyxb30" path="res://Assets/TinySwords/Sprites/Archer/Blue/Archer_Blue.png" id="5_do8kw"]
 [ext_resource type="Animation" uid="uid://bjuop45u4ndx5" path="res://Animation/Error.res" id="6_dd3ir"]
 [ext_resource type="Animation" uid="uid://d0h1sx4b0jesm" path="res://Animation/Death_NPC.res" id="7_vfr0a"]
-[ext_resource type="PackedScene" uid="uid://k0ufhgrxaplu" path="res://Nodes/State/Combat/AttackState.tscn" id="state_AttackState"]
-[ext_resource type="PackedScene" uid="uid://6ct74ht3u7xs" path="res://Nodes/State/Movement/ChaseState.tscn" id="state_ChaseState"]
-[ext_resource type="PackedScene" uid="uid://c5fchvpan65ig" path="res://Nodes/State/Core/DeathState.tscn" id="state_DeathState"]
-[ext_resource type="PackedScene" uid="uid://dhogbp2sdg1fm" path="res://Nodes/State/Movement/IdleState.tscn" id="state_IdleState"]
-[ext_resource type="PackedScene" uid="uid://ca8u8dmqxyiib" path="res://Nodes/State/Movement/RepositionState.tscn" id="state_RepositionState"]
-[ext_resource type="PackedScene" uid="uid://dos0ijyia15w6" path="res://Nodes/State/Combat/WindUpState.tscn" id="state_WindUpState"]
-[ext_resource type="PackedScene" uid="uid://5xki3ncmne9fg" path="res://Nodes/State/Movement/WanderState.tscn" id="state_WanderState"]
-
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_arch"]
 radius = 300.0
@@ -516,10 +507,14 @@ BaseXp = 30.0
 XpMultiplier = 0.2
 AttackSoundKey = "Enemy_Swing_Default"
 AttackVolume = 1.0
+AttackRange = 60.0
+GuardChance = 0.3
+MinAttackRange = 80.0
+MaxAttackRange = 350.0
 HurtSound = ExtResource("3_febu1")
-DeathSound = ExtResource("4_12urs")
 
 [node name="Sprite2D" parent="." index="0" unique_id=1104255030]
+position = Vector2(-1, 1)
 texture = ExtResource("5_1opma")
 
 [node name="CollisionShape2D" parent="." index="1" unique_id=1322914286]
@@ -546,20 +541,5 @@ visible = false
 [node name="AnimationPlayer" parent="." index="9" unique_id=1869571986]
 libraries/ = SubResource("AnimationLibrary_do8kw")
 
-[node name="StateMachine" parent="." index="10" unique_id=402971195 node_paths=PackedStringArray("InitialState")]
-InitialState = NodePath("IdleState")
-
-[node name="IdleState" parent="StateMachine" index="0"]
-
-[node name="WanderState" parent="StateMachine" index="1"]
-
-[node name="ChaseState" parent="StateMachine" index="2"]
+[node name="ChaseState" parent="StateMachine" parent_id_path=PackedInt32Array(402971195) index="2"]
 LoseInterestRange = 600.0
-
-[node name="WindUpState" parent="StateMachine" index="3"]
-
-[node name="AttackState" parent="StateMachine" index="4"]
-
-[node name="DeathState" parent="StateMachine" index="6"]
-
-[node name="RepositionState" parent="StateMachine" index="7"]

@@ -1,0 +1,26 @@
+[gd_scene format=3 uid="uid://ci4rfa6hdr1vw"]
+
+[ext_resource type="PackedScene" uid="uid://bt5vis3qswuxb" path="res://Scenes/NPC/Aggressive/Normal/Lancer/Lancer.tscn" id="1_uuou0"]
+[ext_resource type="PackedScene" uid="uid://dyxx1q578y7t0" path="res://Scenes/NPC/Aggressive/Normal/Soldier/Soldier.tscn" id="2_k7cr8"]
+[ext_resource type="PackedScene" uid="uid://ms5y206nvi0v" path="res://Scenes/NPC/Aggressive/Normal/Archer/Archer.tscn" id="3_w3m3x"]
+
+[node name="TestVisuelEnnemie" type="Node2D" unique_id=74325779]
+
+[node name="Lancer" parent="." unique_id=1880312545 instance=ExtResource("1_uuou0")]
+position = Vector2(694, 213)
+LevelIndex = 6
+IdleSpeed = 0.0
+
+[node name="Soldier" parent="." unique_id=666187867 instance=ExtResource("2_k7cr8")]
+position = Vector2(259, 212)
+LevelIndex = 3
+IdleSpeed = 0.0
+
+[node name="Archer" parent="." unique_id=61408674 instance=ExtResource("3_w3m3x")]
+position = Vector2(461, 225)
+LevelIndex = 3
+AttackRange = 60.0
+GuardChance = 0.3
+MinAttackRange = 80.0
+MaxAttackRange = 350.0
+IdleSpeed = 0.0
