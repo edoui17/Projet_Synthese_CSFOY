@@ -34,20 +34,36 @@ public class NavigationService : INavigationService
     {
         var destinations = new List<IslandDestination>();
 
+        // Replaced string biomes with strong enums for IslandDifficulty logic
+        // Poor = 0 (Free), Normal = 1 (Low Cost), Hard = 2 (High Cost/High Reward)
+        IslandDifficulty[] difficulties = { IslandDifficulty.Poor, IslandDifficulty.Normal, IslandDifficulty.Hard };
+
         for (int i = 0; i < p_count; i++)
         {
-            int difficulty = m_random.Next(1, 10);
-            string biome = m_biomes[m_random.Next(m_biomes.Length)];
+            IslandDifficulty islandDifficulty = difficulties[m_random.Next(difficulties.Length)];
 
-            int dangerLevel = biome == "Dangerous" ? m_random.Next(5, 10) : m_random.Next(1, 5);
-            int resourceCost = difficulty;
+            // Adjust costs based on difficulty, as requested
+            int resourceCost = 0;
+            string biome = "Poor";
+            int dangerLevel = 1;
 
-            if (biome == "Rare")
+            if (islandDifficulty == IslandDifficulty.Normal)
             {
-                resourceCost += 2;
+                resourceCost = m_random.Next(2, 5);
+                biome = "Normal";
+                dangerLevel = m_random.Next(3, 6);
+            }
+            else if (islandDifficulty == IslandDifficulty.Hard)
+            {
+                resourceCost = m_random.Next(6, 12);
+                biome = "Hard";
+                dangerLevel = m_random.Next(7, 10);
             }
 
-            if (i == 0)
+            // First one is always free/Poor, or we just rely on the randomization?
+            // "remove the testing free island since now poor island will be free"
+            // We will just let the Poor difficulty naturally be free.
+            if (islandDifficulty == IslandDifficulty.Poor)
             {
                 resourceCost = 0;
             }
@@ -62,7 +78,7 @@ public class NavigationService : INavigationService
                 Id: $"island_{Guid.NewGuid().ToString().Substring(0, 8)}",
                 ScenePath: scenePath,
                 Biome: biome,
-                Difficulty: difficulty,
+                Difficulty: (int)islandDifficulty,
                 ResourceCost: resourceCost,
                 DangerLevel: dangerLevel
             ));

@@ -27,6 +27,8 @@ ProgressionManager="*res://Managers/ProgressionManager.cs"
 AudioManager="*uid://ccgt7urf64l7y"
 SceneLoadingManager="*res://Managers/SceneLoadingManager.cs"
 SessionManager="*res://Managers/SessionManager.cs"
+SessionManager="*uid://test_uid_session_manager"
+DifficultyManager="*res://Managers/DifficultyManager.cs"
 
 [display]
 
