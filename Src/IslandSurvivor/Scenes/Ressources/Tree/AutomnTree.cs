@@ -103,7 +103,7 @@ public partial class AutomnTree : Area2D, ITree, IDamageable
         }
 
         // Try to play destroy sound
-        AudioStream destroyStream = GD.Load<AudioStream>("res://Assets/Sounds/Combat/wood_destroy.wav");
+        AudioStream destroyStream = GD.Load<AudioStream>("res://Assets/Audio/kenney_impact-sounds/Audio/nematoki-old-tree-falls-493329.mp3");
         if (destroyStream != null)
         {
             AudioManager.Instance?.PlaySound2D(destroyStream, GlobalPosition);
@@ -123,7 +123,7 @@ public partial class AutomnTree : Area2D, ITree, IDamageable
         this.PlayShake();
 
         // Try to play impact sound
-        AudioStream impactStream = GD.Load<AudioStream>("res://Assets/Sounds/Combat/wood_impact.wav");
+        AudioStream impactStream = GD.Load<AudioStream>("res://Assets/Audio/kenney_impact-sounds/Audio/impactWood_medium_000.ogg");
         if (impactStream != null)
         {
             AudioManager.Instance?.PlaySound2D(impactStream, GlobalPosition);

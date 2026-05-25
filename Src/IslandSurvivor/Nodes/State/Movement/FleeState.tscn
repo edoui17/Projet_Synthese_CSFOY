@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://sq896rb2a764a"]
+
+[ext_resource type="Script" uid="uid://644jxs0lkig3y" path="res://Logic/StateMachine/States/FleeState.cs" id="1_script"]
+
+[node name="FleeState" type="Node"]
+script = ExtResource("1_script")

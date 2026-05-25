@@ -3,10 +3,10 @@
 [ext_resource type="PackedScene" uid="uid://cqo7rlgy61vfa" path="res://Scenes/Player/Player.tscn" id="1_player"]
 [ext_resource type="PackedScene" uid="uid://bueuyg7e4p4vm" path="res://Scenes/NPC/Aggressive/Boss/Reaper/Reaper.tscn" id="2_reaper"]
 
-[node name="ReaperTestScene" type="Node2D"]
+[node name="ReaperTestScene" type="Node2D" unique_id=1297959041]
 
-[node name="Player" parent="." instance=ExtResource("1_player")]
+[node name="Player" parent="." unique_id=1822238970 instance=ExtResource("1_player")]
 position = Vector2(200, 200)
 
-[node name="Reaper" parent="." instance=ExtResource("2_reaper")]
+[node name="Reaper" parent="." unique_id=282848357 instance=ExtResource("2_reaper")]
 position = Vector2(500, 200)

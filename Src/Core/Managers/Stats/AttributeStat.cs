@@ -44,6 +44,12 @@ public class AttributeStat : IStat
         NotifyStatChanged();
     }
 
+    public void ClearBonus()
+    {
+        m_additionalValue = 0f;
+        NotifyStatChanged();
+    }
+
     private void NotifyStatChanged()
     {
         m_eventBus.Publish(new StatChangedEvent(m_statType, CurrentValue, EffectiveMaxValue));

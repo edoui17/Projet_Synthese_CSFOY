@@ -1,132 +1,39 @@
 [gd_scene format=3 uid="uid://c3qpgtamtdyll"]
 
-[ext_resource type="Script" uid="uid://bqnic7m1npy33" path="res://Scenes/Projectiles/DarkScythe/DarkScythe.cs" id="1_byklq"]
-[ext_resource type="Texture2D" uid="uid://cd8iknqk3cdka" path="res://Assets/Corrupted/MagicAttacks/DarkScythe.png" id="1_s5lsp"]
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_byklq"]
-atlas = ExtResource("1_s5lsp")
-region = Rect2(0, 0, 96, 96)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_04kyy"]
-atlas = ExtResource("1_s5lsp")
-region = Rect2(96, 0, 96, 96)
+[ext_resource type="PackedScene" uid="uid://df74p1t2jmqx6" path="res://Scenes/Projectiles/BaseProjectile.tscn" id="1_base"]
+[ext_resource type="Script" uid="uid://bqnic7m1npy33" path="res://Scenes/Projectiles/DarkScythe/DarkScythe.cs" id="2_byklq"]
+[ext_resource type="Texture2D" uid="uid://cd8iknqk3cdka" path="res://Assets/Corrupted/MagicAttacks/DarkScythe.png" id="3_s5lsp"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_ebia3"]
-atlas = ExtResource("1_s5lsp")
-region = Rect2(192, 0, 96, 96)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_8mtgf"]
-atlas = ExtResource("1_s5lsp")
-region = Rect2(288, 0, 96, 96)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_i5ot6"]
-atlas = ExtResource("1_s5lsp")
-region = Rect2(384, 0, 96, 96)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_j202j"]
-atlas = ExtResource("1_s5lsp")
-region = Rect2(480, 0, 96, 96)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_ocvvd"]
-atlas = ExtResource("1_s5lsp")
+atlas = ExtResource("3_s5lsp")
 region = Rect2(576, 0, 96, 96)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_et8yx"]
-atlas = ExtResource("1_s5lsp")
-region = Rect2(672, 0, 96, 96)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_vjmjv"]
-atlas = ExtResource("1_s5lsp")
-region = Rect2(0, 96, 96, 96)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_7elak"]
-atlas = ExtResource("1_s5lsp")
-region = Rect2(96, 96, 96, 96)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_g5pdw"]
-atlas = ExtResource("1_s5lsp")
-region = Rect2(192, 96, 96, 96)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_t4lbx"]
-atlas = ExtResource("1_s5lsp")
-region = Rect2(288, 96, 96, 96)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_k4ssg"]
-atlas = ExtResource("1_s5lsp")
-region = Rect2(384, 96, 96, 96)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_2j446"]
-atlas = ExtResource("1_s5lsp")
-region = Rect2(480, 96, 96, 96)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_oetew"]
-atlas = ExtResource("1_s5lsp")
-region = Rect2(576, 96, 96, 96)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_j8jeg"]
 animations = [{
 "frames": [{
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_byklq")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_04kyy")
-}, {
-"duration": 1.0,
 "texture": SubResource("AtlasTexture_ebia3")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_8mtgf")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_i5ot6")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_j202j")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_ocvvd")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_et8yx")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_vjmjv")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_7elak")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_g5pdw")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_t4lbx")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_k4ssg")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_2j446")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_oetew")
 }],
-"loop": false,
+"loop": true,
 "name": &"Attack",
-"speed": 7.0
+"speed": 5.0
 }]
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_s5lsp"]
+[node name="DarkScythe" unique_id=307395803 instance=ExtResource("1_base")]
+scale = Vector2(2.5, 2.5)
+collision_mask = 15
+script = ExtResource("2_byklq")
+ReturnTime = 1.5
+SpinSpeed = 15.0
+DestroyOnImpact = false
 
-[node name="DarkScythe" type="Area2D" unique_id=1593432847]
-script = ExtResource("1_byklq")
-
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=844898042]
+[node name="AnimatedSprite2D" parent="." index="0" unique_id=1598172784]
 sprite_frames = SubResource("SpriteFrames_j8jeg")
 animation = &"Attack"
-frame = 14
 frame_progress = 1.0
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=2883989]
-position = Vector2(-6, 3)
-shape = SubResource("CircleShape2D_s5lsp")
+[node name="CollisionShape2D" parent="." index="1" unique_id=1182282185]
+position = Vector2(-16.800001, -28.400003)
+rotation = 1.0112159
+scale = Vector2(0.9999994, 0.9999994)
+polygon = PackedVector2Array(15.273125, -9.313008, 0.64440536, -8.56416, -6.6642723, 7.625454, -4.0007324, 15.429661, -0.3128128, 16.323677, -1.3223801, 8.139496, 5.0922794, -4.3622)

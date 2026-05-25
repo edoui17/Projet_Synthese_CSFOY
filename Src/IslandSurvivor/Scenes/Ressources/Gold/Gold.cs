@@ -18,7 +18,7 @@ public partial class Gold : Area2D, IOre, IDamageable
 
     [Export] public string MaterialName { get; set; } = "Or";
     [Export] public string MaterialType { get; set; } = "Gold";
-    [Export] public string IconPath { get; set; } = "sera a valider";
+    [Export] public string IconPath { get; set; } = "";
 
     [ExportGroup("Audio")]
     [Export] public float AudioMaxDistance { get; set; } = 2000f;

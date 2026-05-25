@@ -20,6 +20,7 @@ public partial class SignalManager : Node
     [Signal] public delegate void BuildingShopToggledEventHandler(bool p_isOpen, string p_buildingId);
     [Signal] public delegate void InventoryChangedEventHandler(string p_resourceId, int p_totalAmount);
     [Signal] public delegate void OfflineModeRequestedEventHandler();
+    [Signal] public delegate void SessionEndedEventHandler(bool p_isVictory);
 
     public override void _EnterTree()
     {

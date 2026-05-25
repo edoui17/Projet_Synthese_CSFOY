@@ -60,7 +60,7 @@ public partial class AudioManager : Node
         // Enemy Sounds
         RegisterSound("Enemy_Swing_Default", "res://Assets/Audio/kenney_impact-sounds/Audio/jofae-swing-whoosh-110410.mp3");
         RegisterSound("Enemy_Hurt_Default", "res://Assets/Audio/kenney_impact-sounds/Audio/impactGlass_medium_003.ogg");
-        RegisterSound("Enemy_Death_Default", "res://Assets/Sounds/Combat/enemy_death.wav");
+        RegisterSound("Enemy_Death_Default", "res://Assets/Audio/kenney_impact-sounds/Audio/001_we-lost.wav");
 
         // Specific Enemy Sounds (demonstrating separation)
         RegisterSound("Lancer_Attack", "res://Assets/Audio/kenney_impact-sounds/Audio/jofae-swing-whoosh-110410.mp3", -2f); // Slightly quieter
@@ -85,7 +85,7 @@ public partial class AudioManager : Node
 
         // NPC Sounds
         RegisterSound("Sheep_Hurt", "res://Assets/Audio/kenney_impact-sounds/Audio/scottishperson-sound-effect-woman-scream-236488.mp3");
-        RegisterSound("Sheep_Idle", "res://Assets/Audio/kenney_impact-sounds/Audio/stu9-monsheep-352819.mp3"); 
+        RegisterSound("Sheep_Idle", "res://Assets/Audio/kenney_impact-sounds/Audio/stu9-monsheep-352819.mp3");
     }
 
     private void RegisterSound(string p_key, string p_path, float p_defaultVolumeDb = 0f, float p_defaultPitchScale = 1f)

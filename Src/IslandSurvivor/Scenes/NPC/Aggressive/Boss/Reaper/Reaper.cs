@@ -11,20 +11,68 @@ public partial class Reaper : BossBase
 
     private bool m_isAnimationTestMode = false;
     private int m_currentAnimationIndex = 0;
-    private string[] m_animationNames;
+    private string[] m_animationNames = System.Array.Empty<string>();
 
-    private Tween m_colorTween;
-    private Tween m_hoverTween;
+    private Tween? m_colorTween;
+    private Tween? m_hoverTween;
     private Vector2 m_originalSpritePosition;
+
+
+    protected override Godot.StringName GetCombatDecisionState(float distanceSquared, float attackRangeSquared)
+    {
+        float maxAttackRangeSquared = MaxAttackRange * MaxAttackRange;
+        float minAttackRangeSquared = MinAttackRange * MinAttackRange;
+
+        if (distanceSquared > maxAttackRangeSquared)
+        {
+            return IslandSurvivor.Logic.StateMachine.StateConstants.ChaseStateName;
+        }
+
+        // Reaper specific logic: Melee when close, Ranged when far.
+        // Assuming MinAttackRange acts as the Melee range.
+        if (distanceSquared <= minAttackRangeSquared)
+        {
+            if (m_attackController != null && m_attackController.CanAttack)
+            {
+                var windUp = m_stateMachine?.GetState(IslandSurvivor.Logic.StateMachine.StateConstants.WindUpStateName) as IslandSurvivor.Logic.StateMachine.States.WindUpState;
+                if (windUp != null)
+                {
+                    windUp.NextStateAfterWindup = IslandSurvivor.Logic.StateMachine.StateConstants.MeleeAttackStateName;
+                }
+                return IslandSurvivor.Logic.StateMachine.StateConstants.WindUpStateName;
+            }
+        }
+        else
+        {
+            var shooter = GetNodeOrNull<IslandSurvivor.Nodes.Combat.Shooter>("Shooter");
+            if (shooter != null && shooter.CanShoot)
+            {
+                var windUp = m_stateMachine?.GetState(IslandSurvivor.Logic.StateMachine.StateConstants.WindUpStateName) as IslandSurvivor.Logic.StateMachine.States.WindUpState;
+                if (windUp != null)
+                {
+                    windUp.NextStateAfterWindup = IslandSurvivor.Logic.StateMachine.StateConstants.RangedAttackStateName;
+                }
+                return IslandSurvivor.Logic.StateMachine.StateConstants.WindUpStateName;
+            }
+
+            // If shooter is on cooldown, chase or idle?
+            if (distanceSquared > minAttackRangeSquared)
+            {
+                return IslandSurvivor.Logic.StateMachine.StateConstants.ChaseStateName;
+            }
+        }
+
+        return IslandSurvivor.Logic.StateMachine.StateConstants.IdleStateName;
+    }
 
     public override void _Ready()
     {
         base._Ready();
 
-        if (m_animatedSprite != null && m_animatedSprite.SpriteFrames != null)
+        if (m_animationPlayer != null)
         {
-            m_animationNames = m_animatedSprite.SpriteFrames.GetAnimationNames();
-            m_originalSpritePosition = m_animatedSprite.Position;
+            m_animationNames = m_animationPlayer.GetAnimationList().Select(x => x.ToString()).ToArray();
+            if (m_sprite != null) m_originalSpritePosition = m_sprite.Position;
         }
     }
 
@@ -61,14 +109,14 @@ public partial class Reaper : BossBase
 
     private void PlayTestAnimation()
     {
-        if (m_animatedSprite == null) return;
+        if (m_sprite == null) return;
 
         string animName = m_animationNames[m_currentAnimationIndex];
         GD.Print($"[Reaper] Playing Animation: {animName}");
 
         ResetAnimationEffects();
 
-        m_animatedSprite.Play(animName);
+        m_animationPlayer?.Play(animName);
 
         if (animName == "IdleShielded")
         {
@@ -78,7 +126,7 @@ public partial class Reaper : BossBase
 
     private void ApplyShieldEffects()
     {
-        if (m_animatedSprite == null) return;
+        if (m_sprite == null) return;
 
         // Reset any existing tweens just in case
         ResetAnimationEffects();
@@ -87,8 +135,8 @@ public partial class Reaper : BossBase
         m_colorTween = CreateTween();
         m_colorTween.SetLoops(); // Loop infinitely
         Color lightBlue = new Color(0.5f, 0.8f, 1.0f, 1.0f); // Light blue tint
-        m_colorTween.TweenProperty(m_animatedSprite, "modulate", lightBlue, 1.0f).SetTrans(Tween.TransitionType.Sine).SetEase(Tween.EaseType.InOut);
-        m_colorTween.TweenProperty(m_animatedSprite, "modulate", Colors.White, 1.0f).SetTrans(Tween.TransitionType.Sine).SetEase(Tween.EaseType.InOut);
+        m_colorTween.TweenProperty(m_sprite, "modulate", lightBlue, 1.0f).SetTrans(Tween.TransitionType.Sine).SetEase(Tween.EaseType.InOut);
+        m_colorTween.TweenProperty(m_sprite, "modulate", Colors.White, 1.0f).SetTrans(Tween.TransitionType.Sine).SetEase(Tween.EaseType.InOut);
 
         // 2. Slow Hovering Effect
         m_hoverTween = CreateTween();
@@ -96,8 +144,8 @@ public partial class Reaper : BossBase
         Vector2 upPos = m_originalSpritePosition + new Vector2(0, -15);
         Vector2 downPos = m_originalSpritePosition + new Vector2(0, 5);
 
-        m_hoverTween.TweenProperty(m_animatedSprite, "position", upPos, 2.0f).SetTrans(Tween.TransitionType.Sine).SetEase(Tween.EaseType.InOut);
-        m_hoverTween.TweenProperty(m_animatedSprite, "position", downPos, 2.0f).SetTrans(Tween.TransitionType.Sine).SetEase(Tween.EaseType.InOut);
+        m_hoverTween.TweenProperty(m_sprite, "position", upPos, 2.0f).SetTrans(Tween.TransitionType.Sine).SetEase(Tween.EaseType.InOut);
+        m_hoverTween.TweenProperty(m_sprite, "position", downPos, 2.0f).SetTrans(Tween.TransitionType.Sine).SetEase(Tween.EaseType.InOut);
     }
 
     private void ResetAnimationEffects()
@@ -113,65 +161,12 @@ public partial class Reaper : BossBase
             m_hoverTween = null;
         }
 
-        if (m_animatedSprite != null)
+        if (m_sprite != null)
         {
-            m_animatedSprite.Modulate = Colors.White;
-            m_animatedSprite.Position = m_originalSpritePosition;
+            m_sprite.Modulate = Colors.White;
+            m_sprite.Position = m_originalSpritePosition;
         }
     }
 
-    public override void _PhysicsProcess(double p_delta)
-    {
-        if (m_isAnimationTestMode)
-        {
-            // Do not run normal AI or movement when testing animations
-            Velocity = Vector2.Zero;
-            return;
-        }
-
-        // Run normal boss physics process
-        base._PhysicsProcess(p_delta);
-    }
-
-    protected override void UpdateAnimation(Vector2 p_direction)
-    {
-        if (m_animatedSprite == null) return;
-
-        bool isAttacking = m_attackController != null && m_attackController.IsAttacking;
-
-        if (isAttacking)
-        {
-            // Attack animation is handled by OnAttackStarted via signals
-            return;
-        }
-
-        if (Velocity.LengthSquared() > 0)
-        {
-            if (m_animatedSprite.Animation != m_animMoving)
-            {
-                m_animatedSprite.Play(m_animMoving);
-            }
-        }
-        else
-        {
-            StringName targetIdleAnim = m_animIdle;
-
-            // If we are in the Shielded phase (under 66% HP but not enraged), play Shielded idle animation
-            if (m_bossController != null && m_bossController.CurrentPhase == IslandSurvivor.Logic.Entities.BossPhase.Shielded)
-            {
-                targetIdleAnim = new StringName("IdleShielded");
-            }
-
-            if (m_animatedSprite.Animation != targetIdleAnim)
-            {
-                m_animatedSprite.Play(targetIdleAnim);
-            }
-        }
-    }
-
-    protected override void OnAttackStarted()
-    {
-        string animName = m_bossController.CurrentPhase == IslandSurvivor.Logic.Entities.BossPhase.Enraged ? EnragedAttackAnimationName : NormalAttackAnimationName;
-        PlayAttackAnimation(animName);
-    }
+    // Rely exclusively on state machine for Reaper AI.
 }
