@@ -123,98 +123,99 @@ public partial class AttackController : Node
         p_area.Connect(Area2D.SignalName.BodyEntered, new Callable(this, MethodName.OnBodyEntered));
     }
 
-  public bool TryAttack(string p_direction)
-  {
-    // 1. Force a clean state before starting
-    if (IsAttacking)
+    public bool TryAttack(string p_direction)
     {
-      GD.PushWarning("TryAttack called while already attacking. Forcing cleanup.");
-      EndAttack();
+        // 1. Force a clean state before starting
+        if (IsAttacking)
+        {
+            GD.PushWarning("TryAttack called while already attacking. Forcing cleanup.");
+            EndAttack();
+        }
+
+        if (!CanAttack) return false;
+
+        IsAttacking = true;
+        m_hitTargetsThisAttack.Clear();
+
+        // 2. Try getting a registered hitbox. If none exist (e.g., Archer), that's fine.
+        if (m_directionAreas.TryGetValue(p_direction, out Area2D? area) && GodotObject.IsInstanceValid(area))
+        {
+            m_currentActiveArea = area;
+        }
+        else
+        {
+            m_currentActiveArea = null;
+        }
+
+        // ... proceed with animation
+        if (m_animationPlayer != null && !string.IsNullOrEmpty(AttackAnimationName))
+        {
+            m_animationPlayer.Play(AttackAnimationName);
+        }
+        return true;
     }
 
-    if (!CanAttack) return false;
-
-    IsAttacking = true;
-    m_hitTargetsThisAttack.Clear();
-
-    // 2. Try getting a registered hitbox. If none exist (e.g., Archer), that's fine.
-    if (m_directionAreas.TryGetValue(p_direction, out Area2D? area) && GodotObject.IsInstanceValid(area))
+    // Public method intended to be called exclusively by the Godot AnimationPlayer via a Method Track
+    public void ExecuteAttackHit()
     {
-      m_currentActiveArea = area;
+        // Ensure we are still in a valid state
+        if (!IsAttacking) return;
+
+        EmitSignal(SignalName.AttackActionTriggered);
+
+        // Ranged units or units without specific hitboxes will have m_currentActiveArea as null
+        if (!GodotObject.IsInstanceValid(m_currentActiveArea)) return;
+
+        m_currentActiveArea.Monitoring = true;
+
+        // Use CallDeferred to ensure we aren't modifying physics state
+        // mid-frame during an animation playback
+        Callable.From(() =>
+        {
+            if (!GodotObject.IsInstanceValid(m_currentActiveArea)) return;
+
+            var overlappingBodies = m_currentActiveArea.GetOverlappingBodies();
+            foreach (var body in overlappingBodies) ProcessHit(body);
+
+            var overlappingAreas = m_currentActiveArea.GetOverlappingAreas();
+            foreach (var area in overlappingAreas)
+            {
+                ProcessHit(area);
+                ProcessHit(area.GetParent());
+            }
+        }).CallDeferred();
     }
-    else
+
+    public void CancelAttack()
     {
-      m_currentActiveArea = null;
+        // The previous EndAttack() method might be too aggressive.
+        // Let's make it null-safe and check if we are already finished.
+        if (!IsAttacking) return;
+
+        EndAttack();
     }
 
-    // ... proceed with animation
-    if (m_animationPlayer != null && !string.IsNullOrEmpty(AttackAnimationName))
-    {
-      m_animationPlayer.Play(AttackAnimationName);
-    }
-    return true;
-  }
-
-  // Public method intended to be called exclusively by the Godot AnimationPlayer via a Method Track
-  public void ExecuteAttackHit()
-  {
-    // Ensure we are still in a valid state
-    if (!IsAttacking) return;
-
-    EmitSignal(SignalName.AttackActionTriggered);
-
-    // Ranged units or units without specific hitboxes will have m_currentActiveArea as null
-    if (!GodotObject.IsInstanceValid(m_currentActiveArea)) return;
-
-    m_currentActiveArea.Monitoring = true;
-
-    // Use CallDeferred to ensure we aren't modifying physics state 
-    // mid-frame during an animation playback
-    Callable.From(() => {
-      if (!GodotObject.IsInstanceValid(m_currentActiveArea)) return;
-
-      var overlappingBodies = m_currentActiveArea.GetOverlappingBodies();
-      foreach (var body in overlappingBodies) ProcessHit(body);
-
-      var overlappingAreas = m_currentActiveArea.GetOverlappingAreas();
-      foreach (var area in overlappingAreas)
-      {
-        ProcessHit(area);
-        ProcessHit(area.GetParent());
-      }
-    }).CallDeferred();
-  }
-
-  public void CancelAttack()
-  {
-    // The previous EndAttack() method might be too aggressive.
-    // Let's make it null-safe and check if we are already finished.
-    if (!IsAttacking) return;
-
-    EndAttack();
-  }
-
-  public void ResetCooldown()
+    public void ResetCooldown()
     {
         m_cooldownTimer = 0f;
     }
 
-  private void EndAttack()
-  {
-    IsAttacking = false;
-
-    // Safety check: ensure we don't access a freed object
-    if (GodotObject.IsInstanceValid(m_currentActiveArea))
+    private void EndAttack()
     {
-      m_currentActiveArea.Monitoring = false;
+        IsAttacking = false;
+
+        // Safety check: ensure we don't access a freed object
+        if (GodotObject.IsInstanceValid(m_currentActiveArea))
+        {
+            m_currentActiveArea.Monitoring = false;
+        }
+
+        m_currentActiveArea = null;
+        m_hitTargetsThisAttack.Clear();
+        EmitSignal(SignalName.AttackFinished);
     }
 
-    m_currentActiveArea = null;
-    m_hitTargetsThisAttack.Clear();
-    EmitSignal(SignalName.AttackFinished);
-  }
-
-  private void OnAreaEntered(Area2D p_area)
+    private void OnAreaEntered(Area2D p_area)
     {
         ProcessHit(p_area);
         ProcessHit(p_area.GetParent());
