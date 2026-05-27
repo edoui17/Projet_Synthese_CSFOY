@@ -31,10 +31,10 @@ Le système de combat des ennemis dans IslandSurvivor suit l'architecture N-Tier
 
 ### Logique Core (Src/Core)
 - **Interfaces :** `IAttackable`, `IDamageable` dictent l'interaction fondamentale pour infliger et recevoir des dégâts.
-- **Contrôleurs :** `IAgressorController` gère la machine à états pour les entités agressives. Il suit les états (`IDLE`, `CHASE`, `ATTACK`, `DEAD`) et gère les temps de recharge d'attaque et les durées purement en logique C#, sans avoir conscience des frames (images) Godot.
+- **Contrôleurs :** `IStateMachine` gère la machine à états pour les entités agressives. Il suit les états (`IDLE`, `CHASE`, `ATTACK`, `DEAD`) et gère les temps de recharge d'attaque et les durées purement en logique C#, sans avoir conscience des frames (images) Godot.
 
 ### Client Godot (Src/IslandSurvivor)
 - **Détection des Coups (Hit Detection) :** Les attaques de mêlée utilisent des nœuds `Area2D` dédiés (`HitboxArea` sur les ennemis, `WeaponAttack` sur les joueurs).
 - **Suivi des Cibles (Target Tracking) :** Les entités utilisent les signaux `BodyEntered` et `BodyExited` pour maintenir un `HashSet<IDamageable>` des cibles actuellement en chevauchement. Cette approche est plus fiable que d'interroger `GetOverlappingBodies()` en plein milieu d'une animation.
-- **Visuels :** Le `_PhysicsProcess` interroge l'état actuel du contrôleur. Si l'état est `ATTACK`, le mouvement est arrêté, et l'`AnimatedSprite2D` passe à l'animation "Attack".
+- **Visuels :** Le `_PhysicsProcess` interroge l'état actuel du contrôleur. Si l'état est `ATTACK`, le mouvement est arrêté, et le `Sprite2D` et `AnimationPlayer` passe à l'animation "Attack".
 - **Intégration des Statistiques :** Les calculs de dégâts et les modifications de santé sont traités via le `StatManager` attaché, garantissant que toutes les statistiques de l'entité sont centralisées et pilotées par les ressources `EntityStats`.
