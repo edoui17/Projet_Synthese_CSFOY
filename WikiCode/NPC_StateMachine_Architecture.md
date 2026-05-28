@@ -4,7 +4,7 @@ Cette documentation décrit la nouvelle architecture basée sur des nœuds (Node
 
 ## Concept Principal
 
-Plutôt que d'utiliser des blocs `if/else` complexes directement dans la méthode `_PhysicsProcess` des classes C# (comme l'ancien système `AgressorController`), nous utilisons désormais un modèle de conception d'état par composition de nœuds (Composition Pattern).
+Plutôt que d'utiliser des blocs `if/else` complexes directement dans la méthode `_PhysicsProcess` des classes C# (comme l'ancien système `StateMachine`), nous utilisons désormais un modèle de conception d'état par composition de nœuds (Composition Pattern).
 
 Chaque comportement (ex: chasser, attaquer, fuir) est un nœud enfant (`State`) attaché à un nœud parent gérant la transition (`StateMachine`).
 

@@ -12,8 +12,10 @@ Enemies require specific child nodes to utilize the C# scripts via the compositi
 
 ### Step-by-Step Godot Node Setup
 1. **Root Node**: Create a new scene with `CharacterBody2D` as the root. Name it `Soldier`.
-2. **Animation**: Add a `Sprite2D` child and an `AnimationPlayer` child.
-   - Configure the animations (e.g., `Idle`, `Moving`) in the `AnimationPlayer` to manipulate the `Sprite2D` frame properties.
+2. **Animation**: Add a `Sprite2D` and `AnimationPlayer` child.
+   - Create a new `SpriteFrames` resource.
+   - Add two animations exactly named: `Idle` and `Moving`.
+   - Assign the corresponding frames for your enemy in each animation.
 3. **Collision**: Add a `CollisionShape2D` child. Define a shape (like a `CapsuleShape2D` or `CircleShape2D`) that matches the sprite's base. Set the collision layer to the "Enemy" layer and mask the "World" layer (so the enemy collides with walls).
 4. **Movement**: Add a `MovementController` node by instantiating `MovementController.tscn` as a child.
 5. **Stats**: Instantiate `StatsManager.tscn` as a child node.
@@ -28,13 +30,11 @@ Enemies require specific child nodes to utilize the C# scripts via the compositi
 
 The C# logic was designed following the Orchestrator/Accountant N-Tier architecture:
 - `IEnemy.cs` / `INpc.cs`: Interfaces defining base enemy types in Core.
-- **Node-based StateMachine**: State management (IDLE, WANDER, CHASE) is handled by the Godot nodes (`StateMachine.cs` and `State.cs` derivatives). This replaces monolithic controller scripts like the deprecated `AgressorController`.
-- `Soldier.cs` (or `AggressiveNpcBase`): The client-side Godot script that glues components. It manages target detection via Godot Groups ("Player") and relays information to the `StateMachine`.
-
-For more details on the State Machine, consult [`NPC_StateMachine_Architecture.md`](./NPC_StateMachine_Architecture.md).
+- `StateMachine.cs`: Pure C# logic in `Logic/Entities/` to manage state changes (IDLE, CHASE, DEAD) and direction logic. It does not depend on Godot nodes directly.
+- `Soldier.cs`: The client-side Godot script. It links the Godot components (`Sprite2D` / `AnimationPlayer`, `MovementController`) with the C# logic controllers. It manages target detection via Godot Groups ("Player"), physical movement via `MovementController.Move()`, and animation playback based on velocity.
 
 ## 4. Summary of Accomplishments (US 6.1)
-- Implemented Wandering (Idle Wandering) using `WanderState`, which captures a spawn position and assigns a random target within a radius.
-- Implemented Obstacle Avoidance within the `WanderState` by checking `GetSlideCollisionCount() > 0` and handling collision internally (e.g., assigning a new random direction) to prevent state thrashing.
-- Implemented Chase logic via `ChaseState` when the player is within the detection radius.
-- Standardized animations using `Sprite2D` and `AnimationPlayer`, where the `MovementController` is responsible for flipping the `Sprite2D` (`FlipH`) based on the X direction.
+- Implemented Wandering (Idle Wandering) using timers and random directions.
+- Implemented Obstacle Avoidance by checking `GetSlideCollisionCount() > 0` during the `IDLE` state, immediately forcing the controller to pick a new random direction to prevent getting stuck.
+- Implemented Chase logic when the player is within the detection radius.
+- Replaced static sprites with `Sprite2D` and `AnimationPlayer`, ensuring the enemy flips visually based on the X direction and switches between `Idle` and `Moving` animations.
