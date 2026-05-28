@@ -27,14 +27,17 @@ Le système de combat de IslandSurvivor utilise une mécanique d'attaque à zone
 
 ## Système de Combat des Ennemis (Mêlée)
 
-Le système de combat des ennemis dans IslandSurvivor suit l'architecture N-Tier, séparant la logique métier de la représentation client Godot.
+Le système de combat des ennemis dans IslandSurvivor suit l'architecture N-Tier, où la détection des collisions et les animations sont gérées par le client Godot via une architecture basée sur des nœuds (Node-based StateMachine), et où les interfaces du Core garantissent des interactions standardisées.
+
+### Architecture des États (Node-based StateMachine)
+- **StateMachine :** Plutôt qu'un contrôleur monolithique, la logique comportementale des ennemis utilise le pattern de composition via un nœud parent `StateMachine`. Pour en savoir plus, consultez [`NPC_StateMachine_Architecture.md`](./NPC_StateMachine_Architecture.md).
+- **États Concrets :** Des nœuds enfants spécifiques (ex: `ChaseState`, `MeleeAttackState`) héritent de la classe de base `State`. Le `MeleeAttackState` interagit avec le `AttackController` pour infliger les dégâts et écoute la fin de l'animation pour initier une transition (vers le `RecoveryState` ou le `ChaseState`).
 
 ### Logique Core (Src/Core)
-- **Interfaces :** `IAttackable`, `IDamageable` dictent l'interaction fondamentale pour infliger et recevoir des dégâts.
-- **Contrôleurs :** `IAgressorController` gère la machine à états pour les entités agressives. Il suit les états (`IDLE`, `CHASE`, `ATTACK`, `DEAD`) et gère les temps de recharge d'attaque et les durées purement en logique C#, sans avoir conscience des frames (images) Godot.
+- **Interfaces :** `IAttackable`, `IDamageable` dictent l'interaction fondamentale pour infliger et recevoir des dégâts indépendamment de la machine à états utilisée par l'entité.
 
 ### Client Godot (Src/IslandSurvivor)
 - **Détection des Coups (Hit Detection) :** Les attaques de mêlée utilisent des nœuds `Area2D` dédiés (`HitboxArea` sur les ennemis, `WeaponAttack` sur les joueurs).
-- **Suivi des Cibles (Target Tracking) :** Les entités utilisent les signaux `BodyEntered` et `BodyExited` pour maintenir un `HashSet<IDamageable>` des cibles actuellement en chevauchement. Cette approche est plus fiable que d'interroger `GetOverlappingBodies()` en plein milieu d'une animation.
-- **Visuels :** Le `_PhysicsProcess` interroge l'état actuel du contrôleur. Si l'état est `ATTACK`, le mouvement est arrêté, et l'`AnimatedSprite2D` passe à l'animation "Attack".
-- **Intégration des Statistiques :** Les calculs de dégâts et les modifications de santé sont traités via le `StatManager` attaché, garantissant que toutes les statistiques de l'entité sont centralisées et pilotées par les ressources `EntityStats`.
+- **Suivi des Cibles (Target Tracking) :** Les entités utilisent les signaux `BodyEntered` et `BodyExited` pour maintenir un `HashSet<IDamageable>` des cibles actuellement en chevauchement. Cette approche est plus fiable que d'interroger `GetOverlappingBodies()` en plein milieu d'une animation (qui peut être gourmand en performances).
+- **Visuels :** L'état d'attaque (`MeleeAttackState`) stoppe le mouvement et s'appuie sur le nœud `AnimationPlayer` (associé à un nœud `Sprite2D` classique) pour jouer l'animation "Attack". Le système écoute le signal `AnimationFinished` de l'`AnimationPlayer` pour conclure l'attaque de façon synchronisée.
+- **Intégration des Statistiques :** Les calculs de dégâts et les modifications de santé sont traités via le `StatManager` attaché, garantissant que toutes les statistiques de l'entité sont centralisées et pilotées par les variables du Node (ou par les ressources).
