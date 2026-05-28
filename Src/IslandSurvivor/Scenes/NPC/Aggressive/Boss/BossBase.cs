@@ -15,7 +15,16 @@ public partial class BossBase : AggressiveNpcBase
     protected override Godot.StringName GetCombatDecisionState(float distanceSquared, float attackRangeSquared)
     {
         // Future boss phases and AoE cooldown logic will be injected here.
-        return base.GetCombatDecisionState(distanceSquared, attackRangeSquared);
+        var state = base.GetCombatDecisionState(distanceSquared, attackRangeSquared);
+        if (state == IslandSurvivor.Logic.StateMachine.StateConstants.WindUpStateName)
+        {
+            var windUp = m_stateMachine?.GetState(IslandSurvivor.Logic.StateMachine.StateConstants.WindUpStateName) as IslandSurvivor.Logic.StateMachine.States.WindUpState;
+            if (windUp != null)
+            {
+                windUp.NextStateAfterWindup = IslandSurvivor.Logic.StateMachine.StateConstants.MeleeAttackStateName;
+            }
+        }
+        return state;
     }
 
     public override void _Ready()

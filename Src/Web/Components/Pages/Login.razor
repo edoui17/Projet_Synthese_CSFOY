@@ -62,7 +62,7 @@
         var authState = await AuthStateProvider.GetAuthenticationStateAsync();
         if (authState.User.Identity?.IsAuthenticated ?? false)
         {
-            Navigation.NavigateTo("dashboard");
+            Navigation.NavigateTo("login");
         }
     }
 
@@ -82,7 +82,7 @@
             bool success = await AuthService.LoginAsync(m_username, m_password);
             if (success)
             {
-                Navigation.NavigateTo("dashboard");
+                Navigation.NavigateTo($"profile/{m_username}");
             }
             else
             {

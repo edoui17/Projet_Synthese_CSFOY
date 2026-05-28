@@ -1,6 +1,6 @@
-[gd_scene load_steps=2 format=3 uid="uid://cx6r1g1g1g1g2"]
+[gd_scene format=3 uid="uid://cx6r1g1g1g1g2"]
 
-[ext_resource type="Script" uid="uid://b5r1g1g1g1g1h" path="res://Logic/StateMachine/States/RangedAttackState.cs" id="1_script"]
+[ext_resource type="Script" uid="uid://d35k61m73rte1" path="res://Logic/StateMachine/States/RangedAttackState.cs" id="1_script"]
 
 [node name="RangedAttackState" type="Node"]
 script = ExtResource("1_script")

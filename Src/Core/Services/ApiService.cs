@@ -54,22 +54,23 @@ public class ApiService : IApiService
 
     public async Task<string?> LoginAsync(string p_username, string p_password)
     {
-        try
-        {
-            LoginRequest request = new LoginRequest { Username = p_username, Password = p_password };
-            HttpResponseMessage response = await m_httpClient.PostAsJsonAsync("/api/auth/login", request);
+        LoginRequest request = new LoginRequest { Username = p_username, Password = p_password };
+        HttpResponseMessage response = await m_httpClient.PostAsJsonAsync("/api/auth/login", request);
 
-            if (response.IsSuccessStatusCode)
-            {
-                LoginResponse? result = await response.Content.ReadFromJsonAsync<LoginResponse>();
-                SetSessionToken(result?.SessionToken);
-                return m_sessionToken;
-            }
-        }
-        catch (HttpRequestException)
+        if (response.IsSuccessStatusCode)
         {
-            // API is down, swallow error to allow offline mode
+            LoginResponse? result = await response.Content.ReadFromJsonAsync<LoginResponse>();
+            SetSessionToken(result?.SessionToken);
+            return m_sessionToken;
         }
+
+        if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+        {
+            return null;
+        }
+
+        // Throw for other errors (500, 503, etc.) to allow distinguishing from invalid credentials
+        response.EnsureSuccessStatusCode();
         return null;
     }
 

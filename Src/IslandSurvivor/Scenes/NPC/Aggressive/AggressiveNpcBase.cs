@@ -81,7 +81,7 @@ public partial class AggressiveNpcBase : NpcBase
             var windUp = m_stateMachine?.GetState(IslandSurvivor.Logic.StateMachine.StateConstants.WindUpStateName) as IslandSurvivor.Logic.StateMachine.States.WindUpState;
             if (windUp != null)
             {
-                windUp.NextStateAfterWindup = IslandSurvivor.Logic.StateMachine.StateConstants.MeleeAttackStateName;
+                // State routing is handled by specific NpcBase
             }
             return IslandSurvivor.Logic.StateMachine.StateConstants.WindUpStateName;
         }
@@ -150,6 +150,12 @@ public partial class AggressiveNpcBase : NpcBase
         if (Stats != null)
         {
             ApplyLevelScaling();
+        }
+
+        var levelLabel = GetNodeOrNull<Label>("LevelLabel");
+        if (levelLabel != null)
+        {
+            levelLabel.Text = $"Lvl {LevelIndex}";
         }
     }
 

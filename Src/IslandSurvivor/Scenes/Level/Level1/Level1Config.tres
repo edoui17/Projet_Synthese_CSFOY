@@ -1,6 +1,6 @@
-[gd_resource type="Resource" script_class="IslandConfig" load_steps=2 format=3 uid="uid://test_uid_level1_config"]
+[gd_resource type="Resource" script_class="IslandConfig" format=3 uid="uid://dtmnrxh0jqyys"]
 
-[ext_resource type="Script" uid="uid://test_uid_island_config" path="res://Resources/IslandConfig.cs" id="1_script"]
+[ext_resource type="Script" path="res://Resources/IslandConfig.cs" id="1_script"]
 
 [resource]
 script = ExtResource("1_script")

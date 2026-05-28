@@ -161,56 +161,62 @@ public partial class DashState : State
 
             for (int i = 0; i < npc.GetSlideCollisionCount(); i++)
             {
-                KinematicCollision2D collision = npc.GetSlideCollision(i);
-                var collider = collision.GetCollider();
+                HandleCollisions(npc);
+            }
+        }
+        m_hasDealtDashDamage = true;
+    }
 
-                if (collider is StaticBody2D or TileMapLayer)
-                {
-                    CancelDashAndComplete(StateExitReason.CollisionDetected);
-                    return;
-                }
+    private void HandleCollisions(IslandSurvivor.Scenes.NPC.NpcBase p_npc)
+    {
+        for (int i = 0; i < p_npc.GetSlideCollisionCount(); i++)
+        {
+            KinematicCollision2D collision = p_npc.GetSlideCollision(i);
+            var collider = collision.GetCollider();
 
-                if (collider is Node targetNode && targetNode.IsInGroup("Player"))
-                {
-                    ApplyDashDamageToPlayer(targetNode);
-                    CancelDashAndComplete(StateExitReason.CollisionDetected);
-                    return;
-                }
+            if (collider is StaticBody2D or TileMapLayer)
+            {
+                HandleDashInterruption();
+                return;
+            }
+
+            if (collider is Node targetNode && targetNode.IsInGroup("Player"))
+            {
+                DealDashDamage(targetNode);
+                HandleDashInterruption();
+                return;
             }
         }
     }
 
-    private void CancelDashAndComplete(StateExitReason p_reason)
+    private void DealDashDamage(Node p_targetNode)
+    {
+        if (m_hasDealtDashDamage) return;
+
+        if (NpcContext is not IslandSurvivor.Scenes.NPC.Aggressive.AggressiveNpcBase aggNpc || aggNpc.Stats == null) return;
+
+        float baseDamage = aggNpc.Stats.BaseAttackValue;
+        int finalDamage = Mathf.RoundToInt(baseDamage * DashDamageMultiplier);
+
+        if (p_targetNode is Core.Interfaces.Stats.IDamageable damageable)
+        {
+            damageable.TakeDamage(finalDamage, NpcContext);
+        }
+        else if (p_targetNode.HasMethod("TakeDamage"))
+        {
+            p_targetNode.Call("TakeDamage", finalDamage, NpcContext);
+        }
+
+        m_hasDealtDashDamage = true;
+    }
+
+    private void HandleDashInterruption()
     {
         if (m_attackController != null && m_attackController.IsAttacking)
         {
             m_attackController.CancelAttack();
         }
         m_hasCompleted = true;
-        CompleteState(p_reason);
-    }
-
-    private void ApplyDashDamageToPlayer(Node p_targetNode)
-    {
-        if (m_hasDealtDashDamage) return;
-
-        if (NpcContext is IslandSurvivor.Scenes.NPC.Aggressive.AggressiveNpcBase aggNpc)
-        {
-            if (aggNpc.Stats != null)
-            {
-                float baseDamage = aggNpc.Stats.BaseAttackValue;
-                int finalDamage = Mathf.RoundToInt(baseDamage * DashDamageMultiplier);
-
-                if (p_targetNode is Core.Interfaces.Stats.IDamageable damageable)
-                {
-                    damageable.TakeDamage(finalDamage, NpcContext);
-                }
-                else if (p_targetNode.HasMethod("TakeDamage"))
-                {
-                    p_targetNode.Call("TakeDamage", finalDamage, NpcContext);
-                }
-            }
-        }
-        m_hasDealtDashDamage = true;
+        CompleteState(StateExitReason.CollisionDetected);
     }
 }
