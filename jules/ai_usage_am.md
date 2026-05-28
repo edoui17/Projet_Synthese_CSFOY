@@ -43,3 +43,8 @@ User noticed that resource drops (tweening materials to inventory) did not have 
 | **Request** | Prevent players and melee enemies from attacking through walls, and prevent enemies from detecting players through walls. |
 | **AI Contribution** | Implemented a clean, reusable `HasLineOfSightTo` extension method in `NodeExtensions` using `PhysicsRayQueryParameters2D` and `DirectSpaceState`. Applied this method to `Player.cs` (to block attacks through walls), `MeleeEnemyBase.cs` (to block melee attacks through walls), and `EnemyBase.cs` (to prevent detection through walls without relying on buggy `RayCast2D` components). Cleaned up using directives to resolve compilation errors. |
 | **Decision Reasoning** | Using the `DirectSpaceState` via ray queries instead of `RayCast2D` nodes provides immediate, frame-perfect detection that accurately respects world coordinates and avoids update lag, creating a more robust and cleaner architectural solution for both player and enemy code. |
+
+### 2024-05-28 - [Future User Stories]
+| **Request** | **AI Contribution** | **Decision Reasoning** |
+| :--- | :--- | :--- |
+| Générer 6 nouvelles User Stories et leurs tâches associées pour Azure DevOps | Aide à la formulation et à la structuration selon le format strict du projet | Utilisation du template d'US (Titre, Description, Critères, Planning, Priorité, Risque) et du format des tâches pour standardiser la planification future. Les détails ont été clarifiés via un échange (ex: persistance des résidus, volumes spécifiques, comportement des animaux). |
