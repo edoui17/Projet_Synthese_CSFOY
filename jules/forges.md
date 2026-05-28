@@ -339,3 +339,9 @@ For instant line-of-sight validation (e.g., preventing melee attacks or detectio
 Discovered that without a dedicated Godot `WorldManager`, `Autoload`s effectively serve as lifecycle hooks. By attaching a single `SessionManager` autoload solely dedicated to listening for `SessionEnded`, we can isolate state-reset behavior away from the Main Menu, ensuring that navigation between menus doesn't inadvertently wipe state unless explicitly broadcasted.
 
 Additionally, when implementing `ResetStats` on `StatTracker`, it's critical to restore `Health` specifically to its `EffectiveMaxValue` (using `SetCurrentValue`) rather than `0`, while other volatile stats (Speed, Attack modifiers) revert to `0`.
+
+## 2024-05-25 - System Quirk: Godot Resource Config vs Node Logic
+**Vulnerability / Architectural Discovery:** When using the Godot engine to instantiate nodes dynamically and load scene resources, directly embedding difficulty settings on the nodes creates a fragile single-point-of-failure.
+**Learning:** Extracting level settings into a purely declarative Godot `Resource` (e.g., `IslandConfig.tres`) and linking it to a strictly-typed C# enum in the `Core` logic ensures the `LevelController` can remain totally generic.
+**Prevention:** Always pair complex scene logic that requires variations (like Map Biomes/Difficulties) with a data-driven Resource file instead of hardcoded Script exports, feeding directly into a Singleton Manager upon `_Ready()`.
+- Split AttackState into MeleeAttackState and RangedAttackState to reduce conditional bloat.\n- Abstracted projectile logic into a Shooter node to decouple BossBase/RangedAggressiveNpcBase from direct instantiation.\n- Added NextStateAfterWindup configuration to WindUpState to allow dynamic routing based on combat distance.

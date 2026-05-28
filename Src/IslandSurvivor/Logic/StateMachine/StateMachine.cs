@@ -127,7 +127,8 @@ public partial class StateMachine : State
                 }
                 break;
 
-            case StateConstants.AttackState:
+            case StateConstants.MeleeAttackState:
+            case StateConstants.RangedAttackState:
                 if (NpcContext is IslandSurvivor.Scenes.NPC.Aggressive.AggressiveNpcBase aggNpc)
                 {
                     var target = aggNpc.GetTarget();
@@ -149,7 +150,14 @@ public partial class StateMachine : State
             case StateConstants.WindUpState:
                 if (p_reason == StateExitReason.Finished)
                 {
-                    nextStateName = StateConstants.AttackStateName;
+                    if (p_sourceState is IslandSurvivor.Logic.StateMachine.States.WindUpState windUp)
+                    {
+                        nextStateName = windUp.NextStateAfterWindup;
+                    }
+                    else
+                    {
+                        nextStateName = StateConstants.MeleeAttackStateName;
+                    }
                 }
                 break;
 

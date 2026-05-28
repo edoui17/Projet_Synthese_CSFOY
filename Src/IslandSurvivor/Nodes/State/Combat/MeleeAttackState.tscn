@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://cx6r1g1g1g1g1"]
+
+[ext_resource type="Script" uid="uid://c2608ohqm0bbe" path="res://Logic/StateMachine/States/MeleeAttackState.cs" id="1_script"]
+
+[node name="MeleeAttackState" type="Node"]
+script = ExtResource("1_script")

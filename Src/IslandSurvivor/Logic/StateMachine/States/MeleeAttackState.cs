@@ -3,7 +3,7 @@ namespace IslandSurvivor.Logic.StateMachine.States;
 using Godot;
 
 [GlobalClass]
-public partial class AttackState : State
+public partial class MeleeAttackState : State
 {
     [Export] public string AttackAnimationName { get; set; } = "Attack";
 
@@ -107,7 +107,7 @@ public partial class AttackState : State
         }
     }
 
-  // Inside AttackState.cs, modify the Update method:
+  // Inside MeleeAttackState.cs, modify the Update method:
   public override void Update(double p_delta)
   {
     if (m_hasCompleted) return;

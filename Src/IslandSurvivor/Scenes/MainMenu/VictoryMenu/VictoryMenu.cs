@@ -11,6 +11,7 @@ public partial class VictoryMenu : CanvasLayer
     private Label m_highScoreLabel;
     private Label m_mapsClearedLabel;
     private Label m_playerStatsLabel;
+    private Action<BossDiedEvent> m_onBossDiedDelegate;
 
     public override void _Ready()
     {
@@ -22,9 +23,11 @@ public partial class VictoryMenu : CanvasLayer
         m_mapsClearedLabel = GetNode<Label>("PanelContainer/VBoxContainer/MapsClearedLabel");
         m_playerStatsLabel = GetNode<Label>("PanelContainer/VBoxContainer/PlayerStatsLabel");
 
+        m_onBossDiedDelegate = OnBossDied;
+
         if (ServiceRegistry.Instance != null && ServiceRegistry.Instance.EventBus != null)
         {
-            ServiceRegistry.Instance.EventBus.Subscribe<BossDiedEvent>(OnBossDied);
+            ServiceRegistry.Instance.EventBus.Subscribe<BossDiedEvent>(m_onBossDiedDelegate);
         }
     }
 
@@ -84,9 +87,9 @@ public partial class VictoryMenu : CanvasLayer
 
     public override void _ExitTree()
     {
-        if (ServiceRegistry.Instance != null && ServiceRegistry.Instance.EventBus != null)
+        if (ServiceRegistry.Instance != null && ServiceRegistry.Instance.EventBus != null && m_onBossDiedDelegate != null)
         {
-            ServiceRegistry.Instance.EventBus.Unsubscribe<BossDiedEvent>(OnBossDied);
+            ServiceRegistry.Instance.EventBus.Unsubscribe<BossDiedEvent>(m_onBossDiedDelegate);
         }
     }
 }
