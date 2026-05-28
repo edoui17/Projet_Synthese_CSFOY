@@ -57,65 +57,64 @@ public partial class DashState : State
             }
         }
 
-        if (m_attackController != null)
-        {
-            // If the dash is triggered but CanAttack is false (e.g. cooldown), we reset the cooldown so the dash attack can still trigger
-            if (!m_attackController.CanAttack)
-            {
-                // Reset cooldown properly via public API
-                m_attackController.ResetCooldown();
-            }
-
-            // Apply damage multiplier for dash
-            if (m_attackController.Stats != null)
-            {
-                m_attackController.Stats.BaseAttackValue *= DashDamageMultiplier;
-            }
-
-            string animSuffix = "_Side";
-            string direction = "Right";
-
-            if (System.Math.Abs(m_dashDirection.Y) > System.Math.Abs(m_dashDirection.X))
-            {
-                if (m_dashDirection.Y < 0)
-                {
-                    animSuffix = "_Up";
-                    direction = "Up";
-                }
-                else
-                {
-                    animSuffix = "_Down";
-                    direction = "Down";
-                }
-            }
-            else
-            {
-                animSuffix = "_Side";
-                direction = m_dashDirection.X < 0 ? "Left" : "Right";
-                if (m_sprite != null)
-                {
-                    m_sprite.FlipH = m_dashDirection.X < 0;
-                }
-            }
-
-            string fullAnimName = $"{AnimationName}{animSuffix}";
-
-            if (AnimationName.EndsWith("_Side") || AnimationName.EndsWith("_Up") || AnimationName.EndsWith("_Down"))
-            {
-                fullAnimName = AnimationName;
-            }
-
-            m_attackController.SetAttackAnimation(fullAnimName);
-            m_attackController.TryAttack(direction);
-        }
-        else
+        if (m_attackController == null)
         {
             if (!m_hasCompleted)
             {
                 m_hasCompleted = true;
                 CompleteState(StateExitReason.Finished);
             }
+            return;
         }
+
+        // If the dash is triggered but CanAttack is false (e.g. cooldown), we reset the cooldown so the dash attack can still trigger
+        if (!m_attackController.CanAttack)
+        {
+            // Reset cooldown properly via public API
+            m_attackController.ResetCooldown();
+        }
+
+        // Apply damage multiplier for dash
+        if (m_attackController.Stats != null)
+        {
+            m_attackController.Stats.BaseAttackValue *= DashDamageMultiplier;
+        }
+
+        string animSuffix = "_Side";
+        string direction = "Right";
+
+        if (System.Math.Abs(m_dashDirection.Y) > System.Math.Abs(m_dashDirection.X))
+        {
+            if (m_dashDirection.Y < 0)
+            {
+                animSuffix = "_Up";
+                direction = "Up";
+            }
+            else
+            {
+                animSuffix = "_Down";
+                direction = "Down";
+            }
+        }
+        else
+        {
+            animSuffix = "_Side";
+            direction = m_dashDirection.X < 0 ? "Left" : "Right";
+            if (m_sprite != null)
+            {
+                m_sprite.FlipH = m_dashDirection.X < 0;
+            }
+        }
+
+        string fullAnimName = $"{AnimationName}{animSuffix}";
+
+        if (AnimationName.EndsWith("_Side") || AnimationName.EndsWith("_Up") || AnimationName.EndsWith("_Down"))
+        {
+            fullAnimName = AnimationName;
+        }
+
+        m_attackController.SetAttackAnimation(fullAnimName);
+        m_attackController.TryAttack(direction);
     }
 
     public override void Exit()
@@ -142,12 +141,7 @@ public partial class DashState : State
 
         if (m_timer <= 0)
         {
-            if (m_attackController != null && m_attackController.IsAttacking)
-            {
-                m_attackController.CancelAttack();
-            }
-            m_hasCompleted = true;
-            CompleteState(StateExitReason.Finished);
+            CancelDashAndComplete(StateExitReason.Finished);
             return;
         }
 
@@ -163,11 +157,14 @@ public partial class DashState : State
                 npc.MoveAndSlide();
             }
 
-            if (npc.GetSlideCollisionCount() > 0)
+            if (npc.GetSlideCollisionCount() == 0) return;
+
+            for (int i = 0; i < npc.GetSlideCollisionCount(); i++)
             {
                 HandleCollisions(npc);
             }
         }
+        m_hasDealtDashDamage = true;
     }
 
     private void HandleCollisions(IslandSurvivor.Scenes.NPC.NpcBase p_npc)
