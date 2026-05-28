@@ -1,6 +1,6 @@
-[gd_scene format=3 uid="uid://cxab32"]
+[gd_scene format=3 uid="uid://ovqyuvxdanjnk"]
 
-[ext_resource type="Script" uid="uid://hqa70sv9r96y6" path="res://Scenes/MainMenu/VictoryMenu/VictoryMenu.cs" id="1_script"]
+[ext_resource type="Script" uid="uid://prmt5ofvbr6u" path="res://Scenes/MainMenu/VictoryMenu/VictoryMenu.cs" id="1_script"]
 [ext_resource type="Texture2D" uid="uid://cjouk04gbw7xc" path="res://Assets/TinySwords/UI/Buttons/Blue/Button_Blue_3Slides.png" id="2_o70k1"]
 [ext_resource type="Texture2D" uid="uid://bnp7dxk6oa0lo" path="res://Assets/TinySwords/UI/Buttons/Blue/Button_Blue_3Slides_Pressed.png" id="3_kj5tk"]
 [ext_resource type="Texture2D" uid="uid://di2vsmrnmsf0o" path="res://Assets/TinySwords/UI/Buttons/Utils/Button_Hover_3Slides.png" id="4_k7m34"]

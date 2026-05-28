@@ -34,7 +34,7 @@ Lorsqu'un joueur effectue une action gratifiante :
 
 ```csharp
 // Exemple dans un script de ramassage ou d'ennemi vaincu
-ScoreManager scoreManager = GetNode<ScoreManager>("/root/ScoreManager"); // Ou via une référence Export
+ScoreManager scoreManager = Globals.ServiceRegistry.Instance.ScoreManager; // Ensure you have access to globals // Ou via une référence Export
 scoreManager.AddScore(50); // Ajoute 50 points (les valeurs négatives sont ignorées par le Core)
 ```
 

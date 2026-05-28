@@ -8,13 +8,24 @@ public partial class MainMenu : Control
         var startBtn = GetNodeOrNull<TextureButton>("Panel/MenuTab/VBoxContainer/StartGameBtn");
         var scoreBtn = GetNodeOrNull<TextureButton>("Panel/MenuTab/VBoxContainer/ScoreboardBtn");
         var optionsBtn = GetNodeOrNull<TextureButton>("Panel/MenuTab/VBoxContainer/OptionsBtn");
+        var logoutBtn = GetNodeOrNull<TextureButton>("Panel/MenuTab/VBoxContainer/LogoutBtn");
         var quitBtn = GetNodeOrNull<TextureButton>("Panel/MenuTab/VBoxContainer/QuitGameBtn");
 
-        if (startBtn != null && scoreBtn != null && optionsBtn != null && quitBtn != null)
+        if (logoutBtn != null)
+        {
+            var label = logoutBtn.GetNodeOrNull<Label>("LogoutLabel");
+            if (label != null)
+            {
+                label.Text = "Se déconnecter";
+            }
+        }
+
+        if (startBtn != null && scoreBtn != null && optionsBtn != null && logoutBtn != null && quitBtn != null)
         {
             SetupButton(startBtn);
             SetupButton(scoreBtn);
             SetupButton(optionsBtn);
+            SetupButton(logoutBtn);
             SetupButton(quitBtn);
 
             // Focus looping wrap-around
@@ -65,6 +76,12 @@ public partial class MainMenu : Control
     {
         GD.Print("Bouton options appuyé");
         GetTree().ChangeSceneToFile("res://Scenes/MainMenu/OptionsMenu/OptionsMenu.tscn");
+    }
+
+    private void _on_logout_btn_pressed()
+    {
+        GD.Print("Bouton logout appuyé");
+        IslandSurvivor.Managers.GameManager.Instance.Logout();
     }
 
     private void _on_quit_game_btn_pressed()

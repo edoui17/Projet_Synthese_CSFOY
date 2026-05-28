@@ -15,12 +15,14 @@ public partial class ChaseState : State
 
     private AnimationPlayer? m_animationPlayer;
     private Sprite2D? m_sprite;
+    private IslandSurvivor.Nodes.Combat.AttackController? m_attackController;
 
     public override void Initialize(StateMachine p_stateMachine, CharacterBody2D p_npcContext)
     {
         base.Initialize(p_stateMachine, p_npcContext);
         m_animationPlayer = NpcContext.GetNodeOrNull<AnimationPlayer>("AnimationPlayer");
         m_sprite = NpcContext.GetNodeOrNull<Sprite2D>("Sprite2D");
+        m_attackController = NpcContext.GetNodeOrNull<IslandSurvivor.Nodes.Combat.AttackController>("AttackController");
 
         if (NpcContext != null)
         {
@@ -101,9 +103,8 @@ public partial class ChaseState : State
                     {
                         aggressiveNpc.Velocity = Vector2.Zero;
 
-                        var attackController = NpcContext.GetNodeOrNull<IslandSurvivor.Nodes.Combat.AttackController>("AttackController");
-
-                        if (attackController != null && attackController.CanAttack)
+                        // Cached to prevent GetNode allocations in hot path
+                        if (m_attackController != null && m_attackController.CanAttack)
                         {
                             CompleteState(StateExitReason.TargetReached);
                         }
