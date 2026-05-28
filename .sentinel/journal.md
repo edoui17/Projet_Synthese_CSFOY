@@ -10,3 +10,7 @@
  **Vulnerability:** Unverified Godot save files allowing local data tampering and insecure deserialization.
  **Learning:** Godot's local `FileAccess` does not inherently protect against tampering. Standard fixes require generating sidecar checksum files (`.sig`) to safely verify integrity offline before deserialization.
  **Prevention:** All client-side local data storage implementations MUST generate and verify SHA256 signatures before reading sensitive JSON states into memory.
+## 2025-02-14 - [Unsanitized string length constraints in text inputs]
+**Vulnerability:** Text input fields (`UsernameField` and `PasswordField` in `LoginScreen.tscn`) lacked client-side and backend length constraints, potentially allowing excessive memory allocation and Denial of Service (DoS) attacks on the Web/BD API via arbitrarily long login strings.
+**Learning:** Even if the database has its own constraints, failing to truncate inputs early on the Godot client and the core validator creates unnecessary strain on network and serialization pipelines, and opens up the backend to buffer issues when syncing credentials.
+**Prevention:** Always enforce explicit `max_length` properties on UI input nodes (like `LineEdit`) in Godot and mirror these constraints exactly using C# constants (e.g., `MAX_USERNAME_LENGTH`) within the domain validation logic (e.g., `LoginValidator.cs`) to provide robust defense-in-depth.
