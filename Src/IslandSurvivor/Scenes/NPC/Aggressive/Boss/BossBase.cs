@@ -5,14 +5,27 @@ using IslandSurvivor.Logic.Entities;
 
 public partial class BossBase : AggressiveNpcBase
 {
-    [Export] public PackedScene ProjectileScene { get; set; } = null!;
-
     [ExportGroup("Animations")]
     [Export] public string MeleeAttackAnimationName { get; set; } = "Attack_Melee";
     [Export] public string RangedAttackAnimationName { get; set; } = "Attack_Ranged";
 
     protected Area2D? m_hitboxAreaRight;
     protected Area2D? m_hitboxAreaLeft;
+
+    protected override Godot.StringName GetCombatDecisionState(float distanceSquared, float attackRangeSquared)
+    {
+        // Future boss phases and AoE cooldown logic will be injected here.
+        var state = base.GetCombatDecisionState(distanceSquared, attackRangeSquared);
+        if (state == IslandSurvivor.Logic.StateMachine.StateConstants.WindUpStateName)
+        {
+            var windUp = m_stateMachine?.GetState(IslandSurvivor.Logic.StateMachine.StateConstants.WindUpStateName) as IslandSurvivor.Logic.StateMachine.States.WindUpState;
+            if (windUp != null)
+            {
+                windUp.NextStateAfterWindup = IslandSurvivor.Logic.StateMachine.StateConstants.MeleeAttackStateName;
+            }
+        }
+        return state;
+    }
 
     public override void _Ready()
     {
@@ -67,28 +80,24 @@ public partial class BossBase : AggressiveNpcBase
     {
         // Melee attack action is handled automatically by the hitboxes in AttackController
         // Ranged attacks can trigger ShootProjectile()
-        ShootProjectile();
+
     }
 
-    protected virtual void ShootProjectile()
+    protected override void HandleDeath(object? p_attacker = null)
     {
-        if (ProjectileScene == null || m_targetPlayer == null) return;
+        base.HandleDeath(p_attacker);
+    }
 
-        Node projectileNode = ProjectileScene.Instantiate();
-        if (projectileNode is IProjectile projectile)
+    protected override void OnDeathStateFinished(IslandSurvivor.Logic.StateMachine.State p_sourceState, IslandSurvivor.Logic.StateMachine.StateExitReason p_reason)
+    {
+        if (p_reason == IslandSurvivor.Logic.StateMachine.StateExitReason.Finished)
         {
-            Godot.Vector2 directionGodot = (m_targetPlayer.GlobalPosition - GlobalPosition).Normalized();
-            Vector2 directionNumerics = new Vector2(directionGodot.X, directionGodot.Y);
-
-            Marker2D? spawnPosNode = GetNodeOrNull<Marker2D>("ProjectileSpawnPosition");
-            Godot.Vector2 spawnGodot = spawnPosNode != null ? spawnPosNode.GlobalPosition : GlobalPosition;
-            Vector2 startPositionNumerics = new Vector2(spawnGodot.X, spawnGodot.Y);
-
-            float damageAmount = Stats?.BaseAttackValue ?? 20.0f;
-
-            projectile.Initialize(startPositionNumerics, directionNumerics, damageAmount, this);
-            GetTree().CurrentScene.AddChild(projectileNode);
-            projectile.Fire();
+            if (IslandSurvivor.Globals.ServiceRegistry.Instance != null && IslandSurvivor.Globals.ServiceRegistry.Instance.EventBus != null)
+            {
+                IslandSurvivor.Globals.ServiceRegistry.Instance.EventBus.Publish(new Core.Events.BossDiedEvent(Name, EnemyType));
+            }
         }
+
+        base.OnDeathStateFinished(p_sourceState, p_reason);
     }
 }

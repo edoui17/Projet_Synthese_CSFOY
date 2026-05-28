@@ -40,7 +40,7 @@ public partial class FleeState : State
             }
         }
 
-        if (NpcContext is IslandSurvivor.Scenes.NPC.Passive.PassiveNpcBase passive && passive.GetNodeOrNull<Node2D>("LastAttacker") is Node2D attacker)
+        if (NpcContext is IslandSurvivor.Scenes.NPC.NpcBase npc && npc.LastAttacker is Node2D attacker && GodotObject.IsInstanceValid(attacker))
         {
             m_fleeDirection = (NpcContext.GlobalPosition - attacker.GlobalPosition).Normalized();
         }

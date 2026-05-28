@@ -25,17 +25,17 @@ Le Node `StatManager` sert de "pont" (Bridge) entre Godot et la logique pure du 
 Depuis un script (ex: `Player.cs` ou `Enemy.cs`) :
 ```csharp
 // Pour infliger 20 points de dégâts
-GetNode<StatManager>("StatManager").ModifyCurrentValue(StatType.Health, -20f);
+Stats.ModifyCurrentValue(StatType.Health, -20f);
 
 // Pour soigner de 10 points
-GetNode<StatManager>("StatManager").ModifyCurrentValue(StatType.Health, 10f);
+Stats.ModifyCurrentValue(StatType.Health, 10f);
 ```
 
 ### 3. Ajouter un bonus permanent
 Lorsqu'un niveau est gagné ou qu'un objet permanent est équipé :
 ```csharp
 // Ajoute +1 point d'attaque de façon permanente (multiplicateur de +5% aux dégâts de base).
-GetNode<StatManager>("StatManager").AddPermanentBonus(StatType.Attack, 1f);
+Stats.AddSessionBonus(StatType.Attack, 1f);
 ```
 
 ### 4. Connecter l'Interface Utilisateur (Barre de Vie)
@@ -45,7 +45,7 @@ Depuis le code (fortement recommandé) :
 ```csharp
 public override void _Ready()
 {
-    StatManager statManager = GetNode<StatManager>("StatManager");
+    StatManager statManager = Stats;
     statManager.LocalStatChanged += OnStatChanged;
 }
 
@@ -71,7 +71,7 @@ Si vous devez ajouter une nouvelle statistique au jeu (ex: `Defense` ou `Mana`) 
 3. Ajoutez l'entrée dans la logique d'initialisation du dictionnaire à l'intérieur de la fonction `_Ready()` de `StatManager.cs`.
 
 ## Persistance (Méta-Progression)
-Les statistiques de méta-progression (améliorations permanentes) sont gérées séparément via le [Persistence System](./Persistence_System.md). Elles sont stockées en base de données et chargées au démarrage du jeu pour être appliquées comme bonus permanents via `AddPermanentBonus`.
+Les statistiques de méta-progression (améliorations permanentes) sont gérées séparément via le [Persistence System](./Persistence_System.md). Elles sont stockées en base de données et chargées au démarrage du jeu pour être appliquées comme bonus de session via `AddSessionBonus`.
 
 **Synchronisation (US 8.1) :**
 - **Au lancement** : Appel à `/api/player/profile` pour récupérer les stats persistantes.

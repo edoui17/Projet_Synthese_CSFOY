@@ -34,7 +34,14 @@ public partial class NpcBase : CharacterBody2D, INpc, IDamageable
     protected object? m_lastAttacker = null;
     protected bool m_wasKilledByPlayer = false;
 
+    public object? LastAttacker => m_lastAttacker;
+
     public virtual string CurrentState => m_stateMachine?.CurrentState?.Name ?? "";
+
+    public virtual Godot.StringName GetDecisionState(Node2D target)
+    {
+        return IslandSurvivor.Logic.StateMachine.StateConstants.IdleStateName;
+    }
 
     public override void _Ready()
     {
@@ -46,6 +53,12 @@ public partial class NpcBase : CharacterBody2D, INpc, IDamageable
         if (m_stateMachine != null)
         {
             m_stateMachine.Initialize(null, this);
+
+            var deathState = m_stateMachine.GetNodeOrNull<IslandSurvivor.Logic.StateMachine.States.DeathState>("DeathState");
+            if (deathState != null)
+            {
+                deathState.StateFinished += OnDeathStateFinished;
+            }
         }
 
 
@@ -114,4 +127,12 @@ public partial class NpcBase : CharacterBody2D, INpc, IDamageable
     }
 
     protected virtual void HandleDeath(object? p_attacker = null) { }
+
+    protected virtual void OnDeathStateFinished(IslandSurvivor.Logic.StateMachine.State p_sourceState, IslandSurvivor.Logic.StateMachine.StateExitReason p_reason)
+    {
+        if (p_reason == IslandSurvivor.Logic.StateMachine.StateExitReason.Finished)
+        {
+            QueueFree();
+        }
+    }
 }

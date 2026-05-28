@@ -50,3 +50,16 @@ Implemented a triangular progression curve and a ProgressionManager to reward XP
 ### May 30, 2026: NPC State Machine & Visual Component Refactor
 - **Description:** Performed a global architectural refactor migrating all NPCs (`BossBase`, `AggressiveNpcBase`, `PassiveNpcBase`) from hardcoded C# controllers to a Godot node-based `StateMachine` using a composition pattern. Created generic, reusable state nodes (`IdleState`, `ChaseState`, `AttackState`, `DeathState`, `WindUpState`, `DashState`, `RecoveryState`). Replaced all `AnimatedSprite2D` dependencies with `Sprite2D` and `AnimationPlayer`. Centralized visual orientation (`FlipH`) logic inside the `MovementController`. Safely injected the new hierarchy into existing `.tscn` files without destroying visual assets.
 - **Time saved:** ~5 hours of manual node restructuring, script rewrites, scene parsing, and physics debugging.
+
+### 2024-05-24 - [Session Cleanup]
+**Request** | User needed a way to completely reset the current game session (inventory, score, stats, temporary save file) when transitioning to the Main Menu after a run ends (victory or defeat), avoiding state bleed across attempts.
+**AI Contribution** | Created `SessionManager` as a Godot Autoload, updated `ISaveService` with `DeleteData()`, added reset capabilities to `ScoreTracker`, `StatTracker`, and `InventoryManager`. Plumbed `SessionEnded` via the global `SignalManager` and connected it in `DefeatMenu`.
+**Decision Reasoning** | Centralizing cleanup in a single orchestrator (`SessionManager`) triggered by a strict `SignalManager` event ensures that the UI layers do not need deep dependency chains to clear business logic data. Exposing resets on individual Managers guarantees the Core layer controls data wipe policies, retaining N-Tier segregation. Health resets explicitly to EffectiveMaxValue as requested.
+
+### 2024-05-25 - [Story: Difficulty Management System]
+| **Request** | **AI Contribution** | **Decision Reasoning** |
+| :--- | :--- | :--- |
+| Implement a dynamic mathematical threat score system. | Formulated $S_G = M_T \times M_L \times M_{Ile}$ mapped to IslandSurvivor systems. | Implemented exponent logic for Player Level (+15%) and linear time limit for balance, strictly clamping at `6.0x` (500% bonus) to avoid mathematical explosions. |
+| Add a `DifficultyManager` and `LevelController`. | Created an Autoload `DifficultyManager` in `IslandSurvivor` and a standalone `LevelController` mapping a custom Godot `Resource` (`IslandConfig`). | N-Tier compliance required abstracting the mathematical score out of NPC logic. The `LevelController` becomes the single source of truth for the Scene, updating the `DifficultyManager`. |
+| Spawn Scaling and Elite Mobs (20% chance after 15 min). | Created `EnemyStatsHandler` decorator to apply $S_G$ and Elite stats without breaking `AggressiveNpcBase`. | Decorator pattern ensures the base NPC logic remains clean and testable, while `EnemySpawnZone` dynamically calculates spawn intervals and applies the Elite flags dynamically based on the current `TimeElapsed`. |
+### 2026-05-25 - [NPC State Machine] | Refactor Attack States | Split AttackState into Melee and Ranged, and extract Shooter node | Promotes decoupling and allows Reaper boss to alternate between melee and ranged attacks seamlessly.

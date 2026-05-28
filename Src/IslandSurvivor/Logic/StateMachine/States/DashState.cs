@@ -8,37 +8,34 @@ public partial class DashState : State
     [ExportGroup("State Configuration")]
     [Export] public float DashSpeed { get; set; } = 400.0f;
     [Export] public float DashDuration { get; set; } = 0.5f;
+    [Export] public float DashDamageMultiplier { get; set; } = 1.5f;
 
     [ExportGroup("State Animations")]
     [Export] public string AnimationName { get; set; } = "Dash";
     [Export] public string FallbackAnimationName { get; set; } = "Moving";
 
-    private AnimationPlayer m_animationPlayer = null!;
+    public override bool IsActionState => true;
+
+    private IslandSurvivor.Nodes.Combat.AttackController m_attackController = null!;
+    private Sprite2D m_sprite = null!;
+    private bool m_hasCompleted = false;
+    private bool m_hasDealtDashDamage = false;
     private float m_timer;
     private Vector2 m_dashDirection = Vector2.Zero;
 
     public override void Initialize(StateMachine p_stateMachine, CharacterBody2D p_npcContext)
     {
         base.Initialize(p_stateMachine, p_npcContext);
-        m_animationPlayer = NpcContext.GetNodeOrNull<AnimationPlayer>("AnimationPlayer");
+        m_attackController = NpcContext.GetNodeOrNull<IslandSurvivor.Nodes.Combat.AttackController>("AttackController");
+        m_sprite = NpcContext.GetNodeOrNull<Sprite2D>("Sprite2D");
     }
 
     public override void Enter()
     {
         base.Enter();
+        m_hasCompleted = false;
+        m_hasDealtDashDamage = false;
         m_timer = DashDuration;
-
-        if (m_animationPlayer != null)
-        {
-            if (m_animationPlayer.HasAnimation(AnimationName))
-            {
-                m_animationPlayer.Play(AnimationName);
-            }
-            else if (m_animationPlayer.HasAnimation(FallbackAnimationName))
-            {
-                m_animationPlayer.Play(FallbackAnimationName);
-            }
-        }
 
         if (NpcContext is IslandSurvivor.Scenes.NPC.Aggressive.AggressiveNpcBase aggNpc)
         {
@@ -55,21 +52,81 @@ public partial class DashState : State
                 }
                 else
                 {
-                    var sprite = NpcContext.GetNodeOrNull<Sprite2D>("Sprite2D");
-                    m_dashDirection = (sprite != null && sprite.FlipH) ? Vector2.Left : Vector2.Right;
+                    m_dashDirection = (m_sprite != null && m_sprite.FlipH) ? Vector2.Left : Vector2.Right;
                 }
             }
         }
 
-        if (NpcContext.HasMethod("EnableDashHitbox"))
+        if (m_attackController == null)
         {
-            NpcContext.Call("EnableDashHitbox", m_dashDirection);
+            if (!m_hasCompleted)
+            {
+                m_hasCompleted = true;
+                CompleteState(StateExitReason.Finished);
+            }
+            return;
         }
+
+        // If the dash is triggered but CanAttack is false (e.g. cooldown), we reset the cooldown so the dash attack can still trigger
+        if (!m_attackController.CanAttack)
+        {
+            // Reset cooldown properly via public API
+            m_attackController.ResetCooldown();
+        }
+
+        // Apply damage multiplier for dash
+        if (m_attackController.Stats != null)
+        {
+            m_attackController.Stats.BaseAttackValue *= DashDamageMultiplier;
+        }
+
+        string animSuffix = "_Side";
+        string direction = "Right";
+
+        if (System.Math.Abs(m_dashDirection.Y) > System.Math.Abs(m_dashDirection.X))
+        {
+            if (m_dashDirection.Y < 0)
+            {
+                animSuffix = "_Up";
+                direction = "Up";
+            }
+            else
+            {
+                animSuffix = "_Down";
+                direction = "Down";
+            }
+        }
+        else
+        {
+            animSuffix = "_Side";
+            direction = m_dashDirection.X < 0 ? "Left" : "Right";
+            if (m_sprite != null)
+            {
+                m_sprite.FlipH = m_dashDirection.X < 0;
+            }
+        }
+
+        string fullAnimName = $"{AnimationName}{animSuffix}";
+
+        if (AnimationName.EndsWith("_Side") || AnimationName.EndsWith("_Up") || AnimationName.EndsWith("_Down"))
+        {
+            fullAnimName = AnimationName;
+        }
+
+        m_attackController.SetAttackAnimation(fullAnimName);
+        m_attackController.TryAttack(direction);
     }
 
     public override void Exit()
     {
         base.Exit();
+
+        // Reset damage multiplier
+        if (m_attackController != null && m_attackController.Stats != null)
+        {
+            m_attackController.Stats.BaseAttackValue /= DashDamageMultiplier;
+        }
+
         if (NpcContext.HasMethod("DisableAllDashHitboxes"))
         {
             NpcContext.Call("DisableAllDashHitboxes");
@@ -78,11 +135,13 @@ public partial class DashState : State
 
     public override void PhysicsUpdate(double p_delta)
     {
+        if (m_hasCompleted) return;
+
         m_timer -= (float)p_delta;
 
         if (m_timer <= 0)
         {
-            CompleteState(StateExitReason.Finished);
+            CancelDashAndComplete(StateExitReason.Finished);
             return;
         }
 
@@ -90,7 +149,6 @@ public partial class DashState : State
         {
             if (npc.MovementController != null)
             {
-                // Dash overrides stats modifications
                 npc.MovementController.Move(m_dashDirection, DashSpeed);
             }
             else
@@ -99,19 +157,66 @@ public partial class DashState : State
                 npc.MoveAndSlide();
             }
 
-            // If we hit a wall while dashing, transition early
-            if (npc.GetSlideCollisionCount() > 0)
+            if (npc.GetSlideCollisionCount() == 0) return;
+
+            for (int i = 0; i < npc.GetSlideCollisionCount(); i++)
             {
-                for (int i = 0; i < npc.GetSlideCollisionCount(); i++)
-                {
-                    KinematicCollision2D collision = npc.GetSlideCollision(i);
-                    if (collision.GetCollider() is StaticBody2D or TileMapLayer)
-                    {
-                        CompleteState(StateExitReason.CollisionDetected);
-                        return;
-                    }
-                }
+                HandleCollisions(npc);
             }
         }
+        m_hasDealtDashDamage = true;
+    }
+
+    private void HandleCollisions(IslandSurvivor.Scenes.NPC.NpcBase p_npc)
+    {
+        for (int i = 0; i < p_npc.GetSlideCollisionCount(); i++)
+        {
+            KinematicCollision2D collision = p_npc.GetSlideCollision(i);
+            var collider = collision.GetCollider();
+
+            if (collider is StaticBody2D or TileMapLayer)
+            {
+                HandleDashInterruption();
+                return;
+            }
+
+            if (collider is Node targetNode && targetNode.IsInGroup("Player"))
+            {
+                DealDashDamage(targetNode);
+                HandleDashInterruption();
+                return;
+            }
+        }
+    }
+
+    private void DealDashDamage(Node p_targetNode)
+    {
+        if (m_hasDealtDashDamage) return;
+
+        if (NpcContext is not IslandSurvivor.Scenes.NPC.Aggressive.AggressiveNpcBase aggNpc || aggNpc.Stats == null) return;
+
+        float baseDamage = aggNpc.Stats.BaseAttackValue;
+        int finalDamage = Mathf.RoundToInt(baseDamage * DashDamageMultiplier);
+
+        if (p_targetNode is Core.Interfaces.Stats.IDamageable damageable)
+        {
+            damageable.TakeDamage(finalDamage, NpcContext);
+        }
+        else if (p_targetNode.HasMethod("TakeDamage"))
+        {
+            p_targetNode.Call("TakeDamage", finalDamage, NpcContext);
+        }
+
+        m_hasDealtDashDamage = true;
+    }
+
+    private void HandleDashInterruption()
+    {
+        if (m_attackController != null && m_attackController.IsAttacking)
+        {
+            m_attackController.CancelAttack();
+        }
+        m_hasCompleted = true;
+        CompleteState(StateExitReason.CollisionDetected);
     }
 }

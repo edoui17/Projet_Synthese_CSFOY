@@ -51,7 +51,7 @@ public class StatTrackerTests
     }
 
     [Fact]
-    public void AddPermanentBonus_UpdatesMaxAndCurrentSimultaneously()
+    public void AddSessionBonus_UpdatesMaxAndCurrentSimultaneously()
     {
         // Arrange
         StatTracker tracker = new StatTracker(new global::Core.Services.EventBus());
@@ -62,7 +62,7 @@ public class StatTrackerTests
         tracker.InitializeStats(baseStats);
 
         // Act - Add permanent +5
-        tracker.AddPermanentBonus(StatType.Health, 5f);
+        tracker.AddSessionBonus(StatType.Health, 5f);
 
         // Assert
         Assert.Equal(105f, tracker.GetEffectiveMaxValue(StatType.Health));
@@ -70,7 +70,7 @@ public class StatTrackerTests
     }
 
     [Fact]
-    public void AddPermanentBonus_WithDamagedCurrentValue_MaintainsDeficit()
+    public void AddSessionBonus_WithDamagedCurrentValue_MaintainsDeficit()
     {
         // Arrange
         StatTracker tracker = new StatTracker(new global::Core.Services.EventBus());
@@ -84,7 +84,7 @@ public class StatTrackerTests
         tracker.ModifyCurrentValue(StatType.Health, -50f);
 
         // Act - Add permanent +10 HP (Health upgrade)
-        tracker.AddPermanentBonus(StatType.Health, 10f);
+        tracker.AddSessionBonus(StatType.Health, 10f);
 
         // Assert
         // Max HP becomes 110, Current HP should become 60
@@ -104,7 +104,7 @@ public class StatTrackerTests
         tracker.InitializeStats(baseStats);
 
         // Act - Add permanent +1
-        tracker.AddPermanentBonus(StatType.Speed, 1f);
+        tracker.AddSessionBonus(StatType.Speed, 1f);
 
         // Assert
         Assert.Equal(6f, tracker.GetCurrentValue(StatType.Speed));
@@ -123,7 +123,7 @@ public class StatTrackerTests
         tracker.InitializeStats(baseStats);
 
         // Act - Add permanent +1
-        tracker.AddPermanentBonus(StatType.Attack, 1f);
+        tracker.AddSessionBonus(StatType.Attack, 1f);
 
         // Assert
         Assert.Equal(11f, tracker.GetCurrentValue(StatType.Attack));
@@ -142,7 +142,7 @@ public class StatTrackerTests
         tracker.InitializeStats(baseStats);
 
         // Act - Add permanent +1
-        tracker.AddPermanentBonus(StatType.Luck, 1f);
+        tracker.AddSessionBonus(StatType.Luck, 1f);
 
         // Assert
         Assert.Equal(2f, tracker.GetCurrentValue(StatType.Luck));

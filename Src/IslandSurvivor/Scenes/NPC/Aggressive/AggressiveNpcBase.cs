@@ -17,6 +17,14 @@ public partial class AggressiveNpcBase : NpcBase
     [Export] public string AttackSoundKey { get; set; } = string.Empty;
     [Export] public float AttackVolume { get; set; } = 1.0f;
 
+    [ExportGroup("Melee Configuration")]
+    [Export] public float AttackRange { get; set; } = 60.0f;
+    [Export] public float GuardChance { get; set; } = 0.3f;
+
+    [ExportGroup("Ranged Configuration")]
+    [Export] public float MinAttackRange { get; set; } = 80.0f;
+    [Export] public float MaxAttackRange { get; set; } = 350.0f;
+
     protected Node2D? m_targetPlayer;
     // protected IAgressorController m_agressorController = null!;
     protected IslandSurvivor.Nodes.Combat.AttackController? m_attackController;
@@ -31,7 +39,55 @@ public partial class AggressiveNpcBase : NpcBase
     protected string m_guardDirection = "";
     protected float m_guardDamageMultiplier = 1.0f;
     protected float m_guardCooldownTimer = 0.0f;
-    public bool CanGuard => !m_isGuarding && m_guardCooldownTimer <= 0.0f;
+
+    public virtual bool CanGuard => false;
+
+    public override Godot.StringName GetDecisionState(Node2D target)
+    {
+        if (target == null)
+        {
+            if (m_stateMachine != null)
+            {
+                if (m_stateMachine.HasState(IslandSurvivor.Logic.StateMachine.StateConstants.IdleStateName))
+                {
+                    var idleStateNode = m_stateMachine.GetState(IslandSurvivor.Logic.StateMachine.StateConstants.IdleStateName);
+                    if (idleStateNode is IslandSurvivor.Logic.StateMachine.States.IdleState idleState)
+                    {
+                        if (idleState.IsWanderCooldownElapsed && m_stateMachine.HasState(IslandSurvivor.Logic.StateMachine.StateConstants.WanderStateName))
+                        {
+                            return IslandSurvivor.Logic.StateMachine.StateConstants.WanderStateName;
+                        }
+                    }
+                }
+            }
+            return IslandSurvivor.Logic.StateMachine.StateConstants.IdleStateName;
+        }
+
+        float distanceSquared = GlobalPosition.DistanceSquaredTo(target.GlobalPosition);
+        float attackRangeSquared = AttackRange * AttackRange;
+
+        return GetCombatDecisionState(distanceSquared, attackRangeSquared);
+    }
+
+    protected virtual Godot.StringName GetCombatDecisionState(float distanceSquared, float attackRangeSquared)
+    {
+        if (distanceSquared > attackRangeSquared)
+        {
+            return IslandSurvivor.Logic.StateMachine.StateConstants.ChaseStateName;
+        }
+
+        if (m_attackController != null && m_attackController.CanAttack)
+        {
+            var windUp = m_stateMachine?.GetState(IslandSurvivor.Logic.StateMachine.StateConstants.WindUpStateName) as IslandSurvivor.Logic.StateMachine.States.WindUpState;
+            if (windUp != null)
+            {
+                // State routing is handled by specific NpcBase
+            }
+            return IslandSurvivor.Logic.StateMachine.StateConstants.WindUpStateName;
+        }
+
+        return IslandSurvivor.Logic.StateMachine.StateConstants.IdleStateName;
+    }
 
     public void SetGuardState(bool isGuarding, string direction, float multiplier)
     {
@@ -95,6 +151,12 @@ public partial class AggressiveNpcBase : NpcBase
         {
             ApplyLevelScaling();
         }
+
+        var levelLabel = GetNodeOrNull<Label>("LevelLabel");
+        if (levelLabel != null)
+        {
+            levelLabel.Text = $"Lvl {LevelIndex}";
+        }
     }
 
     protected virtual void InitializeController()
@@ -104,13 +166,9 @@ public partial class AggressiveNpcBase : NpcBase
 
     protected virtual void ApplyLevelScaling()
     {
-        float scalingFactor = 1.0f + 0.2f * (LevelIndex - 1);
-
-        float maxHealth = Stats.MaxHealth * scalingFactor;
-        float baseDamage = Stats.BaseAttackValue * scalingFactor;
-
-        IdleSpeed *= scalingFactor;
-        ChaseSpeed *= scalingFactor;
+        // Stats scaling is now purely handled by the EnemyStatsHandler Decorator
+        // using the Global Threat Score system. We only apply the color modulation here
+        // as a visual indicator of the enemy's raw level before map multipliers.
 
         if (m_sprite != null)
         {
@@ -122,10 +180,6 @@ public partial class AggressiveNpcBase : NpcBase
 
             m_sprite.SelfModulate = modulateColor;
         }
-
-        Stats.MaxHealth = maxHealth;
-        Stats.SetCurrentValue(Core.Managers.Stats.StatType.Health, maxHealth);
-        Stats.BaseAttackValue = baseDamage;
     }
 
     public override void _PhysicsProcess(double p_delta)
@@ -284,6 +338,6 @@ public partial class AggressiveNpcBase : NpcBase
             GD.Print($"[AggressiveNpcBase] Enemy died. Sent {scoreToAward} points to ScoreManager and published {xpEarned} XP.");
         }
 
-        QueueFree();
+
     }
 }

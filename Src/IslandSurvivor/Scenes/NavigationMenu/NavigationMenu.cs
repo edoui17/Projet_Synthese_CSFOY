@@ -70,35 +70,8 @@ public partial class NavigationMenu : Control
 
         if (isHome)
         {
-            // Add Boss Island Option
-            bool isBossReady = Managers.ProgressionManager.Instance.IsBossReady();
-            var bossBtn = new Button();
-
-            if (isBossReady)
-            {
-                bossBtn.Text = "Boss Island (Level 4) [Danger: Extreme]";
-                bossBtn.Modulate = new Color(1, 0, 0); // Red for danger
-
-                var bossDestination = new IslandDestination(
-                    Id: "boss_island",
-                    ScenePath: "res://Scenes/Level/Level4/Level4.tscn",
-                    Biome: "Boss",
-                    Difficulty: 10,
-                    ResourceCost: 0,
-                    DangerLevel: 10
-                );
-
-                bossBtn.Pressed += () => OnDestinationSelected(bossDestination);
-            }
-            else
-            {
-                bossBtn.Text = "Boss Island (Locked - Level 10 required)";
-                bossBtn.Disabled = true;
-            }
-            m_destinationsContainer.AddChild(bossBtn);
-
-            // Generate 5 random islands
-            m_currentOptions = m_navigationService.GenerateDestinations(5);
+            // Generate 2 random islands (1 Poor, 1 Normal/Hard)
+            m_currentOptions = m_navigationService.GenerateDestinations(2);
 
             foreach (var destination in m_currentOptions)
             {
@@ -118,6 +91,37 @@ public partial class NavigationMenu : Control
 
                 m_destinationsContainer.AddChild(btn);
             }
+
+            // Add Boss Island Option at the bottom
+            bool isBossReady = Managers.ProgressionManager.Instance.IsBossReady();
+            int bossRequirement = Managers.ProgressionManager.Instance.Requirement != null
+                ? Managers.ProgressionManager.Instance.Requirement.BossLevelRequirement
+                : 10;
+
+            var bossBtn = new Button();
+
+            if (isBossReady)
+            {
+                bossBtn.Text = "Boss Island [Danger: Extreme]";
+                bossBtn.Modulate = new Color(1, 0, 0); // Red for danger
+
+                var bossDestination = new IslandDestination(
+                    Id: "boss_island",
+                    ScenePath: "res://Scenes/Level/Level4/Level4.tscn",
+                    Biome: "Boss",
+                    Difficulty: 10,
+                    ResourceCost: 0,
+                    DangerLevel: 10
+                );
+
+                bossBtn.Pressed += () => OnDestinationSelected(bossDestination);
+            }
+            else
+            {
+                bossBtn.Text = $"Boss Island (Locked - Level {bossRequirement} required)";
+                bossBtn.Disabled = true;
+            }
+            m_destinationsContainer.AddChild(bossBtn);
         }
         else
         {

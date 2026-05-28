@@ -11,6 +11,7 @@ public partial class DefeatMenu : CanvasLayer
     private Label m_highScoreLabel;
     private Label m_mapsClearedLabel;
     private Label m_playerStatsLabel;
+    private Action<PlayerDiedEvent> m_onPlayerDiedDelegate;
 
     public override void _Ready()
     {
@@ -22,9 +23,11 @@ public partial class DefeatMenu : CanvasLayer
         m_mapsClearedLabel = GetNode<Label>("PanelContainer/VBoxContainer/MapsClearedLabel");
         m_playerStatsLabel = GetNode<Label>("PanelContainer/VBoxContainer/PlayerStatsLabel");
 
+        m_onPlayerDiedDelegate = OnPlayerDied;
+
         if (ServiceRegistry.Instance != null && ServiceRegistry.Instance.EventBus != null)
         {
-            ServiceRegistry.Instance.EventBus.Subscribe<PlayerDiedEvent>(OnPlayerDied);
+            ServiceRegistry.Instance.EventBus.Subscribe<PlayerDiedEvent>(m_onPlayerDiedDelegate);
         }
     }
 
@@ -75,14 +78,18 @@ public partial class DefeatMenu : CanvasLayer
     public void _on_return_menu_btn_pressed()
     {
         GetTree().Paused = false;
+
+        // Notify the SessionManager to clean up state before transitioning
+        SignalManager.Instance?.EmitSignal(SignalManager.SignalName.SessionEnded, false);
+
         GetTree().ChangeSceneToFile("res://Scenes/MainMenu/MainMenu/MainMenu.tscn");
     }
 
     public override void _ExitTree()
     {
-        if (ServiceRegistry.Instance != null && ServiceRegistry.Instance.EventBus != null)
+        if (ServiceRegistry.Instance != null && ServiceRegistry.Instance.EventBus != null && m_onPlayerDiedDelegate != null)
         {
-            ServiceRegistry.Instance.EventBus.Unsubscribe<PlayerDiedEvent>(OnPlayerDied);
+            ServiceRegistry.Instance.EventBus.Unsubscribe<PlayerDiedEvent>(m_onPlayerDiedDelegate);
         }
     }
 }

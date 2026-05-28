@@ -34,8 +34,10 @@ public class AgressorController : IAgressorController
                 m_currentState = NpcStates.CHASE;
             }
             m_disengageTimer = DISENGAGE_TIME; // Reset the timer while we have line of sight
+            return;
         }
-        else if (m_currentState == NpcStates.CHASE)
+
+        if (m_currentState == NpcStates.CHASE)
         {
             // We have a target but lost line of sight
             m_disengageTimer -= p_delta;
@@ -45,27 +47,25 @@ public class AgressorController : IAgressorController
                 m_currentState = NpcStates.IDLE;
                 PickNewRandomDirection();
             }
+            return;
         }
-        else
+
+        // IDLE behavior
+        m_currentState = NpcStates.IDLE;
+        m_idleTimer -= p_delta;
+        if (m_idleTimer <= 0)
         {
-            // IDLE behavior
-            m_currentState = NpcStates.IDLE;
-            m_idleTimer -= p_delta;
-            if (m_idleTimer <= 0)
-            {
-                PickNewRandomDirection();
-            }
+            PickNewRandomDirection();
         }
     }
 
     public virtual void UpdateChaseDirection(Vector2 p_agressorPosition, Vector2 p_targetPosition)
     {
         Vector2 direction = p_targetPosition - p_agressorPosition;
-        if (direction.LengthSquared() > 0)
-        {
-            float length = (float)Math.Sqrt(direction.X * direction.X + direction.Y * direction.Y);
-            m_currentDirection = new Vector2(direction.X / length, direction.Y / length);
-        }
+        if (direction.LengthSquared() <= 0) return;
+
+        float length = (float)Math.Sqrt(direction.X * direction.X + direction.Y * direction.Y);
+        m_currentDirection = new Vector2(direction.X / length, direction.Y / length);
     }
 
     public virtual void SetDead()

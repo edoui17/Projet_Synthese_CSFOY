@@ -38,6 +38,12 @@ public partial class LoadingScreen : CanvasLayer
         m_retryBtn.Pressed += OnRetryPressed;
         m_offlineBtn.Pressed += OnOfflinePressed;
 
+        SetupButton(m_retryBtn);
+        SetupButton(m_offlineBtn);
+
+        m_retryBtn.FocusNeighborRight = m_offlineBtn.GetPath();
+        m_offlineBtn.FocusNeighborLeft = m_retryBtn.GetPath();
+
         ShowLoading();
     }
 
@@ -114,5 +120,31 @@ public partial class LoadingScreen : CanvasLayer
     private void OnOfflinePressed()
     {
         EmitSignal(SignalName.OfflineModeRequested);
+    }
+
+    private void SetupButton(Button p_btn)
+    {
+        p_btn.FocusMode = FocusModeEnum.All;
+        p_btn.MouseDefaultCursorShape = CursorShape.PointingHand;
+        p_btn.PivotOffset = p_btn.Size / 2f;
+
+        Tween currentTween = null;
+
+        p_btn.MouseEntered += () => p_btn.GrabFocus();
+
+        p_btn.FocusEntered += () =>
+        {
+            p_btn.PivotOffset = p_btn.Size / 2f;
+            currentTween?.Kill();
+            currentTween = CreateTween();
+            currentTween.TweenProperty(p_btn, "scale", new Vector2(1.05f, 1.05f), 0.1f);
+        };
+
+        p_btn.FocusExited += () =>
+        {
+            currentTween?.Kill();
+            currentTween = CreateTween();
+            currentTween.TweenProperty(p_btn, "scale", new Vector2(1.0f, 1.0f), 0.1f);
+        };
     }
 }

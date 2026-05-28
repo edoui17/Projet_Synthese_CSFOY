@@ -28,7 +28,7 @@ public partial class StateMachine : State
         {
             if (child is State state)
             {
-                m_states[new StringName(child.Name)] = state;
+                m_states[state.Name] = state;
                 state.Initialize(this, p_npcContext);
                 state.StateFinished += OnStateFinished;
             }
@@ -82,100 +82,154 @@ public partial class StateMachine : State
     {
         if (p_sourceState != m_currentState) return;
 
-        StringName nextStateName = new StringName();
+        StringName nextStateName = null;
 
         switch (p_sourceState.Name.ToString())
         {
-            case "IdleState":
-                if (p_reason == StateExitReason.TargetDetected)
+            case "LancerRepositionState":
+                if (p_reason == StateExitReason.Finished)
                 {
-                    nextStateName = new StringName("ChaseState");
+                    nextStateName = StateConstants.DashStateName;
                 }
                 break;
 
-            case "ChaseState":
+            case StateConstants.IdleState:
+                if (p_reason == StateExitReason.TargetDetected)
+                {
+                    if (NpcContext is IslandSurvivor.Scenes.NPC.NpcBase npc)
+                    {
+                        var target = (npc as IslandSurvivor.Scenes.NPC.Aggressive.AggressiveNpcBase)?.GetTarget();
+                        nextStateName = npc.GetDecisionState(target);
+                    }
+                    else
+                    {
+                        nextStateName = StateConstants.ChaseStateName;
+                    }
+                }
+                else if (p_reason == StateExitReason.CooldownFinished)
+                {
+                    nextStateName = GetCombatDecisionState();
+                }
+                else if (p_reason == StateExitReason.Finished)
+                {
+                    nextStateName = GetCombatDecisionState();
+                }
+                break;
+
+            case StateConstants.ChaseState:
                 if (p_reason == StateExitReason.TargetLost)
                 {
-                    nextStateName = new StringName("IdleState");
+                    nextStateName = StateConstants.IdleStateName;
                 }
                 else if (p_reason == StateExitReason.TargetReached)
                 {
-                    var attackController = NpcContext.GetNodeOrNull<IslandSurvivor.Nodes.Combat.AttackController>("AttackController");
-                    if (attackController != null && attackController.CanAttack)
+                    nextStateName = GetCombatDecisionState();
+                }
+                break;
+
+            case StateConstants.MeleeAttackState:
+            case StateConstants.RangedAttackState:
+                if (NpcContext is IslandSurvivor.Scenes.NPC.Aggressive.AggressiveNpcBase aggNpc)
+                {
+                    var target = aggNpc.GetTarget();
+                    if (target != null)
                     {
-                        nextStateName = new StringName("AttackState");
+                        nextStateName = StateConstants.RecoveryStateName;
                     }
                     else
                     {
-                        float guardChance = 0.0f;
-                        if (p_sourceState is IslandSurvivor.Logic.StateMachine.States.ChaseState chaseState)
-                        {
-                            guardChance = chaseState.GuardChance;
-                        }
+                        nextStateName = StateConstants.IdleStateName;
+                    }
+                }
+                else
+                {
+                    nextStateName = StateConstants.IdleStateName;
+                }
+                break;
 
-                        if (NpcContext is IslandSurvivor.Scenes.NPC.Aggressive.AggressiveNpcBase aggNpc && aggNpc.CanGuard && GD.Randf() <= guardChance)
-                        {
-                            nextStateName = new StringName("GuardState");
-                        }
-                        else
-                        {
-                            nextStateName = new StringName("IdleState");
-                        }
+            case StateConstants.WindUpState:
+                if (p_reason == StateExitReason.Finished)
+                {
+                    if (p_sourceState is IslandSurvivor.Logic.StateMachine.States.WindUpState windUp)
+                    {
+                        nextStateName = windUp.NextStateAfterWindup;
+                    }
+                    else
+                    {
+                        nextStateName = StateConstants.MeleeAttackStateName;
                     }
                 }
                 break;
 
-            case "AttackState":
-                nextStateName = new StringName("ChaseState");
+            case StateConstants.DashState:
+                nextStateName = StateConstants.RecoveryStateName;
                 break;
 
-            case "WindUpState":
+            case StateConstants.RecoveryState:
+                nextStateName = StateConstants.IdleStateName;
+                break;
+
+            case StateConstants.FleeState:
                 if (p_reason == StateExitReason.Finished)
                 {
-                    nextStateName = new StringName("DashState"); // Or "AttackState", depending on the NPC. Lancer uses DashState after WindUp. Wait, this needs to be specific.
-                    // For the Lancer, WindUp goes to DashState.
-                    // Let's assume it goes to AttackState by default, but if it has DashState, it goes to DashState?
-                    // Let me check if DashState is present.
-                    if (m_states.ContainsKey(new StringName("DashState")))
-                        nextStateName = new StringName("DashState");
+                    nextStateName = StateConstants.IdleStateName;
+                }
+                break;
+
+            case StateConstants.RepositionState:
+                if (p_reason == StateExitReason.Finished)
+                {
+                    if (NpcContext is IslandSurvivor.Scenes.NPC.Aggressive.Normal.Lancer.Lancer lancer)
+                    {
+                        nextStateName = StateConstants.DashStateName;
+                    }
                     else
-                        nextStateName = new StringName("AttackState");
+                    {
+                        nextStateName = StateConstants.IdleStateName;
+                    }
                 }
                 break;
 
-            case "DashState":
-                nextStateName = new StringName("RecoveryState");
+            case StateConstants.GuardState:
+                nextStateName = GetPostGuardState();
                 break;
 
-            case "RecoveryState":
-                nextStateName = new StringName("IdleState");
-                break;
-
-            case "FleeState":
-                if (p_reason == StateExitReason.Finished)
-                {
-                    nextStateName = new StringName("IdleState");
-                }
-                break;
-
-            case "GuardState":
-                nextStateName = new StringName("ChaseState");
-                break;
-
-            case "DeathState":
+            case StateConstants.DeathState:
                 // No transitions out of DeathState
                 return;
+
+            case StateConstants.WanderState:
+                if (p_reason == StateExitReason.TargetDetected)
+                {
+                    nextStateName = StateConstants.ChaseStateName;
+                }
+                else if (p_reason == StateExitReason.Finished)
+                {
+                    nextStateName = StateConstants.IdleStateName;
+                }
+                break;
         }
 
-        if (!nextStateName.IsEmpty && m_states.ContainsKey(nextStateName))
+        if (nextStateName != null && m_states.ContainsKey(nextStateName))
         {
             if (NpcContext != null && Engine.IsEditorHint() == false)
             {
                 GD.Print($"[Frame: {Engine.GetPhysicsFrames()}] [{NpcContext.Name}] [StateMachine] TRANSITION: {p_sourceState.Name} -> {nextStateName}");
             }
-            ForceTransition(nextStateName.ToString());
+
+            if (m_currentState?.Name == nextStateName)
+            {
+                if (m_currentState.IsActionState)
+                {
+                    m_currentState.Exit();
+                    m_currentState.Enter();
+                }
+                return;
+            }
+
+            ForceTransition(nextStateName);
         }
-        else if (!nextStateName.IsEmpty)
+        else if (nextStateName != null)
         {
             if (NpcContext != null && Engine.IsEditorHint() == false)
             {
@@ -184,12 +238,47 @@ public partial class StateMachine : State
         }
     }
 
-    public void ForceTransition(string p_targetStateName)
+    private StringName GetPostGuardState()
     {
-        if (!m_states.ContainsKey(new StringName(p_targetStateName))) return;
+        if (NpcContext is not IslandSurvivor.Scenes.NPC.Aggressive.AggressiveNpcBase aggNpcGuard)
+            return StateConstants.IdleStateName;
+
+        var target = aggNpcGuard.GetTarget();
+        if (target == null)
+            return StateConstants.IdleStateName;
+
+        return GetCombatDecisionState();
+    }
+
+    private StringName GetCombatDecisionState()
+    {
+        if (NpcContext == null)
+            return StateConstants.IdleStateName;
+
+        var target = (NpcContext as IslandSurvivor.Scenes.NPC.Aggressive.AggressiveNpcBase)?.GetTarget();
+        return ((IslandSurvivor.Scenes.NPC.NpcBase)NpcContext).GetDecisionState(target);
+    }
+
+    public bool HasState(Godot.StringName stateName) => m_states.ContainsKey(stateName);
+
+    public State GetState(Godot.StringName stateName) => m_states.TryGetValue(stateName, out var state) ? state : null;
+
+    public void ForceTransition(StringName p_targetStateName)
+    {
+        if (!m_states.ContainsKey(p_targetStateName)) return;
+
+        if (m_currentState?.Name == p_targetStateName)
+        {
+            if (m_currentState.IsActionState)
+            {
+                m_currentState.Exit();
+                m_currentState.Enter();
+            }
+            return;
+        }
 
         m_currentState?.Exit();
-        m_currentState = m_states[new StringName(p_targetStateName)];
+        m_currentState = m_states[p_targetStateName];
         m_currentState.Enter();
     }
 }

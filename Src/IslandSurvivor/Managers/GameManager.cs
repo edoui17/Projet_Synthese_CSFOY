@@ -36,10 +36,13 @@ public partial class GameManager : Node
 
     public override void _Ready()
     {
-        //InitializeGameAsync();
+        // Subscribe to global signals
+        SignalManager.Instance.OfflineModeRequested += SetGuestMode;
+
+        InitializeGameAsync();
     }
 
-    private async void InitializeGameAsync()
+    public async void InitializeGameAsync()
     {
         m_status = AppStatus.Loading;
         GD.Print("[GameManager] Initializing game...");
@@ -94,8 +97,8 @@ public partial class GameManager : Node
             }
         }
 
-        GD.Print("[GameManager] No valid session. Redirecting to Login.");
-        await CompleteInitialization("res://Scenes/Login/Login.tscn");
+        GD.Print("[GameManager] No valid session or validation failed. Redirecting to Login.");
+        await CompleteInitialization("res://Scenes/UI/LoginScreen/LoginScreen.tscn");
     }
 
     private void ShowLoadingScreen()
@@ -163,6 +166,12 @@ public partial class GameManager : Node
         GD.Print("[GameManager] Entering Guest Mode.");
         m_isGuest = true;
 
+        // Ensure loading screen is visible if we come from LoginScreen
+        if (m_loadingScreen == null)
+        {
+            ShowLoadingScreen();
+        }
+
         m_loadingScreen?.ShowLoading("Connexion impossible. Lancement en mode hors ligne avec les données locales...");
         await ToSignal(GetTree().CreateTimer(1.5f), SceneTreeTimer.SignalName.Timeout);
 
@@ -186,6 +195,22 @@ public partial class GameManager : Node
         }
 
         await CompleteInitialization("res://Scenes/MainMenu/MainMenu/MainMenu.tscn");
+    }
+
+    public void Logout()
+    {
+        GD.Print("[GameManager] Logging out...");
+
+        // 1. Clear session
+        SessionProvider.ClearToken();
+        ServiceRegistry.Instance.ApiService.SetSessionToken(null);
+
+        // 2. Reset state
+        m_isGuest = false;
+        m_status = AppStatus.Loading;
+
+        // 3. Redirect to login
+        GetTree().ChangeSceneToFile("res://Scenes/UI/LoginScreen/LoginScreen.tscn");
     }
 
     public void RetryInitialization()

@@ -25,7 +25,7 @@ When a resource's HP drops to 0 or below, its local `StatManager` fires a `Local
 
 ### 3. Death (Enemies)
 When an enemy's HP drops to 0 or below, its local `StatManager` fires a `LocalStatChanged` signal which triggers `HandleDeath(object p_attacker)`.
-- The death animation/logic plays via its specific controller (e.g., `AgressorController`).
+- The death animation/logic plays via its specific controller (e.g., `StateMachine`).
 - Entities like Sheep and Soldiers extract the `p_attacker`'s `Luck` stat to calculate their resource drop quantity and notify the player via `EmitMaterialDestroyed`.
 - Aggressive enemies like Soldiers notify the `ScoreManager` (`ServiceRegistry.Instance.ScoreTracker.AddScore(...)`) to grant the player points.
 - The enemy calls `QueueFree()`.

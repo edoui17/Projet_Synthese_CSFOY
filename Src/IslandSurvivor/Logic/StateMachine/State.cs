@@ -11,6 +11,8 @@ public partial class State : Node
     public StateMachine StateMachine { get; protected set; }
     public CharacterBody2D NpcContext { get; protected set; }
 
+    public virtual bool IsActionState => false;
+
     public virtual void Initialize(StateMachine p_stateMachine, CharacterBody2D p_npcContext)
     {
         StateMachine = p_stateMachine;
@@ -20,18 +22,10 @@ public partial class State : Node
 
     public virtual void Enter()
     {
-        if (NpcContext != null && Engine.IsEditorHint() == false)
-        {
-            GD.Print($"[Frame: {Engine.GetPhysicsFrames()}] [{NpcContext.Name}] [{Name}] ENTERED");
-        }
     }
 
     public virtual void Exit()
     {
-        if (NpcContext != null && Engine.IsEditorHint() == false)
-        {
-            GD.Print($"[Frame: {Engine.GetPhysicsFrames()}] [{NpcContext.Name}] [{Name}] EXITED");
-        }
     }
 
     public virtual void Update(double p_delta) { }
@@ -39,10 +33,6 @@ public partial class State : Node
 
     protected void CompleteState(StateExitReason p_reason)
     {
-        if (NpcContext != null && Engine.IsEditorHint() == false)
-        {
-            GD.Print($"[Frame: {Engine.GetPhysicsFrames()}] [{NpcContext.Name}] [{Name}] COMPLETED. Reason: {p_reason}");
-        }
         EmitSignal(SignalName.StateFinished, this, Variant.From(p_reason));
     }
 }
