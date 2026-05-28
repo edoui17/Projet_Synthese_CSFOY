@@ -27,7 +27,11 @@ Le système de combat de IslandSurvivor utilise une mécanique d'attaque à zone
 
 ## Système de Combat des Ennemis (Mêlée)
 
-Le système de combat des ennemis dans IslandSurvivor suit l'architecture N-Tier, séparant la logique métier de la représentation client Godot.
+Le système de combat des ennemis dans IslandSurvivor suit l'architecture N-Tier, où la détection des collisions et les animations sont gérées par le client Godot via une architecture basée sur des nœuds (Node-based StateMachine), et où les interfaces du Core garantissent des interactions standardisées.
+
+### Architecture des États (Node-based StateMachine)
+- **StateMachine :** Plutôt qu'un contrôleur monolithique, la logique comportementale des ennemis utilise le pattern de composition via un nœud parent `StateMachine`. Pour en savoir plus, consultez [`NPC_StateMachine_Architecture.md`](./NPC_StateMachine_Architecture.md).
+- **États Concrets :** Des nœuds enfants spécifiques (ex: `ChaseState`, `MeleeAttackState`) héritent de la classe de base `State`. Le `MeleeAttackState` interagit avec le `AttackController` pour infliger les dégâts et écoute la fin de l'animation pour initier une transition (vers le `RecoveryState` ou le `ChaseState`).
 
 ### Logique Core (Src/Core)
 - **Interfaces :** `IAttackable`, `IDamageable` dictent l'interaction fondamentale pour infliger et recevoir des dégâts.
