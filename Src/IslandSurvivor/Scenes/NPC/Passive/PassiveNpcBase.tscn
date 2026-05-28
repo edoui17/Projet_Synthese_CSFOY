@@ -3,6 +3,6 @@
 [ext_resource type="PackedScene" uid="uid://npcbase12345" path="res://Scenes/NPC/NpcBase.tscn" id="1_scene"]
 [ext_resource type="Script" uid="uid://8vfhfrphox7t" path="res://Scenes/NPC/Passive/PassiveNpcBase.cs" id="2_script"]
 
-[node name="PassiveNpcBase" instance=ExtResource("1_scene")]
+[node name="PassiveNpcBase" unique_id=1194401176 instance=ExtResource("1_scene")]
 script = ExtResource("2_script")
 FleeSpeed = 120.0

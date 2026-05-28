@@ -37,7 +37,7 @@ public partial class Sheep : PassiveNpcBase
 
     private void OnIdleSoundTimeout()
     {
-        if (CurrentState != NpcStates.DEAD)
+        if (CurrentState != IslandSurvivor.Logic.StateMachine.StateConstants.DeathStateName)
         {
             if (IdleSound != null)
                 AudioManager.Instance?.PlaySound2D(IdleSound, GlobalPosition, p_volumeLinear: IdleVolume, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
@@ -49,7 +49,7 @@ public partial class Sheep : PassiveNpcBase
     }
     protected override void HandleDeath(object? p_attacker = null)
     {
-        m_passiveController.SetDead();
+        m_stateMachine?.ForceTransition(IslandSurvivor.Logic.StateMachine.StateConstants.DeathStateName);
 
         if (ServiceRegistry.Instance != null)
         {
@@ -119,7 +119,7 @@ public partial class Sheep : PassiveNpcBase
             AudioManager.Instance?.PlaySound2D(DeathSoundKey, GlobalPosition, p_volumeLinear: DeathVolume, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
 
 
-        QueueFree();
+
     }
     protected override void OnDamageTaken(Node2D p_attacker)
     {

@@ -17,4 +17,5 @@ public interface IScoreTracker
     void Initialize(int p_initialScore, int p_mapCount, string p_characterId);
     void AddScore(int p_amount);
     void UpdateHighScore();
+    void ResetSession();
 }

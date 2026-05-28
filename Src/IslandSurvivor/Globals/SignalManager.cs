@@ -19,6 +19,8 @@ public partial class SignalManager : Node
     [Signal] public delegate void TeleportRequestedEventHandler(string p_islandId, string p_scenePath, string p_biome, int p_difficulty, int p_resourceCost, int p_dangerLevel);
     [Signal] public delegate void BuildingShopToggledEventHandler(bool p_isOpen, string p_buildingId);
     [Signal] public delegate void InventoryChangedEventHandler(string p_resourceId, int p_totalAmount);
+    [Signal] public delegate void OfflineModeRequestedEventHandler();
+    [Signal] public delegate void SessionEndedEventHandler(bool p_isVictory);
 
     public override void _EnterTree()
     {
@@ -89,6 +91,11 @@ public partial class SignalManager : Node
     private void OnInventoryChangedEvent(InventoryChangedEvent e)
     {
         EmitSignal(SignalName.InventoryChanged, e.ResourceId, e.TotalAmount);
+    }
+
+    public void EmitOfflineModeRequested()
+    {
+        EmitSignal(SignalName.OfflineModeRequested);
     }
 
     // --- Godot -> Core Bridge (Proxy methods to emit into Core EventBus) ---

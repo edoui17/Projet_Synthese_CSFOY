@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://cax25d4b5ex2y"]
+
+[ext_resource type="Script"  path="res://Logic/StateMachine/States/LancerRepositionState.cs" id="1_script"]
+
+[node name="LancerRepositionState" type="Node"]
+script = ExtResource("1_script")

@@ -13,4 +13,5 @@ public interface IStat
     void AddBonus(float p_amount);
     void ModifyCurrentValue(float p_amount);
     void SetCurrentValue(float p_value);
+    void ClearBonus();
 }

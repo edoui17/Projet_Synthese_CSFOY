@@ -1,48 +1,117 @@
-using Core.Managers.Stats;
-
-
-using Core.Domain;
 namespace IslandSurvivor.Scenes.NPC.Aggressive;
 
-using System;
 using Godot;
-using IslandSurvivor.Extensions;
 using IslandSurvivor.Logic.Entities;
-using Core.Interfaces.Stats;
-using IslandSurvivor.Nodes.Combat;
 using IslandSurvivor.Globals;
-using Core.Interfaces;
 
-public partial class AggressiveNpcBase : NpcBase, IEnemy
+public partial class AggressiveNpcBase : NpcBase
 {
-    [Export] public float ChaseSpeed { get; set; } = 100.0f;
-    [Export] public float StoppingDistance { get; set; } = 40.0f;
+    [Export] public float ChaseSpeed { get; set; } = 120.0f;
+    [Export] public float StoppingDistance { get; set; } = 50.0f;
     [Export] public int LevelIndex { get; set; } = 1;
+    [Export] public float BaseXp { get; set; } = 10.0f;
+    [Export] public float XpMultiplier { get; set; } = 0.5f;
 
-    [ExportGroup("XP Settings")]
-    [Export] public float BaseXp { get; set; } = 30.0f;
-    [Export] public float XpMultiplier { get; set; } = 0.2f;
-
-    [ExportGroup("Audio Override")]
+    [ExportGroup("Combat Audio")]
     [Export] public AudioStream? AttackSound { get; set; }
-    [Export] public string AttackSoundKey { get; set; } = "Enemy_Swing_Default";
+    [Export] public string AttackSoundKey { get; set; } = string.Empty;
     [Export] public float AttackVolume { get; set; } = 1.0f;
 
-    protected IAgressorController m_agressorController;
-    protected AttackController? m_attackController;
-    protected Area2D m_detectionArea;
-    protected RayCast2D m_lineOfSightRay;
-    protected Node2D m_targetPlayer;
+    [ExportGroup("Melee Configuration")]
+    [Export] public float AttackRange { get; set; } = 60.0f;
+    [Export] public float GuardChance { get; set; } = 0.3f;
 
-    protected StringName m_animMoving = new StringName("Moving");
-    protected StringName m_animIdle = new StringName("Idle");
+    [ExportGroup("Ranged Configuration")]
+    [Export] public float MinAttackRange { get; set; } = 80.0f;
+    [Export] public float MaxAttackRange { get; set; } = 350.0f;
 
-    public override string CurrentState => m_agressorController?.CurrentState ?? NpcStates.IDLE;
+    protected Node2D? m_targetPlayer;
+    // protected IAgressorController m_agressorController = null!;
+    protected IslandSurvivor.Nodes.Combat.AttackController? m_attackController;
+    protected Area2D? m_detectionArea;
+    protected RayCast2D? m_lineOfSightRay;
+    protected Sprite2D? m_sprite;
+    protected AnimationPlayer? m_animationPlayer;
+
+    public Vector2 LockedDirection { get; set; } = Vector2.Zero;
+
+    protected bool m_isGuarding = false;
+    protected string m_guardDirection = "";
+    protected float m_guardDamageMultiplier = 1.0f;
+    protected float m_guardCooldownTimer = 0.0f;
+
+    public virtual bool CanGuard => false;
+
+    public override Godot.StringName GetDecisionState(Node2D target)
+    {
+        if (target == null)
+        {
+            if (m_stateMachine != null)
+            {
+                if (m_stateMachine.HasState(IslandSurvivor.Logic.StateMachine.StateConstants.IdleStateName))
+                {
+                    var idleStateNode = m_stateMachine.GetState(IslandSurvivor.Logic.StateMachine.StateConstants.IdleStateName);
+                    if (idleStateNode is IslandSurvivor.Logic.StateMachine.States.IdleState idleState)
+                    {
+                        if (idleState.IsWanderCooldownElapsed && m_stateMachine.HasState(IslandSurvivor.Logic.StateMachine.StateConstants.WanderStateName))
+                        {
+                            return IslandSurvivor.Logic.StateMachine.StateConstants.WanderStateName;
+                        }
+                    }
+                }
+            }
+            return IslandSurvivor.Logic.StateMachine.StateConstants.IdleStateName;
+        }
+
+        float distanceSquared = GlobalPosition.DistanceSquaredTo(target.GlobalPosition);
+        float attackRangeSquared = AttackRange * AttackRange;
+
+        return GetCombatDecisionState(distanceSquared, attackRangeSquared);
+    }
+
+    protected virtual Godot.StringName GetCombatDecisionState(float distanceSquared, float attackRangeSquared)
+    {
+        if (distanceSquared > attackRangeSquared)
+        {
+            return IslandSurvivor.Logic.StateMachine.StateConstants.ChaseStateName;
+        }
+
+        if (m_attackController != null && m_attackController.CanAttack)
+        {
+            var windUp = m_stateMachine?.GetState(IslandSurvivor.Logic.StateMachine.StateConstants.WindUpStateName) as IslandSurvivor.Logic.StateMachine.States.WindUpState;
+            if (windUp != null)
+            {
+                // State routing is handled by specific NpcBase
+            }
+            return IslandSurvivor.Logic.StateMachine.StateConstants.WindUpStateName;
+        }
+
+        return IslandSurvivor.Logic.StateMachine.StateConstants.IdleStateName;
+    }
+
+    public void SetGuardState(bool isGuarding, string direction, float multiplier)
+    {
+        m_isGuarding = isGuarding;
+        m_guardDirection = direction;
+        m_guardDamageMultiplier = multiplier;
+    }
+
+    public void StartGuardCooldown(float cooldown)
+    {
+        m_guardCooldownTimer = cooldown;
+    }
+
+
+    public Node2D? GetTarget() => m_targetPlayer;
+    public bool HasTargetAndLineOfSight() => m_targetPlayer != null && CheckLineOfSight();
+
     public string EnemyType => "GenericEnemy";
 
     public override void _Ready()
     {
         base._Ready();
+        m_sprite = GetNodeOrNull<Sprite2D>("Sprite2D");
+        m_animationPlayer = GetNodeOrNull<AnimationPlayer>("AnimationPlayer");
 
         // Initialize default keys if not set
         if (string.IsNullOrEmpty(HurtSoundKey)) HurtSoundKey = "Enemy_Hurt_Default";
@@ -50,12 +119,13 @@ public partial class AggressiveNpcBase : NpcBase, IEnemy
 
         InitializeController();
 
-        m_attackController = GetNodeOrNull<AttackController>("AttackController");
-        if (m_animatedSprite != null && m_attackController != null)
+        m_attackController = GetNodeOrNull<IslandSurvivor.Nodes.Combat.AttackController>("AttackController");
+        if (m_sprite != null && m_attackController != null)
         {
             if (m_attackController.AttackSprite == null)
             {
-                m_attackController.AttackSprite = m_animatedSprite;
+                m_attackController.AttackSprite = m_sprite;
+                m_attackController.AttackAnimationPlayer = m_animationPlayer;
             }
             m_attackController.AttackActionTriggered += PlayAttackSound;
         }
@@ -81,24 +151,26 @@ public partial class AggressiveNpcBase : NpcBase, IEnemy
         {
             ApplyLevelScaling();
         }
+
+        var levelLabel = GetNodeOrNull<Label>("LevelLabel");
+        if (levelLabel != null)
+        {
+            levelLabel.Text = $"Lvl {LevelIndex}";
+        }
     }
 
     protected virtual void InitializeController()
     {
-        m_agressorController = new AgressorController();
+        // m_agressorController = new AgressorController();
     }
 
     protected virtual void ApplyLevelScaling()
     {
-        float scalingFactor = 1.0f + 0.2f * (LevelIndex - 1);
+        // Stats scaling is now purely handled by the EnemyStatsHandler Decorator
+        // using the Global Threat Score system. We only apply the color modulation here
+        // as a visual indicator of the enemy's raw level before map multipliers.
 
-        float maxHealth = Stats.MaxHealth * scalingFactor;
-        float baseDamage = Stats.BaseAttackValue * scalingFactor;
-
-        IdleSpeed *= scalingFactor;
-        ChaseSpeed *= scalingFactor;
-
-        if (m_animatedSprite != null)
+        if (m_sprite != null)
         {
             Color modulateColor = Colors.White;
             if (LevelIndex >= 3 && LevelIndex <= 5) modulateColor = Colors.Yellow;
@@ -106,80 +178,27 @@ public partial class AggressiveNpcBase : NpcBase, IEnemy
             else if (LevelIndex > 8 && LevelIndex <= 10) modulateColor = Colors.Purple;
             else if (LevelIndex > 10) modulateColor = Colors.DarkGray;
 
-            m_animatedSprite.SelfModulate = modulateColor;
+            m_sprite.SelfModulate = modulateColor;
         }
-
-        Stats.MaxHealth = maxHealth;
-        Stats.SetCurrentValue(StatType.Health, maxHealth);
-        Stats.BaseAttackValue = baseDamage;
     }
 
     public override void _PhysicsProcess(double p_delta)
     {
-        if (m_agressorController.CurrentState == NpcStates.DEAD) return;
+        base._PhysicsProcess(p_delta);
 
-        bool hasLineOfSight = CheckLineOfSight();
-
-        m_agressorController.Update((float)p_delta, m_targetPlayer != null, hasLineOfSight);
-
-        HandleAttackState();
-
-        Vector2 direction = new Vector2(m_agressorController.CurrentDirection.X, m_agressorController.CurrentDirection.Y);
-        float targetSpeed = IdleSpeed;
-
-        if (m_attackController != null && m_attackController.IsAttacking)
+        if (m_guardCooldownTimer > 0)
         {
-            targetSpeed = 0f;
-            direction = Vector2.Zero;
+            m_guardCooldownTimer -= (float)p_delta;
         }
-        else if (m_agressorController.CurrentState == NpcStates.CHASE && m_targetPlayer != null)
-        {
-            float distanceSquaredToPlayer = GlobalPosition.DistanceSquaredTo(m_targetPlayer.GlobalPosition);
-            // Replaced DistanceTo with DistanceSquaredTo to eliminate square root calculation in hot path (_PhysicsProcess)
-            if (distanceSquaredToPlayer <= StoppingDistance * StoppingDistance)
-            {
-                targetSpeed = 0f;
-                direction = Vector2.Zero;
-            }
-            else
-            {
-                targetSpeed = ChaseSpeed;
-                Vector2 globalPositionNumerics = GlobalPosition;
-                Vector2 targetPositionNumerics = m_targetPlayer.GlobalPosition;
-                m_agressorController.UpdateChaseDirection(globalPositionNumerics, targetPositionNumerics);
-                direction = new Vector2(m_agressorController.CurrentDirection.X, m_agressorController.CurrentDirection.Y);
-            }
-        }
-
-        if (m_movementController != null)
-        {
-            m_movementController.Move(direction, targetSpeed);
-        }
-        else
-        {
-            Velocity = direction * targetSpeed;
-            MoveAndSlide();
-        }
-
-        if (m_agressorController.CurrentState == NpcStates.IDLE && GetSlideCollisionCount() > 0)
-        {
-            m_agressorController.ForceNewDirection();
-        }
-
-        UpdateAnimation(new Vector2(m_agressorController.CurrentDirection.X, m_agressorController.CurrentDirection.Y));
-    }
-
-    protected virtual void HandleAttackState()
-    {
     }
 
     protected virtual void PlayAttackAnimation(string p_animName)
     {
-        if (m_animatedSprite == null) return;
+        if (m_sprite == null) return;
 
         if (m_targetPlayer != null)
         {
-            m_animatedSprite.FlipH = m_targetPlayer.GlobalPosition.X < GlobalPosition.X;
+            m_sprite.FlipH = m_targetPlayer.GlobalPosition.X < GlobalPosition.X;
         }
 
         if (m_attackController != null)
@@ -187,42 +206,7 @@ public partial class AggressiveNpcBase : NpcBase, IEnemy
             m_attackController.SetAttackAnimation(p_animName);
         }
 
-        m_animatedSprite.Play(p_animName);
-        m_animatedSprite.Frame = 0;
-    }
-
-    protected virtual void UpdateAnimation(Vector2 p_direction)
-    {
-        if (m_animatedSprite == null) return;
-
-        bool isAttacking = m_attackController != null && m_attackController.IsAttacking;
-
-        if (isAttacking)
-        {
-            // Attack animation playback is handled directly via PlayAttackAnimation in OnAttackStarted.
-            // We just skip standard directional animation logic here.
-            return;
-        }
-
-        if (Velocity.LengthSquared() > 0)
-        {
-            if (m_animatedSprite.Animation != m_animMoving)
-            {
-                m_animatedSprite.Play(m_animMoving);
-            }
-        }
-        else
-        {
-            if (m_animatedSprite.Animation != m_animIdle)
-            {
-                m_animatedSprite.Play(m_animIdle);
-            }
-        }
-
-        if (p_direction.X != 0 && !isAttacking)
-        {
-            m_animatedSprite.FlipH = p_direction.X < 0;
-        }
+        m_animationPlayer?.Play(p_animName);
     }
 
     protected virtual bool CheckLineOfSight()
@@ -269,11 +253,63 @@ public partial class AggressiveNpcBase : NpcBase, IEnemy
             AudioManager.Instance?.PlaySound2D(AttackSoundKey, GlobalPosition, p_volumeLinear: AttackVolume, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
     }
 
+    public override void TakeDamage(int p_amount, object p_attacker)
+    {
+        m_lastAttacker = p_attacker;
+
+        int actualDamage = p_amount;
+        bool wasBlocked = false;
+
+        if (m_isGuarding && p_attacker is Node2D attackNode)
+        {
+            // Determine attack direction relative to the NPC
+            bool attackCameFromLeft = attackNode.GlobalPosition.X < GlobalPosition.X;
+            string attackDirection = attackCameFromLeft ? "Left" : "Right";
+
+            if (attackDirection == m_guardDirection)
+            {
+                wasBlocked = true;
+                actualDamage = Mathf.RoundToInt(p_amount * m_guardDamageMultiplier);
+            }
+        }
+
+        if (Stats != null)
+        {
+            float currentHp = Stats.GetCurrentValue(Core.Managers.Stats.StatType.Health);
+            Stats.SetCurrentValue(Core.Managers.Stats.StatType.Health, currentHp - actualDamage);
+        }
+
+        bool isDead = Stats == null || Stats.GetCurrentValue(Core.Managers.Stats.StatType.Health) <= 0;
+
+        if (p_attacker is Node2D attackerNode)
+        {
+            if (isDead && attackerNode.IsInGroup("Player"))
+            {
+                m_wasKilledByPlayer = true;
+            }
+
+            if (!isDead)
+            {
+                OnDamageTaken(attackerNode);
+
+                if (wasBlocked)
+                {
+                    IslandSurvivor.Extensions.NodeExtensions.PlayShake(this);
+                }
+                else
+                {
+                    IslandSurvivor.Extensions.NodeExtensions.PlayHitFlash(this);
+                    IslandSurvivor.Extensions.NodeExtensions.PlayShake(this);
+                }
+            }
+        }
+    }
+
     protected override void OnDamageTaken(Node2D p_attacker)
     {
         base.OnDamageTaken(p_attacker);
         m_targetPlayer = p_attacker;
-        
+
         if (HurtSound != null)
             AudioManager.Instance?.PlaySound2D(HurtSound, GlobalPosition, p_volumeLinear: HurtVolume, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
         else if (!string.IsNullOrEmpty(HurtSoundKey))
@@ -282,7 +318,7 @@ public partial class AggressiveNpcBase : NpcBase, IEnemy
 
     protected override void HandleDeath(object? p_attacker = null)
     {
-        m_agressorController.SetDead();
+        m_stateMachine?.ForceTransition("DeathState");
 
         if (DeathSound != null)
             AudioManager.Instance?.PlaySound2D(DeathSound, GlobalPosition, p_volumeLinear: DeathVolume, p_maxDistance: AudioMaxDistance, p_attenuation: AudioAttenuation);
@@ -296,12 +332,12 @@ public partial class AggressiveNpcBase : NpcBase, IEnemy
 
             int multiplier = (LevelIndex - 1) / 3;
             int baseScore = 10;
-            int scoreToAward = baseScore * (int)Math.Pow(2, multiplier);
+            int scoreToAward = baseScore * (int)System.Math.Pow(2, multiplier);
 
             ServiceRegistry.Instance.ScoreTracker.AddScore(scoreToAward);
             GD.Print($"[AggressiveNpcBase] Enemy died. Sent {scoreToAward} points to ScoreManager and published {xpEarned} XP.");
         }
 
-        QueueFree();
+
     }
 }

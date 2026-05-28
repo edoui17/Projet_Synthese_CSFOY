@@ -1,15 +1,49 @@
 namespace IslandSurvivor.Scenes.NPC.Aggressive;
 
 using Godot;
-using IslandSurvivor.Globals;
 
 public partial class MeleeAggressiveNpcBase : AggressiveNpcBase
 {
-    [ExportGroup("Animations")]
-    [Export] public string AttackAnimationName { get; set; } = "Attack";
+    public override bool CanGuard => !m_isGuarding && m_guardCooldownTimer <= 0.0f;
 
-    protected Area2D m_hitboxAreaRight;
-    protected Area2D m_hitboxAreaLeft;
+    protected override Godot.StringName GetCombatDecisionState(float distanceSquared, float attackRangeSquared)
+    {
+        if (distanceSquared > attackRangeSquared)
+        {
+            return IslandSurvivor.Logic.StateMachine.StateConstants.ChaseStateName;
+        }
+
+        if (m_attackController != null && m_attackController.CanAttack)
+        {
+            if (CanGuard && GD.Randf() <= GuardChance)
+            {
+                return IslandSurvivor.Logic.StateMachine.StateConstants.GuardStateName;
+            }
+
+            var windUp = m_stateMachine?.GetState(IslandSurvivor.Logic.StateMachine.StateConstants.WindUpStateName) as IslandSurvivor.Logic.StateMachine.States.WindUpState;
+            if (windUp != null)
+            {
+                windUp.NextStateAfterWindup = IslandSurvivor.Logic.StateMachine.StateConstants.MeleeAttackStateName;
+            }
+            return IslandSurvivor.Logic.StateMachine.StateConstants.WindUpStateName;
+        }
+        else
+        {
+            if (CanGuard)
+            {
+                return IslandSurvivor.Logic.StateMachine.StateConstants.GuardStateName;
+            }
+            else
+            {
+                return IslandSurvivor.Logic.StateMachine.StateConstants.IdleStateName;
+            }
+        }
+    }
+
+    protected Area2D? m_hitboxAreaRight;
+    protected Area2D? m_hitboxAreaLeft;
+    protected Area2D? m_hitboxAreaUp;
+    protected Area2D? m_hitboxAreaDown;
 
     public override void _Ready()
     {
@@ -17,16 +51,18 @@ public partial class MeleeAggressiveNpcBase : AggressiveNpcBase
 
         m_hitboxAreaRight = GetNodeOrNull<Area2D>("HitboxAreaRight");
         m_hitboxAreaLeft = GetNodeOrNull<Area2D>("HitboxAreaLeft");
+        m_hitboxAreaUp = GetNodeOrNull<Area2D>("HitboxAreaUp");
+        m_hitboxAreaDown = GetNodeOrNull<Area2D>("HitboxAreaDown");
 
         if (m_attackController != null)
         {
             m_attackController.Stats = Stats;
             m_attackController.Faction = IslandSurvivor.Enums.EntityFaction.Enemy;
-            m_attackController.AttackSprite = m_animatedSprite;
-            m_attackController.ActionFrame = 2; // Impact frame for Melee
 
             if (m_hitboxAreaRight != null) m_attackController.RegisterArea("Right", m_hitboxAreaRight);
             if (m_hitboxAreaLeft != null) m_attackController.RegisterArea("Left", m_hitboxAreaLeft);
+            if (m_hitboxAreaUp != null) m_attackController.RegisterArea("Up", m_hitboxAreaUp);
+            if (m_hitboxAreaDown != null) m_attackController.RegisterArea("Down", m_hitboxAreaDown);
 
             m_attackController.AttackStarted += OnAttackStarted;
         }
@@ -36,30 +72,7 @@ public partial class MeleeAggressiveNpcBase : AggressiveNpcBase
         }
     }
 
-    protected override void HandleAttackState()
-    {
-        if (m_attackController != null && m_attackController.CanAttack && m_targetPlayer != null)
-        {
-            float distanceSquaredToPlayer = GlobalPosition.DistanceSquaredTo(m_targetPlayer.GlobalPosition);
-
-            if (distanceSquaredToPlayer <= 50f * 50f)
-            {
-                string direction = (m_animatedSprite != null && m_animatedSprite.FlipH) ? "Left" : "Right";
-
-                // Si la gestion du son n'est pas incluse dans TryAttack, vous pouvez la mettre ici :
-                AudioStream attackStream = GD.Load<AudioStream>("res://Assets/Audio/kenney_impact-sounds/Audio/jofae-swing-whoosh-110410.mp3");
-                if (attackStream != null)
-                {
-                    IslandSurvivor.Globals.AudioManager.Instance?.PlaySound2D(attackStream, GlobalPosition);
-                }
-
-                m_attackController.TryAttack(direction);
-            }
-        }
-    }
-
     protected virtual void OnAttackStarted()
     {
-        PlayAttackAnimation(AttackAnimationName);
     }
 }

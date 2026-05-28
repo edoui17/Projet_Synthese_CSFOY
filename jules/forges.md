@@ -326,5 +326,75 @@ When triggering updates (e.g., UI upgrades emitting events to a decoupled compon
 - **Dépendance SQL Server** : Le serveur de base de données (SQL Server) doit être actif et accessible par l'API pour permettre l'authentification initiale et l'obtention du `SessionToken`.
 - **Gestion de l'Indisponibilité (503)** : Si la base de données est arrêtée ou inaccessible, l'API renvoie une erreur 503 (via `ExceptionHandlingMiddleware`). Le client intercepte cette erreur, lève une alerte visuelle et propose le basculement vers le mode hors ligne basé sur le cache local (`user://session.cfg` et `profile_cache.json`).
 
+## 2026-05-25 - US 11.0.1 : Interface Graphique du Formulaire et Validation Locale
+
+### Architecture de Validation Découplée
+- **Validation dans Core** : Extraction de la logique de validation de saisie dans `LoginValidator.cs` (`Core.Utils`). Cela permet de garantir que les règles (ex: identifiant de 3 caractères minimum) sont identiques entre le client Godot et le futur dashboard Blazor, tout en restant testables en .NET pur.
+- **Règles Strictes** :
+  - Identifiant : Non vide et minimum 3 caractères.
+  - Mot de passe : Non vide.
+
+### Ergonomie UI et UX Godot
+- **Navigation par Tabulation** : Configuration manuelle de `FocusNeighborTop` et `FocusNeighborBottom` sur les champs `LineEdit` pour assurer une navigation fluide entre l'identifiant, le mot de passe et les boutons d'action.
+- **Soumission Rapide** : Utilisation du signal `TextSubmitted` sur les `LineEdit` pour déclencher la tentative de connexion lors de l'appui sur la touche Entrée.
+- **Visibilité du Mot de passe** : Implémentation d'un `TextureButton` (icône œil) pilotant la propriété `Secret` du champ mot de passe.
+- **Découplage Hors Ligne** : Émission du signal `OfflineModeRequested` au clic sur le bouton "Mode Hors Ligne", permettant une gestion asynchrone et découplée par le `GameManager`.
+- **Feedback Visuel** : Utilisation d'un `Label` d'erreur dédié, piloté par la validation locale avant tout appel réseau, pour une UX réactive.
 ## Godot Quirks & Line-of-Sight
 For instant line-of-sight validation (e.g., preventing melee attacks or detection through walls), prefer using `PhysicsRayQueryParameters2D` querying the `DirectSpaceState` against the map collision mask (Layer 1), rather than relying on `RayCast2D` nodes to avoid node-update and local-coordinate complexities.
+
+## 2026-05-23 - US 11.0.1 : Interface Graphique du Formulaire et Validation Locale (Standardisation)
+
+### Architecture et Restructuration
+- **Migration de la Scène** : Déplacement de `res://Scenes/Login/Login.tscn` vers `res://Scenes/UI/LoginScreen/LoginScreen.tscn` pour standardiser la structure des scènes d'UI. L'ancien dossier `Scenes/Login/` a été supprimé.
+- **Renommage des Scripts** : Le script compagnon est désormais `LoginScreen.cs` et la classe est nommée `LoginScreen` (namespace `IslandSurvivor.Scenes.UI.LoginScreen`).
+- **Mise à jour GameManager** : Le `GameManager` a été mis à jour pour rediriger vers le nouveau chemin de la scène de login lorsqu'aucune session n'est trouvée.
+
+### Guide de Test de la Pull Request
+Pour tester l'écran de login dans l'écosystème complet :
+1. **Dépendances d'Infrastructure** :
+   - **SQL Server** : Doit être actif. L'authentification nécessite une vérification en base de données.
+   - **API ASP.NET Core** : Doit être lancée (`Src/API`). Elle sert de pont entre le jeu et la base de données.
+   - **Web Dashboard (Optionnel)** : Non requis pour l'initialisation du jeu, mais recommandé pour vérifier la synchronisation post-login.
+2. **Scénarios de Test UI** :
+   - **Validation Locale** : Tester avec un identifiant de moins de 3 caractères (ex: "ab"). Un message d'erreur rouge doit apparaître sans appel réseau.
+   - **Login Réussi** : Utiliser un compte valide. Redirection vers `MainMenu.tscn`.
+   - **Mode Hors Ligne** : Cliquer sur "Mode Hors Ligne". Redirection immédiate vers `MainMenu.tscn` avec un profil "Guest".
+3. **Comptes de Test (Seed Data)** :
+   - **User** : `Admin`, **Password** : `Admin123` (ou selon `data.sql`).
+   - **User** : `Player1`, **Password** : `Password123`.
+
+## 2026-05-23 - US 11.0.2 : Network Authentication & Session Lifecycle
+
+### API Integration & UX Flow
+- **Async Authentication**: Integrated `IApiService.LoginAsync` into `LoginScreen.cs`. The UI now provides real-time feedback using a neutral "Connexion en cours..." message and locks all inputs (LineEdit, Buttons) during the request to prevent spam.
+- **Error Handling**: Implemented specialized French error messages for network failures (e.g., "Identifiants invalides", "Serveur API indisponible" for 503 errors). Error messages are displayed in red (#ff5555) for high visibility.
+- **Robustness**: Encapsulated API calls in `try/catch/finally` blocks to ensure UI controls are always re-enabled if the request fails or throws an exception.
+
+### Session Management & Persistence
+- **Auto-Login Persistence**: `GameManager` now automatically checks for a stored token in `user://session.cfg` via `SessionProvider` at startup. If a valid token is found, it bypasses the login screen and proceeds to profile synchronization.
+- **Synchronization Routing**: Upon successful login or auto-login, the game now redirects to `LoadingScreen.tscn`. This allows the `GameManager` to orchestrate the full data synchronization flow (Inventory, Stats, HighScore) before reaching the `MainMenu`.
+- **Global Logout**: Implemented a "Se déconnecter" button in the `MainMenu`. Triggering logout clears the local session token, resets the `GameManager` state (isGuest, status), and redirects the player back to the `LoginScreen`.
+
+### Architectural Decoupling
+- **Signal Bus for Offline Mode**: To maintain strict N-Tier separation, `LoginScreen` communicates guest access requests via a global `OfflineModeRequested` signal in the `SignalManager`. The `GameManager` subscribes to this signal to trigger its internal guest mode initialization, avoiding direct UI-to-Manager coupling.
+
+### 2026-05-23 - [Correctif] US 11.0.2 : Résolution du blocage de synchronisation et Distinction des erreurs
+- **Bug Fix (Sync Loop)**: Correction d'un problème où le changement direct de scène vers `LoadingScreen.tscn` après le login ne déclenchait pas l'initialisation du `GameManager`. Désormais, `LoginScreen` appelle explicitement `GameManager.InitializeGameAsync()` en cas de succès, garantissant le lancement de la routine de synchronisation du profil.
+- **Bug Fix (Error Handling)**: Refonte de `ApiService.LoginAsync` pour ne plus avaler les `HttpRequestException`. L'API lève désormais une exception pour les erreurs 5xx (serveur) ou réseau, permettant au client d'afficher "Serveur API indisponible" au lieu de "Identifiants invalides" (réservé au code 401).
+## 2026-05-30 - US 20.0.6 : Godot Node-Based State Machine Architecture
+- **Composition over Inheritance:** Replaced monolithic C# `_PhysicsProcess` controllers with Godot nodes using a strict Composition pattern. The `StateMachine` (parent) orchestrates `State` (child) nodes (e.g., `IdleState`, `ChaseState`), allowing designers to mix-and-match logic directly in the Inspector.
+- **Node Injection without Destruction:** Refactored complex Godot scenes (`.tscn`) to replace `AnimatedSprite2D` with `Sprite2D` and `AnimationPlayer`. Modified scenes via controlled script injection to preserve legacy scene configurations, avoiding destructive text-replacements on complex resources like `SpriteFrames`.
+- **Animation Fallbacks:** Implemented an `AnimationPlayer.HasAnimation` fallback logic inside State nodes. If the required `AnimationName` isn't configured, it safely defaults to `FallbackAnimationName` (e.g. `"Error"`), avoiding game crashes when designers miss an animation setup.
+- **Centralized Visual State:** Moved sprite flipping (`FlipH`) logic out of individual behaviors and centralized it within the `MovementController.Move()` method, tying visual orientation directly to the physics vector.
+
+## Session Lifecycle Management
+Discovered that without a dedicated Godot `WorldManager`, `Autoload`s effectively serve as lifecycle hooks. By attaching a single `SessionManager` autoload solely dedicated to listening for `SessionEnded`, we can isolate state-reset behavior away from the Main Menu, ensuring that navigation between menus doesn't inadvertently wipe state unless explicitly broadcasted.
+
+Additionally, when implementing `ResetStats` on `StatTracker`, it's critical to restore `Health` specifically to its `EffectiveMaxValue` (using `SetCurrentValue`) rather than `0`, while other volatile stats (Speed, Attack modifiers) revert to `0`.
+
+## 2024-05-25 - System Quirk: Godot Resource Config vs Node Logic
+**Vulnerability / Architectural Discovery:** When using the Godot engine to instantiate nodes dynamically and load scene resources, directly embedding difficulty settings on the nodes creates a fragile single-point-of-failure.
+**Learning:** Extracting level settings into a purely declarative Godot `Resource` (e.g., `IslandConfig.tres`) and linking it to a strictly-typed C# enum in the `Core` logic ensures the `LevelController` can remain totally generic.
+**Prevention:** Always pair complex scene logic that requires variations (like Map Biomes/Difficulties) with a data-driven Resource file instead of hardcoded Script exports, feeding directly into a Singleton Manager upon `_Ready()`.
+- Split AttackState into MeleeAttackState and RangedAttackState to reduce conditional bloat.\n- Abstracted projectile logic into a Shooter node to decouple BossBase/RangedAggressiveNpcBase from direct instantiation.\n- Added NextStateAfterWindup configuration to WindUpState to allow dynamic routing based on combat distance.

@@ -15,6 +15,12 @@ public partial class BaseProjectile : Area2D, IProjectile
     [Export] public float LifeTime { get; set; } = 5.0f;
     [Export] public bool DestroyOnImpact { get; set; } = true;
 
+    private const string GROUP_PLAYER = "Player";
+    private const string GROUP_ENEMIES_NPC = "EnnemiesNPC";
+    private const string GROUP_ENEMY = "Ennemy";
+    private const string NODE_ATTACK_CONTROLLER = "AttackController";
+    private const string NODE_MOVEMENT_CONTROLLER = "MovementController";
+
     public float Speed { get; protected set; }
     public float Damage { get; protected set; }
     public Vector2 Direction { get; protected set; }
@@ -51,16 +57,16 @@ public partial class BaseProjectile : Area2D, IProjectile
         // Determine faction based on shooter
         if (m_shooter is Node shooterNode)
         {
-            var controller = shooterNode.GetNodeOrNull<IslandSurvivor.Nodes.Combat.AttackController>("AttackController");
+            var controller = shooterNode.GetNodeOrNull<IslandSurvivor.Nodes.Combat.AttackController>(NODE_ATTACK_CONTROLLER);
             if (controller != null)
             {
                 m_faction = controller.Faction;
             }
-            else if (shooterNode.IsInGroup("Player"))
+            else if (shooterNode.IsInGroup(GROUP_PLAYER))
             {
                 m_faction = EntityFaction.Player;
             }
-            else if (shooterNode.IsInGroup("EnnemiesNPC"))
+            else if (shooterNode.IsInGroup(GROUP_ENEMIES_NPC))
             {
                 m_faction = EntityFaction.Enemy;
             }
@@ -99,10 +105,10 @@ public partial class BaseProjectile : Area2D, IProjectile
 
         if (m_faction == EntityFaction.Player)
         {
-            return p_body.IsInGroup("EnnemiesNPC") || p_body.IsInGroup("Ennemy"); // Assuming generic enemy tags
+            return p_body.IsInGroup(GROUP_ENEMIES_NPC) || p_body.IsInGroup(GROUP_ENEMY); // Assuming generic enemy tags
         }
 
-        if (m_faction == EntityFaction.Enemy && p_body.IsInGroup("Player"))
+        if (m_faction == EntityFaction.Enemy && p_body.IsInGroup(GROUP_PLAYER))
         {
             return true;
         }
@@ -125,35 +131,35 @@ public partial class BaseProjectile : Area2D, IProjectile
         // Don't hit the shooter
         if (p_node == m_shooter as Node2D) return;
 
-        if (IsValidTarget(p_node))
+        if (!IsValidTarget(p_node))
         {
-            // Check if target is dashing and interrupt
-            if (p_node is CharacterBody2D charBody)
-            {
-                var movementController = charBody.GetNodeOrNull<IslandSurvivor.Nodes.Movement.MovementController>("MovementController");
-                if (movementController != null && movementController.IsDashing)
-                {
-                    movementController.CancelDash();
-                    movementController.ApplyStun(0.5f); // Half a second stun
-                }
-            }
+            bool isSolid = !(p_node is Area2D); // Assuming non-areas (CharacterBody2D, StaticBody2D) might be solid
+                                                // Refine this check if there's a specific collision layer for walls
 
-            if (p_node is IDamageable damageable)
-            {
-                damageable.TakeDamage((int)Damage, m_shooter);
-            }
-
-            if (DestroyOnImpact)
+            if (isSolid && DestroyOnImpact)
             {
                 QueueFree();
             }
             return;
         }
 
-        bool isSolid = !(p_node is Area2D); // Assuming non-areas (CharacterBody2D, StaticBody2D) might be solid
-                                            // Refine this check if there's a specific collision layer for walls
+        // Check if target is dashing and interrupt
+        if (p_node is CharacterBody2D charBody)
+        {
+            var movementController = charBody.GetNodeOrNull<IslandSurvivor.Nodes.Movement.MovementController>(NODE_MOVEMENT_CONTROLLER);
+            if (movementController != null && movementController.IsDashing)
+            {
+                movementController.CancelDash();
+                movementController.ApplyStun(0.5f); // Half a second stun
+            }
+        }
 
-        if (isSolid && DestroyOnImpact)
+        if (p_node is IDamageable damageable)
+        {
+            damageable.TakeDamage((int)Damage, m_shooter);
+        }
+
+        if (DestroyOnImpact)
         {
             QueueFree();
         }
