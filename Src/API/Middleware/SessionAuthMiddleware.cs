@@ -22,7 +22,7 @@ public class SessionAuthMiddleware
         var path = p_context.Request.Path.Value?.ToLower();
         // Whitelist login, leaderboard and swagger
         //RETIRER PROFILE PROCHAINEMENT : SEULEMENT POUR TESTER
-        if (path != null && (path.StartsWith("/api/auth/login") || path.StartsWith("/api/player/leaderboard")|| path.StartsWith("/api/player/profile/") || path.StartsWith("/swagger")))
+        if (path != null && (path.StartsWith("/api/auth/login") || path.StartsWith("/api/player/leaderboard") || path.StartsWith("/api/player/profile/") || path.StartsWith("/swagger")))
         {
             await m_next(p_context);
             return;
