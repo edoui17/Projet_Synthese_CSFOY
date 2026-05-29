@@ -1,5 +1,5 @@
 using Core.Events;
-using Core.Managers.Stats;
+using Core.Managers;
 using Core.Services;
 using Xunit;
 

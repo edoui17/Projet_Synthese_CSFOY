@@ -1,7 +1,7 @@
 using Godot;
 using System;
 using IslandSurvivor.Globals;
-using IslandSurvivor.Globals.Navigation;
+using IslandSurvivor.Globals;
 
 namespace IslandSurvivor.Managers;
 

@@ -1,8 +1,8 @@
-namespace IslandSurvivor.Logic.Projectiles;
+namespace IslandSurvivor.Logic;
 
 using Godot;
-using IslandSurvivor.Logic.Entities;
-using Core.Interfaces.Stats;
+using IslandSurvivor.Logic;
+using Core.Interfaces;
 using IslandSurvivor.Extensions;
 using IslandSurvivor.Enums;
 

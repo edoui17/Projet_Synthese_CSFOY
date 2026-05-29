@@ -1,8 +1,8 @@
 using Godot;
-using IslandSurvivor.Nodes.StatsManager;
-using Core.Managers.Stats;
+using IslandSurvivor.Nodes;
+using Core.Managers;
 
-namespace IslandSurvivor.Nodes.Combat;
+namespace IslandSurvivor.Nodes;
 
 /// <summary>
 /// [Gameplay][Statistique][Spawning]

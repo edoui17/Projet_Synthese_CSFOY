@@ -1,9 +1,9 @@
 using Godot;
 using System;
-using Core.Interfaces.Stats;
+using Core.Interfaces;
 using IslandSurvivor.Scenes.Projectiles;
 
-namespace IslandSurvivor.Scenes.Projectiles.DarkBlast;
+namespace IslandSurvivor.Scenes.Projectiles;
 
 public partial class DarkBlast : BaseAoEAttack
 {

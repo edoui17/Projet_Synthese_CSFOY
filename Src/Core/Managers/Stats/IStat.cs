@@ -1,6 +1,6 @@
 using Core.Interfaces;
 
-namespace Core.Managers.Stats;
+namespace Core.Managers;
 
 public interface IStat
 {

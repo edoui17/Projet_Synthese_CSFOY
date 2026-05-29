@@ -1,7 +1,7 @@
-namespace IslandSurvivor.Nodes.Combat;
+namespace IslandSurvivor.Nodes;
 
 using Godot;
-using IslandSurvivor.Logic.Entities;
+using IslandSurvivor.Logic;
 
 [GlobalClass]
 public partial class Shooter : Node2D

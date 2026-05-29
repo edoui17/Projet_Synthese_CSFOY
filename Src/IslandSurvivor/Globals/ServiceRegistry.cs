@@ -1,10 +1,10 @@
 using Godot;
 using Core.Interfaces;
-using Core.Interfaces.Stats;
-using Core.Interfaces.Navigation;
+using Core.Interfaces;
+using Core.Interfaces;
 using Core.Managers;
-using Core.Managers.Stats;
-using Core.Managers.Navigation;
+using Core.Managers;
+using Core.Managers;
 using Core.Services;
 using Core.Domain;
 using Core.Events;

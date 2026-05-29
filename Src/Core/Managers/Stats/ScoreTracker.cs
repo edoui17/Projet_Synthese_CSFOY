@@ -1,10 +1,10 @@
-namespace Core.Managers.Stats;
+namespace Core.Managers;
 
 using System.Text.Json;
 using Core.Domain;
 using Core.Events;
 using Core.Interfaces;
-using Core.Interfaces.Stats;
+using Core.Interfaces;
 using Core.Utils;
 
 public class ScoreTracker : IScoreTracker

@@ -1,7 +1,7 @@
-namespace IslandSurvivor.Scenes.NPC.Aggressive;
+namespace IslandSurvivor.Scenes.NPC;
 
 using Godot;
-using IslandSurvivor.Logic.Entities;
+using IslandSurvivor.Logic;
 using IslandSurvivor.Globals;
 
 public partial class AggressiveNpcBase : NpcBase

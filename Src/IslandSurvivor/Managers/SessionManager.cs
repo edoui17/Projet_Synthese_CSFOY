@@ -1,7 +1,7 @@
 using Godot;
 using IslandSurvivor.Globals;
 using Core.Interfaces;
-using Core.Interfaces.Stats;
+using Core.Interfaces;
 
 namespace IslandSurvivor.Managers;
 

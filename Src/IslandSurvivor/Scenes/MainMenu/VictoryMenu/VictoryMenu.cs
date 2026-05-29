@@ -1,8 +1,8 @@
 using Godot;
 using System;
 using Core.Events;
-using Core.Interfaces.Stats;
-using Core.Managers.Stats;
+using Core.Interfaces;
+using Core.Managers;
 using IslandSurvivor.Globals;
 
 public partial class VictoryMenu : CanvasLayer

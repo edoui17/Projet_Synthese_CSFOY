@@ -1,8 +1,8 @@
-namespace IslandSurvivor.Scenes.NPC.Aggressive.Normal.Lancer;
+namespace IslandSurvivor.Scenes.NPC;
 
 using Godot;
 using IslandSurvivor.Globals;
-using IslandSurvivor.Logic.Entities;
+using IslandSurvivor.Logic;
 
 public partial class Lancer : MeleeAggressiveNpcBase
 {

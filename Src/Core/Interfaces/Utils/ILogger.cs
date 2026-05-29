@@ -1,4 +1,4 @@
-namespace Core.Interfaces.Utils;
+namespace Core.Interfaces;
 
 /// <summary>
 /// Provides logging abstractions completely decoupled from the rendering engine.
