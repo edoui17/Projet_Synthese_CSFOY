@@ -1,4 +1,4 @@
-namespace IslandSurvivor.Scenes.NPC.Aggressive;
+namespace IslandSurvivor.Scenes.NPC;
 
 using Godot;
 

@@ -1,5 +1,5 @@
 using Godot;
-using Core.Interfaces.Utils;
+using Core.Interfaces;
 
 namespace IslandSurvivor.Utils;
 

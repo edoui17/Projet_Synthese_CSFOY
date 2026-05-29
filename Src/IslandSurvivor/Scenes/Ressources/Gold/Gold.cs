@@ -1,6 +1,6 @@
 using Core.Domain;
-using Core.Interfaces.Stats;
-using Core.Managers.Stats;
+using Core.Interfaces;
+using Core.Managers;
 using Godot;
 using IslandSurvivor.Extensions;
 using IslandSurvivor.Globals;

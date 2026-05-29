@@ -1,4 +1,4 @@
-namespace IslandSurvivor.Logic.StateMachine.States;
+namespace IslandSurvivor.Logic.StateMachine;
 
 using Godot;
 

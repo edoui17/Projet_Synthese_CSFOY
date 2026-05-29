@@ -3,7 +3,7 @@ using Core.Utils;
 using IslandSurvivor.Globals;
 using IslandSurvivor.Utils;
 
-namespace IslandSurvivor.Scenes.UI.LoginScreen;
+namespace IslandSurvivor.Scenes.UI;
 
 public partial class LoginScreen : Control
 {

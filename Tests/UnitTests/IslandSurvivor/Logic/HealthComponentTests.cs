@@ -1,7 +1,7 @@
 using System;
 using Godot;
 using Xunit;
-using IslandSurvivor.Logic.Entities;
+using IslandSurvivor.Logic;
 
 namespace Tests.UnitTests.IslandSurvivor.Logic;
 

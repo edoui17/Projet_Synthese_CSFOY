@@ -1,5 +1,5 @@
-using Core.Interfaces.Stats;
-using Core.Managers.Stats;
+using Core.Interfaces;
+using Core.Managers;
 using Godot;
 using IslandSurvivor.Extensions;
 using IslandSurvivor.Globals;
@@ -8,7 +8,7 @@ using IslandSurvivor.Interfaces;
 using IslandSurvivor.Managers;
 using IslandSurvivor.Nodes;
 using IslandSurvivor.Resources;
-using IslandSurvivor.Nodes.Movement;
+using IslandSurvivor.Nodes;
 using System;
 using System.Collections.Generic;
 

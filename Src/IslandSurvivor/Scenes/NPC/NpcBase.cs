@@ -2,10 +2,10 @@ using IslandSurvivor.Nodes;
 namespace IslandSurvivor.Scenes.NPC;
 
 using Godot;
-using Core.Interfaces.Stats;
-using Core.Managers.Stats;
+using Core.Interfaces;
+using Core.Managers;
 using IslandSurvivor.Interfaces;
-using IslandSurvivor.Nodes.Movement;
+using IslandSurvivor.Nodes;
 
 public partial class NpcBase : CharacterBody2D, INpc, IDamageable
 {

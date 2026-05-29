@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Core.Utils;
 
-namespace Core.Interfaces.Stats;
+namespace Core.Interfaces;
 
 public interface IStatTracker
 {

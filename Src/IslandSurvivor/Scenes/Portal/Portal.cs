@@ -1,6 +1,6 @@
 using Godot;
 using System;
-using Core.Domain.Models;
+using Core.Domain;
 using IslandSurvivor.Interfaces;
 
 public partial class Portal : Node2D

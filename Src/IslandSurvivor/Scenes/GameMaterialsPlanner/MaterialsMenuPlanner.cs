@@ -1,6 +1,6 @@
 using Godot;
 using System.Collections.Generic;
-using Core.Managers.Stats;
+using Core.Managers;
 using Core.Interfaces;
 
 public partial class MaterialsMenuPlanner : Control

@@ -1,5 +1,5 @@
-using Core.Interfaces.Stats;
-using Core.Managers.Stats;
+using Core.Interfaces;
+using Core.Managers;
 using Godot;
 using IslandSurvivor.Nodes;
 

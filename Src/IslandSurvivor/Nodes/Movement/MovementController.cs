@@ -1,8 +1,8 @@
 using Godot;
-using Core.Managers.Stats;
+using Core.Managers;
 using IslandSurvivor.Nodes;
 
-namespace IslandSurvivor.Nodes.Movement;
+namespace IslandSurvivor.Nodes;
 
 public partial class MovementController : Node
 {

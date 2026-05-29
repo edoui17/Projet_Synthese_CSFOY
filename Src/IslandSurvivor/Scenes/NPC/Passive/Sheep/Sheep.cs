@@ -1,8 +1,8 @@
-namespace IslandSurvivor.Scenes.NPC.Passive;
+namespace IslandSurvivor.Scenes.NPC;
 
-using IslandSurvivor.Logic.Entities;
+using IslandSurvivor.Logic;
 using Core.Domain;
-using Core.Managers.Stats;
+using Core.Managers;
 using Godot;
 using IslandSurvivor.Globals;
 using IslandSurvivor.Nodes;

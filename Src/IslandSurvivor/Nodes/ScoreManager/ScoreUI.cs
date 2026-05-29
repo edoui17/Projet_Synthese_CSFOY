@@ -1,6 +1,6 @@
 using Godot;
 
-namespace IslandSurvivor.Nodes.StatsManager;
+namespace IslandSurvivor.Nodes;
 
 public partial class ScoreUI : Label
 {

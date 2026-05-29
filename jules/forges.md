@@ -398,3 +398,6 @@ Additionally, when implementing `ResetStats` on `StatTracker`, it's critical to 
 **Learning:** Extracting level settings into a purely declarative Godot `Resource` (e.g., `IslandConfig.tres`) and linking it to a strictly-typed C# enum in the `Core` logic ensures the `LevelController` can remain totally generic.
 **Prevention:** Always pair complex scene logic that requires variations (like Map Biomes/Difficulties) with a data-driven Resource file instead of hardcoded Script exports, feeding directly into a Singleton Manager upon `_Ready()`.
 - Split AttackState into MeleeAttackState and RangedAttackState to reduce conditional bloat.\n- Abstracted projectile logic into a Shooter node to decouple BossBase/RangedAggressiveNpcBase from direct instantiation.\n- Added NextStateAfterWindup configuration to WindUpState to allow dynamic routing based on combat distance.
+## 2026-05-29 - Architecture Namespace Flattening
+**Observation:** The codebase namespaces were too deep, leading to massive collision zones or unnecessarily long names. The user provided a specific mapping for flattening namespaces in the Core and IslandSurvivor projects.
+**Action:** Applied the regex replacements for namespaces across Core and IslandSurvivor. Kept Infrastructure, Web, and API intact per instructions.

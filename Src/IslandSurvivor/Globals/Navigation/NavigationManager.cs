@@ -3,11 +3,11 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using Core.Domain;
-using Core.Domain.Models;
-using Core.Interfaces.Stats;
+using Core.Domain;
+using Core.Interfaces;
 using Core.Interfaces;
 
-namespace IslandSurvivor.Globals.Navigation;
+namespace IslandSurvivor.Globals;
 
 public partial class NavigationManager : Node
 {

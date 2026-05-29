@@ -1,6 +1,6 @@
 using Godot;
 using System;
-using Core.Managers.Stats;
+using Core.Managers;
 
 [Tool]
 public partial class HealthBarStatic : Control

@@ -1,4 +1,4 @@
-namespace Core.Interfaces.Stats;
+namespace Core.Interfaces;
 
 public interface IDamageable
 {

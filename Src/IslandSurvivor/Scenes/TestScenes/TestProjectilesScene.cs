@@ -1,8 +1,8 @@
 using Godot;
 using System;
-using IslandSurvivor.Scenes.Projectiles.EvilEye;
 using IslandSurvivor.Scenes.Projectiles;
-using IslandSurvivor.Logic.Projectiles;
+using IslandSurvivor.Scenes.Projectiles;
+using IslandSurvivor.Logic;
 
 namespace IslandSurvivor.Scenes;
 
