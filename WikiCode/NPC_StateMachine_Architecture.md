@@ -54,4 +54,4 @@ Chaque nœud `State` possède une propriété `AnimationName` et `FallbackAnimat
 
 ## Orientation Visuelle (`FlipH`)
 
-La logique d'orientation du sprite n'est plus gérée dans les états. C'est désormais le `MovementController` qui est responsable de basculer la propriété `FlipH` du `Sprite2D` en fonction du vecteur de mouvement.
+La logique d'orientation du sprite (`Sprite2D.FlipH`) est gérée individuellement au sein des classes d'états spécifiques (comme `ChaseState`, `WanderState`, ou `FleeState`) en y accédant lors du `Initialize` et en la mettant à jour pendant leur boucle `PhysicsUpdate`, plutôt que de manière centralisée dans le `MovementController`.

@@ -11,3 +11,7 @@
 ## 2026-05-28 - [Deprecated AgressorController Documentation]
 **Observation:** Discovered a major discrepancy where `WikiCode/combat_system.md` and `WikiCode/Systeme_Ennemis_Deplacement.md` still document the deprecated pure C# `IAgressorController` and `AnimatedSprite2D` architecture for enemies, rather than the new Node-based StateMachine composition pattern and `AnimationPlayer`.
 **Action:** Updated `combat_system.md` and `Systeme_Ennemis_Deplacement.md` to accurately reflect the Orchestrator Node-based StateMachine architecture (`StateMachine`, `ChaseState`, `MeleeAttackState`, etc.) and the use of `Sprite2D` with `AnimationPlayer`, ensuring alignment with `NPC_StateMachine_Architecture.md`.
+
+## 2026-05-29 - [Outdated FlipH Architecture Documentation]
+**Observation:** Discovered an architectural discrepancy between the written architecture in `NPC_StateMachine_Architecture.md` and the actual implemented codebase. The documentation stated that `Sprite2D.FlipH` was managed centrally by `MovementController`, but it is actually handled individually within specific movement state classes (such as `ChaseState`, `WanderState`, or `FleeState`) during their `PhysicsUpdate` loops.
+**Action:** Updated `WikiCode/NPC_StateMachine_Architecture.md` to correct the `Orientation Visuelle (FlipH)` section, ensuring it accurately reflects how visual orientation is delegated to individual states.
