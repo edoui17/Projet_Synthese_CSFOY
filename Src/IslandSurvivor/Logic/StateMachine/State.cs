@@ -8,8 +8,8 @@ public partial class State : Node
     [Signal]
     public delegate void StateFinishedEventHandler(State p_sourceState, StateExitReason p_reason);
 
-    public StateMachine StateMachine { get; protected set; }
-    public CharacterBody2D NpcContext { get; protected set; }
+    public StateMachine StateMachine { get; protected set; } = null!;
+    public CharacterBody2D NpcContext { get; protected set; } = null!;
 
     public virtual bool IsActionState => false;
 

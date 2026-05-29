@@ -71,7 +71,7 @@ public partial class Gold : Area2D, IOre, IDamageable
         ResourceItem item = new ResourceItem(EntityId, MaterialName, MaterialType, IconPath);
 
         // Target is the player who mined it
-        Node2D targetNode = p_attacker as Node2D;
+        Node2D targetNode = (p_attacker as Node2D)!;
         Vector2 fallbackPosition = targetNode != null ? targetNode.GlobalPosition : GlobalPosition;
 
         // Spawn Resource Drops for tweening
@@ -83,7 +83,7 @@ public partial class Gold : Area2D, IOre, IDamageable
                 if (dropScene.Instantiate() is IslandSurvivor.Scenes.Ressources.ResourceDrop drop)
                 {
                     // Pass quantity 1 for each individual drop
-                    drop.Initialize(item, 1, GlobalPosition, targetNode, fallbackPosition);
+                    drop.Initialize(item, 1, GlobalPosition, targetNode!, fallbackPosition);
                     GetParent().AddChild(drop);
                 }
             }

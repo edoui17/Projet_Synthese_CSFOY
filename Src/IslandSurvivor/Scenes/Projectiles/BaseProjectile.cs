@@ -26,12 +26,12 @@ public partial class BaseProjectile : Area2D, IProjectile
     public Vector2 Direction { get; protected set; }
 
     protected Godot.Vector2 m_velocity;
-    protected object m_shooter;
+    protected object m_shooter = null!;
     protected EntityFaction m_faction = EntityFaction.None;
     protected bool m_isFired = false;
     protected float m_lifeTimer;
 
-    protected AnimatedSprite2D m_animatedSprite;
+    protected AnimatedSprite2D m_animatedSprite = null!;
 
     public override void _Ready()
     {

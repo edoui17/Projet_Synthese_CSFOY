@@ -8,8 +8,8 @@ public partial class RessourceSlot : Control
     [Export] public string ResourceName = "";
 
     private int _lastAmount = -1;
-    private Tween _currentTween;
-    private Tween _hoverTween;
+    private Tween _currentTween = null!;
+    private Tween _hoverTween = null!;
 
     public override void _Ready()
     {

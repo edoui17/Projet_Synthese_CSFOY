@@ -7,9 +7,9 @@ using IslandSurvivor.Logic.StateMachine;
 public partial class AnimationTrackGenerator : Node
 {
     [Export]
-    AnimationPlayer animPlayer;
+    AnimationPlayer animPlayer = null!;
     [Export]
-    Node stateMachine;
+    Node stateMachine = null!;
     [Export]
     public bool GenerateAnimations
     {

@@ -124,11 +124,11 @@ public partial class LoadingScreen : CanvasLayer
 
     private void SetupButton(Button p_btn)
     {
-        p_btn.FocusMode = FocusModeEnum.All;
-        p_btn.MouseDefaultCursorShape = CursorShape.PointingHand;
+        p_btn.FocusMode = Control.FocusModeEnum.All;
+        p_btn.MouseDefaultCursorShape = Control.CursorShape.PointingHand;
         p_btn.PivotOffset = p_btn.Size / 2f;
 
-        Tween currentTween = null;
+        Tween? currentTween = null;
 
         p_btn.MouseEntered += () => p_btn.GrabFocus();
 
