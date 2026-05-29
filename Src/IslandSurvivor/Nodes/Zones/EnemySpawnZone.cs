@@ -184,9 +184,10 @@ public partial class EnemySpawnZone : Node2D, IEnemySpawnZone
 
     private bool IsTooCloseToOtherEnemies(Vector2 p_localPos)
     {
+        float minDistanceSquared = MinDistanceBetweenEnemies * MinDistanceBetweenEnemies;
         foreach (var existing in m_activeEnemies)
         {
-            if (IsInstanceValid(existing) && p_localPos.DistanceTo(existing.Position) < MinDistanceBetweenEnemies)
+            if (IsInstanceValid(existing) && p_localPos.DistanceSquaredTo(existing.Position) < minDistanceSquared)
             {
                 return true;
             }
