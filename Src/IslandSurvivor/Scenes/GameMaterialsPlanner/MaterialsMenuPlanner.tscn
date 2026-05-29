@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://c0gym4pjyd031" path="res://Scenes/GameMaterialsPlanner/MaterialsMenuPlanner.cs" id="1_4tgk7"]
 
-[node name="GameMaterialControl" type="Control" unique_id=1530430602 node_paths=PackedStringArray("_buyHealthBtn", "_buySpeedBtn", "_buyAttackBtn", "_buyLuckBtn", "_buyIslandBtn")]
+[node name="GameMaterialControl" type="Control" unique_id=1530430602 node_paths=PackedStringArray("m_buyHealthBtn", "m_buySpeedBtn", "m_buyAttackBtn", "m_buyLuckBtn", "m_buyIslandBtn")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -10,11 +10,11 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_4tgk7")
-_buyHealthBtn = NodePath("PanelContainer/VBoxContainer/BuyHealthBtn")
-_buySpeedBtn = NodePath("PanelContainer/VBoxContainer/BuySpeedBtn")
-_buyAttackBtn = NodePath("PanelContainer/VBoxContainer/BuyAttackBtn")
-_buyLuckBtn = NodePath("PanelContainer/VBoxContainer/BuyLuckBtn")
-_buyIslandBtn = NodePath("PanelContainer/VBoxContainer/BuyNextIslandBtn")
+m_buyHealthBtn = NodePath("PanelContainer/VBoxContainer/BuyHealthBtn")
+m_buySpeedBtn = NodePath("PanelContainer/VBoxContainer/BuySpeedBtn")
+m_buyAttackBtn = NodePath("PanelContainer/VBoxContainer/BuyAttackBtn")
+m_buyLuckBtn = NodePath("PanelContainer/VBoxContainer/BuyLuckBtn")
+m_buyIslandBtn = NodePath("PanelContainer/VBoxContainer/BuyNextIslandBtn")
 
 [node name="PanelContainer" type="PanelContainer" parent="." unique_id=24578957]
 layout_mode = 1

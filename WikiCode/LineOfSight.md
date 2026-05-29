@@ -16,9 +16,9 @@ The Godot script is responsible for sensing the environment. It utilizes two mai
 2. **`LineOfSightRay` (RayCast2D):** A raycast that continuously points towards the target player when they are in the detection radius. It checks for collisions along the path. If it hits an obstacle (like a wall), the line of sight is considered broken.
 
 **Usage:**
-In the `_PhysicsProcess`, the Godot script calls `CheckLineOfSight()` to evaluate if the RayCast can clearly see the player. It then passes the boolean result to the `AgressorController` in the logic layer.
+In the `_PhysicsProcess`, the Godot script calls `CheckLineOfSight()` to evaluate if the RayCast can clearly see the player. It then passes the boolean result to the `StateMachine` in the logic layer.
 
-### Core Logic (`AgressorController.cs`)
+### Core Logic (`StateMachine.cs`)
 The core logic manages the state transitions without any knowledge of Godot Nodes.
 
 - **State Updates:** The `Update` method receives `p_hasLineOfSight`.

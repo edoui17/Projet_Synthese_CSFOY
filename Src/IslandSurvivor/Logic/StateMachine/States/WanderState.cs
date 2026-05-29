@@ -151,8 +151,10 @@ public partial class WanderState : State
                 npcBaseCollision.Velocity = Vector2.Zero;
                 if (m_animationPlayer != null && m_animationPlayer.HasAnimation("Idle"))
                 {
-                     m_animationPlayer.Play("Idle"); // Or just stop current animation.
-                } else if (m_animationPlayer != null) {
+                    m_animationPlayer.Play("Idle"); // Or just stop current animation.
+                }
+                else if (m_animationPlayer != null)
+                {
                     m_animationPlayer.Stop();
                 }
             }

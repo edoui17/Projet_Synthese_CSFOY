@@ -23,6 +23,11 @@ public partial class InventoryUi : Godot.Control
         FoodSlot.SetIcon(FoodTexture);
         GoldSlot.SetIcon(GoldTexture);
 
+        WoodSlot.ResourceName = "Wood";
+        StoneSlot.ResourceName = "Stone";
+        FoodSlot.ResourceName = "Food";
+        GoldSlot.ResourceName = "Gold";
+
         if (SignalManager.Instance != null)
         {
             SignalManager.Instance.InventoryChanged += OnInventoryChanged;

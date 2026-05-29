@@ -8,8 +8,8 @@ public partial class BaseAoEAttack : Area2D
     [Export] public float WarningDuration { get; set; } = 1.2f;
     [Export] public int Damage { get; set; } = 20;
 
-    protected AnimatedSprite2D m_animatedSprite;
-    protected CollisionShape2D m_collisionShape;
+    protected AnimatedSprite2D m_animatedSprite = null!;
+    protected CollisionShape2D m_collisionShape = null!;
     protected bool m_isPausedForWarning;
 
     public override void _Ready()

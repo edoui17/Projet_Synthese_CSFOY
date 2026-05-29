@@ -7,11 +7,11 @@ using IslandSurvivor.Globals;
 
 public partial class DefeatMenu : CanvasLayer
 {
-    private Label m_scoreLabel;
-    private Label m_highScoreLabel;
-    private Label m_mapsClearedLabel;
-    private Label m_playerStatsLabel;
-    private Action<PlayerDiedEvent> m_onPlayerDiedDelegate;
+    private Label m_scoreLabel = null!;
+    private Label m_highScoreLabel = null!;
+    private Label m_mapsClearedLabel = null!;
+    private Label m_playerStatsLabel = null!;
+    private Action<PlayerDiedEvent> m_onPlayerDiedDelegate = null!;
 
     public override void _Ready()
     {
