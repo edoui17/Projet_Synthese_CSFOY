@@ -7,17 +7,17 @@ namespace IslandSurvivor.Managers;
 
 public partial class ProgressionManager : Node
 {
-    public static ProgressionManager Instance { get; private set; }
+    public static ProgressionManager Instance { get; private set; } = null!;
 
     [Export]
-    public ProgressionRequirement Requirement { get; set; }
+    public ProgressionRequirement Requirement { get; set; } = null!;
 
     // Configuration for XP rewards
     [ExportGroup("XP Rewards")]
     [Export] public float XpFromHarvesting = 10f;
     [Export] public float XpFromNewIsland = 50f;
 
-    private IEventBus m_eventBus;
+    private IEventBus m_eventBus = null!;
 
     public override void _EnterTree()
     {

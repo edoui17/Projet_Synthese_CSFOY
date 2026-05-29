@@ -141,7 +141,12 @@ public partial class DashState : State
 
         if (m_timer <= 0)
         {
-            CancelDashAndComplete(StateExitReason.Finished);
+            if (m_attackController != null && m_attackController.IsAttacking)
+            {
+                m_attackController.CancelAttack();
+            }
+            m_hasCompleted = true;
+            CompleteState(StateExitReason.Finished);
             return;
         }
 
