@@ -82,7 +82,7 @@ public partial class StateMachine : State
     {
         if (p_sourceState != m_currentState) return;
 
-        StringName nextStateName = null;
+        StringName nextStateName = null!;
 
         switch (p_sourceState.Name.ToString())
         {
@@ -99,7 +99,7 @@ public partial class StateMachine : State
                     if (NpcContext is IslandSurvivor.Scenes.NPC.NpcBase npc)
                     {
                         var target = (npc as IslandSurvivor.Scenes.NPC.Aggressive.AggressiveNpcBase)?.GetTarget();
-                        nextStateName = npc.GetDecisionState(target);
+                        nextStateName = npc.GetDecisionState(target!);
                     }
                     else
                     {
@@ -256,12 +256,12 @@ public partial class StateMachine : State
             return StateConstants.IdleStateName;
 
         var target = (NpcContext as IslandSurvivor.Scenes.NPC.Aggressive.AggressiveNpcBase)?.GetTarget();
-        return ((IslandSurvivor.Scenes.NPC.NpcBase)NpcContext).GetDecisionState(target);
+        return ((IslandSurvivor.Scenes.NPC.NpcBase)NpcContext).GetDecisionState(target!);
     }
 
     public bool HasState(Godot.StringName stateName) => m_states.ContainsKey(stateName);
 
-    public State GetState(Godot.StringName stateName) => m_states.TryGetValue(stateName, out var state) ? state : null;
+    public State GetState(Godot.StringName stateName) => m_states.TryGetValue(stateName, out var state) ? state : null!;
 
     public void ForceTransition(StringName p_targetStateName)
     {

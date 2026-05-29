@@ -7,11 +7,10 @@ namespace UnitTests.Core.Stats
     // A simple fake implementation of IDamageable for testing purposes without using Moq
     public class FakeDamageableEntity : IDamageable
     {
-        public string NpcType { get; set; } = "Fake";
+        public string NpcType { get; set; } = "FakeNpc";
         public int Health { get; private set; }
         public bool IsDead => Health <= 0;
         public object? LastAttacker { get; private set; }
-        public string NpcType { get; set; } = "FakeNpc";
 
         public FakeDamageableEntity(int initialHealth)
         {

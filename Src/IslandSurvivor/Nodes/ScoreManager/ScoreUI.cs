@@ -7,12 +7,14 @@ public partial class ScoreUI : Label
     [Export]
     private ScoreManager m_scoreManager = null!;
 
+    private Tween m_currentTween = null!;
+
     public override void _Ready()
     {
         if (m_scoreManager == null)
         {
             // Try to find it dynamically globally
-            m_scoreManager = GetTree().GetFirstNodeInGroup("ScoreManager") as ScoreManager;
+            m_scoreManager = (GetTree().GetFirstNodeInGroup("ScoreManager") as ScoreManager)!;
         }
 
         if (m_scoreManager == null)
@@ -42,6 +44,21 @@ public partial class ScoreUI : Label
     {
         Text = $"Score {p_newScore}";
         GD.Print($"[ScoreUI] Score updated! Previous: {p_previousScore}, New: {p_newScore}");
+
+        if (p_previousScore != p_newScore && IsInsideTree())
+        {
+            PivotOffset = Size / 2f;
+
+            m_currentTween?.Kill();
+            m_currentTween = CreateTween();
+
+            Color highlightColor = p_newScore > p_previousScore ? Colors.LimeGreen : Colors.IndianRed;
+
+            m_currentTween.TweenProperty(this, "scale", new Vector2(1.2f, 1.2f), 0.1f);
+            m_currentTween.Parallel().TweenProperty(this, "modulate", highlightColor, 0.1f);
+            m_currentTween.TweenProperty(this, "scale", Vector2.One, 0.2f);
+            m_currentTween.Parallel().TweenProperty(this, "modulate", Colors.White, 0.2f);
+        }
     }
 
     public override void _ExitTree()

@@ -13,6 +13,7 @@ public partial class FleeState : State
     [Export] public string FallbackAnimationName { get; set; } = "Error";
 
     private AnimationPlayer m_animationPlayer = null!;
+    private Sprite2D? m_sprite;
     private float m_timer;
     private Vector2 m_fleeDirection;
 
@@ -20,6 +21,7 @@ public partial class FleeState : State
     {
         base.Initialize(p_stateMachine, p_npcContext);
         m_animationPlayer = NpcContext.GetNodeOrNull<AnimationPlayer>("AnimationPlayer");
+        m_sprite = NpcContext.GetNodeOrNull<Sprite2D>("Sprite2D");
     }
 
     public override void Enter()
@@ -71,6 +73,11 @@ public partial class FleeState : State
             {
                 passive.Velocity = m_fleeDirection * passive.FleeSpeed;
                 passive.MoveAndSlide();
+            }
+
+            if (m_sprite != null && m_fleeDirection.X != 0)
+            {
+                m_sprite.FlipH = m_fleeDirection.X < 0;
             }
         }
     }

@@ -12,7 +12,7 @@ public partial class AudioManager : Node
         public float DefaultPitchScale { get; set; } = 1f;
     }
 
-    private static AudioManager m_instance;
+    private static AudioManager m_instance = null!;
     public static AudioManager Instance => m_instance;
 
     private readonly List<AudioStreamPlayer> m_availablePlayers = new();

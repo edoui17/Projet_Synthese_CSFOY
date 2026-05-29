@@ -6,7 +6,7 @@ using IslandSurvivor.Interfaces;
 public partial class Portal : Node2D
 {
     // On ajoute une référence pour le nœud audio
-    private AudioStreamPlayer2D m_ambientAudio;
+    private AudioStreamPlayer2D m_ambientAudio = null!;
     private AnimationPlayer m_animationPlayer = null!;
     private PortalInteraction m_interactionArea = null!;
 

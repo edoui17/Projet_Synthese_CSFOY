@@ -25,17 +25,17 @@ Le Node `StatManager` sert de "pont" (Bridge) entre Godot et la logique pure du 
 Depuis un script (ex: `Player.cs` ou `Enemy.cs`) :
 ```csharp
 // Pour infliger 20 points de dégâts
-GetNode<StatManager>("StatManager").ModifyCurrentValue(StatType.Health, -20f);
+Stats.ModifyCurrentValue(StatType.Health, -20f);
 
 // Pour soigner de 10 points
-GetNode<StatManager>("StatManager").ModifyCurrentValue(StatType.Health, 10f);
+Stats.ModifyCurrentValue(StatType.Health, 10f);
 ```
 
 ### 3. Ajouter un bonus permanent
 Lorsqu'un niveau est gagné ou qu'un objet permanent est équipé :
 ```csharp
 // Ajoute +1 point d'attaque de façon permanente (multiplicateur de +5% aux dégâts de base).
-GetNode<StatManager>("StatManager").AddSessionBonus(StatType.Attack, 1f);
+Stats.AddSessionBonus(StatType.Attack, 1f);
 ```
 
 ### 4. Connecter l'Interface Utilisateur (Barre de Vie)
@@ -45,7 +45,7 @@ Depuis le code (fortement recommandé) :
 ```csharp
 public override void _Ready()
 {
-    StatManager statManager = GetNode<StatManager>("StatManager");
+    StatManager statManager = Stats;
     statManager.LocalStatChanged += OnStatChanged;
 }
 

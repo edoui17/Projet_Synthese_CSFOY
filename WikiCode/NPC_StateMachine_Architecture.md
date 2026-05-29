@@ -4,7 +4,7 @@ Cette documentation décrit la nouvelle architecture basée sur des nœuds (Node
 
 ## Concept Principal
 
-Plutôt que d'utiliser des blocs `if/else` complexes directement dans la méthode `_PhysicsProcess` des classes C# (comme l'ancien système `AgressorController`), nous utilisons désormais un modèle de conception d'état par composition de nœuds (Composition Pattern).
+Plutôt que d'utiliser des blocs `if/else` complexes directement dans la méthode `_PhysicsProcess` des classes C# (comme l'ancien système `StateMachine`), nous utilisons désormais un modèle de conception d'état par composition de nœuds (Composition Pattern).
 
 Chaque comportement (ex: chasser, attaquer, fuir) est un nœud enfant (`State`) attaché à un nœud parent gérant la transition (`StateMachine`).
 
@@ -54,4 +54,4 @@ Chaque nœud `State` possède une propriété `AnimationName` et `FallbackAnimat
 
 ## Orientation Visuelle (`FlipH`)
 
-La logique d'orientation du sprite n'est plus gérée dans les états. C'est désormais le `MovementController` qui est responsable de basculer la propriété `FlipH` du `Sprite2D` en fonction du vecteur de mouvement.
+La logique d'orientation du sprite (`Sprite2D.FlipH`) est gérée individuellement au sein des classes d'états spécifiques (comme `ChaseState`, `WanderState`, ou `FleeState`) en y accédant lors du `Initialize` et en la mettant à jour pendant leur boucle `PhysicsUpdate`, plutôt que de manière centralisée dans le `MovementController`.

@@ -10,7 +10,7 @@ The combat system is unified around the `AttackController` Godot node, which act
 
 ## Core Separation
 
-The Core logic (`AgressorController`) no longer manages attack timers. Time-based physical interactions are exclusively managed in the Godot client layer by `AttackController`.
+The Core logic (`StateMachine`) no longer manages attack timers. Time-based physical interactions are exclusively managed in the Godot client layer by `AttackController`.
 
 ## Dash Interruption
 

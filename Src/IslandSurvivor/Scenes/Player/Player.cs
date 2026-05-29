@@ -416,7 +416,7 @@ public partial class Player : CharacterBody2D, IDamageable
         {
             m_xpGainLabel.Text = "LEVEL UP!";
             m_xpGainLabel.Visible = true;
-            m_xpGainTimer.Start();
+            m_xpGainTimer?.Start();
             AudioManager.Instance?.PlaySound2D("Level_Up", GlobalPosition);
         }
     }
@@ -429,7 +429,7 @@ public partial class Player : CharacterBody2D, IDamageable
         {
             m_xpGainLabel.Text = $"+{p_event.Amount} XP";
             m_xpGainLabel.Visible = true;
-            m_xpGainTimer.Start();
+            m_xpGainTimer?.Start();
         }
     }
 
