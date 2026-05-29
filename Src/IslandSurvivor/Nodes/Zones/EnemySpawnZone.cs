@@ -2,14 +2,14 @@ using Godot;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Core.Interfaces.Spawning;
-using Core.Interfaces.Utils;
+using Core.Interfaces;
+using Core.Interfaces;
 using Core.Utils;
-using IslandSurvivor.Scenes.NPC.Aggressive;
+using IslandSurvivor.Scenes.NPC;
 using IslandSurvivor.Utils;
 using IslandSurvivor.Utils.Logging;
 
-namespace IslandSurvivor.Nodes.Zones;
+namespace IslandSurvivor.Nodes;
 
 /// <summary>
 /// [Gameplay][Spawning][Algorithme]

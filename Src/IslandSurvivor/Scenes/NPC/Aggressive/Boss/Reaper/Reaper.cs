@@ -1,7 +1,7 @@
 using Godot;
 using System.Linq;
 
-namespace IslandSurvivor.Scenes.NPC.Aggressive;
+namespace IslandSurvivor.Scenes.NPC;
 
 public partial class Reaper : BossBase
 {

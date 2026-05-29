@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Core.Domain.Models;
+using Core.Domain;
 using Core.Events;
 using Core.Interfaces;
-using Core.Interfaces.Navigation;
+using Core.Interfaces;
 
-namespace Core.Managers.Navigation;
+namespace Core.Managers;
 
 public class NavigationService : INavigationService
 {

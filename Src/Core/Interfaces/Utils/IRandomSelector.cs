@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Core.Interfaces.Utils;
+namespace Core.Interfaces;
 
 /// <summary>
 /// Interface for selecting a random item from a collection.

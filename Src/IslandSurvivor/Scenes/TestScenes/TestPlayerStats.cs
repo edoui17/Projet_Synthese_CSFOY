@@ -1,6 +1,6 @@
 using Godot;
 using System;
-using Core.Managers.Stats;
+using Core.Managers;
 
 public partial class TestPlayerStats : Node2D
 {

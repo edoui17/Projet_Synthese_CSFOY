@@ -1,4 +1,4 @@
-namespace IslandSurvivor.Logic.Entities;
+namespace IslandSurvivor.Logic;
 
 using Godot;
 

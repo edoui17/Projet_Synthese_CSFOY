@@ -1,9 +1,9 @@
 using Godot;
 using System;
 using System.Collections.Generic;
-using Core.Interfaces.Spawning;
+using Core.Interfaces;
 
-namespace IslandSurvivor.Nodes.Zones;
+namespace IslandSurvivor.Nodes;
 
 public partial class ResourceZone : Node2D, IResourcePopulator
 {
