@@ -98,7 +98,7 @@ public partial class StateMachine : State
                 {
                     if (NpcContext is IslandSurvivor.Scenes.NPC.NpcBase npc)
                     {
-                        var target = (npc as IslandSurvivor.Scenes.NPC.Aggressive.AggressiveNpcBase)?.GetTarget();
+                        var target = (npc as IslandSurvivor.Scenes.NPC.AggressiveNpcBase)?.GetTarget();
                         nextStateName = npc.GetDecisionState(target!);
                     }
                     else
@@ -129,7 +129,7 @@ public partial class StateMachine : State
 
             case StateConstants.MeleeAttackState:
             case StateConstants.RangedAttackState:
-                if (NpcContext is IslandSurvivor.Scenes.NPC.Aggressive.AggressiveNpcBase aggNpc)
+                if (NpcContext is IslandSurvivor.Scenes.NPC.AggressiveNpcBase aggNpc)
                 {
                     var target = aggNpc.GetTarget();
                     if (target != null)
@@ -150,7 +150,7 @@ public partial class StateMachine : State
             case StateConstants.WindUpState:
                 if (p_reason == StateExitReason.Finished)
                 {
-                    if (p_sourceState is IslandSurvivor.Logic.StateMachine.States.WindUpState windUp)
+                    if (p_sourceState is IslandSurvivor.Logic.StateMachine.WindUpState windUp)
                     {
                         nextStateName = windUp.NextStateAfterWindup;
                     }
@@ -179,7 +179,7 @@ public partial class StateMachine : State
             case StateConstants.RepositionState:
                 if (p_reason == StateExitReason.Finished)
                 {
-                    if (NpcContext is IslandSurvivor.Scenes.NPC.Aggressive.Normal.Lancer.Lancer lancer)
+                    if (NpcContext is IslandSurvivor.Scenes.NPC.Lancer lancer)
                     {
                         nextStateName = StateConstants.DashStateName;
                     }
@@ -240,7 +240,7 @@ public partial class StateMachine : State
 
     private StringName GetPostGuardState()
     {
-        if (NpcContext is not IslandSurvivor.Scenes.NPC.Aggressive.AggressiveNpcBase aggNpcGuard)
+        if (NpcContext is not IslandSurvivor.Scenes.NPC.AggressiveNpcBase aggNpcGuard)
             return StateConstants.IdleStateName;
 
         var target = aggNpcGuard.GetTarget();
@@ -255,7 +255,7 @@ public partial class StateMachine : State
         if (NpcContext == null)
             return StateConstants.IdleStateName;
 
-        var target = (NpcContext as IslandSurvivor.Scenes.NPC.Aggressive.AggressiveNpcBase)?.GetTarget();
+        var target = (NpcContext as IslandSurvivor.Scenes.NPC.AggressiveNpcBase)?.GetTarget();
         return ((IslandSurvivor.Scenes.NPC.NpcBase)NpcContext).GetDecisionState(target!);
     }
 

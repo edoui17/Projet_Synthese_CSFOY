@@ -9,14 +9,14 @@ public partial class MeleeAttackState : State
 
     public override bool IsActionState => true;
 
-    private IslandSurvivor.Nodes.Combat.AttackController m_attackController = null!;
+    private IslandSurvivor.Nodes.AttackController m_attackController = null!;
     private Sprite2D m_sprite = null!;
     private bool m_hasCompleted = false;
 
     public override void Initialize(StateMachine p_stateMachine, CharacterBody2D p_npcContext)
     {
         base.Initialize(p_stateMachine, p_npcContext);
-        m_attackController = NpcContext.GetNodeOrNull<IslandSurvivor.Nodes.Combat.AttackController>("AttackController");
+        m_attackController = NpcContext.GetNodeOrNull<IslandSurvivor.Nodes.AttackController>("AttackController");
         m_sprite = NpcContext.GetNodeOrNull<Sprite2D>("Sprite2D");
     }
 
@@ -37,7 +37,7 @@ public partial class MeleeAttackState : State
 
             bool handledTargetDirection = false;
 
-            if (NpcContext is IslandSurvivor.Scenes.NPC.Aggressive.AggressiveNpcBase aggNpc)
+            if (NpcContext is IslandSurvivor.Scenes.NPC.AggressiveNpcBase aggNpc)
             {
                 var target = aggNpc.GetTarget();
                 if (GodotObject.IsInstanceValid(target))

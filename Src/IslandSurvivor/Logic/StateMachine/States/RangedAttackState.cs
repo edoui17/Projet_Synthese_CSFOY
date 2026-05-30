@@ -9,16 +9,16 @@ public partial class RangedAttackState : State
 
     public override bool IsActionState => true;
 
-    private IslandSurvivor.Nodes.Combat.Shooter m_shooter = null!;
-    private IslandSurvivor.Nodes.Combat.AttackController m_attackController = null!;
+    private IslandSurvivor.Nodes.Shooter m_shooter = null!;
+    private IslandSurvivor.Nodes.AttackController m_attackController = null!;
     private Sprite2D m_sprite = null!;
     private bool m_hasCompleted = false;
 
     public override void Initialize(StateMachine p_stateMachine, CharacterBody2D p_npcContext)
     {
         base.Initialize(p_stateMachine, p_npcContext);
-        m_shooter = NpcContext.GetNodeOrNull<IslandSurvivor.Nodes.Combat.Shooter>("Shooter");
-        m_attackController = NpcContext.GetNodeOrNull<IslandSurvivor.Nodes.Combat.AttackController>("AttackController");
+        m_shooter = NpcContext.GetNodeOrNull<IslandSurvivor.Nodes.Shooter>("Shooter");
+        m_attackController = NpcContext.GetNodeOrNull<IslandSurvivor.Nodes.AttackController>("AttackController");
         m_sprite = NpcContext.GetNodeOrNull<Sprite2D>("Sprite2D");
     }
 
@@ -38,7 +38,7 @@ public partial class RangedAttackState : State
             string direction = "Right";
             bool handledTargetDirection = false;
 
-            if (NpcContext is IslandSurvivor.Scenes.NPC.Aggressive.AggressiveNpcBase aggNpc)
+            if (NpcContext is IslandSurvivor.Scenes.NPC.AggressiveNpcBase aggNpc)
             {
                 var target = aggNpc.GetTarget();
                 if (GodotObject.IsInstanceValid(target))
@@ -95,9 +95,9 @@ public partial class RangedAttackState : State
             }
 
             var callable = new Callable(this, nameof(OnAttackActionTriggered));
-            if (!m_attackController.IsConnected(IslandSurvivor.Nodes.Combat.AttackController.SignalName.AttackActionTriggered, callable))
+            if (!m_attackController.IsConnected(IslandSurvivor.Nodes.AttackController.SignalName.AttackActionTriggered, callable))
             {
-                m_attackController.Connect(IslandSurvivor.Nodes.Combat.AttackController.SignalName.AttackActionTriggered, callable);
+                m_attackController.Connect(IslandSurvivor.Nodes.AttackController.SignalName.AttackActionTriggered, callable);
             }
 
             m_attackController.SetAttackAnimation(fullAnimName);
@@ -119,9 +119,9 @@ public partial class RangedAttackState : State
         if (m_attackController != null)
         {
             var callable = new Callable(this, nameof(OnAttackActionTriggered));
-            if (m_attackController.IsConnected(IslandSurvivor.Nodes.Combat.AttackController.SignalName.AttackActionTriggered, callable))
+            if (m_attackController.IsConnected(IslandSurvivor.Nodes.AttackController.SignalName.AttackActionTriggered, callable))
             {
-                m_attackController.Disconnect(IslandSurvivor.Nodes.Combat.AttackController.SignalName.AttackActionTriggered, callable);
+                m_attackController.Disconnect(IslandSurvivor.Nodes.AttackController.SignalName.AttackActionTriggered, callable);
             }
         }
     }

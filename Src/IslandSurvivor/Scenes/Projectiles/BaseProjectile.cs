@@ -57,7 +57,7 @@ public partial class BaseProjectile : Area2D, IProjectile
         // Determine faction based on shooter
         if (m_shooter is Node shooterNode)
         {
-            var controller = shooterNode.GetNodeOrNull<IslandSurvivor.Nodes.Combat.AttackController>(NODE_ATTACK_CONTROLLER);
+            var controller = shooterNode.GetNodeOrNull<IslandSurvivor.Nodes.AttackController>(NODE_ATTACK_CONTROLLER);
             if (controller != null)
             {
                 m_faction = controller.Faction;
@@ -146,7 +146,7 @@ public partial class BaseProjectile : Area2D, IProjectile
         // Check if target is dashing and interrupt
         if (p_node is CharacterBody2D charBody)
         {
-            var movementController = charBody.GetNodeOrNull<IslandSurvivor.Nodes.Movement.MovementController>(NODE_MOVEMENT_CONTROLLER);
+            var movementController = charBody.GetNodeOrNull<IslandSurvivor.Nodes.MovementController>(NODE_MOVEMENT_CONTROLLER);
             if (movementController != null && movementController.IsDashing)
             {
                 movementController.CancelDash();
