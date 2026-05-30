@@ -25,9 +25,9 @@ public partial class PortalInteraction : Area2D, IInteractable
         }
     }
 
-    public float GetDistanceTo(float p_x, float p_y)
+    public float GetDistanceSquaredTo(float p_x, float p_y)
     {
-        return GlobalPosition.DistanceTo(new Vector2(p_x, p_y));
+        return GlobalPosition.DistanceSquaredTo(new Vector2(p_x, p_y));
     }
 
     public void Interact()

@@ -8,3 +8,6 @@
 ## 2024-05-30 - [DistanceSquaredTo over DistanceTo]
  **Learning:** Godot's `DistanceTo` performs an expensive square root operation, which adds up during heavy looping, such as evaluating spawn locations multiple times per frame.
  **Action:** Prefer `DistanceSquaredTo` when comparing distances, especially in loops and physics frames. Manually square the threshold distance for comparison.
+## 2026-05-30 - [DistanceSquaredTo over DistanceTo everywhere]
+ **Learning:** In C#/Godot, systematically changing `DistanceTo` to `DistanceSquaredTo` across all distance calculations (e.g. evaluating interactables distances per-frame or close to it) prevents expensive square root operations and marginally reduces runtime costs.
+ **Action:** Replaced `DistanceTo` with `DistanceSquaredTo` across the `IInteractable` implementers and `InteractionService`.
