@@ -13,16 +13,16 @@ public class InteractionService : IInteractionService
     public IInteractable? GetBestInteractable(float p_playerX, float p_playerY, IEnumerable<IInteractable> p_interactables)
     {
         IInteractable? bestTarget = null;
-        float minDistance = float.MaxValue;
+        float minDistanceSquared = float.MaxValue;
 
         foreach (var interactable in p_interactables)
         {
             if (!interactable.IsInteractable) continue;
 
-            float distance = interactable.GetDistanceTo(p_playerX, p_playerY);
-            if (distance < minDistance)
+            float distanceSquared = interactable.GetDistanceSquaredTo(p_playerX, p_playerY);
+            if (distanceSquared < minDistanceSquared)
             {
-                minDistance = distance;
+                minDistanceSquared = distanceSquared;
                 bestTarget = interactable;
             }
         }
