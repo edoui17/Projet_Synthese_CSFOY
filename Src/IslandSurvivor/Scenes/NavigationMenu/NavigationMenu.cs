@@ -37,7 +37,7 @@ public partial class NavigationMenu : Control
 
     private bool IsPlayerHome()
     {
-        var scoreManager = GetTree().CurrentScene.GetNodeOrNull<Nodes.StatsManager.ScoreManager>("ScoreManager");
+        var scoreManager = GetTree().CurrentScene.GetNodeOrNull<Nodes.ScoreManager>("ScoreManager");
         if (scoreManager != null)
         {
             var tracker = scoreManager.GetTracker();

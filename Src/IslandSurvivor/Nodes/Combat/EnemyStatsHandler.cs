@@ -42,7 +42,7 @@ public partial class EnemyStatsHandler : Node
         float newIdleSpeed = 0f;
         float newChaseSpeed = 0f;
 
-        if (GetParent() is IslandSurvivor.Scenes.NPC.Aggressive.AggressiveNpcBase aggressiveNpc)
+        if (GetParent() is IslandSurvivor.Scenes.NPC.AggressiveNpcBase aggressiveNpc)
         {
             newIdleSpeed = aggressiveNpc.IdleSpeed * p_threatScore;
             newChaseSpeed = aggressiveNpc.ChaseSpeed * p_threatScore;
@@ -71,7 +71,7 @@ public partial class EnemyStatsHandler : Node
         // Ensure current health is topped up to the new max
         Stats.SetCurrentValue(StatType.Health, newMaxHealth);
 
-        if (GetParent() is IslandSurvivor.Scenes.NPC.Aggressive.AggressiveNpcBase aggressiveNpcFinal)
+        if (GetParent() is IslandSurvivor.Scenes.NPC.AggressiveNpcBase aggressiveNpcFinal)
         {
             aggressiveNpcFinal.IdleSpeed = newIdleSpeed;
             aggressiveNpcFinal.ChaseSpeed = newChaseSpeed;

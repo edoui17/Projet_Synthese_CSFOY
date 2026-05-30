@@ -15,14 +15,14 @@ public partial class ChaseState : State
 
     private AnimationPlayer? m_animationPlayer;
     private Sprite2D? m_sprite;
-    private IslandSurvivor.Nodes.Combat.AttackController? m_attackController;
+    private IslandSurvivor.Nodes.AttackController? m_attackController;
 
     public override void Initialize(StateMachine p_stateMachine, CharacterBody2D p_npcContext)
     {
         base.Initialize(p_stateMachine, p_npcContext);
         m_animationPlayer = NpcContext.GetNodeOrNull<AnimationPlayer>("AnimationPlayer");
         m_sprite = NpcContext.GetNodeOrNull<Sprite2D>("Sprite2D");
-        m_attackController = NpcContext.GetNodeOrNull<IslandSurvivor.Nodes.Combat.AttackController>("AttackController");
+        m_attackController = NpcContext.GetNodeOrNull<IslandSurvivor.Nodes.AttackController>("AttackController");
 
         if (NpcContext != null)
         {
@@ -66,7 +66,7 @@ public partial class ChaseState : State
 
     public override void PhysicsUpdate(double p_delta)
     {
-        if (NpcContext is IslandSurvivor.Scenes.NPC.Aggressive.AggressiveNpcBase aggressiveNpc)
+        if (NpcContext is IslandSurvivor.Scenes.NPC.AggressiveNpcBase aggressiveNpc)
         {
             if (!aggressiveNpc.HasTargetAndLineOfSight())
             {
@@ -87,16 +87,16 @@ public partial class ChaseState : State
                 }
                 else
                 {
-                    bool isRanged = NpcContext is IslandSurvivor.Scenes.NPC.Aggressive.RangedAggressiveNpcBase;
+                    bool isRanged = NpcContext is IslandSurvivor.Scenes.NPC.RangedAggressiveNpcBase;
                     bool inAttackRange = false;
 
                     if (isRanged)
                     {
-                        inAttackRange = distSquared <= ((IslandSurvivor.Scenes.NPC.Aggressive.AggressiveNpcBase)NpcContext).MaxAttackRange * ((IslandSurvivor.Scenes.NPC.Aggressive.AggressiveNpcBase)NpcContext).MaxAttackRange;
+                        inAttackRange = distSquared <= ((IslandSurvivor.Scenes.NPC.AggressiveNpcBase)NpcContext).MaxAttackRange * ((IslandSurvivor.Scenes.NPC.AggressiveNpcBase)NpcContext).MaxAttackRange;
                     }
                     else
                     {
-                        inAttackRange = distSquared <= ((IslandSurvivor.Scenes.NPC.Aggressive.AggressiveNpcBase)NpcContext).AttackRange * ((IslandSurvivor.Scenes.NPC.Aggressive.AggressiveNpcBase)NpcContext).AttackRange;
+                        inAttackRange = distSquared <= ((IslandSurvivor.Scenes.NPC.AggressiveNpcBase)NpcContext).AttackRange * ((IslandSurvivor.Scenes.NPC.AggressiveNpcBase)NpcContext).AttackRange;
                     }
 
                     if (inAttackRange)

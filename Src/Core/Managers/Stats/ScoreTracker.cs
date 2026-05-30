@@ -4,7 +4,6 @@ using System.Text.Json;
 using Core.Domain;
 using Core.Events;
 using Core.Interfaces;
-using Core.Interfaces;
 using Core.Utils;
 
 public class ScoreTracker : IScoreTracker

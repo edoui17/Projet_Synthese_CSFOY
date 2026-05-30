@@ -46,7 +46,7 @@ public partial class RepositionState : State
             }
         }
 
-        if (NpcContext is IslandSurvivor.Scenes.NPC.Aggressive.AggressiveNpcBase aggressiveNpc)
+        if (NpcContext is IslandSurvivor.Scenes.NPC.AggressiveNpcBase aggressiveNpc)
         {
             var target = aggressiveNpc.GetTarget();
             if (target != null)
@@ -72,7 +72,7 @@ public partial class RepositionState : State
             return;
         }
 
-        if (NpcContext is IslandSurvivor.Scenes.NPC.Aggressive.AggressiveNpcBase aggressiveNpc)
+        if (NpcContext is IslandSurvivor.Scenes.NPC.AggressiveNpcBase aggressiveNpc)
         {
             float speed = aggressiveNpc.ChaseSpeed;
             if (aggressiveNpc.MovementController != null)
@@ -119,7 +119,7 @@ public partial class RepositionState : State
             {
                 float distSquared = NpcContext.GlobalPosition.DistanceSquaredTo(target.GlobalPosition);
                 // Stop repositioning early if we are comfortably out of the minimum range (e.g., halfway to max range)
-                float idealRangeSquared = (((IslandSurvivor.Scenes.NPC.Aggressive.AggressiveNpcBase)NpcContext).MinAttackRange + (((IslandSurvivor.Scenes.NPC.Aggressive.AggressiveNpcBase)NpcContext).MaxAttackRange - ((IslandSurvivor.Scenes.NPC.Aggressive.AggressiveNpcBase)NpcContext).MinAttackRange) / 2.0f);
+                float idealRangeSquared = (((IslandSurvivor.Scenes.NPC.AggressiveNpcBase)NpcContext).MinAttackRange + (((IslandSurvivor.Scenes.NPC.AggressiveNpcBase)NpcContext).MaxAttackRange - ((IslandSurvivor.Scenes.NPC.AggressiveNpcBase)NpcContext).MinAttackRange) / 2.0f);
                 idealRangeSquared *= idealRangeSquared;
 
                 if (distSquared >= idealRangeSquared)

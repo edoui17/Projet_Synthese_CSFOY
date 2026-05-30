@@ -4,7 +4,6 @@ using System.Linq;
 using Core.Domain;
 using Core.Events;
 using Core.Interfaces;
-using Core.Interfaces;
 
 namespace Core.Managers;
 

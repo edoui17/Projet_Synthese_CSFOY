@@ -92,7 +92,7 @@ public partial class Sheep : PassiveNpcBase
             {
                 for (int i = 0; i < meatAmount; i++)
                 {
-                    if (dropScene.Instantiate() is IslandSurvivor.Scenes.Ressources.ResourceDrop drop)
+                    if (dropScene.Instantiate() is IslandSurvivor.Scenes.ResourceDrop drop)
                     {
                         drop.Initialize(meatResource, 1, GlobalPosition, targetNode!, fallbackPosition);
                         GetParent().AddChild(drop);
