@@ -11,3 +11,7 @@
 ## 2026-05-30 - [DistanceSquaredTo over DistanceTo everywhere]
  **Learning:** In C#/Godot, systematically changing `DistanceTo` to `DistanceSquaredTo` across all distance calculations (e.g. evaluating interactables distances per-frame or close to it) prevents expensive square root operations and marginally reduces runtime costs.
  **Action:** Replaced `DistanceTo` with `DistanceSquaredTo` across the `IInteractable` implementers and `InteractionService`.
+
+## 2026-05-31 - [O(N²) Godot API marshaling anti-pattern]
+ **Learning:** Iterating over Godot array/count API like `GetSlideCollisionCount()` and subsequently re-calling it in nested logic inside `_PhysicsProcess` or state `PhysicsUpdate` methods creates O(N²) marshaling overhead between C# and C++.
+ **Action:** Always cache Godot count or lookup properties into local variables before entering loops inside hot paths to avoid redundant engine barrier crossings.
