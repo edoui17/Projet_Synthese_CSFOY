@@ -13,7 +13,7 @@ public partial class Rock : Area2D, IOre, IDamageable
 {
     [Export] public StatManager Stats { get; set; } = null!;
 
-    [Export] public string EntityId { get; set; } = "rock_01";
+    [Export] public string EntityId { get; set; } = Core.Constants.ResourceConstants.ROCK;
     [Export] public Timer Timer { get; set; } = null!;
 
     [Export] public string MaterialName { get; set; } = "Roche";
