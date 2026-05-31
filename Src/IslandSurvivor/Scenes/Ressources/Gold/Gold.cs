@@ -13,7 +13,7 @@ using System;
 public partial class Gold : Area2D, IOre, IDamageable
 {
     [Export] public StatManager Stats { get; set; } = null!;
-    [Export] public string EntityId { get; set; } = "gold_01";
+    [Export] public string EntityId { get; set; } = Core.Constants.ResourceConstants.GOLD;
     [Export] public Timer Timer { get; set; } = null!;
 
     [Export] public string MaterialName { get; set; } = "Or";
