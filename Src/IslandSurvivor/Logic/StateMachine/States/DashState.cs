@@ -162,19 +162,17 @@ public partial class DashState : State
                 npc.MoveAndSlide();
             }
 
-            if (npc.GetSlideCollisionCount() == 0) return;
+            int collisionCount = npc.GetSlideCollisionCount();
+            if (collisionCount == 0) return;
 
-            for (int i = 0; i < npc.GetSlideCollisionCount(); i++)
-            {
-                HandleCollisions(npc);
-            }
+            HandleCollisions(npc, collisionCount);
         }
         m_hasDealtDashDamage = true;
     }
 
-    private void HandleCollisions(IslandSurvivor.Scenes.NPC.NpcBase p_npc)
+    private void HandleCollisions(IslandSurvivor.Scenes.NPC.NpcBase p_npc, int p_collisionCount)
     {
-        for (int i = 0; i < p_npc.GetSlideCollisionCount(); i++)
+        for (int i = 0; i < p_collisionCount; i++)
         {
             KinematicCollision2D collision = p_npc.GetSlideCollision(i);
             var collider = collision.GetCollider();
