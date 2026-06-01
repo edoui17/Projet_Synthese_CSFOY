@@ -23,3 +23,7 @@
 ## 2024-05-31 - [Sub-menu juice consistency and focus-loops]
 **Learning:** Adding uniform juicyness like scaling tweens and immediate accessibility (like focus looping and default grab-focuses) across all internal and sub-menu pages (Options, Scoreboard) creates consistent UX instead of leaving out these pages while the primary Main Menu is fully juiced.
 **Action:** Extract standard UI feedback and keyboard tracking logic into re-usable UI helpers or consistent internal class methods (like `SetupButtonJuice`) on all Godot `Control` menu nodes. Always call `GrabFocus` on the primary default button during `_Ready()` to assure zero-friction keyboard use.
+
+## 2026-06-01 - [Shop Menu Toggle Focus Recovery]
+**Learning:** For dynamic or toggleable UI elements like the `MaterialsMenuPlanner` shop that are toggled visible during active gameplay scenes, keyboard users get trapped if the menu simply becomes `Visible = true` without receiving active engine focus. Furthermore, elements generated as part of `[Export]` fields must explicitly have their `FocusNeighbor` arrays connected during `_Ready()` since they exist outside a linear flow.
+**Action:** Always call `GrabFocus()` on the first valid interactable element immediately within the method that sets `Visible = true`. Setup explicit `FocusNeighborTop` and `FocusNeighborBottom` rings during `_Ready()` for any static export grids.
