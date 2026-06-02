@@ -1,10 +1,10 @@
 using Godot;
-using Core.Interfaces.Stats;
+using Core.Interfaces;
 using Core.Events;
-using IslandSurvivor.Resources.Stats;
+using IslandSurvivor.Resources;
 using IslandSurvivor.Globals;
 
-namespace IslandSurvivor.Nodes.StatsManager;
+namespace IslandSurvivor.Nodes;
 
 public partial class ScoreManager : Node
 {

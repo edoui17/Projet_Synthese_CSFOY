@@ -109,17 +109,17 @@ public partial class SignalManager : Node
         m_eventBus?.Publish(new ResourceSpentEvent(p_resourceId, p_amount));
     }
 
-    public void EmitStatUpgradePurchased(object p_sender, Core.Managers.Stats.StatType p_statType)
+    public void EmitStatUpgradePurchased(object p_sender, Core.Managers.StatType p_statType)
     {
         m_eventBus?.Publish(new StatUpgradePurchasedEvent(p_statType));
     }
 
-    public void EmitNavigationRequested(object p_sender, Core.Domain.Models.IslandDestination p_destination)
+    public void EmitNavigationRequested(object p_sender, Core.Domain.IslandDestination p_destination)
     {
         m_eventBus?.Publish(new NavigationRequestedEvent(p_destination));
     }
 
-    public void EmitTeleportRequested(object p_sender, Core.Domain.Models.IslandDestination p_destination)
+    public void EmitTeleportRequested(object p_sender, Core.Domain.IslandDestination p_destination)
     {
         m_eventBus?.Publish(new TeleportRequestedEvent(p_destination));
     }

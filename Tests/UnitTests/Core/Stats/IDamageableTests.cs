@@ -1,6 +1,6 @@
 using System;
 using Xunit;
-using Core.Interfaces.Stats;
+using Core.Interfaces;
 
 namespace UnitTests.Core.Stats
 {

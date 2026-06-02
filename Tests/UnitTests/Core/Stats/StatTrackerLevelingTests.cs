@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Core.Managers.Stats;
+using Core.Managers;
 using Core.Events;
 using Xunit;
 using Core.Services;

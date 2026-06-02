@@ -1,4 +1,4 @@
-namespace Core.Managers.Stats;
+namespace Core.Managers;
 
 public enum StatType
 {

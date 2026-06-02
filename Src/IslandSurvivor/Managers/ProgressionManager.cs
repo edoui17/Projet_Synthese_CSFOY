@@ -66,7 +66,7 @@ public partial class ProgressionManager : Node
     private void OnTeleportRequestedEvent(TeleportRequestedEvent p_event)
     {
         // Don't reward XP for returning home, only for exploring
-        if (p_event.Destination.Id != Core.Domain.Models.IslandDestination.HomeIsland.Id)
+        if (p_event.Destination.Id != Core.Domain.IslandDestination.HomeIsland.Id)
         {
             Globals.ServiceRegistry.Instance.StatTracker.AddExperience(XpFromNewIsland);
         }
@@ -76,7 +76,7 @@ public partial class ProgressionManager : Node
     {
         if (Requirement == null) return false;
 
-        float currentLevel = Globals.ServiceRegistry.Instance.StatTracker.GetCurrentValue(Core.Managers.Stats.StatType.Level);
+        float currentLevel = Globals.ServiceRegistry.Instance.StatTracker.GetCurrentValue(Core.Managers.StatType.Level);
         return currentLevel >= Requirement.BossLevelRequirement;
     }
 }

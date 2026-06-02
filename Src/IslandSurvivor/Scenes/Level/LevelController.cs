@@ -3,7 +3,7 @@ using IslandSurvivor.Resources;
 using Core.Interfaces;
 using IslandSurvivor.Globals;
 
-namespace IslandSurvivor.Scenes.Level;
+namespace IslandSurvivor.Scenes;
 
 /// <summary>
 /// [Gameplay][Map]

@@ -1,6 +1,6 @@
 using Godot;
 using System.Collections.Generic;
-using Core.Managers.Stats;
+using Core.Managers;
 using Core.Interfaces;
 
 public partial class MaterialsMenuPlanner : Control
@@ -93,7 +93,7 @@ public partial class MaterialsMenuPlanner : Control
     {
         // L'ouverture du menu est maintenant gratuite
         // 1. Trouver le NavigationMenu de façon robuste à partir de la racine
-        var navMenu = GetTree().Root.GetNodeOrNull<IslandSurvivor.Scenes.NavigationMenu.NavigationMenu>("Main/CanvasLayer/NavigationMenu");
+        var navMenu = GetTree().Root.GetNodeOrNull<IslandSurvivor.Scenes.NavigationMenu>("Main/CanvasLayer/NavigationMenu");
 
         if (navMenu == null)
         {
