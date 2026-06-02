@@ -1,11 +1,12 @@
 using Godot;
 using System;
+using IslandSurvivor.Globals;
 
 public partial class AudioOptions : Control
 {
-    [Export] HSlider masterSlider = null!;
-    [Export] HSlider musicSlider = null!;
-    [Export] HSlider sfxSlider = null!;
+    [Export] Slider masterSlider = null!;
+    [Export] Slider musicSlider = null!;
+    [Export] Slider sfxSlider = null!;
 
     private int masterBusIndex = AudioServer.GetBusIndex("Master");
     private int musicBusIndex = AudioServer.GetBusIndex("Music");
@@ -16,6 +17,11 @@ public partial class AudioOptions : Control
         masterSlider.Value = Mathf.DbToLinear(AudioServer.GetBusVolumeDb(masterBusIndex));
         musicSlider.Value = Mathf.DbToLinear(AudioServer.GetBusVolumeDb(musicBusIndex));
         sfxSlider.Value = Mathf.DbToLinear(AudioServer.GetBusVolumeDb(sfxBusIndex));
+
+        // Connect the 'drag_ended' signal to SaveSettings to avoid disk I/O on every frame
+        masterSlider.DragEnded += OnSliderDragEnded;
+        musicSlider.DragEnded += OnSliderDragEnded;
+        sfxSlider.DragEnded += OnSliderDragEnded;
     }
 
     public void _on_master_soudn_h_slider_value_changed(double p_value)
@@ -40,5 +46,26 @@ public partial class AudioOptions : Control
         AudioServer.SetBusVolumeDb(sfxBusIndex, volumeDb);
         AudioServer.SetBusMute(sfxBusIndex, p_value <= 0.0001);
         GD.Print("Slider SFX Modifié");
+    }
+
+    private void OnSliderDragEnded(bool valueChanged)
+    {
+        if (valueChanged)
+        {
+            SaveSettings();
+        }
+    }
+
+    private void SaveSettings()
+    {
+        var settingsManager = ServiceRegistry.Instance.AudioSettingsManager;
+        if (settingsManager == null) return;
+
+        var settings = settingsManager.GetSettings();
+        settings.MasterVolume = (float)masterSlider.Value;
+        settings.MusicVolume = (float)musicSlider.Value;
+        settings.SfxVolume = (float)sfxSlider.Value;
+
+        settingsManager.SaveSettings(settings);
     }
 }
