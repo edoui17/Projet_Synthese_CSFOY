@@ -15,3 +15,7 @@
 ## 2026-05-31 - [O(N²) Godot API marshaling anti-pattern]
  **Learning:** Iterating over Godot array/count API like `GetSlideCollisionCount()` and subsequently re-calling it in nested logic inside `_PhysicsProcess` or state `PhysicsUpdate` methods creates O(N²) marshaling overhead between C# and C++.
  **Action:** Always cache Godot count or lookup properties into local variables before entering loops inside hot paths to avoid redundant engine barrier crossings.
+
+## 2026-06-02 - [Lambda Closure Allocation in CallDeferred]
+ **Learning:** Using `Callable.From(() => { ... }).CallDeferred()` inside a frequently called method (like `ExecuteAttackHit()`) allocates a lambda closure on the heap every execution, causing unnecessary Garbage Collection (GC) spikes in Godot 4 C#.
+ **Action:** Extract the lambda logic into a dedicated private method and use `CallDeferred(MethodName.YourMethod)` to avoid delegate/closure heap allocations.
