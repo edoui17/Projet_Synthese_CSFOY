@@ -79,31 +79,38 @@ Le `NavigationManager` en Godot (Autoload) s'abonne au `NavigationRequestedEvent
 // Extrait de NavigationManager.cs
 public override void _Ready()
 {
-    // Abonnement direct à l'EventBus
-    ServiceRegistry.Instance.EventBus.Subscribe<NavigationRequestedEvent>(OnNavigationRequested);
+    // Abonnement au SignalManager pour écouter les demandes de téléportation
+    SignalManager.Instance.TeleportRequested += OnTeleportRequested;
 }
 
-private void OnNavigationRequested(NavigationRequestedEvent p_event)
+private async void OnTeleportRequested(string p_islandId, string p_scenePath, string p_biome, int p_difficulty, int p_resourceCost, int p_dangerLevel)
 {
-    // 1. Sauvegarde de l'inventaire via GodotSaveService
-    var saveService = new GodotSaveService();
-    string inventoryJson = JsonSerializer.Serialize(InventoryNode.Instance.Manager.GetAllSlots());
-    saveService.SaveData("inventory_save.json", inventoryJson);
-
-    // 2. Mise à jour et sauvegarde de la session via le ServiceRegistry
-    var tracker = ServiceRegistry.Instance.ScoreTracker;
-    if (tracker != null)
-    {
-        tracker.UpdateCurrentIsland(p_event.Destination.Id);
-        string sessionJson = JsonSerializer.Serialize(tracker.GetSessionState());
-        saveService.SaveData("session_save.json", sessionJson);
-    }
-
-    // 3. Délégation au SceneLoadingManager
+    // 1. Affiche l'écran de chargement
     var slm = GetNodeOrNull<Managers.SceneLoadingManager>("/root/SceneLoadingManager");
     if (slm != null)
     {
-        slm.LoadScene(p_event.Destination.ScenePath);
+        slm.ShowLoading();
+        await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
+    }
+
+    // 2. Construit la requête de synchronisation avec l'inventaire actuel
+    SyncRequest syncRequest = new SyncRequest();
+    // ... (mapping de InventoryNode.Instance.Manager.GetAllSlots() vers syncRequest.Inventory)
+
+    // 3. Met à jour l'île actuelle dans le tracker de score
+    IScoreTracker tracker = ServiceRegistry.Instance.ScoreTracker;
+    if (tracker != null)
+    {
+        tracker.UpdateCurrentIsland(p_islandId);
+    }
+
+    // 4. Lance la tâche de synchronisation via ApiService
+    bool success = await ServiceRegistry.Instance.ApiService.SyncAsync(syncRequest);
+
+    // 5. Délégation au SceneLoadingManager pour changer la scène
+    if (slm != null)
+    {
+        slm.LoadScene(p_scenePath);
     }
 }
 ```
