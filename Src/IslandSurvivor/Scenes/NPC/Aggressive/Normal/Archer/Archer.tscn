@@ -3,7 +3,6 @@
 [ext_resource type="PackedScene" uid="uid://rbase12345" path="res://Scenes/NPC/Aggressive/Normal/RangedAggressiveNpcBase.tscn" id="1_scene"]
 [ext_resource type="Script" uid="uid://dgynmagnnb7ih" path="res://Scenes/NPC/Aggressive/Normal/Archer/Archer.cs" id="2_script"]
 [ext_resource type="AudioStream" uid="uid://bng0g5vtfxg8b" path="res://Assets/Audio/kenney_impact-sounds/Audio/hurtSound.mp3" id="3_febu1"]
-[ext_resource type="AudioStream" uid="uid://d3mi5a68pa0l5" path="res://Assets/Audio/kenney_impact-sounds/Audio/001_we-lost.wav" id="4_12urs"]
 [ext_resource type="Texture2D" uid="uid://6ecpwabyxb30" path="res://Assets/TinySwords/Sprites/Archer/Blue/Archer_Blue.png" id="5_do8kw"]
 [ext_resource type="Animation" uid="uid://bjuop45u4ndx5" path="res://Animation/Error.res" id="6_dd3ir"]
 [ext_resource type="Animation" uid="uid://d0h1sx4b0jesm" path="res://Animation/Death_NPC.res" id="7_vfr0a"]
@@ -446,33 +445,21 @@ BaseXp = 30.0
 XpMultiplier = 0.2
 AttackSoundKey = "Enemy_Swing_Default"
 HurtSound = ExtResource("3_febu1")
-DeathSound = ExtResource("4_12urs")
 
 [node name="Sprite2D" parent="." index="0" unique_id=1104255030]
+scale = Vector2(0.99999994, 0.99999994)
 texture = ExtResource("5_do8kw")
 hframes = 8
 vframes = 7
 
-[node name="CollisionShape2D" parent="." index="1" unique_id=1322914286]
-visible = false
-position = Vector2(-2.0000005, 1)
-scale = Vector2(0.99999994, 0.99999994)
-
 [node name="StatManager" parent="." index="2" unique_id=990476419]
-MaxHealth = 30.0
 BaseAttackValue = 15.0
 
-[node name="DetectionArea" parent="." index="5" unique_id=423904877]
-visible = false
-
-[node name="CollisionShape2D" parent="DetectionArea" index="0" unique_id=1152940949]
+[node name="CollisionShape2D" parent="DetectionArea" parent_id_path=PackedInt32Array(423904877) index="0" unique_id=1152940949]
 shape = SubResource("CircleShape2D_arch")
 
 [node name="AttackController" parent="." index="6" unique_id=1292425161]
 BaseAttackCooldown = 1.5
-
-[node name="HitboxArea" parent="." index="7"]
-visible = false
 
 [node name="AnimationPlayer" parent="." index="12" unique_id=1869571986]
 libraries/ = SubResource("AnimationLibrary_do8kw")
