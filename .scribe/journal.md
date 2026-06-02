@@ -19,3 +19,10 @@
 ## 2026-05-31 - [Outdated WeakEvent Documentation in SignalManager]
 **Observation:** Discovered that `WikiCode/SignalManager.md` contained deprecated legacy documentation regarding `WeakEvent` and `WeakEvent<TEventArgs>` classes, contradicting the implemented `EventBus` architecture which utilizes `WeakAction<T>`.
 **Action:** Cleaned up `SignalManager.md` to remove the confusing legacy `WeakEvent` explanation and instead briefly explain `WeakAction<T>` within the context of the `EventBus` bridge, ensuring documentation reflects the current codebase state. Also updated `IEventBus` code snippet in `EventBus.md` to include up-to-date XML summaries.
+
+## 2026-06-02 - [Outdated Navigation and ScoreManager Persistence Documentation]
+**Observation:** `SystemeNavigation.md` incorrectly documented that `NavigationManager` persists data by saving directly to JSON files via `GodotSaveService` and hooks onto an EventBus event. The actual implementation uses `ApiService.SyncAsync` to construct a `SyncRequest` and perform an atomic API sync, and listens to `SignalManager.Instance.TeleportRequested`. Additionally, `ScoreManager.md` implied local file saving was the primary persistence mechanism.
+**Action:** Updated the code snippet in `SystemeNavigation.md` to reflect the `OnTeleportRequested` API sync logic, and modified `ScoreManager.md` to clarify the role of `ApiService` alongside local caching.
+## 2026-06-02 - [Outdated Code Snippets and Event Names]
+**Observation:** Discovered outdated code snippets in `WikiCode/ScoreManager.md` where `ScoreUI` incorrectly inherits from `Control` instead of `Label` and misses the Game Juice Tween animations. Also found incorrect event names in `WikiCode/ProgressionLoop.md` (`ResourceHarvestedEvent` instead of `MaterialDestroyedEvent`, `NavigationRequestedEvent` instead of `TeleportRequestedEvent`).
+**Action:** Updated `WikiCode/ScoreManager.md` with the accurate `ScoreUI.cs` snippet, including the tween logic. Corrected the event names and description of XP handling in `WikiCode/ProgressionLoop.md` to match the actual `ProgressionManager.cs` implementation.

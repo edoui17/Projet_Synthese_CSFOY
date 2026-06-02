@@ -170,20 +170,23 @@ public partial class AttackController : Node
 
         // Use CallDeferred to ensure we aren't modifying physics state
         // mid-frame during an animation playback
-        Callable.From(() =>
+        // Cached to prevent GetNode allocations in hot path and GC allocations
+        CallDeferred(MethodName.DeferredExecuteHit);
+    }
+
+    private void DeferredExecuteHit()
+    {
+        if (!GodotObject.IsInstanceValid(m_currentActiveArea)) return;
+
+        var overlappingBodies = m_currentActiveArea.GetOverlappingBodies();
+        foreach (var body in overlappingBodies) ProcessHit(body);
+
+        var overlappingAreas = m_currentActiveArea.GetOverlappingAreas();
+        foreach (var area in overlappingAreas)
         {
-            if (!GodotObject.IsInstanceValid(m_currentActiveArea)) return;
-
-            var overlappingBodies = m_currentActiveArea.GetOverlappingBodies();
-            foreach (var body in overlappingBodies) ProcessHit(body);
-
-            var overlappingAreas = m_currentActiveArea.GetOverlappingAreas();
-            foreach (var area in overlappingAreas)
-            {
-                ProcessHit(area);
-                ProcessHit(area.GetParent());
-            }
-        }).CallDeferred();
+            ProcessHit(area);
+            ProcessHit(area.GetParent());
+        }
     }
 
     public void CancelAttack()
