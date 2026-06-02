@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace Core.Domain;
 
@@ -18,6 +19,8 @@ public class GameStats
     public float BonusAttack { get; set; }
     public float BonusSpeed { get; set; }
     public float BonusLuck { get; set; }
+
+    [StringLength(2000, ErrorMessage = "ExtraStats payload exceeds the maximum allowed length of 2000 characters.")]
     public string? ExtraStats { get; set; }
 
     public virtual Player? Player { get; set; }

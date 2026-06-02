@@ -15,11 +15,11 @@ public class InteractionServiceTests
         var service = new InteractionService();
         var mock1 = new Mock<IInteractable>();
         mock1.Setup(m => m.IsInteractable).Returns(true);
-        mock1.Setup(m => m.GetDistanceTo(0, 0)).Returns(10f);
+        mock1.Setup(m => m.GetDistanceSquaredTo(0, 0)).Returns(100f);
 
         var mock2 = new Mock<IInteractable>();
         mock2.Setup(m => m.IsInteractable).Returns(true);
-        mock2.Setup(m => m.GetDistanceTo(0, 0)).Returns(5f);
+        mock2.Setup(m => m.GetDistanceSquaredTo(0, 0)).Returns(25f);
 
         var interactables = new List<IInteractable> { mock1.Object, mock2.Object };
 
@@ -37,11 +37,11 @@ public class InteractionServiceTests
         var service = new InteractionService();
         var mock1 = new Mock<IInteractable>();
         mock1.Setup(m => m.IsInteractable).Returns(false);
-        mock1.Setup(m => m.GetDistanceTo(0, 0)).Returns(2f);
+        mock1.Setup(m => m.GetDistanceSquaredTo(0, 0)).Returns(4f);
 
         var mock2 = new Mock<IInteractable>();
         mock2.Setup(m => m.IsInteractable).Returns(true);
-        mock2.Setup(m => m.GetDistanceTo(0, 0)).Returns(10f);
+        mock2.Setup(m => m.GetDistanceSquaredTo(0, 0)).Returns(100f);
 
         var interactables = new List<IInteractable> { mock1.Object, mock2.Object };
 

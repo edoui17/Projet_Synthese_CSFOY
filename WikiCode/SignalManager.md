@@ -12,10 +12,10 @@
 Imaginez que vous ouvrez le Menu de Pause. Ce menu s'abonne au `SignalManager` pour mettre a jour l'affichage. Ensuite, vous fermez le menu, et Godot le detruit (`QueueFree()`).
 Cependant, si nous utilisions un evenement C# standard (`event Action`), le `SignalManager` (qui est un Autoload global et ne meurt jamais) garderait une reference forte vers le menu detruit. Resultat : **Fuite de memoire (Memory Leak)**, l'objet reste en memoire C# a l'infini, et le jeu plantera la prochaine fois que le `SignalManager` essaiera d'envoyer un signal au menu detruit.
 
-### La solution : Nos classes `WeakEvent` et `WeakEvent<TEventArgs>`
-Pour regler cela, nous n'utilisons pas le mot-cle `event` de C#. Nous avons cree nos propres classes : `WeakEvent` (pour les evenements sans arguments) et `WeakEvent<TEventArgs>` (pour les evenements avec des donnees, comme le nouveau score).
+### La solution : L'EventBus et la classe `WeakAction<T>`
+Pour régler cela, le projet évite l'utilisation des événements C# standard (`event Action`) pour la communication globale. À la place, il repose sur l'**EventBus** (voir [EventBus.md](./EventBus.md)), qui utilise une classe personnalisée appelée `WeakAction<T>`.
 
-Ces classes enveloppent l'abonne dans une `WeakReference`. Ainsi, quand Godot detruit un element de l'interface graphique (UI) ou un ennemi, la reference faible dans le `WeakEvent` devient nulle. Le Garbage Collector nettoie la memoire, et le `SignalManager` detectera automatiquement que l'abonne est mort (`IsAlive == false`) et le retirera de la liste silencieusement. Cela rend notre systeme robuste, evite les plantages, et libere les developpeurs de l'obligation absolue de se desabonner manuellement lors de la destruction des objets (bien que cela reste une bonne pratique).
+Cette classe enveloppe le délégué de l'abonné dans une `WeakReference`. Ainsi, quand Godot détruit un élément de l'interface graphique (UI) ou un ennemi, la référence faible dans le `WeakAction<T>` devient nulle. Le Garbage Collector nettoie la mémoire, et l'EventBus détectera automatiquement que l'abonné est mort (`IsAlive == false`) lors du prochain traitement d'événements, le retirant de la liste silencieusement. Cela rend notre système robuste, évite les plantages liés au Lapsed Listener Problem, et libère les développeurs de l'obligation absolue de se désabonner manuellement lors de la destruction des objets (bien que l'appel à `Unsubscribe` reste une bonne pratique, en particulier pour les objets à courte durée de vie).
 
 ## Le Rôle de Bridge (Translator) et l'EventBus
 
