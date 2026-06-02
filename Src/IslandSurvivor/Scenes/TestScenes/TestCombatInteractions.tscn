@@ -10,6 +10,7 @@
 [ext_resource type="PackedScene" uid="uid://dyxx1q578y7t0" path="res://Scenes/NPC/Aggressive/Normal/Soldier/Soldier.tscn" id="8_crhun"]
 [ext_resource type="PackedScene" uid="uid://ms5y206nvi0v" path="res://Scenes/NPC/Aggressive/Normal/Archer/Archer.tscn" id="9_vji2q"]
 
+
 [node name="TestCombatInteractions" type="Node2D" unique_id=729654025]
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=925283878]
