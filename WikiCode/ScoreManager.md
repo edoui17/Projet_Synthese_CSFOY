@@ -7,7 +7,7 @@ Le système de score a été conçu en respectant l'architecture N-Tier du proje
 1.  **Core (`SessionState`, `ScoreTracker`)** : Gère l'état vivant (Live State). Il valide les points, accumule le score et gère la logique de record (High Score).
 2.  **Godot Resources (`SessionResource`)** : Agit comme un template immuable. Il fournit les valeurs de départ lors de l'initialisation.
 3.  **Bridge (`ScoreManager` / `SignalManager`)** : Ce sont les nœuds Godot qui font le lien. Ils écoutent les événements du Core (`ScoreChangedEvent` via l'**EventBus**) et les transforment en signaux Godot (`[Signal]`).
-4.  **Save System (`ISaveService`, `GodotSaveService`)** : Le Core utilise une interface pour sauvegarder les données, ce qui permet à Godot d'injecter sa propre implémentation utilisant `FileAccess`.
+4.  **Save System (`ISaveService`, `GodotSaveService`, et `ApiService`)** : Le Core utilise une interface pour sauvegarder les données localement (`GodotSaveService` utilisant `FileAccess`), mais la synchronisation globale des données se fait désormais via l'`ApiService` (API REST) lors des transitions de scènes ou de la connexion.
 
 ---
 
