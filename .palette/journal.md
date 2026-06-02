@@ -19,3 +19,7 @@
 ## 2026-06-01 - [ScoreUI Update Feedback Jitter]
 **Learning:** When adding "juice" to simple numeric updates on HUD labels (like `ScoreUI`), relying purely on instantaneous text replacement feels flat. Adding a `CreateTween()` sequence to briefly scale and color-shift the text greatly improves the UX. However, it's critical to calculate `PivotOffset = Size / 2f` right before scaling and strictly use `m_currentTween?.Kill()` to handle rapid, overlapping score update signals cleanly without Godot UI layout errors.
 **Action:** For all continuous numeric state changes in the UI, check if the previous and new values differ. Apply brief, colored parallel tweens for `scale` and `modulate`, ensuring tweens are killed and nodes are `IsInsideTree()` before running the animation.
+
+## 2024-05-31 - [Sub-menu juice consistency and focus-loops]
+**Learning:** Adding uniform juicyness like scaling tweens and immediate accessibility (like focus looping and default grab-focuses) across all internal and sub-menu pages (Options, Scoreboard) creates consistent UX instead of leaving out these pages while the primary Main Menu is fully juiced.
+**Action:** Extract standard UI feedback and keyboard tracking logic into re-usable UI helpers or consistent internal class methods (like `SetupButtonJuice`) on all Godot `Control` menu nodes. Always call `GrabFocus` on the primary default button during `_Ready()` to assure zero-friction keyboard use.

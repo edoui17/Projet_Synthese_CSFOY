@@ -82,7 +82,7 @@ public partial class Sheep : PassiveNpcBase
 
             meatAmount += bonusQuantity;
 
-            ResourceItem meatResource = new ResourceItem("meat_01", "Viande", "Meat", "res://Assets/TinySwords/Terrain/Meat Resource/Meat Resource.png");
+            ResourceItem meatResource = new ResourceItem(Core.Constants.ResourceConstants.MEAT, "Viande", "Meat", "res://Assets/TinySwords/Terrain/Meat Resource/Meat Resource.png");
 
             Node2D? targetNode = p_attacker as Node2D;
             Vector2 fallbackPosition = targetNode != null ? targetNode.GlobalPosition : GlobalPosition;
