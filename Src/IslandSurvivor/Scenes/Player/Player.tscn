@@ -263,6 +263,7 @@ m_xpGainLabel = NodePath("XpGainLabel")
 m_dashLabel = NodePath("DashLabel")
 m_interactionArea = NodePath("PlayerInteraction")
 AttackSound = ExtResource("attack_stream")
+AttackVolume = 10.0
 HurtSound = ExtResource("6_4wape")
 DeathSound = ExtResource("death_stream")
 m_weaponAreaRight = NodePath("WeaponAttackRight")
@@ -320,7 +321,8 @@ script = ExtResource("attack_controller_script")
 [node name="StatManager" parent="." unique_id=772458511 instance=ExtResource("7_stat")]
 m_isGlobal = true
 EntityType = 0
-MaxHealth = 500.0
+MaxHealth = 5.0
+BaseSpeedValue = 400.0
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=238914161]
 
