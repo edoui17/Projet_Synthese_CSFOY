@@ -13,3 +13,6 @@
 ## 2026-05-28 - [Refactoring] Flattened Nested Ifs in State Updates
 **Observation:** Deeply nested if statements were present in State classes (specifically DashState `PhysicsUpdate` method), often related to collision checks and handling, increasing cognitive load and hindering readability.
 **Action:** Applied guard clauses (early returns) by extracting collision handling and logic into separate helper methods to flatten nesting and improve readability according to Clean Code conventions. Ensured field names and parameter names follow standard conventions.
+## 2026-06-02 - [Refactoring] Flattened Nested Ifs with Guard Clauses in ChaseState
+**Observation:** Deeply nested if-else statements were present in ChaseState `PhysicsUpdate` method, increasing cognitive load and hindering readability. Duplicate sprite flipping logic was also present.
+**Action:** Applied guard clauses (early returns) to flatten nesting and extracted common logic to improve readability according to Clean Code conventions.
