@@ -1,3 +1,17 @@
 ## 2026-05-20 - [Missing Core Architectural Guide]
 **Observation:** The 'Accountant vs. Orchestrator' architectural boundary is a core pillar of the project (mentioned in Convention.md and forges.md), but lacks a dedicated master reference in the WikiCode folder to explain the *why* and *how* to new developers.
 **Action:** Created `WikiCode/Accountant_vs_Orchestrator.md` to serve as the master guide, standardizing how we document the separation between pure C# Core logic and Godot Client nodes, and updated outdated terminology (e.g., BaseDamage to BaseAttackValue) in existing files.
+
+## 2026-05-23 - [Outdated Godot Documentation Discrepancies]
+**Observation:** Discovered significant discrepancies between the C# codebase and `WikiCode` documentation. `Movement_System.md` referenced deprecated `BaseSpeed` export variable instead of `Stats.BaseSpeedValue` (managed by `StatManager`), and lacked info on Stun mechanics. `EventBus.md` had outdated implementation details (e.g., didn't explain the `ConcurrentQueue` logic and `WeakAction<T>` direct storage).
+**Action:** Updated `Movement_System.md` to explain how `StatManager` controls default speed, and added the `IsStunned` state. Updated `EventBus.md` with accurate code implementation details to explain thread safety and queue execution flow matching `Src/Core/Services/EventBus.cs`.
+## 2026-05-27 - [Outdated Godot Client Node References and Architecture Discrepancy]
+**Observation:** The documentation for enemy controllers and state management referred to `AgressorController` and `AnimatedSprite2D`, which have been replaced by the new Godot Node-based `StateMachine` architecture with `Sprite2D` and `AnimationPlayer`. In addition, some scripts still contained outdated `GetNode<StatManager>` logic instead of relying on explicit Exports.
+**Action:** Replaced mentions of `AgressorController` with `StateMachine`, `IAgressorController` with `IStateMachine`, updated `AnimatedSprite2D` references to use `Sprite2D` and `AnimationPlayer`, and corrected Godot script API syntax (`GetNode<StatManager>("StatManager")` to `Stats`) across the wiki pages to match current code logic.
+## 2026-05-28 - [Deprecated AgressorController Documentation]
+**Observation:** Discovered a major discrepancy where `WikiCode/combat_system.md` and `WikiCode/Systeme_Ennemis_Deplacement.md` still document the deprecated pure C# `IAgressorController` and `AnimatedSprite2D` architecture for enemies, rather than the new Node-based StateMachine composition pattern and `AnimationPlayer`.
+**Action:** Updated `combat_system.md` and `Systeme_Ennemis_Deplacement.md` to accurately reflect the Orchestrator Node-based StateMachine architecture (`StateMachine`, `ChaseState`, `MeleeAttackState`, etc.) and the use of `Sprite2D` with `AnimationPlayer`, ensuring alignment with `NPC_StateMachine_Architecture.md`.
+
+## 2026-05-29 - [Outdated FlipH Architecture Documentation]
+**Observation:** Discovered an architectural discrepancy between the written architecture in `NPC_StateMachine_Architecture.md` and the actual implemented codebase. The documentation stated that `Sprite2D.FlipH` was managed centrally by `MovementController`, but it is actually handled individually within specific movement state classes (such as `ChaseState`, `WanderState`, or `FleeState`) during their `PhysicsUpdate` loops.
+**Action:** Updated `WikiCode/NPC_StateMachine_Architecture.md` to correct the `Orientation Visuelle (FlipH)` section, ensuring it accurately reflects how visual orientation is delegated to individual states.

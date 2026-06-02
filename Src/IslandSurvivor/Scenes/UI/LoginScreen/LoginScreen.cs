@@ -37,13 +37,58 @@ public partial class LoginScreen : Control
 
         // Focus handling for TAB navigation
         m_usernameField.FocusNeighborBottom = m_passwordField.GetPath();
+
         m_passwordField.FocusNeighborTop = m_usernameField.GetPath();
-        m_passwordField.FocusNeighborBottom = m_loginBtn.GetPath();
-        m_loginBtn.FocusNeighborTop = m_passwordField.GetPath();
+        m_passwordField.FocusNeighborBottom = m_showPasswordBtn.GetPath();
+
+        m_showPasswordBtn.FocusNeighborTop = m_passwordField.GetPath();
+        m_showPasswordBtn.FocusNeighborBottom = m_loginBtn.GetPath();
+        m_showPasswordBtn.TooltipText = "Afficher/Masquer le mot de passe";
+
+        m_loginBtn.FocusNeighborTop = m_showPasswordBtn.GetPath();
         m_loginBtn.FocusNeighborBottom = m_offlineBtn.GetPath();
+
         m_offlineBtn.FocusNeighborTop = m_loginBtn.GetPath();
+        m_offlineBtn.FocusNeighborBottom = m_usernameField.GetPath();
+        m_usernameField.FocusNeighborTop = m_offlineBtn.GetPath();
+
+        SetupButtonJuice(m_loginBtn);
+        SetupButtonJuice(m_offlineBtn);
+        SetupButtonJuice(m_showPasswordBtn);
 
         m_usernameField.GrabFocus();
+    }
+
+    private void SetupButtonJuice(Control p_btn)
+    {
+        p_btn.FocusMode = FocusModeEnum.All;
+        p_btn.MouseDefaultCursorShape = CursorShape.PointingHand;
+
+        p_btn.MouseEntered += () => p_btn.GrabFocus();
+
+        p_btn.FocusEntered += () =>
+        {
+            if (p_btn.HasMeta("tween"))
+            {
+                p_btn.GetMeta("tween").As<Tween>()?.Kill();
+            }
+            Tween tween = CreateTween();
+            p_btn.SetMeta("tween", tween);
+            p_btn.PivotOffset = p_btn.Size / 2f;
+            tween.TweenProperty(p_btn, "scale", new Vector2(1.05f, 1.05f), 0.1f);
+        };
+
+        p_btn.FocusExited += () =>
+        {
+            if (p_btn.HasMeta("tween"))
+            {
+                p_btn.GetMeta("tween").As<Tween>()?.Kill();
+            }
+            Tween tween = CreateTween();
+            p_btn.SetMeta("tween", tween);
+            p_btn.PivotOffset = p_btn.Size / 2f;
+            tween.TweenProperty(p_btn, "scale", new Vector2(1.0f, 1.0f), 0.1f);
+        };
     }
 
     private async void OnLoginPressed()

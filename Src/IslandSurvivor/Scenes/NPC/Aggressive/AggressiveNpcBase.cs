@@ -26,7 +26,7 @@ public partial class AggressiveNpcBase : NpcBase
     [Export] public float MaxAttackRange { get; set; } = 350.0f;
 
     protected Node2D? m_targetPlayer;
-    // protected IAgressorController m_agressorController = null!;
+
     protected IslandSurvivor.Nodes.Combat.AttackController? m_attackController;
     protected Area2D? m_detectionArea;
     protected RayCast2D? m_lineOfSightRay;
@@ -161,7 +161,7 @@ public partial class AggressiveNpcBase : NpcBase
 
     protected virtual void InitializeController()
     {
-        // m_agressorController = new AgressorController();
+
     }
 
     protected virtual void ApplyLevelScaling()

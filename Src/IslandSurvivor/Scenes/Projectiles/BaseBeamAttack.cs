@@ -8,8 +8,8 @@ public partial class BaseBeamAttack : Node2D
     [Export] public float SweepSpeed { get; set; } = 1.5f;
     [Export] public int Damage { get; set; } = 30;
 
-    protected AnimatedSprite2D m_animatedSprite;
-    protected RayCast2D m_rayCast;
+    protected AnimatedSprite2D m_animatedSprite = null!;
+    protected RayCast2D m_rayCast = null!;
     protected bool m_hasHitPlayer;
 
     public override void _Ready()

@@ -52,7 +52,7 @@ public partial class NpcBase : CharacterBody2D, INpc, IDamageable
         m_stateMachine = GetNodeOrNull<IslandSurvivor.Logic.StateMachine.StateMachine>("StateMachine");
         if (m_stateMachine != null)
         {
-            m_stateMachine.Initialize(null, this);
+            m_stateMachine.Initialize(null!, this);
 
             var deathState = m_stateMachine.GetNodeOrNull<IslandSurvivor.Logic.StateMachine.States.DeathState>("DeathState");
             if (deathState != null)

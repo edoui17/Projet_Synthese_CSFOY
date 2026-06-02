@@ -22,6 +22,13 @@ public class StatsController : ControllerBase
     [HttpPost("session")]
     public async Task<IActionResult> AddSession([FromBody] StatsUpsertRequest p_request)
     {
+        // SECURITY FIX: Prevent DoS and buffer overflow attacks by enforcing a maximum length
+        // on the ExtraStats JSON payload before it hits the database layer.
+        if (p_request.Stats?.ExtraStats != null && p_request.Stats.ExtraStats.Length > 2000)
+        {
+            return BadRequest("ExtraStats payload exceeds the maximum allowed length of 2000 characters.");
+        }
+
         Player? player = HttpContext.Items["Player"] as Player;
         if (player == null) return Unauthorized();
 
