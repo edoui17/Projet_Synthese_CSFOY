@@ -1,7 +1,7 @@
-namespace IslandSurvivor.Nodes.Combat;
+namespace IslandSurvivor.Nodes;
 
 using Godot;
-using IslandSurvivor.Logic.Entities;
+using IslandSurvivor.Logic;
 
 [GlobalClass]
 public partial class Shooter : Node2D
@@ -51,7 +51,7 @@ public partial class Shooter : Node2D
                 startPosition = SpawnPosition.GlobalPosition;
             }
 
-            if (m_owner is IslandSurvivor.Scenes.NPC.Aggressive.AggressiveNpcBase aggNpc)
+            if (m_owner is IslandSurvivor.Scenes.NPC.AggressiveNpcBase aggNpc)
             {
                 var target = aggNpc.GetTarget();
                 if (GodotObject.IsInstanceValid(target))

@@ -1,7 +1,7 @@
-namespace IslandSurvivor.Scenes.NPC.Aggressive;
+namespace IslandSurvivor.Scenes.NPC;
 
 using Godot;
-using IslandSurvivor.Logic.Entities;
+using IslandSurvivor.Logic;
 using IslandSurvivor.Globals;
 
 public partial class AggressiveNpcBase : NpcBase
@@ -27,7 +27,7 @@ public partial class AggressiveNpcBase : NpcBase
 
     protected Node2D? m_targetPlayer;
 
-    protected IslandSurvivor.Nodes.Combat.AttackController? m_attackController;
+    protected IslandSurvivor.Nodes.AttackController? m_attackController;
     protected Area2D? m_detectionArea;
     protected RayCast2D? m_lineOfSightRay;
     protected Sprite2D? m_sprite;
@@ -51,7 +51,7 @@ public partial class AggressiveNpcBase : NpcBase
                 if (m_stateMachine.HasState(IslandSurvivor.Logic.StateMachine.StateConstants.IdleStateName))
                 {
                     var idleStateNode = m_stateMachine.GetState(IslandSurvivor.Logic.StateMachine.StateConstants.IdleStateName);
-                    if (idleStateNode is IslandSurvivor.Logic.StateMachine.States.IdleState idleState)
+                    if (idleStateNode is IslandSurvivor.Logic.StateMachine.IdleState idleState)
                     {
                         if (idleState.IsWanderCooldownElapsed && m_stateMachine.HasState(IslandSurvivor.Logic.StateMachine.StateConstants.WanderStateName))
                         {
@@ -78,7 +78,7 @@ public partial class AggressiveNpcBase : NpcBase
 
         if (m_attackController != null && m_attackController.CanAttack)
         {
-            var windUp = m_stateMachine?.GetState(IslandSurvivor.Logic.StateMachine.StateConstants.WindUpStateName) as IslandSurvivor.Logic.StateMachine.States.WindUpState;
+            var windUp = m_stateMachine?.GetState(IslandSurvivor.Logic.StateMachine.StateConstants.WindUpStateName) as IslandSurvivor.Logic.StateMachine.WindUpState;
             if (windUp != null)
             {
                 // State routing is handled by specific NpcBase
@@ -119,7 +119,7 @@ public partial class AggressiveNpcBase : NpcBase
 
         InitializeController();
 
-        m_attackController = GetNodeOrNull<IslandSurvivor.Nodes.Combat.AttackController>("AttackController");
+        m_attackController = GetNodeOrNull<IslandSurvivor.Nodes.AttackController>("AttackController");
         if (m_sprite != null && m_attackController != null)
         {
             if (m_attackController.AttackSprite == null)
@@ -275,11 +275,11 @@ public partial class AggressiveNpcBase : NpcBase
 
         if (Stats != null)
         {
-            float currentHp = Stats.GetCurrentValue(Core.Managers.Stats.StatType.Health);
-            Stats.SetCurrentValue(Core.Managers.Stats.StatType.Health, currentHp - actualDamage);
+            float currentHp = Stats.GetCurrentValue(Core.Managers.StatType.Health);
+            Stats.SetCurrentValue(Core.Managers.StatType.Health, currentHp - actualDamage);
         }
 
-        bool isDead = Stats == null || Stats.GetCurrentValue(Core.Managers.Stats.StatType.Health) <= 0;
+        bool isDead = Stats == null || Stats.GetCurrentValue(Core.Managers.StatType.Health) <= 0;
 
         if (p_attacker is Node2D attackerNode)
         {

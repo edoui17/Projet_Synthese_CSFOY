@@ -1,4 +1,4 @@
-namespace Core.Interfaces.Stats;
+namespace Core.Interfaces;
 
 using System;
 using Core.Utils;

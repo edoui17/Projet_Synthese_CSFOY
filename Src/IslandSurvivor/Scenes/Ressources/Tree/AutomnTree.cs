@@ -1,5 +1,5 @@
-using Core.Interfaces.Stats;
-using Core.Managers.Stats;
+using Core.Interfaces;
+using Core.Managers;
 using Godot;
 using IslandSurvivor.Extensions;
 using IslandSurvivor.Globals;
@@ -72,7 +72,7 @@ public partial class AutomnTree : Area2D, ITree, IDamageable
         {
             for (int i = 0; i < quantity; i++)
             {
-                if (dropScene.Instantiate() is IslandSurvivor.Scenes.Ressources.ResourceDrop drop)
+                if (dropScene.Instantiate() is IslandSurvivor.Scenes.ResourceDrop drop)
                 {
                     // Pass quantity 1 for each individual drop
                     drop.Initialize(item, 1, GlobalPosition, targetNode!, fallbackPosition);

@@ -2,14 +2,14 @@ using Godot;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Core.Interfaces.Spawning;
-using Core.Interfaces.Utils;
+using Core.Interfaces;
+using Core.Interfaces;
 using Core.Utils;
-using IslandSurvivor.Scenes.NPC.Aggressive;
+using IslandSurvivor.Scenes.NPC;
 using IslandSurvivor.Utils;
 using IslandSurvivor.Utils.Logging;
 
-namespace IslandSurvivor.Nodes.Zones;
+namespace IslandSurvivor.Nodes;
 
 /// <summary>
 /// [Gameplay][Spawning][Algorithme]
@@ -74,7 +74,7 @@ public partial class EnemySpawnZone : Node2D, IEnemySpawnZone
 
         if (difficultyManager != null && statTracker != null)
         {
-            int playerLevel = (int)statTracker.GetCurrentValue(Core.Managers.Stats.StatType.Level);
+            int playerLevel = (int)statTracker.GetCurrentValue(Core.Managers.StatType.Level);
             if (playerLevel <= 0) playerLevel = 1; // Safeguard
 
             threatScore = difficultyManager.GetGlobalThreatScore(playerLevel);
@@ -207,7 +207,7 @@ public partial class EnemySpawnZone : Node2D, IEnemySpawnZone
             var statTracker = Globals.ServiceRegistry.Instance?.StatTracker;
             if (statTracker != null)
             {
-                enemyInstance.LevelIndex = (int)statTracker.GetCurrentValue(Core.Managers.Stats.StatType.Level);
+                enemyInstance.LevelIndex = (int)statTracker.GetCurrentValue(Core.Managers.StatType.Level);
                 if (enemyInstance.LevelIndex <= 0) enemyInstance.LevelIndex = 1;
             }
 
@@ -229,7 +229,7 @@ public partial class EnemySpawnZone : Node2D, IEnemySpawnZone
             }
 
             // Try to find the EnemyStatsHandler decorator to apply the threat scaling
-            var statsHandler = enemyInstance.GetNodeOrNull<IslandSurvivor.Nodes.Combat.EnemyStatsHandler>("EnemyStatsHandler");
+            var statsHandler = enemyInstance.GetNodeOrNull<IslandSurvivor.Nodes.EnemyStatsHandler>("EnemyStatsHandler");
             if (statsHandler != null)
             {
                 // We call it on next frame to ensure NpcBase _Ready & InitializeController has run
@@ -267,7 +267,7 @@ public partial class EnemySpawnZone : Node2D, IEnemySpawnZone
         return new Rect2(minX, minY, maxX - minX, maxY - minY);
     }
 
-    private void DeferredInitializeStats(IslandSurvivor.Nodes.Combat.EnemyStatsHandler p_handler, float p_threatScore, bool p_isElite)
+    private void DeferredInitializeStats(IslandSurvivor.Nodes.EnemyStatsHandler p_handler, float p_threatScore, bool p_isElite)
     {
         if (IsInstanceValid(p_handler))
         {

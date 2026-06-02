@@ -1,8 +1,8 @@
-namespace IslandSurvivor.Scenes.NPC.Passive;
+namespace IslandSurvivor.Scenes.NPC;
 
-using IslandSurvivor.Logic.Entities;
+using IslandSurvivor.Logic;
 using Core.Domain;
-using Core.Managers.Stats;
+using Core.Managers;
 using Godot;
 using IslandSurvivor.Globals;
 using IslandSurvivor.Nodes;
@@ -92,7 +92,7 @@ public partial class Sheep : PassiveNpcBase
             {
                 for (int i = 0; i < meatAmount; i++)
                 {
-                    if (dropScene.Instantiate() is IslandSurvivor.Scenes.Ressources.ResourceDrop drop)
+                    if (dropScene.Instantiate() is IslandSurvivor.Scenes.ResourceDrop drop)
                     {
                         drop.Initialize(meatResource, 1, GlobalPosition, targetNode!, fallbackPosition);
                         GetParent().AddChild(drop);

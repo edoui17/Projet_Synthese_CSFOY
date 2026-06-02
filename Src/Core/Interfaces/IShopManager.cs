@@ -1,6 +1,6 @@
 namespace Core.Interfaces;
 
-using Core.Managers.Stats;
+using Core.Managers;
 
 public interface IShopManager
 {

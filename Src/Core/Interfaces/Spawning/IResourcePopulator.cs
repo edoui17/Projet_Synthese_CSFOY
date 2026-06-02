@@ -1,4 +1,4 @@
-namespace Core.Interfaces.Spawning;
+namespace Core.Interfaces;
 
 /// <summary>
 /// Interface for objects responsible for spawning resources in the game world.

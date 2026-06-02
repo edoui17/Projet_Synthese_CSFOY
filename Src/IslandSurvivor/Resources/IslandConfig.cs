@@ -1,5 +1,5 @@
 using Godot;
-using Core.Domain.Models;
+using Core.Domain;
 
 namespace IslandSurvivor.Resources;
 

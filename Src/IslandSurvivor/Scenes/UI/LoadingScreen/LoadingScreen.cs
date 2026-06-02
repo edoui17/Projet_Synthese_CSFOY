@@ -1,6 +1,6 @@
 using Godot;
 
-namespace IslandSurvivor.Scenes.UI.LoadingScreen;
+namespace IslandSurvivor.Scenes.UI;
 
 public partial class LoadingScreen : CanvasLayer
 {

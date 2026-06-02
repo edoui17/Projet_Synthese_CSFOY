@@ -6,7 +6,7 @@ using Core.Events;
 using Core.Utils;
 using IslandSurvivor.Globals;
 using IslandSurvivor.Utils;
-using IslandSurvivor.Scenes.UI.LoadingScreen;
+using IslandSurvivor.Scenes.UI;
 
 namespace IslandSurvivor.Managers;
 

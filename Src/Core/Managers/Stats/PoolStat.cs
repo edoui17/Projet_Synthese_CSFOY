@@ -1,7 +1,7 @@
 using Core.Interfaces;
 using Core.Events;
 
-namespace Core.Managers.Stats;
+namespace Core.Managers;
 
 public class PoolStat : IStat
 {

@@ -1,6 +1,6 @@
 using Godot;
 
-namespace IslandSurvivor.Resources.Stats;
+namespace IslandSurvivor.Resources;
 
 [GlobalClass]
 public partial class SessionResource : Resource

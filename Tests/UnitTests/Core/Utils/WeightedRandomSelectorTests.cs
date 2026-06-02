@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Core.Interfaces.Utils;
+using Core.Interfaces;
 using Core.Utils;
 using Xunit;
 using Moq;

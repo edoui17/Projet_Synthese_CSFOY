@@ -1,7 +1,7 @@
 using Godot;
 using System.Linq;
 
-namespace IslandSurvivor.Scenes.NPC.Aggressive;
+namespace IslandSurvivor.Scenes.NPC;
 
 public partial class Reaper : BossBase
 {
@@ -34,7 +34,7 @@ public partial class Reaper : BossBase
         {
             if (m_attackController != null && m_attackController.CanAttack)
             {
-                var windUp = m_stateMachine?.GetState(IslandSurvivor.Logic.StateMachine.StateConstants.WindUpStateName) as IslandSurvivor.Logic.StateMachine.States.WindUpState;
+                var windUp = m_stateMachine?.GetState(IslandSurvivor.Logic.StateMachine.StateConstants.WindUpStateName) as IslandSurvivor.Logic.StateMachine.WindUpState;
                 if (windUp != null)
                 {
                     windUp.NextStateAfterWindup = IslandSurvivor.Logic.StateMachine.StateConstants.MeleeAttackStateName;
@@ -44,10 +44,10 @@ public partial class Reaper : BossBase
         }
         else
         {
-            var shooter = GetNodeOrNull<IslandSurvivor.Nodes.Combat.Shooter>("Shooter");
+            var shooter = GetNodeOrNull<IslandSurvivor.Nodes.Shooter>("Shooter");
             if (shooter != null && shooter.CanShoot)
             {
-                var windUp = m_stateMachine?.GetState(IslandSurvivor.Logic.StateMachine.StateConstants.WindUpStateName) as IslandSurvivor.Logic.StateMachine.States.WindUpState;
+                var windUp = m_stateMachine?.GetState(IslandSurvivor.Logic.StateMachine.StateConstants.WindUpStateName) as IslandSurvivor.Logic.StateMachine.WindUpState;
                 if (windUp != null)
                 {
                     windUp.NextStateAfterWindup = IslandSurvivor.Logic.StateMachine.StateConstants.RangedAttackStateName;

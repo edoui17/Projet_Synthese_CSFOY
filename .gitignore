@@ -1,4 +1,4 @@
-## [ Visual Studio ]
+## [ Visual Studio / .NET ]
 .vs/
 [Bb]in/
 [Oo]bj/
@@ -19,7 +19,10 @@ IslandSurvivor/Exports/
 Thumbs.db
 desktop.ini
 
-## [Documentation / jules]
+## [ Documentation & Profiles ]
 jules/forge.md
 profile_cache.json
 profile_cache.json.sig
+
+## [ Logs ]
+*.log
