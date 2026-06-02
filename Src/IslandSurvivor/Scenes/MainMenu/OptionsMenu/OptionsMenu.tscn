@@ -47,7 +47,7 @@ text = "Options"
 [node name="MasterSoundLabel" type="Label" parent="AudioOptions/OptionsTab/VBoxContainer" unique_id=1953859228]
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
-text = "Sound"
+text = "Master Volume"
 
 [node name="MasterSoudnHSlider" type="HSlider" parent="AudioOptions/OptionsTab/VBoxContainer" unique_id=210809865]
 layout_mode = 2
