@@ -18,13 +18,18 @@ public partial class AudioOptions : Control
         musicSlider.Value = Mathf.DbToLinear(AudioServer.GetBusVolumeDb(musicBusIndex));
         sfxSlider.Value = Mathf.DbToLinear(AudioServer.GetBusVolumeDb(sfxBusIndex));
 
+        // Connect the value changed signals programmatically
+        masterSlider.ValueChanged += OnMasterSliderValueChanged;
+        musicSlider.ValueChanged += OnMusicSliderValueChanged;
+        sfxSlider.ValueChanged += OnSfxSliderValueChanged;
+
         // Connect the 'drag_ended' signal to SaveSettings to avoid disk I/O on every frame
         masterSlider.DragEnded += OnSliderDragEnded;
         musicSlider.DragEnded += OnSliderDragEnded;
         sfxSlider.DragEnded += OnSliderDragEnded;
     }
 
-    public void _on_master_soudn_h_slider_value_changed(double p_value)
+    private void OnMasterSliderValueChanged(double p_value)
     {
         float volumeDb = Mathf.LinearToDb((float)p_value);
         AudioServer.SetBusVolumeDb(masterBusIndex, volumeDb);
@@ -32,7 +37,7 @@ public partial class AudioOptions : Control
         GD.Print("Slider master Modifié");
     }
 
-    public void _on_musicslider_value_changed(double p_value)
+    private void OnMusicSliderValueChanged(double p_value)
     {
         float volumeDb = Mathf.LinearToDb((float)p_value);
         AudioServer.SetBusVolumeDb(musicBusIndex, volumeDb);
@@ -40,7 +45,7 @@ public partial class AudioOptions : Control
         GD.Print("Slider music Modifié");
     }
 
-    public void _on_sfx_slider_value_changed(double p_value)
+    private void OnSfxSliderValueChanged(double p_value)
     {
         float volumeDb = Mathf.LinearToDb((float)p_value);
         AudioServer.SetBusVolumeDb(sfxBusIndex, volumeDb);

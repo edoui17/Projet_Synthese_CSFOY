@@ -79,7 +79,7 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 35
 text = "Return"
 
-[connection signal="value_changed" from="AudioOptions/OptionsTab/VBoxContainer/MasterSoudnHSlider" to="." method="_on_master_soudn_h_slider_value_changed"]
-[connection signal="value_changed" from="AudioOptions/OptionsTab/VBoxContainer/MusicSlider" to="AudioOptions" method="_on_musicslider_value_changed"]
-[connection signal="value_changed" from="AudioOptions/OptionsTab/VBoxContainer/SFXSlider" to="." method="_on_sfx_slider_value_changed"]
-[connection signal="pressed" from="AudioOptions/OptionsTab/VBoxContainer/ReturnBtn" to="AudioOptions/OptionsTab" method="_on_return_btn_pressed"]
+
+
+
+[connection signal="pressed" from="AudioOptions/OptionsTab/VBoxContainer/ReturnBtn" to="." method="OnReturnToMenuPressed"]
