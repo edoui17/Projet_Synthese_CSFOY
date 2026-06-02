@@ -66,87 +66,71 @@ public partial class ChaseState : State
 
     public override void PhysicsUpdate(double p_delta)
     {
-        if (NpcContext is IslandSurvivor.Scenes.NPC.AggressiveNpcBase aggressiveNpc)
+        if (NpcContext is not IslandSurvivor.Scenes.NPC.AggressiveNpcBase aggressiveNpc)
+            return;
+
+        if (!aggressiveNpc.HasTargetAndLineOfSight())
         {
-            if (!aggressiveNpc.HasTargetAndLineOfSight())
+            aggressiveNpc.Velocity = Vector2.Zero;
+            CompleteState(StateExitReason.TargetLost);
+            return;
+        }
+
+        var target = aggressiveNpc.GetTarget();
+        if (target == null)
+            return;
+
+        float distSquared = NpcContext.GlobalPosition.DistanceSquaredTo(target.GlobalPosition);
+
+        if (distSquared > LoseInterestRange * LoseInterestRange)
+        {
+            aggressiveNpc.Velocity = Vector2.Zero;
+            CompleteState(StateExitReason.TargetLost);
+            return;
+        }
+
+        bool isRanged = NpcContext is IslandSurvivor.Scenes.NPC.RangedAggressiveNpcBase;
+        float attackRange = isRanged ? aggressiveNpc.MaxAttackRange : aggressiveNpc.AttackRange;
+
+        if (distSquared <= attackRange * attackRange)
+        {
+            aggressiveNpc.Velocity = Vector2.Zero;
+
+            // Cached to prevent GetNode allocations in hot path
+            if (m_attackController != null && m_attackController.CanAttack)
             {
-                aggressiveNpc.Velocity = Vector2.Zero;
-                CompleteState(StateExitReason.TargetLost);
-                return;
+                CompleteState(StateExitReason.TargetReached);
             }
-
-            var target = aggressiveNpc.GetTarget();
-            if (target != null)
+            else
             {
-                float distSquared = NpcContext.GlobalPosition.DistanceSquaredTo(target.GlobalPosition);
-
-                if (distSquared > LoseInterestRange * LoseInterestRange)
+                if (m_animationPlayer != null && m_animationPlayer.HasAnimation("Idle"))
                 {
-                    aggressiveNpc.Velocity = Vector2.Zero;
-                    CompleteState(StateExitReason.TargetLost);
-                }
-                else
-                {
-                    bool isRanged = NpcContext is IslandSurvivor.Scenes.NPC.RangedAggressiveNpcBase;
-                    bool inAttackRange = false;
-
-                    if (isRanged)
-                    {
-                        inAttackRange = distSquared <= ((IslandSurvivor.Scenes.NPC.AggressiveNpcBase)NpcContext).MaxAttackRange * ((IslandSurvivor.Scenes.NPC.AggressiveNpcBase)NpcContext).MaxAttackRange;
-                    }
-                    else
-                    {
-                        inAttackRange = distSquared <= ((IslandSurvivor.Scenes.NPC.AggressiveNpcBase)NpcContext).AttackRange * ((IslandSurvivor.Scenes.NPC.AggressiveNpcBase)NpcContext).AttackRange;
-                    }
-
-                    if (inAttackRange)
-                    {
-                        aggressiveNpc.Velocity = Vector2.Zero;
-
-                        // Cached to prevent GetNode allocations in hot path
-                        if (m_attackController != null && m_attackController.CanAttack)
-                        {
-                            CompleteState(StateExitReason.TargetReached);
-                        }
-                        else
-                        {
-                            if (m_animationPlayer != null && m_animationPlayer.HasAnimation("Idle"))
-                            {
-                                m_animationPlayer.Play("Idle");
-                            }
-                        }
-                    }
-                    else
-                    {
-                        if (m_animationPlayer != null && m_animationPlayer.HasAnimation(AnimationName))
-                        {
-                            m_animationPlayer.Play(AnimationName);
-                        }
-
-                        Vector2 direction = (target.GlobalPosition - NpcContext.GlobalPosition).Normalized();
-
-                        if (aggressiveNpc.MovementController != null)
-                        {
-                            aggressiveNpc.MovementController.Move(direction, ChaseSpeed);
-
-                            if (m_sprite != null && direction.X != 0)
-                            {
-                                m_sprite.FlipH = direction.X < 0;
-                            }
-                        }
-                        else
-                        {
-                            aggressiveNpc.Velocity = direction * ChaseSpeed;
-                            aggressiveNpc.MoveAndSlide();
-
-                            if (m_sprite != null && direction.X != 0)
-                            {
-                                m_sprite.FlipH = direction.X < 0;
-                            }
-                        }
-                    }
+                    m_animationPlayer.Play("Idle");
                 }
             }
+            return;
+        }
+
+        if (m_animationPlayer != null && m_animationPlayer.HasAnimation(AnimationName))
+        {
+            m_animationPlayer.Play(AnimationName);
+        }
+
+        Vector2 direction = (target.GlobalPosition - NpcContext.GlobalPosition).Normalized();
+
+        if (aggressiveNpc.MovementController != null)
+        {
+            aggressiveNpc.MovementController.Move(direction, ChaseSpeed);
+        }
+        else
+        {
+            aggressiveNpc.Velocity = direction * ChaseSpeed;
+            aggressiveNpc.MoveAndSlide();
+        }
+
+        if (m_sprite != null && direction.X != 0)
+        {
+            m_sprite.FlipH = direction.X < 0;
         }
     }
 }
