@@ -15,3 +15,7 @@
 ## 2026-05-29 - [Outdated FlipH Architecture Documentation]
 **Observation:** Discovered an architectural discrepancy between the written architecture in `NPC_StateMachine_Architecture.md` and the actual implemented codebase. The documentation stated that `Sprite2D.FlipH` was managed centrally by `MovementController`, but it is actually handled individually within specific movement state classes (such as `ChaseState`, `WanderState`, or `FleeState`) during their `PhysicsUpdate` loops.
 **Action:** Updated `WikiCode/NPC_StateMachine_Architecture.md` to correct the `Orientation Visuelle (FlipH)` section, ensuring it accurately reflects how visual orientation is delegated to individual states.
+
+## 2026-05-31 - [Outdated WeakEvent Documentation in SignalManager]
+**Observation:** Discovered that `WikiCode/SignalManager.md` contained deprecated legacy documentation regarding `WeakEvent` and `WeakEvent<TEventArgs>` classes, contradicting the implemented `EventBus` architecture which utilizes `WeakAction<T>`.
+**Action:** Cleaned up `SignalManager.md` to remove the confusing legacy `WeakEvent` explanation and instead briefly explain `WeakAction<T>` within the context of the `EventBus` bridge, ensuring documentation reflects the current codebase state. Also updated `IEventBus` code snippet in `EventBus.md` to include up-to-date XML summaries.

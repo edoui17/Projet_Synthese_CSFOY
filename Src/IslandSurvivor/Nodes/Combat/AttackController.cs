@@ -1,11 +1,11 @@
-namespace IslandSurvivor.Nodes.Combat;
+namespace IslandSurvivor.Nodes;
 
 using Godot;
 using IslandSurvivor.Enums;
 using IslandSurvivor.Interfaces;
 using IslandSurvivor.Logic;
-using Core.Interfaces.Stats;
-using Core.Managers.Stats;
+using Core.Interfaces;
+using Core.Managers;
 using System.Collections.Generic;
 
 [GlobalClass]

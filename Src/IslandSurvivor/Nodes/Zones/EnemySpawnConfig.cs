@@ -1,7 +1,7 @@
 using Godot;
-using Core.Interfaces.Utils;
+using Core.Interfaces;
 
-namespace IslandSurvivor.Nodes.Zones;
+namespace IslandSurvivor.Nodes;
 
 /// <summary>
 /// Configuration for a specific enemy type in an EnemySpawnZone.

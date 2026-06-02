@@ -3,7 +3,6 @@ namespace Core.Managers;
 using System.Collections.Generic;
 using System.Linq;
 using Core.Domain;
-using Core.Domain.Models;
 using Core.Events;
 using Core.Interfaces;
 
@@ -42,10 +41,10 @@ public class InventoryManager : IInventoryManager
 
         if (requiredCost > 0)
         {
-            bool hasMeat = GetMaterialCount("meat_01") >= requiredCost;
-            bool hasWood = GetMaterialCount("wood_01") >= requiredCost;
-            bool hasRock = GetMaterialCount("rock_01") >= requiredCost;
-            bool hasGold = GetMaterialCount("gold_01") >= requiredCost;
+            bool hasMeat = GetMaterialCount(Core.Constants.ResourceConstants.MEAT) >= requiredCost;
+            bool hasWood = GetMaterialCount(Core.Constants.ResourceConstants.WOOD) >= requiredCost;
+            bool hasRock = GetMaterialCount(Core.Constants.ResourceConstants.ROCK) >= requiredCost;
+            bool hasGold = GetMaterialCount(Core.Constants.ResourceConstants.GOLD) >= requiredCost;
 
             if (!hasMeat || !hasWood || !hasRock || !hasGold)
             {
@@ -54,17 +53,17 @@ public class InventoryManager : IInventoryManager
             }
 
             // Deduct items and emit spent events
-            RemoveMaterial("meat_01", requiredCost);
-            m_eventBus.Publish(new ResourceSpentEvent("meat_01", requiredCost));
+            RemoveMaterial(Core.Constants.ResourceConstants.MEAT, requiredCost);
+            m_eventBus.Publish(new ResourceSpentEvent(Core.Constants.ResourceConstants.MEAT, requiredCost));
 
-            RemoveMaterial("wood_01", requiredCost);
-            m_eventBus.Publish(new ResourceSpentEvent("wood_01", requiredCost));
+            RemoveMaterial(Core.Constants.ResourceConstants.WOOD, requiredCost);
+            m_eventBus.Publish(new ResourceSpentEvent(Core.Constants.ResourceConstants.WOOD, requiredCost));
 
-            RemoveMaterial("rock_01", requiredCost);
-            m_eventBus.Publish(new ResourceSpentEvent("rock_01", requiredCost));
+            RemoveMaterial(Core.Constants.ResourceConstants.ROCK, requiredCost);
+            m_eventBus.Publish(new ResourceSpentEvent(Core.Constants.ResourceConstants.ROCK, requiredCost));
 
-            RemoveMaterial("gold_01", requiredCost);
-            m_eventBus.Publish(new ResourceSpentEvent("gold_01", requiredCost));
+            RemoveMaterial(Core.Constants.ResourceConstants.GOLD, requiredCost);
+            m_eventBus.Publish(new ResourceSpentEvent(Core.Constants.ResourceConstants.GOLD, requiredCost));
         }
 
         m_eventBus.Publish(new NavigationApprovedEvent(destination));

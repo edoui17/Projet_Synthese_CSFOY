@@ -1,6 +1,6 @@
 using System;
 
-namespace Core.Managers.Stats;
+namespace Core.Managers;
 
 public class StatChangedEventArgs : EventArgs
 {

@@ -1,7 +1,7 @@
 namespace IslandSurvivor.Scenes.Projectiles;
 
 using Godot;
-using IslandSurvivor.Logic.Projectiles;
+using IslandSurvivor.Logic;
 
 public partial class DarkScythe : BaseProjectile
 {

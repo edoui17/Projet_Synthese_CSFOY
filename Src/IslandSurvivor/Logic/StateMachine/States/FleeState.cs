@@ -1,4 +1,4 @@
-namespace IslandSurvivor.Logic.StateMachine.States;
+namespace IslandSurvivor.Logic.StateMachine;
 
 using Godot;
 
@@ -63,7 +63,7 @@ public partial class FleeState : State
             return;
         }
 
-        if (NpcContext is IslandSurvivor.Scenes.NPC.Passive.PassiveNpcBase passive)
+        if (NpcContext is IslandSurvivor.Scenes.NPC.PassiveNpcBase passive)
         {
             if (passive.MovementController != null)
             {

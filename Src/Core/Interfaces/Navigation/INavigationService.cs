@@ -1,7 +1,7 @@
-namespace Core.Interfaces.Navigation;
+namespace Core.Interfaces;
 
 using System.Collections.Generic;
-using Core.Domain.Models;
+using Core.Domain;
 
 public interface INavigationService
 {

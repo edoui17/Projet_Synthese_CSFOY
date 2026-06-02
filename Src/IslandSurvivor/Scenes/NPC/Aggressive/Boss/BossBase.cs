@@ -1,7 +1,7 @@
-namespace IslandSurvivor.Scenes.NPC.Aggressive;
+namespace IslandSurvivor.Scenes.NPC;
 
 using Godot;
-using IslandSurvivor.Logic.Entities;
+using IslandSurvivor.Logic;
 
 public partial class BossBase : AggressiveNpcBase
 {
@@ -18,7 +18,7 @@ public partial class BossBase : AggressiveNpcBase
         var state = base.GetCombatDecisionState(distanceSquared, attackRangeSquared);
         if (state == IslandSurvivor.Logic.StateMachine.StateConstants.WindUpStateName)
         {
-            var windUp = m_stateMachine?.GetState(IslandSurvivor.Logic.StateMachine.StateConstants.WindUpStateName) as IslandSurvivor.Logic.StateMachine.States.WindUpState;
+            var windUp = m_stateMachine?.GetState(IslandSurvivor.Logic.StateMachine.StateConstants.WindUpStateName) as IslandSurvivor.Logic.StateMachine.WindUpState;
             if (windUp != null)
             {
                 windUp.NextStateAfterWindup = IslandSurvivor.Logic.StateMachine.StateConstants.MeleeAttackStateName;
@@ -67,7 +67,7 @@ public partial class BossBase : AggressiveNpcBase
         ChaseSpeed *= scalingFactor;
 
         Stats.MaxHealth = maxHealth;
-        Stats.SetCurrentValue(Core.Managers.Stats.StatType.Health, maxHealth);
+        Stats.SetCurrentValue(Core.Managers.StatType.Health, maxHealth);
         Stats.BaseAttackValue = baseDamage;
     }
 

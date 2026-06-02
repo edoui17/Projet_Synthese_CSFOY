@@ -1,4 +1,4 @@
-namespace IslandSurvivor.Logic.StateMachine.States;
+namespace IslandSurvivor.Logic.StateMachine;
 
 using Godot;
 
@@ -16,7 +16,7 @@ public partial class DashState : State
 
     public override bool IsActionState => true;
 
-    private IslandSurvivor.Nodes.Combat.AttackController m_attackController = null!;
+    private IslandSurvivor.Nodes.AttackController m_attackController = null!;
     private Sprite2D m_sprite = null!;
     private bool m_hasCompleted = false;
     private bool m_hasDealtDashDamage = false;
@@ -26,7 +26,7 @@ public partial class DashState : State
     public override void Initialize(StateMachine p_stateMachine, CharacterBody2D p_npcContext)
     {
         base.Initialize(p_stateMachine, p_npcContext);
-        m_attackController = NpcContext.GetNodeOrNull<IslandSurvivor.Nodes.Combat.AttackController>("AttackController");
+        m_attackController = NpcContext.GetNodeOrNull<IslandSurvivor.Nodes.AttackController>("AttackController");
         m_sprite = NpcContext.GetNodeOrNull<Sprite2D>("Sprite2D");
     }
 
@@ -37,7 +37,7 @@ public partial class DashState : State
         m_hasDealtDashDamage = false;
         m_timer = DashDuration;
 
-        if (NpcContext is IslandSurvivor.Scenes.NPC.Aggressive.AggressiveNpcBase aggNpc)
+        if (NpcContext is IslandSurvivor.Scenes.NPC.AggressiveNpcBase aggNpc)
         {
             if (aggNpc.LockedDirection != Vector2.Zero)
             {
@@ -162,19 +162,17 @@ public partial class DashState : State
                 npc.MoveAndSlide();
             }
 
-            if (npc.GetSlideCollisionCount() == 0) return;
+            int collisionCount = npc.GetSlideCollisionCount();
+            if (collisionCount == 0) return;
 
-            for (int i = 0; i < npc.GetSlideCollisionCount(); i++)
-            {
-                HandleCollisions(npc);
-            }
+            HandleCollisions(npc, collisionCount);
         }
         m_hasDealtDashDamage = true;
     }
 
-    private void HandleCollisions(IslandSurvivor.Scenes.NPC.NpcBase p_npc)
+    private void HandleCollisions(IslandSurvivor.Scenes.NPC.NpcBase p_npc, int p_collisionCount)
     {
-        for (int i = 0; i < p_npc.GetSlideCollisionCount(); i++)
+        for (int i = 0; i < p_collisionCount; i++)
         {
             KinematicCollision2D collision = p_npc.GetSlideCollision(i);
             var collider = collision.GetCollider();
@@ -198,12 +196,12 @@ public partial class DashState : State
     {
         if (m_hasDealtDashDamage) return;
 
-        if (NpcContext is not IslandSurvivor.Scenes.NPC.Aggressive.AggressiveNpcBase aggNpc || aggNpc.Stats == null) return;
+        if (NpcContext is not IslandSurvivor.Scenes.NPC.AggressiveNpcBase aggNpc || aggNpc.Stats == null) return;
 
         float baseDamage = aggNpc.Stats.BaseAttackValue;
         int finalDamage = Mathf.RoundToInt(baseDamage * DashDamageMultiplier);
 
-        if (p_targetNode is Core.Interfaces.Stats.IDamageable damageable)
+        if (p_targetNode is Core.Interfaces.IDamageable damageable)
         {
             damageable.TakeDamage(finalDamage, NpcContext);
         }

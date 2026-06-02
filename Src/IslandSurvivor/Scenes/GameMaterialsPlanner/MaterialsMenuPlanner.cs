@@ -1,14 +1,14 @@
 using Godot;
 using System.Collections.Generic;
-using Core.Managers.Stats;
+using Core.Managers;
 using Core.Interfaces;
 
 public partial class MaterialsMenuPlanner : Control
 {
-    private static readonly string RESOURCE_MEAT = "meat_01";
-    private static readonly string RESOURCE_WOOD = "wood_01";
-    private static readonly string RESOURCE_ROCK = "rock_01";
-    private static readonly string RESOURCE_GOLD = "gold_01";
+    private static readonly string RESOURCE_MEAT = Core.Constants.ResourceConstants.MEAT;
+    private static readonly string RESOURCE_WOOD = Core.Constants.ResourceConstants.WOOD;
+    private static readonly string RESOURCE_ROCK = Core.Constants.ResourceConstants.ROCK;
+    private static readonly string RESOURCE_GOLD = Core.Constants.ResourceConstants.GOLD;
 
     [ExportGroup("Boutons d'Amélioration")]
     [Export] private Button m_buyHealthBtn = null!;
@@ -93,7 +93,7 @@ public partial class MaterialsMenuPlanner : Control
     {
         // L'ouverture du menu est maintenant gratuite
         // 1. Trouver le NavigationMenu de façon robuste à partir de la racine
-        var navMenu = GetTree().Root.GetNodeOrNull<IslandSurvivor.Scenes.NavigationMenu.NavigationMenu>("Main/CanvasLayer/NavigationMenu");
+        var navMenu = GetTree().Root.GetNodeOrNull<IslandSurvivor.Scenes.NavigationMenu>("Main/CanvasLayer/NavigationMenu");
 
         if (navMenu == null)
         {

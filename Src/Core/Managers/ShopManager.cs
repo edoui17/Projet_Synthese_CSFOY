@@ -45,10 +45,10 @@ public class ShopManager : IShopManager
             return false;
         }
 
-        int meatCount = p_inventoryManager.GetMaterialCount("meat_01");
-        int woodCount = p_inventoryManager.GetMaterialCount("wood_01");
-        int rockCount = p_inventoryManager.GetMaterialCount("rock_01");
-        int goldCount = p_inventoryManager.GetMaterialCount("gold_01");
+        int meatCount = p_inventoryManager.GetMaterialCount(Core.Constants.ResourceConstants.MEAT);
+        int woodCount = p_inventoryManager.GetMaterialCount(Core.Constants.ResourceConstants.WOOD);
+        int rockCount = p_inventoryManager.GetMaterialCount(Core.Constants.ResourceConstants.ROCK);
+        int goldCount = p_inventoryManager.GetMaterialCount(Core.Constants.ResourceConstants.GOLD);
 
         return meatCount >= p_cost && woodCount >= p_cost && rockCount >= p_cost && goldCount >= p_cost;
     }

@@ -3,7 +3,7 @@ using Core.Domain;
 using IslandSurvivor.Globals;
 using System;
 
-namespace IslandSurvivor.Scenes.Ressources;
+namespace IslandSurvivor.Scenes;
 
 public partial class ResourceDrop : Node2D
 {

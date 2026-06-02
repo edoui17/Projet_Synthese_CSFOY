@@ -1,9 +1,8 @@
 using System.Collections.Generic;
 using Core.Events;
 using Core.Interfaces;
-using Core.Interfaces.Stats;
 
-namespace Core.Managers.Stats;
+namespace Core.Managers;
 
 public class StatTracker : IStatTracker
 {

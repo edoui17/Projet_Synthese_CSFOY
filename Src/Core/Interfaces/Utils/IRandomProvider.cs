@@ -1,4 +1,4 @@
-namespace Core.Interfaces.Utils;
+namespace Core.Interfaces;
 
 /// <summary>
 /// Provides deterministic random number generation abstractions.

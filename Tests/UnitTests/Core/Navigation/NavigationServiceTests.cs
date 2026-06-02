@@ -4,10 +4,8 @@ using System.Linq;
 using Moq;
 using Xunit;
 using global::Core.Domain;
-using global::Core.Domain.Models;
 using global::Core.Interfaces;
-using global::Core.Interfaces.Navigation;
-using global::Core.Managers.Navigation;
+using global::Core.Managers;
 using global::Core.Events;
 
 public class NavigationServiceTests
