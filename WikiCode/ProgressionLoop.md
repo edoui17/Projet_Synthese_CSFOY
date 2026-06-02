@@ -15,8 +15,8 @@ The Core layer is strictly responsible for math and raw data storage.
 
 ### 2. The "Orchestrator" (`IslandSurvivor.Managers.ProgressionManager`)
 Located in the game client (Godot), this global Autoload acts as the bridge between gameplay and the Core.
-- Subscribes to events triggered by gameplay: `ResourceHarvestedEvent`, `EnemyKilledEvent`, and `NavigationRequestedEvent`.
-- Determines the *value* of these actions (e.g., harvesting gives 10 XP, killing an enemy gives 30 XP, traveling to a new island gives 50 XP).
+- Subscribes to events triggered by gameplay: `MaterialDestroyedEvent`, `EnemyKilledEvent`, and `TeleportRequestedEvent`.
+- Determines the *value* of these actions for specific activities like harvesting or discovering a new island, or receives the value directly from events (e.g., extracting `XpEarned` provided by `EnemyKilledEvent`).
 - Injects these values back into the Core by calling `StatTracker.AddExperience()`.
 - Exposes `IsBossReady()` by comparing the Player's level with the requirements set in the `ProgressionRequirement` resource.
 
@@ -26,7 +26,7 @@ A pure Godot Resource (`.tres`) that allows designers to edit requirements witho
 ## UI Flow
 1. **Player acts** (e.g., destroys a `Soldier` node).
 2. **Event Emission**: The node publishes an `EnemyKilledEvent` via the `EventBus`.
-3. **Orchestrator computes**: `ProgressionManager` intercepts the event, decides the reward (30 XP), and calls `StatTracker.AddExperience(30)`.
+3. **Orchestrator delegates**: `ProgressionManager` intercepts the event, directly extracts the reward from it (e.g. `p_event.XpEarned`), and calls `StatTracker.AddExperience(...)`.
 4. **Core updates**: `StatTracker` increments XP, determines a level-up has occurred, and publishes `LevelChangedEvent` and `ExperienceGainedEvent`.
 5. **UI reacts**: `Player.cs` (via subscribed listeners) updates the `LevelLabel` and triggers a temporary `XpGainLabel` pop-up to provide visual feedback to the user.
 
