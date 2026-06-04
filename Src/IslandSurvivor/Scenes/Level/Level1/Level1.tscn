@@ -55,12 +55,3 @@ uv = PackedVector2Array(-277.30957, 36.86975)
 
 [node name="Portal" parent="." index="4" unique_id=704496346 instance=ExtResource("3_portal")]
 position = Vector2(0, 50)
-
-[node name="CanvasLayer" parent="." index="6" unique_id=644654125]
-visible = false
-
-[node name="DefeatMenu" parent="CanvasLayer" index="3" unique_id=987654321]
-visible = false
-
-[node name="VictoryMenu" parent="CanvasLayer" index="4" unique_id=987654322]
-visible = false
