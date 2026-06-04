@@ -1,0 +1,79 @@
+[gd_scene format=3 uid="uid://dlho41pwxcx28"]
+
+[ext_resource type="PackedScene" uid="uid://ms5y206nvi0v" path="res://Scenes/NPC/Aggressive/Normal/Archer/Archer.tscn" id="1_qltij"]
+[ext_resource type="PackedScene" uid="uid://dyxx1q578y7t0" path="res://Scenes/NPC/Aggressive/Normal/Soldier/Soldier.tscn" id="2_02q83"]
+[ext_resource type="PackedScene" uid="uid://bt5vis3qswuxb" path="res://Scenes/NPC/Aggressive/Normal/Lancer/Lancer.tscn" id="3_xi5oo"]
+
+[node name="TestEnnemieCouleur" type="Node2D" unique_id=22320036]
+
+[node name="Archer" parent="." unique_id=61408674 instance=ExtResource("1_qltij")]
+position = Vector2(157, 134)
+IdleSpeed = 0.0
+
+[node name="Archer2" parent="." unique_id=1663300090 instance=ExtResource("1_qltij")]
+position = Vector2(157, 230)
+LevelIndex = 3
+IdleSpeed = 0.0
+
+[node name="Archer3" parent="." unique_id=741417796 instance=ExtResource("1_qltij")]
+position = Vector2(160, 326)
+LevelIndex = 6
+IdleSpeed = 0.0
+
+[node name="Archer4" parent="." unique_id=577338373 instance=ExtResource("1_qltij")]
+position = Vector2(158, 410)
+LevelIndex = 9
+IdleSpeed = 0.0
+
+[node name="Archer5" parent="." unique_id=217049618 instance=ExtResource("1_qltij")]
+position = Vector2(159, 507)
+LevelIndex = 12
+IdleSpeed = 0.0
+
+[node name="Soldier" parent="." unique_id=666187867 instance=ExtResource("2_02q83")]
+position = Vector2(471, 126)
+IdleSpeed = 0.0
+
+[node name="Soldier2" parent="." unique_id=898690332 instance=ExtResource("2_02q83")]
+position = Vector2(472, 230)
+LevelIndex = 3
+IdleSpeed = 0.0
+
+[node name="Soldier3" parent="." unique_id=923224023 instance=ExtResource("2_02q83")]
+position = Vector2(467, 328)
+LevelIndex = 6
+IdleSpeed = 0.0
+
+[node name="Soldier4" parent="." unique_id=1677229887 instance=ExtResource("2_02q83")]
+position = Vector2(469, 412)
+LevelIndex = 9
+IdleSpeed = 0.0
+
+[node name="Soldier5" parent="." unique_id=321390212 instance=ExtResource("2_02q83")]
+position = Vector2(469, 508)
+LevelIndex = 12
+IdleSpeed = 0.0
+
+[node name="Lancer" parent="." unique_id=1880312545 instance=ExtResource("3_xi5oo")]
+position = Vector2(677, 135)
+IdleSpeed = 0.0
+
+[node name="Lancer2" parent="." unique_id=1468453471 instance=ExtResource("3_xi5oo")]
+position = Vector2(679, 230)
+LevelIndex = 3
+IdleSpeed = 0.0
+
+[node name="Lancer3" parent="." unique_id=228036949 instance=ExtResource("3_xi5oo")]
+position = Vector2(681, 295)
+LevelIndex = 6
+IdleSpeed = 0.0
+
+[node name="Lancer4" parent="." unique_id=104833454 instance=ExtResource("3_xi5oo")]
+position = Vector2(684, 410)
+LevelIndex = 9
+IdleSpeed = 0.0
+
+[node name="Lancer5" parent="." unique_id=734602809 instance=ExtResource("3_xi5oo")]
+position = Vector2(683, 509)
+LevelIndex = 12
+IdleSpeed = 0.0
