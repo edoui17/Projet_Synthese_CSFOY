@@ -39,8 +39,42 @@ public partial class GameManager : Node
         // Subscribe to global signals
         SignalManager.Instance.OfflineModeRequested += SetGuestMode;
 
+#if DEBUG
+        CallDeferred(MethodName.DeferredDebugInit);
+#else
+        InitializeGameAsync();
+#endif
+    }
+
+#if DEBUG
+    private void DeferredDebugInit()
+    {
+        // Check if we are running the main scene or a specific test scene
+        string mainScenePath = ProjectSettings.GetSetting("application/run/main_scene").AsString() ?? string.Empty;
+        string currentScenePath = GetTree().CurrentScene?.SceneFilePath ?? string.Empty;
+
+        // Also check if we are already in the LoginScreen to prevent an infinite loop
+        bool isLoginScreen = currentScenePath != null && currentScenePath.Contains("LoginScreen.tscn");
+
+        if (!string.IsNullOrEmpty(currentScenePath) && currentScenePath != mainScenePath && !isLoginScreen)
+        {
+            GD.Print($"[GameManager] DEBUG MODE: Running individual scene: {currentScenePath}. Skipping login flow and setting default Guest profile.");
+
+            // Set up a default profile for testing
+            PlayerProfile defaultProfile = new PlayerProfile
+            {
+                Player = new Core.Domain.Player { Username = "DebugTester" }
+            };
+            ServiceRegistry.Instance.EventBus.Publish(new ProfileLoadedEvent(defaultProfile));
+
+            m_status = AppStatus.Ready;
+            m_isGuest = true;
+            return;
+        }
+
         InitializeGameAsync();
     }
+#endif
 
     public async void InitializeGameAsync()
     {
