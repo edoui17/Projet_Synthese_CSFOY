@@ -382,11 +382,11 @@ Pour tester l'écran de login dans l'écosystème complet :
 ### 2026-05-23 - [Correctif] US 11.0.2 : Résolution du blocage de synchronisation et Distinction des erreurs
 - **Bug Fix (Sync Loop)**: Correction d'un problème où le changement direct de scène vers `LoadingScreen.tscn` après le login ne déclenchait pas l'initialisation du `GameManager`. Désormais, `LoginScreen` appelle explicitement `GameManager.InitializeGameAsync()` en cas de succès, garantissant le lancement de la routine de synchronisation du profil.
 - **Bug Fix (Error Handling)**: Refonte de `ApiService.LoginAsync` pour ne plus avaler les `HttpRequestException`. L'API lève désormais une exception pour les erreurs 5xx (serveur) ou réseau, permettant au client d'afficher "Serveur API indisponible" au lieu de "Identifiants invalides" (réservé au code 401).
-## 2026-05-31 - US 10.1.7 : Web Leaderboard Manual & Auto Refresh
+## 2026-06-05 - US 10.1.7 : Web Leaderboard Manual & Auto Refresh
 - **Refresh Strategy**: Implemented both manual and automatic (1h interval) refresh logic in the Blazor `Index.razor` page.
-- **Timer Management**: Used `System.Timers.Timer` with explicit `IDisposable` implementation to prevent memory leaks and ensure the background refresh is cleaned up when navigating away.
-- **UX Feedback**: Introduced a `m_isRefreshing` state that disables the refresh button and applies a CSS-based rotation animation (`@@keyframes`) to the refresh icon during API calls.
-- **Race Condition Prevention**: The manual refresh button explicitly resets the automatic timer to prevent overlapping API calls.
+- **Timer Management**: Used `System.Timers.Timer` with explicit `IDisposable` implementation with REFRESH_INTERVAL = 3600000.
+- **UX Feedback**: Introduced a `m_isRefreshing` state that disables the refresh button and applies a CSS-based rotation animation (`.spinning`) exclusively to the `<img>` element.
+- **Technical Note**: Used `InvokeAsync(StateHasChanged)` for UI updates from the background timer thread. Added fixed dimensions to the refresh icon to prevent layout shifts.
 
 ## 2026-05-30 - US 20.0.6 : Godot Node-Based State Machine Architecture
 - **Composition over Inheritance:** Replaced monolithic C# `_PhysicsProcess` controllers with Godot nodes using a strict Composition pattern. The `StateMachine` (parent) orchestrates `State` (child) nodes (e.g., `IdleState`, `ChaseState`), allowing designers to mix-and-match logic directly in the Inspector.
