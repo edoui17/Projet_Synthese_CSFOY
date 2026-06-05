@@ -107,7 +107,7 @@
     private string m_searchQuery = string.Empty;
     private string m_sortCriteria = "Level";
     private bool m_isRefreshing = false;
-    private Timer? m_refreshTimer;
+    private System.Timers.Timer? m_refreshTimer;
     private const double REFRESH_INTERVAL = 3600000; // 1 hour in milliseconds
 
     public string SearchQuery
@@ -116,7 +116,6 @@
         set
         {
             m_searchQuery = value;
-            // Update happens automatically due to @bind:event="oninput"
         }
     }
 
@@ -126,7 +125,6 @@
         set
         {
             m_sortCriteria = value;
-            // Update happens automatically when selection changes
         }
     }
 
@@ -177,7 +175,6 @@
         };
     }
 
-    
     protected override async Task OnInitializedAsync()
     {
         await LoadLeaderboardAsync();
@@ -187,7 +184,7 @@
     private void StartRefreshTimer()
     {
         m_refreshTimer?.Dispose();
-        m_refreshTimer = new Timer(REFRESH_INTERVAL);
+        m_refreshTimer = new System.Timers.Timer(REFRESH_INTERVAL);
         m_refreshTimer.Elapsed += async (sender, e) => await InvokeAsync(async () => await LoadLeaderboardAsync());
         m_refreshTimer.AutoReset = true;
         m_refreshTimer.Enabled = true;
