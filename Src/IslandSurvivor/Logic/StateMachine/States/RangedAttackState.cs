@@ -12,6 +12,7 @@ public partial class RangedAttackState : State
     private IslandSurvivor.Nodes.Shooter m_shooter = null!;
     private IslandSurvivor.Nodes.AttackController m_attackController = null!;
     private Sprite2D m_sprite = null!;
+    private AnimationPlayer m_animationPlayer = null!;
     private bool m_hasCompleted = false;
 
     public override void Initialize(StateMachine p_stateMachine, CharacterBody2D p_npcContext)
@@ -20,6 +21,7 @@ public partial class RangedAttackState : State
         m_shooter = NpcContext.GetNodeOrNull<IslandSurvivor.Nodes.Shooter>("Shooter");
         m_attackController = NpcContext.GetNodeOrNull<IslandSurvivor.Nodes.AttackController>("AttackController");
         m_sprite = NpcContext.GetNodeOrNull<Sprite2D>("Sprite2D");
+        m_animationPlayer = NpcContext.GetNodeOrNull<AnimationPlayer>("AnimationPlayer");
     }
 
     public override void Enter()
@@ -46,6 +48,10 @@ public partial class RangedAttackState : State
         string fullAnimName = $"{AttackAnimationName}{animSuffix}";
 
         if (AttackAnimationName.EndsWith("_Side") || AttackAnimationName.EndsWith("_Up") || AttackAnimationName.EndsWith("_Down"))
+        {
+            fullAnimName = AttackAnimationName;
+        }
+        else if (m_animationPlayer != null && !m_animationPlayer.HasAnimation(fullAnimName))
         {
             fullAnimName = AttackAnimationName;
         }
