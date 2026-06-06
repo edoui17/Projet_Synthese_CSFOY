@@ -19,3 +19,6 @@
 ## 2026-06-02 - [Lambda Closure Allocation in CallDeferred]
  **Learning:** Using `Callable.From(() => { ... }).CallDeferred()` inside a frequently called method (like `ExecuteAttackHit()`) allocates a lambda closure on the heap every execution, causing unnecessary Garbage Collection (GC) spikes in Godot 4 C#.
  **Action:** Extract the lambda logic into a dedicated private method and use `CallDeferred(MethodName.YourMethod)` to avoid delegate/closure heap allocations.
+## 2026-06-05 - [Redundant Type Casting Overhead in Hot Paths]
+ **Learning:** Repeatedly casting the same Godot Engine object (e.g., `(IslandSurvivor.Scenes.NPC.AggressiveNpcBase)NpcContext`) inline within a hot path like `PhysicsUpdate` or `_PhysicsProcess` causes unnecessary C# type-checking overhead and pollutes the code visually. When multiple casts of the same object are required in a method block, it implies structural overhead.
+ **Action:** Always use the `is` pattern matching to cast the object once and cache it in a local variable (e.g., `if (NpcContext is AggressiveNpcBase aggressiveNpc)`), then reuse that cached variable for all property accesses within the scope.
