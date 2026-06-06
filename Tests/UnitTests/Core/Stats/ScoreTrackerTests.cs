@@ -1,7 +1,7 @@
 using Xunit;
-using Core.Managers.Stats;
+using Core.Managers;
 using Core.Interfaces;
-using Core.Interfaces.Stats;
+using Core.Interfaces;
 using Core.Events;
 using Moq;
 

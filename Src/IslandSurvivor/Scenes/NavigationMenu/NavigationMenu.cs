@@ -1,11 +1,11 @@
 using Godot;
 using System;
 using System.Collections.Generic;
-using Core.Domain.Models;
-using Core.Interfaces.Navigation;
-using Core.Managers.Navigation;
+using Core.Domain;
+using Core.Interfaces;
+using Core.Managers;
 
-namespace IslandSurvivor.Scenes.NavigationMenu;
+namespace IslandSurvivor.Scenes;
 
 public partial class NavigationMenu : Control
 {
@@ -37,7 +37,7 @@ public partial class NavigationMenu : Control
 
     private bool IsPlayerHome()
     {
-        var scoreManager = GetTree().CurrentScene.GetNodeOrNull<Nodes.StatsManager.ScoreManager>("ScoreManager");
+        var scoreManager = GetTree().CurrentScene.GetNodeOrNull<Nodes.ScoreManager>("ScoreManager");
         if (scoreManager != null)
         {
             var tracker = scoreManager.GetTracker();

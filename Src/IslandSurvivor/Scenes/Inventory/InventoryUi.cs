@@ -23,6 +23,11 @@ public partial class InventoryUi : Godot.Control
         FoodSlot.SetIcon(FoodTexture);
         GoldSlot.SetIcon(GoldTexture);
 
+        WoodSlot.ResourceName = "Wood";
+        StoneSlot.ResourceName = "Stone";
+        FoodSlot.ResourceName = "Food";
+        GoldSlot.ResourceName = "Gold";
+
         if (SignalManager.Instance != null)
         {
             SignalManager.Instance.InventoryChanged += OnInventoryChanged;
@@ -39,13 +44,12 @@ public partial class InventoryUi : Godot.Control
 
         // Ensure these IDs match the EntityId exported in the Resource scripts
         // e.g. "wood_01" -> we can track them individually or you might have a generic type
-        // The current implementation in resources uses EntityId: "wood_01", "rock_01", "meat_01", "gold_01"
         // Update: Let's fetch all slots and update based on type or ID
 
-        int woodCount = manager.GetMaterialCount("wood_01");
-        int stoneCount = manager.GetMaterialCount("rock_01");
-        int foodCount = manager.GetMaterialCount("meat_01");
-        int goldCount = manager.GetMaterialCount("gold_01");
+        int woodCount = manager.GetMaterialCount(Core.Constants.ResourceConstants.WOOD);
+        int stoneCount = manager.GetMaterialCount(Core.Constants.ResourceConstants.ROCK);
+        int foodCount = manager.GetMaterialCount(Core.Constants.ResourceConstants.MEAT);
+        int goldCount = manager.GetMaterialCount(Core.Constants.ResourceConstants.GOLD);
 
         WoodSlot.SetAmount(woodCount);
         StoneSlot.SetAmount(stoneCount);

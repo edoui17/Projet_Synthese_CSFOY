@@ -1,7 +1,8 @@
 [gd_resource type="Resource" script_class="EnemySpawnConfig" format=3 uid="uid://dbscgytmkqyn7"]
 
-[ext_resource type="PackedScene" uid="uid://ms5y206nvi0v" path="res://Scenes/NPC/Agressive/Normal/Archer/Archer.tscn" id="1_scene"]
+[ext_resource type="PackedScene" uid="uid://ms5y206nvi0v" path="res://Scenes/NPC/Aggressive/Normal/Archer/Archer.tscn" id="1_scene"]
 [ext_resource type="Script" uid="uid://cbbphk4jiuhm5" path="res://Nodes/Zones/EnemySpawnConfig.cs" id="2_script"]
+
 
 [resource]
 script = ExtResource("2_script")

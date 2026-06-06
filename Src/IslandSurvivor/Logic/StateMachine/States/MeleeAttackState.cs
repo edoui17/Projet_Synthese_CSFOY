@@ -1,4 +1,4 @@
-namespace IslandSurvivor.Logic.StateMachine.States;
+namespace IslandSurvivor.Logic.StateMachine;
 
 using Godot;
 
@@ -9,14 +9,14 @@ public partial class MeleeAttackState : State
 
     public override bool IsActionState => true;
 
-    private IslandSurvivor.Nodes.Combat.AttackController m_attackController = null!;
+    private IslandSurvivor.Nodes.AttackController m_attackController = null!;
     private Sprite2D m_sprite = null!;
     private bool m_hasCompleted = false;
 
     public override void Initialize(StateMachine p_stateMachine, CharacterBody2D p_npcContext)
     {
         base.Initialize(p_stateMachine, p_npcContext);
-        m_attackController = NpcContext.GetNodeOrNull<IslandSurvivor.Nodes.Combat.AttackController>("AttackController");
+        m_attackController = NpcContext.GetNodeOrNull<IslandSurvivor.Nodes.AttackController>("AttackController");
         m_sprite = NpcContext.GetNodeOrNull<Sprite2D>("Sprite2D");
     }
 
@@ -37,7 +37,7 @@ public partial class MeleeAttackState : State
 
             bool handledTargetDirection = false;
 
-            if (NpcContext is IslandSurvivor.Scenes.NPC.Aggressive.AggressiveNpcBase aggNpc)
+            if (NpcContext is IslandSurvivor.Scenes.NPC.AggressiveNpcBase aggNpc)
             {
                 var target = aggNpc.GetTarget();
                 if (GodotObject.IsInstanceValid(target))
@@ -107,30 +107,30 @@ public partial class MeleeAttackState : State
         }
     }
 
-  // Inside MeleeAttackState.cs, modify the Update method:
-  public override void Update(double p_delta)
-  {
-    if (m_hasCompleted) return;
-
-    if (m_attackController != null)
+    // Inside MeleeAttackState.cs, modify the Update method:
+    public override void Update(double p_delta)
     {
-      // Add a safety check: only complete if the controller is NOT attacking
-      // AND it isn't in the middle of a cleanup frame.
-      if (!m_attackController.IsAttacking)
-      {
-        // Optional: Add a frame delay to let the physics server catch up
-        // or simply ensure the state is fully stable.
-        m_hasCompleted = true;
+        if (m_hasCompleted) return;
 
-        // Use call_deferred to ensure the transition happens AFTER 
-        // the current frame's physics/animation tasks are processed
-        Callable.From(() => CompleteState(StateExitReason.Finished)).CallDeferred();
-      }
+        if (m_attackController != null)
+        {
+            // Add a safety check: only complete if the controller is NOT attacking
+            // AND it isn't in the middle of a cleanup frame.
+            if (!m_attackController.IsAttacking)
+            {
+                // Optional: Add a frame delay to let the physics server catch up
+                // or simply ensure the state is fully stable.
+                m_hasCompleted = true;
+
+                // Use call_deferred to ensure the transition happens AFTER
+                // the current frame's physics/animation tasks are processed
+                Callable.From(() => CompleteState(StateExitReason.Finished)).CallDeferred();
+            }
+        }
+        else
+        {
+            m_hasCompleted = true;
+            CompleteState(StateExitReason.Finished);
+        }
     }
-    else
-    {
-      m_hasCompleted = true;
-      CompleteState(StateExitReason.Finished);
-    }
-  }
 }

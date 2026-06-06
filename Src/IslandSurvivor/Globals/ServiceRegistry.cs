@@ -1,10 +1,10 @@
 using Godot;
 using Core.Interfaces;
-using Core.Interfaces.Stats;
-using Core.Interfaces.Navigation;
+using Core.Interfaces;
+using Core.Interfaces;
 using Core.Managers;
-using Core.Managers.Stats;
-using Core.Managers.Navigation;
+using Core.Managers;
+using Core.Managers;
 using Core.Services;
 using Core.Domain;
 using Core.Events;
@@ -24,6 +24,7 @@ public partial class ServiceRegistry : Node
     public IStatTracker StatTracker { get; private set; } = null!;
     public ISaveService SaveService { get; private set; } = null!;
     public IDifficultyManager DifficultyManager { get; private set; } = null!;
+    public IAudioSettingsManager AudioSettingsManager { get; private set; } = null!;
 
     public override void _EnterTree()
     {
@@ -46,6 +47,7 @@ public partial class ServiceRegistry : Node
         SaveService = new GodotSaveService();
         ScoreTracker = new ScoreTracker(SaveService, EventBus);
         NavigationService = new NavigationService(EventBus, ShopManager, InventoryManager);
+        AudioSettingsManager = new AudioSettingsManager(SaveService);
 
         string apiKey = ProjectSettings.GetSetting("network/api/api_key").AsString();
         ApiService = new ApiService(SaveService, apiKey);

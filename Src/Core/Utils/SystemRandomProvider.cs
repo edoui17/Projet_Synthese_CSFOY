@@ -1,5 +1,5 @@
 using System;
-using Core.Interfaces.Utils;
+using Core.Interfaces;
 
 namespace Core.Utils;
 

@@ -2,10 +2,10 @@ using IslandSurvivor.Nodes;
 namespace IslandSurvivor.Scenes.NPC;
 
 using Godot;
-using Core.Interfaces.Stats;
-using Core.Managers.Stats;
+using Core.Interfaces;
+using Core.Managers;
 using IslandSurvivor.Interfaces;
-using IslandSurvivor.Nodes.Movement;
+using IslandSurvivor.Nodes;
 
 public partial class NpcBase : CharacterBody2D, INpc, IDamageable
 {
@@ -52,9 +52,9 @@ public partial class NpcBase : CharacterBody2D, INpc, IDamageable
         m_stateMachine = GetNodeOrNull<IslandSurvivor.Logic.StateMachine.StateMachine>("StateMachine");
         if (m_stateMachine != null)
         {
-            m_stateMachine.Initialize(null, this);
+            m_stateMachine.Initialize(null!, this);
 
-            var deathState = m_stateMachine.GetNodeOrNull<IslandSurvivor.Logic.StateMachine.States.DeathState>("DeathState");
+            var deathState = m_stateMachine.GetNodeOrNull<IslandSurvivor.Logic.StateMachine.DeathState>("DeathState");
             if (deathState != null)
             {
                 deathState.StateFinished += OnDeathStateFinished;

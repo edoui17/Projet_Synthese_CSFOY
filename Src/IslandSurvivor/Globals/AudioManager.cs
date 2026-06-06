@@ -12,7 +12,7 @@ public partial class AudioManager : Node
         public float DefaultPitchScale { get; set; } = 1f;
     }
 
-    private static AudioManager m_instance;
+    private static AudioManager m_instance = null!;
     public static AudioManager Instance => m_instance;
 
     private readonly List<AudioStreamPlayer> m_availablePlayers = new();
@@ -53,6 +53,32 @@ public partial class AudioManager : Node
         }
 
         InitializeLibrary();
+    }
+
+    public override void _Ready()
+    {
+        ApplyAudioSettings();
+    }
+
+    private void ApplyAudioSettings()
+    {
+        var settingsManager = ServiceRegistry.Instance.AudioSettingsManager;
+        if (settingsManager == null) return;
+
+        var settings = settingsManager.GetSettings();
+
+        int masterBus = AudioServer.GetBusIndex("Master");
+        int musicBus = AudioServer.GetBusIndex("Music");
+        int sfxBus = AudioServer.GetBusIndex("SFX");
+
+        AudioServer.SetBusVolumeDb(masterBus, Mathf.LinearToDb(settings.MasterVolume));
+        AudioServer.SetBusMute(masterBus, settings.MasterVolume <= 0.0001f);
+
+        AudioServer.SetBusVolumeDb(musicBus, Mathf.LinearToDb(settings.MusicVolume));
+        AudioServer.SetBusMute(musicBus, settings.MusicVolume <= 0.0001f);
+
+        AudioServer.SetBusVolumeDb(sfxBus, Mathf.LinearToDb(settings.SfxVolume));
+        AudioServer.SetBusMute(sfxBus, settings.SfxVolume <= 0.0001f);
     }
 
     private void InitializeLibrary()

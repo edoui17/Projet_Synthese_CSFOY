@@ -1,6 +1,6 @@
 using Godot;
 using System;
-using Core.Domain.Models;
+using Core.Domain;
 using Core.Interfaces;
 
 namespace IslandSurvivor.Managers;

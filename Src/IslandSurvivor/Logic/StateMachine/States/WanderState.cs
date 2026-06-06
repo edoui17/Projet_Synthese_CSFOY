@@ -1,4 +1,4 @@
-namespace IslandSurvivor.Logic.StateMachine.States;
+namespace IslandSurvivor.Logic.StateMachine;
 
 using System;
 using Godot;
@@ -90,7 +90,7 @@ public partial class WanderState : State
             return;
         }
 
-        if (NpcContext is IslandSurvivor.Scenes.NPC.Aggressive.AggressiveNpcBase aggressiveNpc)
+        if (NpcContext is IslandSurvivor.Scenes.NPC.AggressiveNpcBase aggressiveNpc)
         {
             if (aggressiveNpc.HasTargetAndLineOfSight())
             {
@@ -151,8 +151,10 @@ public partial class WanderState : State
                 npcBaseCollision.Velocity = Vector2.Zero;
                 if (m_animationPlayer != null && m_animationPlayer.HasAnimation("Idle"))
                 {
-                     m_animationPlayer.Play("Idle"); // Or just stop current animation.
-                } else if (m_animationPlayer != null) {
+                    m_animationPlayer.Play("Idle"); // Or just stop current animation.
+                }
+                else if (m_animationPlayer != null)
+                {
                     m_animationPlayer.Stop();
                 }
             }

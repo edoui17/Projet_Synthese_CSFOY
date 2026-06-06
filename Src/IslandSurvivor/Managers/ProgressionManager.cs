@@ -7,17 +7,17 @@ namespace IslandSurvivor.Managers;
 
 public partial class ProgressionManager : Node
 {
-    public static ProgressionManager Instance { get; private set; }
+    public static ProgressionManager Instance { get; private set; } = null!;
 
     [Export]
-    public ProgressionRequirement Requirement { get; set; }
+    public ProgressionRequirement Requirement { get; set; } = null!;
 
     // Configuration for XP rewards
     [ExportGroup("XP Rewards")]
     [Export] public float XpFromHarvesting = 10f;
     [Export] public float XpFromNewIsland = 50f;
 
-    private IEventBus m_eventBus;
+    private IEventBus m_eventBus = null!;
 
     public override void _EnterTree()
     {
@@ -66,7 +66,7 @@ public partial class ProgressionManager : Node
     private void OnTeleportRequestedEvent(TeleportRequestedEvent p_event)
     {
         // Don't reward XP for returning home, only for exploring
-        if (p_event.Destination.Id != Core.Domain.Models.IslandDestination.HomeIsland.Id)
+        if (p_event.Destination.Id != Core.Domain.IslandDestination.HomeIsland.Id)
         {
             Globals.ServiceRegistry.Instance.StatTracker.AddExperience(XpFromNewIsland);
         }
@@ -76,7 +76,7 @@ public partial class ProgressionManager : Node
     {
         if (Requirement == null) return false;
 
-        float currentLevel = Globals.ServiceRegistry.Instance.StatTracker.GetCurrentValue(Core.Managers.Stats.StatType.Level);
+        float currentLevel = Globals.ServiceRegistry.Instance.StatTracker.GetCurrentValue(Core.Managers.StatType.Level);
         return currentLevel >= Requirement.BossLevelRequirement;
     }
 }

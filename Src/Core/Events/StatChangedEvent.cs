@@ -1,5 +1,5 @@
 using Core.Interfaces;
-using Core.Managers.Stats;
+using Core.Managers;
 
 namespace Core.Events;
 

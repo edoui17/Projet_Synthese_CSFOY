@@ -1,4 +1,4 @@
-namespace Core.Domain.Models;
+namespace Core.Domain;
 
 public record IslandDestination(string Id, string ScenePath, string Biome, int Difficulty, int ResourceCost, int DangerLevel)
 {

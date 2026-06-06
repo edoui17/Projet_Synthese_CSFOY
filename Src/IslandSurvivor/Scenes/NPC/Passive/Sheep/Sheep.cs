@@ -1,8 +1,8 @@
-namespace IslandSurvivor.Scenes.NPC.Passive;
+namespace IslandSurvivor.Scenes.NPC;
 
-using IslandSurvivor.Logic.Entities;
+using IslandSurvivor.Logic;
 using Core.Domain;
-using Core.Managers.Stats;
+using Core.Managers;
 using Godot;
 using IslandSurvivor.Globals;
 using IslandSurvivor.Nodes;
@@ -82,7 +82,7 @@ public partial class Sheep : PassiveNpcBase
 
             meatAmount += bonusQuantity;
 
-            ResourceItem meatResource = new ResourceItem("meat_01", "Viande", "Meat", "res://Assets/TinySwords/Terrain/Meat Resource/Meat Resource.png");
+            ResourceItem meatResource = new ResourceItem(Core.Constants.ResourceConstants.MEAT, "Viande", "Meat", "res://Assets/TinySwords/Terrain/Meat Resource/Meat Resource.png");
 
             Node2D? targetNode = p_attacker as Node2D;
             Vector2 fallbackPosition = targetNode != null ? targetNode.GlobalPosition : GlobalPosition;
@@ -92,9 +92,9 @@ public partial class Sheep : PassiveNpcBase
             {
                 for (int i = 0; i < meatAmount; i++)
                 {
-                    if (dropScene.Instantiate() is IslandSurvivor.Scenes.Ressources.ResourceDrop drop)
+                    if (dropScene.Instantiate() is IslandSurvivor.Scenes.ResourceDrop drop)
                     {
-                        drop.Initialize(meatResource, 1, GlobalPosition, targetNode, fallbackPosition);
+                        drop.Initialize(meatResource, 1, GlobalPosition, targetNode!, fallbackPosition);
                         GetParent().AddChild(drop);
                     }
                 }

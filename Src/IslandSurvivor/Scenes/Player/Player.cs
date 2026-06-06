@@ -1,5 +1,5 @@
-using Core.Interfaces.Stats;
-using Core.Managers.Stats;
+using Core.Interfaces;
+using Core.Managers;
 using Godot;
 using IslandSurvivor.Extensions;
 using IslandSurvivor.Globals;
@@ -8,7 +8,7 @@ using IslandSurvivor.Interfaces;
 using IslandSurvivor.Managers;
 using IslandSurvivor.Nodes;
 using IslandSurvivor.Resources;
-using IslandSurvivor.Nodes.Movement;
+using IslandSurvivor.Nodes;
 using System;
 using System.Collections.Generic;
 
@@ -48,7 +48,7 @@ public partial class Player : CharacterBody2D, IDamageable
     [Export] private Area2D? m_weaponAreaRight;
     [Export] private Area2D? m_weaponAreaLeft;
 
-    private IslandSurvivor.Nodes.Combat.AttackController? m_attackController;
+    private IslandSurvivor.Nodes.AttackController? m_attackController;
 
     private readonly List<IInteractable> m_nearbyInteractables = new();
     private IInteractable? m_bestTarget;
@@ -121,7 +121,7 @@ public partial class Player : CharacterBody2D, IDamageable
             m_interactionArea.AreaExited += OnInteractionAreaExited;
         }
 
-        m_attackController = GetNodeOrNull<IslandSurvivor.Nodes.Combat.AttackController>("AttackController");
+        m_attackController = GetNodeOrNull<IslandSurvivor.Nodes.AttackController>("AttackController");
         if (m_attackController != null)
         {
             m_attackController.Stats = Stats;
@@ -416,7 +416,7 @@ public partial class Player : CharacterBody2D, IDamageable
         {
             m_xpGainLabel.Text = "LEVEL UP!";
             m_xpGainLabel.Visible = true;
-            m_xpGainTimer.Start();
+            m_xpGainTimer?.Start();
             AudioManager.Instance?.PlaySound2D("Level_Up", GlobalPosition);
         }
     }
@@ -429,7 +429,7 @@ public partial class Player : CharacterBody2D, IDamageable
         {
             m_xpGainLabel.Text = $"+{p_event.Amount} XP";
             m_xpGainLabel.Visible = true;
-            m_xpGainTimer.Start();
+            m_xpGainTimer?.Start();
         }
     }
 

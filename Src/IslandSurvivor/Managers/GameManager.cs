@@ -6,7 +6,7 @@ using Core.Events;
 using Core.Utils;
 using IslandSurvivor.Globals;
 using IslandSurvivor.Utils;
-using IslandSurvivor.Scenes.UI.LoadingScreen;
+using IslandSurvivor.Scenes.UI;
 
 namespace IslandSurvivor.Managers;
 
@@ -36,10 +36,47 @@ public partial class GameManager : Node
 
     public override void _Ready()
     {
-        //InitializeGameAsync();
+        // Subscribe to global signals
+        SignalManager.Instance.OfflineModeRequested += SetGuestMode;
+
+#if DEBUG
+        CallDeferred(MethodName.DeferredDebugInit);
+#else
+        InitializeGameAsync();
+#endif
     }
 
-    private async void InitializeGameAsync()
+#if DEBUG
+    private void DeferredDebugInit()
+    {
+        // Check if we are running the main scene or a specific test scene
+        string mainScenePath = ProjectSettings.GetSetting("application/run/main_scene").AsString() ?? string.Empty;
+        string currentScenePath = GetTree().CurrentScene?.SceneFilePath ?? string.Empty;
+
+        // Also check if we are already in the LoginScreen to prevent an infinite loop
+        bool isLoginScreen = currentScenePath != null && currentScenePath.Contains("LoginScreen.tscn");
+
+        if (!string.IsNullOrEmpty(currentScenePath) && currentScenePath != mainScenePath && !isLoginScreen)
+        {
+            GD.Print($"[GameManager] DEBUG MODE: Running individual scene: {currentScenePath}. Skipping login flow and setting default Guest profile.");
+
+            // Set up a default profile for testing
+            PlayerProfile defaultProfile = new PlayerProfile
+            {
+                Player = new Core.Domain.Player { Username = "DebugTester" }
+            };
+            ServiceRegistry.Instance.EventBus.Publish(new ProfileLoadedEvent(defaultProfile));
+
+            m_status = AppStatus.Ready;
+            m_isGuest = true;
+            return;
+        }
+
+        InitializeGameAsync();
+    }
+#endif
+
+    public async void InitializeGameAsync()
     {
         m_status = AppStatus.Loading;
         GD.Print("[GameManager] Initializing game...");
@@ -94,8 +131,8 @@ public partial class GameManager : Node
             }
         }
 
-        GD.Print("[GameManager] No valid session. Redirecting to Login.");
-        await CompleteInitialization("res://Scenes/Login/Login.tscn");
+        GD.Print("[GameManager] No valid session or validation failed. Redirecting to Login.");
+        await CompleteInitialization("res://Scenes/UI/LoginScreen/LoginScreen.tscn");
     }
 
     private void ShowLoadingScreen()
@@ -163,6 +200,12 @@ public partial class GameManager : Node
         GD.Print("[GameManager] Entering Guest Mode.");
         m_isGuest = true;
 
+        // Ensure loading screen is visible if we come from LoginScreen
+        if (m_loadingScreen == null)
+        {
+            ShowLoadingScreen();
+        }
+
         m_loadingScreen?.ShowLoading("Connexion impossible. Lancement en mode hors ligne avec les données locales...");
         await ToSignal(GetTree().CreateTimer(1.5f), SceneTreeTimer.SignalName.Timeout);
 
@@ -186,6 +229,22 @@ public partial class GameManager : Node
         }
 
         await CompleteInitialization("res://Scenes/MainMenu/MainMenu/MainMenu.tscn");
+    }
+
+    public void Logout()
+    {
+        GD.Print("[GameManager] Logging out...");
+
+        // 1. Clear session
+        SessionProvider.ClearToken();
+        ServiceRegistry.Instance.ApiService.SetSessionToken(null);
+
+        // 2. Reset state
+        m_isGuest = false;
+        m_status = AppStatus.Loading;
+
+        // 3. Redirect to login
+        GetTree().ChangeSceneToFile("res://Scenes/UI/LoginScreen/LoginScreen.tscn");
     }
 
     public void RetryInitialization()

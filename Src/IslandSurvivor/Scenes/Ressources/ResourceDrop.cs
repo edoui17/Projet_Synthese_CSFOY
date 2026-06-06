@@ -3,15 +3,15 @@ using Core.Domain;
 using IslandSurvivor.Globals;
 using System;
 
-namespace IslandSurvivor.Scenes.Ressources;
+namespace IslandSurvivor.Scenes;
 
 public partial class ResourceDrop : Node2D
 {
-    private ResourceItem m_item;
+    private ResourceItem m_item = null!;
     private int m_quantity;
-    private Node2D m_targetNode;
+    private Node2D m_targetNode = null!;
     private Vector2 m_fallbackTargetPosition;
-    private Sprite2D m_sprite;
+    private Sprite2D m_sprite = null!;
     private Vector2 m_startLerpPosition;
 
     public void Initialize(ResourceItem p_item, int p_quantity, Vector2 p_startPosition, Node2D p_targetNode, Vector2 p_fallbackTargetPosition)

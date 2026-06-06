@@ -1,9 +1,9 @@
 using Godot;
 using System;
-using Core.Interfaces.Stats;
+using Core.Interfaces;
 using IslandSurvivor.Scenes.Projectiles;
 
-namespace IslandSurvivor.Scenes.Projectiles.EvilEye;
+namespace IslandSurvivor.Scenes.Projectiles;
 
 public partial class EvilEye : BaseBeamAttack
 {

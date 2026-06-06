@@ -7,7 +7,6 @@
 [ext_resource type="Texture2D" uid="uid://xjppjsnbf28b" path="res://Assets/TinySwords/Sprites/Lancer/Blue/Lancer_Run.png" id="3_qp1c1"]
 [ext_resource type="AudioStream" uid="uid://bng0g5vtfxg8b" path="res://Assets/Audio/kenney_impact-sounds/Audio/hurtSound.mp3" id="3_u3wq2"]
 [ext_resource type="Texture2D" uid="uid://b1cvhtd4ckvmc" path="res://Assets/TinySwords/Sprites/Lancer/Blue/Lancer_Down_Attack.png" id="3_vdtxd"]
-[ext_resource type="AudioStream" uid="uid://d3mi5a68pa0l5" path="res://Assets/Audio/kenney_impact-sounds/Audio/001_we-lost.wav" id="4_hesqx"]
 [ext_resource type="Texture2D" uid="uid://d2tfksdwjadim" path="res://Assets/TinySwords/Sprites/Lancer/Blue/Lancer_Up_Attack.png" id="4_mcrgq"]
 [ext_resource type="Animation" uid="uid://d0h1sx4b0jesm" path="res://Animation/Death_NPC.res" id="6_sw6gv"]
 [ext_resource type="Animation" uid="uid://bjuop45u4ndx5" path="res://Animation/Error.res" id="7_4cady"]
@@ -663,7 +662,6 @@ XpMultiplier = 0.2
 AttackSoundKey = "Enemy_Swing_Default"
 GuardChance = 0.0
 HurtSound = ExtResource("3_u3wq2")
-DeathSound = ExtResource("4_hesqx")
 
 [node name="Sprite2D" parent="." index="0" unique_id=1104255030]
 texture = ExtResource("3_qp1c1")

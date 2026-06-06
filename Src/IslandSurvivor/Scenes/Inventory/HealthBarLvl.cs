@@ -40,7 +40,7 @@ public partial class HealthBarLvl : Control
         {
             IslandSurvivor.Globals.ServiceRegistry.Instance.EventBus.Subscribe<Core.Events.LevelChangedEvent>(OnLevelChanged);
             // Initialize Level based on current stat if it's already set
-            float currentLevel = IslandSurvivor.Globals.ServiceRegistry.Instance.StatTracker.GetCurrentValue(Core.Managers.Stats.StatType.Level);
+            float currentLevel = IslandSurvivor.Globals.ServiceRegistry.Instance.StatTracker.GetCurrentValue(Core.Managers.StatType.Level);
             if (currentLevel > 0)
             {
                 Level = (int)currentLevel;

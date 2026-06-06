@@ -1,7 +1,7 @@
-## La HomeMap 
+## La HomeMap
 
 La HomeMap est composer de plusieur couche. Chaque couche est une certaine partie du terrain.
-La couche qui est un peut differente c'est celle du batiment qui a un node2D qui est le batiment car elle est composer d'une hit box 
+La couche qui est un peut differente c'est celle du batiment qui a un node2D qui est le batiment car elle est composer d'une hit box
 et aussi d'une zone d'interaction.
 
 Voici les differentes couche dans le node2D BaseMapIsland:

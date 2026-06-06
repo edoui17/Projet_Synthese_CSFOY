@@ -1,0 +1,111 @@
+@page "/profile/{Pseudonyme}"
+@using Core.Domain
+@inject HttpClient Http
+@rendermode InteractiveServer
+
+<header>
+    <nav id="navbar">
+        <div>
+            <div class="profile">
+                <img src="images/profile/Avatars_06.png" alt="profile picture">
+            </div>
+
+            <span class="profile-username">@Pseudonyme.ToUpper()</span>
+        </div>
+        <a href="/">
+            <img src="images/logo.png" alt="Logo Island Survivor" id="logo">
+        </a>
+        <h2 class="headerNiv">Lvl @HighestLevel</h2>
+    </nav>
+</header>
+
+<section class="profile-section">
+    @if (m_isLoading)
+    {
+        <p style="color: white; text-align: center;">Loading profile...</p>
+    }
+    else if (m_profile == null)
+    {
+        <p style="color: white; text-align: center;">Player not found.</p>
+    }
+    else
+    {
+        <h3 class="history-title">Game history</h3>
+        <div class="history-container">
+            @if (m_profile.LastSessions == null || !m_profile.LastSessions.Any())
+            {
+                <p style="color: white; text-align: center;">No match history</p>
+            }
+            else
+            {
+                var sessionsList = m_profile.LastSessions.OrderByDescending(s => s.PlayedAt).ToList();
+
+                @foreach (var session in sessionsList)
+                {
+                    <div class="history-card">
+                        <div class="card-header">
+                            <span class="card-date">@session.PlayedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</span>
+                            <span class="card-duration">Time session: @session.Duration.ToString(@"mm\:ss")</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-main-stats">
+                                <h4>Level @session.LevelReached</h4>
+                                <p>Score: @session.Score</p>
+                            </div>
+                            <div class="card-sub-stats">
+                                <div><img src="images/health_icon.png" alt="HP" onerror="this.style.display='none'"/> HP: @session.Health (+@session.BonusHealth)</div>
+                                <div><img src="images/attack_icon.png" alt="ATK" onerror="this.style.display='none'"/> ATK: @session.Attack (+@session.BonusAttack)</div>
+                                <div><img src="images/speed_icon.png" alt="SPD" onerror="this.style.display='none'"/> SPEED: @session.Speed (+@session.BonusSpeed)</div>
+                                <div><img src="images/luck_icon.png" alt="LUCK" onerror="this.style.display='none'"/> LUCK: @session.Luck (+@session.BonusLuck)</div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    }
+</section>
+
+@code {
+    [Parameter]
+    public string Pseudonyme { get; set; } = string.Empty;
+
+    private ProfileResponse? m_profile;
+    private bool m_isLoading = true;
+
+    private int HighestLevel => m_profile?.LastSessions?.Any() == true
+        ? m_profile.LastSessions.Max(s => s.LevelReached)
+        : 1;
+
+    /*protected override async Task OnInitializedAsync()
+    {
+        await LoadProfileAsync();
+    }*/
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await LoadProfileAsync();
+            StateHasChanged();
+        }
+    }
+
+    private async Task LoadProfileAsync()
+    {
+        m_isLoading = true;
+        try
+        {
+            m_profile = await Http.GetFromJsonAsync<ProfileResponse>($"api/player/profile/{Pseudonyme}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching profile: {ex.Message}");
+            m_profile = null;
+        }
+        finally
+        {
+            m_isLoading = false;
+        }
+    }
+}

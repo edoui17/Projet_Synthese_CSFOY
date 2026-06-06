@@ -23,9 +23,9 @@ public partial class BuildingNode : Node2D, IInteractable
         SignalManager.Instance.EmitBuildingShopToggled(this, true, "PlayerHouse");
     }
 
-    public float GetDistanceTo(float p_x, float p_y)
+    public float GetDistanceSquaredTo(float p_x, float p_y)
     {
-        return GlobalPosition.DistanceTo(new Vector2(p_x, p_y));
+        return GlobalPosition.DistanceSquaredTo(new Vector2(p_x, p_y));
     }
 
     private void OnBodyExited(Node body)

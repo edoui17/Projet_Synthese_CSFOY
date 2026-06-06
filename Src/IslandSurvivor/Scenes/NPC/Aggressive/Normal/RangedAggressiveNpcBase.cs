@@ -1,7 +1,7 @@
-namespace IslandSurvivor.Scenes.NPC.Aggressive;
+namespace IslandSurvivor.Scenes.NPC;
 
 using Godot;
-using IslandSurvivor.Logic.Entities;
+using IslandSurvivor.Logic;
 using IslandSurvivor.Globals;
 
 public partial class RangedAggressiveNpcBase : AggressiveNpcBase
@@ -24,10 +24,10 @@ public partial class RangedAggressiveNpcBase : AggressiveNpcBase
             return IslandSurvivor.Logic.StateMachine.StateConstants.RepositionStateName;
         }
 
-        var shooter = GetNodeOrNull<IslandSurvivor.Nodes.Combat.Shooter>("Shooter");
+        var shooter = GetNodeOrNull<IslandSurvivor.Nodes.Shooter>("Shooter");
         if (shooter != null && shooter.CanShoot)
         {
-            var windUp = m_stateMachine?.GetState(IslandSurvivor.Logic.StateMachine.StateConstants.WindUpStateName) as IslandSurvivor.Logic.StateMachine.States.WindUpState;
+            var windUp = m_stateMachine?.GetState(IslandSurvivor.Logic.StateMachine.StateConstants.WindUpStateName) as IslandSurvivor.Logic.StateMachine.WindUpState;
             if (windUp != null)
             {
                 windUp.NextStateAfterWindup = IslandSurvivor.Logic.StateMachine.StateConstants.RangedAttackStateName;
@@ -36,7 +36,7 @@ public partial class RangedAggressiveNpcBase : AggressiveNpcBase
         }
         else if (m_attackController != null && m_attackController.CanAttack)
         {
-            var windUp = m_stateMachine?.GetState(IslandSurvivor.Logic.StateMachine.StateConstants.WindUpStateName) as IslandSurvivor.Logic.StateMachine.States.WindUpState;
+            var windUp = m_stateMachine?.GetState(IslandSurvivor.Logic.StateMachine.StateConstants.WindUpStateName) as IslandSurvivor.Logic.StateMachine.WindUpState;
             if (windUp != null)
             {
                 windUp.NextStateAfterWindup = IslandSurvivor.Logic.StateMachine.StateConstants.RangedAttackStateName;

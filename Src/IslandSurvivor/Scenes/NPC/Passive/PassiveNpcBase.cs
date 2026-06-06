@@ -1,7 +1,7 @@
-namespace IslandSurvivor.Scenes.NPC.Passive;
+namespace IslandSurvivor.Scenes.NPC;
 
 using Godot;
-using IslandSurvivor.Logic.Entities;
+using IslandSurvivor.Logic;
 
 public partial class PassiveNpcBase : NpcBase
 {

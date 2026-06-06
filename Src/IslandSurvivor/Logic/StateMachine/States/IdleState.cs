@@ -1,4 +1,4 @@
-namespace IslandSurvivor.Logic.StateMachine.States;
+namespace IslandSurvivor.Logic.StateMachine;
 
 using Godot;
 
@@ -17,6 +17,7 @@ public partial class IdleState : State
     private float m_wanderTimer;
     private AnimationPlayer? m_animationPlayer;
     private Sprite2D? m_sprite;
+    private IslandSurvivor.Nodes.AttackController? m_attackController;
     private bool m_hasCompleted = false;
 
     public bool IsWanderCooldownElapsed => m_wanderTimer <= 0;
@@ -26,6 +27,7 @@ public partial class IdleState : State
         base.Initialize(p_stateMachine, p_npcContext);
         m_animationPlayer = NpcContext.GetNodeOrNull<AnimationPlayer>("AnimationPlayer");
         m_sprite = NpcContext.GetNodeOrNull<Sprite2D>("Sprite2D");
+        m_attackController = NpcContext.GetNodeOrNull<IslandSurvivor.Nodes.AttackController>("AttackController");
     }
 
     public override void Enter()
@@ -66,7 +68,7 @@ public partial class IdleState : State
 
         m_wanderTimer -= (float)p_delta;
 
-        if (NpcContext is IslandSurvivor.Scenes.NPC.Aggressive.AggressiveNpcBase aggressiveNpc)
+        if (NpcContext is IslandSurvivor.Scenes.NPC.AggressiveNpcBase aggressiveNpc)
         {
             if (aggressiveNpc.HasTargetAndLineOfSight())
             {
@@ -74,13 +76,13 @@ public partial class IdleState : State
                 if (target != null)
                 {
                     float distSquared = NpcContext.GlobalPosition.DistanceSquaredTo(target.GlobalPosition);
-                    bool isRanged = NpcContext is IslandSurvivor.Scenes.NPC.Aggressive.RangedAggressiveNpcBase;
-                    float checkRange = isRanged ? ((IslandSurvivor.Scenes.NPC.Aggressive.AggressiveNpcBase)NpcContext).MaxAttackRange : ((IslandSurvivor.Scenes.NPC.Aggressive.AggressiveNpcBase)NpcContext).AttackRange;
+                    bool isRanged = NpcContext is IslandSurvivor.Scenes.NPC.RangedAggressiveNpcBase;
+                    float checkRange = isRanged ? ((IslandSurvivor.Scenes.NPC.AggressiveNpcBase)NpcContext).MaxAttackRange : ((IslandSurvivor.Scenes.NPC.AggressiveNpcBase)NpcContext).AttackRange;
 
                     if (distSquared <= checkRange * checkRange)
                     {
-                        var attackController = NpcContext.GetNodeOrNull<IslandSurvivor.Nodes.Combat.AttackController>("AttackController");
-                        bool isAttackCooldownReady = attackController != null && attackController.CanAttack;
+                        // Cached to prevent GetNode allocations in hot path
+                        bool isAttackCooldownReady = m_attackController != null && m_attackController.CanAttack;
 
                         // Let the StateMachine evaluate if it can guard or attack. We just notify that we are ready to transition.
                         if (isAttackCooldownReady || m_timer <= 0)

@@ -21,6 +21,7 @@ public class SessionAuthMiddleware
         // Skip authentication for specific endpoints
         var path = p_context.Request.Path.Value?.ToLower();
         // Whitelist login, leaderboard and swagger
+
         if (path != null && (path.StartsWith("/api/auth/login") || path.StartsWith("/api/player/leaderboard") || path.StartsWith("/swagger")))
         {
             await m_next(p_context);

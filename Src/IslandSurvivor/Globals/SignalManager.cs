@@ -19,6 +19,7 @@ public partial class SignalManager : Node
     [Signal] public delegate void TeleportRequestedEventHandler(string p_islandId, string p_scenePath, string p_biome, int p_difficulty, int p_resourceCost, int p_dangerLevel);
     [Signal] public delegate void BuildingShopToggledEventHandler(bool p_isOpen, string p_buildingId);
     [Signal] public delegate void InventoryChangedEventHandler(string p_resourceId, int p_totalAmount);
+    [Signal] public delegate void OfflineModeRequestedEventHandler();
     [Signal] public delegate void SessionEndedEventHandler(bool p_isVictory);
 
     public override void _EnterTree()
@@ -92,6 +93,11 @@ public partial class SignalManager : Node
         EmitSignal(SignalName.InventoryChanged, e.ResourceId, e.TotalAmount);
     }
 
+    public void EmitOfflineModeRequested()
+    {
+        EmitSignal(SignalName.OfflineModeRequested);
+    }
+
     // --- Godot -> Core Bridge (Proxy methods to emit into Core EventBus) ---
     public void EmitMaterialDestroyed(object p_sender, Core.Domain.ResourceItem p_item, int p_quantity)
     {
@@ -103,17 +109,17 @@ public partial class SignalManager : Node
         m_eventBus?.Publish(new ResourceSpentEvent(p_resourceId, p_amount));
     }
 
-    public void EmitStatUpgradePurchased(object p_sender, Core.Managers.Stats.StatType p_statType)
+    public void EmitStatUpgradePurchased(object p_sender, Core.Managers.StatType p_statType)
     {
         m_eventBus?.Publish(new StatUpgradePurchasedEvent(p_statType));
     }
 
-    public void EmitNavigationRequested(object p_sender, Core.Domain.Models.IslandDestination p_destination)
+    public void EmitNavigationRequested(object p_sender, Core.Domain.IslandDestination p_destination)
     {
         m_eventBus?.Publish(new NavigationRequestedEvent(p_destination));
     }
 
-    public void EmitTeleportRequested(object p_sender, Core.Domain.Models.IslandDestination p_destination)
+    public void EmitTeleportRequested(object p_sender, Core.Domain.IslandDestination p_destination)
     {
         m_eventBus?.Publish(new TeleportRequestedEvent(p_destination));
     }

@@ -1,6 +1,6 @@
 using Core.Events;
 using Core.Interfaces;
-using Core.Managers.Stats;
+using Core.Managers;
 using Moq;
 using Xunit;
 

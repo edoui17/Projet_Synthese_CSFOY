@@ -1,9 +1,9 @@
 using Godot;
 using System;
 using System.Collections.Generic;
-using Core.Interfaces.Spawning;
+using Core.Interfaces;
 
-namespace IslandSurvivor.Nodes.Zones;
+namespace IslandSurvivor.Nodes;
 
 public partial class ResourceZone : Node2D, IResourcePopulator
 {
@@ -121,7 +121,7 @@ public partial class ResourceZone : Node2D, IResourcePopulator
 
     private bool IsInSafeZone(Vector2 p_localPos)
     {
-        return p_localPos.DistanceTo(SafeZoneCenter) < SafeZoneRadius;
+        return p_localPos.DistanceSquaredTo(SafeZoneCenter) < SafeZoneRadius * SafeZoneRadius;
     }
 
     private bool IsOnWater(Vector2 p_localPos)
@@ -135,9 +135,10 @@ public partial class ResourceZone : Node2D, IResourcePopulator
 
     private bool IsTooCloseToOtherResources(Vector2 p_localPos)
     {
+        float minDistanceSquared = MinDistanceBetweenResources * MinDistanceBetweenResources;
         foreach (var existing in m_activeResources)
         {
-            if (IsInstanceValid(existing) && p_localPos.DistanceTo(existing.Position) < MinDistanceBetweenResources)
+            if (IsInstanceValid(existing) && p_localPos.DistanceSquaredTo(existing.Position) < minDistanceSquared)
             {
                 return true;
             }

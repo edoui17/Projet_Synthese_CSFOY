@@ -1,21 +1,21 @@
 using Godot;
 using System;
-using IslandSurvivor.Scenes.Projectiles.EvilEye;
 using IslandSurvivor.Scenes.Projectiles;
-using IslandSurvivor.Logic.Projectiles;
+using IslandSurvivor.Scenes.Projectiles;
+using IslandSurvivor.Logic;
 
 namespace IslandSurvivor.Scenes;
 
 public partial class TestProjectilesScene : Node2D
 {
-    private PackedScene _darkBlastScene;
-    private PackedScene _evilEyeScene;
-    private PackedScene _arrowScene;
-    private PackedScene _orbScene;
-    private PackedScene _scytheScene;
+    private PackedScene _darkBlastScene = null!;
+    private PackedScene _evilEyeScene = null!;
+    private PackedScene _arrowScene = null!;
+    private PackedScene _orbScene = null!;
+    private PackedScene _scytheScene = null!;
 
-    private Node2D _player;
-    private Timer _loopTimer;
+    private Node2D _player = null!;
+    private Timer _loopTimer = null!;
 
     public override void _Ready()
     {
