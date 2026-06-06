@@ -49,9 +49,14 @@ public partial class Reaper : BossBase
                 return IslandSurvivor.Logic.StateMachine.StateConstants.WindUpStateName;
             }
 
-            // If shooter is on cooldown but we are outside melee range, we should chase
-            // to get into melee range while ranged is cooling down.
-            return IslandSurvivor.Logic.StateMachine.StateConstants.ChaseStateName;
+            // If shooter is on cooldown, check if we can melee attack before deciding to chase into melee range
+            if (m_attackController != null && m_attackController.CanAttack)
+            {
+                return IslandSurvivor.Logic.StateMachine.StateConstants.ChaseStateName;
+            }
+
+            // Both ranged and melee are on cooldown, wait/idle where we are instead of pointless chasing.
+            return IslandSurvivor.Logic.StateMachine.StateConstants.IdleStateName;
         }
     }
 }

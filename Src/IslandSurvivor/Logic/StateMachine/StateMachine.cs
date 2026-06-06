@@ -114,6 +114,10 @@ public partial class StateMachine : State
                 {
                     nextStateName = GetCombatDecisionState();
                 }
+                else if (p_reason == StateExitReason.Timeout)
+                {
+                    nextStateName = StateConstants.IdleStateName;
+                }
                 break;
 
             case StateConstants.ChaseState:
@@ -124,6 +128,10 @@ public partial class StateMachine : State
                 else if (p_reason == StateExitReason.TargetReached)
                 {
                     nextStateName = GetCombatDecisionState();
+                }
+                else if (p_reason == StateExitReason.Timeout)
+                {
+                    nextStateName = StateConstants.IdleStateName;
                 }
                 break;
 
