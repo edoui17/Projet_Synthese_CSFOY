@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://bueuyg7e4p4vm"]
 
 [ext_resource type="PackedScene" uid="uid://bossbase123" path="res://Scenes/NPC/Aggressive/Boss/BossBase.tscn" id="1_t3tbm"]
+[ext_resource type="Texture2D" uid="uid://dp5xwdfvc4aoi" path="res://Assets/Corrupted/Reaper/Reaper.png" id="3_lthjc"]
 [ext_resource type="Script" uid="uid://drd3hylg8xmy3" path="res://Scenes/NPC/Aggressive/Boss/Reaper/Reaper.cs" id="3_reaper_script"]
 [ext_resource type="PackedScene" uid="uid://c3qpgtamtdyll" path="res://Scenes/Projectiles/DarkScythe/DarkScythe.tscn" id="5_scythe"]
 [ext_resource type="PackedScene" uid="uid://cx6r1g1g1g1g3" path="res://Nodes/Combat/Shooter.tscn" id="Shooter"]
@@ -14,6 +15,217 @@ height = 128.0
 [sub_resource type="CircleShape2D" id="CircleShape2D_dp46e"]
 radius = 602.0407
 
+[sub_resource type="Animation" id="Animation_fr3sl"]
+resource_name = "Death"
+step = 0.1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("3_lthjc")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite2D:frame")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [40, 41, 42, 43, 44, 45, 46, 47, 48, 49]
+}
+
+[sub_resource type="Animation" id="Animation_lthjc"]
+resource_name = "Idle"
+loop_mode = 1
+step = 0.1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("3_lthjc")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite2D:frame")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.2, 0.4, 0.6, 0.8),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4]
+}
+
+[sub_resource type="Animation" id="Animation_mvu4d"]
+resource_name = "MeleeAttackNormal"
+step = 0.1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("3_lthjc")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite2D:frame")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [20, 21, 22, 23, 24, 25, 26, 27, 28, 29]
+}
+
+[sub_resource type="Animation" id="Animation_bf1an"]
+resource_name = "Moving"
+length = 0.5
+loop_mode = 1
+step = 0.1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("3_lthjc")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite2D:frame")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 1,
+"values": [10, 11, 12, 13, 14]
+}
+
+[sub_resource type="Animation" id="Animation_biphk"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("3_lthjc")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite2D:frame")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+
+[sub_resource type="Animation" id="Animation_dsbs6"]
+resource_name = "RangeAttackNormal"
+length = 0.9
+loop_mode = 1
+step = 0.1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("3_lthjc")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite2D:frame")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [20, 21, 22, 23, 24, 23, 22, 21, 20]
+}
+
+[sub_resource type="Animation" id="Animation_yyit3"]
+resource_name = "RangeAttackOrb"
+step = 0.1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("3_lthjc")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite2D:frame")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [50, 51, 53, 55, 56, 57, 53, 52, 51, 50]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_biphk"]
+_data = {
+&"Death": SubResource("Animation_fr3sl"),
+&"Idle": SubResource("Animation_lthjc"),
+&"MeleeAttackNormal": SubResource("Animation_mvu4d"),
+&"Moving": SubResource("Animation_bf1an"),
+&"RESET": SubResource("Animation_biphk"),
+&"RangeAttackNormal": SubResource("Animation_dsbs6"),
+&"RangeAttackOrb": SubResource("Animation_yyit3")
+}
+
 [node name="Reaper" unique_id=495261644 instance=ExtResource("1_t3tbm")]
 script = ExtResource("3_reaper_script")
 NormalAttackAnimationName = "MeleeAttackNormal"
@@ -21,9 +233,20 @@ EnragedAttackAnimationName = "MeleeAttackEnraged"
 MeleeAttackAnimationName = "Attack_Melee"
 RangedAttackAnimationName = "ScytheThrow"
 
+[node name="Sprite2D" parent="." index="0" unique_id=1104255030]
+scale = Vector2(4, 4)
+texture = ExtResource("3_lthjc")
+hframes = 10
+vframes = 6
+
 [node name="CollisionShape2D" parent="." index="1" unique_id=1322914286]
+visible = false
 position = Vector2(-4, -6)
 shape = SubResource("CapsuleShape2D_dp46e")
+
+[node name="StatManager" parent="." index="2" unique_id=990476419]
+MaxHealth = 250.0
+BaseAttackValue = 50.0
 
 [node name="DetectionArea" parent="." index="5" unique_id=423904877]
 visible = false
@@ -40,6 +263,9 @@ position = Vector2(-2, 0)
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="HitboxAreaLeft" index="0" unique_id=1087917700]
 scale = Vector2(-1, 1)
 polygon = PackedVector2Array(45, -96, 93, -61, 113, -13, 116, 44, 98, 74, 45, 74)
+
+[node name="AnimationPlayer" parent="." index="12" unique_id=1869571986]
+libraries/ = SubResource("AnimationLibrary_biphk")
 
 [node name="MeleeAttackState" parent="StateMachine" parent_id_path=PackedInt32Array(402971195) index="6" unique_id=1002124802 instance=ExtResource("state_MeleeAttackState")]
 AttackAnimationName = "MeleeAttackNormal"
