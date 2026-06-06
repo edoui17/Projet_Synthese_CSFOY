@@ -31,13 +31,15 @@ public partial class BaseProjectile : Area2D, IProjectile
     protected bool m_isFired = false;
     protected float m_lifeTimer;
 
-    protected AnimatedSprite2D m_animatedSprite = null!;
+    protected Sprite2D m_sprite = null!;
+    protected AnimationPlayer m_animationPlayer = null!;
 
     public override void _Ready()
     {
         base._Ready();
 
-        m_animatedSprite = GetNodeOrNull<AnimatedSprite2D>("AnimatedSprite2D");
+        m_sprite = GetNodeOrNull<Sprite2D>("Sprite2D");
+        m_animationPlayer = GetNodeOrNull<AnimationPlayer>("AnimationPlayer");
 
         BodyEntered += OnBodyEntered;
         AreaEntered += OnAreaEntered;
@@ -80,9 +82,9 @@ public partial class BaseProjectile : Area2D, IProjectile
     public virtual void Fire()
     {
         m_isFired = true;
-        if (m_animatedSprite != null && m_animatedSprite.SpriteFrames != null && m_animatedSprite.SpriteFrames.HasAnimation(AttackAnimation))
+        if (m_animationPlayer != null && m_animationPlayer.HasAnimation(AttackAnimation))
         {
-            m_animatedSprite.Play(AttackAnimation);
+            m_animationPlayer.Play(AttackAnimation);
         }
     }
 
