@@ -9,8 +9,8 @@ La navigation entre les îles se déroule en plusieurs étapes :
 1. **Génération et Sélection :** Le joueur interagit avec un planificateur qui affiche le menu de navigation (`NavigationMenu`). Le `NavigationService` (Core) génère les destinations possibles et leurs coûts en ressources. L'UI affiche désormais de façon détaillée les coûts en ressources directement sur les boutons de la boutique d'îles.
 2. **Paiement et Validation :** Le joueur sélectionne une destination. Le `NavigationService` vérifie si l'inventaire (`IInventoryManager`) contient les ressources requises et les déduit le cas échéant.
 3. **Activation du Portail :** Si la validation réussit, le `Portal` est activé dans la scène et se voit attribuer la destination choisie. Le label d'interaction "Press E to Interact" s'affiche correctement à l'aide d'un `CanvasLayer` pour se superposer proprement par-dessus l'environnement.
-4. **Interaction et Événement :** Le joueur interagit avec le `PortalInteraction`. Cela publie un événement `NavigationRequestedEvent` sur l'EventBus.
-5. **Sauvegarde d'État :** L'Autoload `NavigationManager` (Godot) écoute cet événement, sauvegarde l'inventaire et l'état de la session (comme `CurrentIslandId` dans `SessionState`). Cette sauvegarde garantit la persistance des données indépendamment du cycle de vie des scènes Godot.
+4. **Interaction et Événement :** Le joueur interagit avec le `PortalInteraction`. Cela publie un événement `TeleportRequestedEvent` sur l'EventBus via le `SignalManager`.
+5. **Sauvegarde d'État :** L'Autoload `NavigationManager` (Godot) écoute cet événement via le signal natif de Godot, sauvegarde l'inventaire et l'état de la session (comme `CurrentIslandId` dans `SessionState`). Cette sauvegarde garantit la persistance des données indépendamment du cycle de vie des scènes Godot.
 6. **Transition de Scène :** Le `NavigationManager` délègue le changement effectif de scène au `SceneLoadingManager`. Ce dernier affiche un écran de chargement et force explicitement le moteur à faire un rendu (pendant 2 frames) avant de démarrer des opérations potentiellement bloquantes.
 
 ---
@@ -64,16 +64,16 @@ public void Interact()
 {
     if (m_destination != null)
     {
-        GD.Print($"[PortalInteraction] Emitting NavigationRequestedEvent for destination: {m_destination.Biome}");
-        // Émission de l'événement sur l'EventBus
-        ServiceRegistry.Instance.EventBus.Publish(new NavigationRequestedEvent(m_destination));
+        GD.Print($"[PortalInteraction] Emitting TeleportRequested for destination: {m_destination.Biome}");
+        // Émission de l'événement sur l'EventBus via SignalManager
+        SignalManager.Instance.EmitTeleportRequested(this, m_destination);
     }
 }
 ```
 
 ### C. Réception de l'événement, Sauvegarde et Transition
 
-Le `NavigationManager` en Godot (Autoload) s'abonne au `NavigationRequestedEvent`. Avant de changer la scène, il s'assure que tout l'état de jeu est persisté (inventaire et SessionState).
+Le `NavigationManager` en Godot (Autoload) s'abonne à `TeleportRequested`. Avant de changer la scène, il s'assure que tout l'état de jeu est persisté (inventaire et SessionState).
 
 ```csharp
 // Extrait de NavigationManager.cs
