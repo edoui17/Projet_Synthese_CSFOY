@@ -8,7 +8,8 @@ public partial class BaseBeamAttack : Node2D
     [Export] public float SweepSpeed { get; set; } = 1.5f;
     [Export] public int Damage { get; set; } = 30;
 
-    protected AnimatedSprite2D m_animatedSprite = null!;
+    protected Sprite2D m_sprite = null!;
+    protected AnimationPlayer m_animationPlayer = null!;
     protected RayCast2D m_rayCast = null!;
     protected bool m_hasHitPlayer;
 
@@ -16,7 +17,8 @@ public partial class BaseBeamAttack : Node2D
     {
         base._Ready();
 
-        m_animatedSprite = GetNodeOrNull<AnimatedSprite2D>("AnimatedSprite2D");
+        m_sprite = GetNodeOrNull<Sprite2D>("Sprite2D");
+        m_animationPlayer = GetNodeOrNull<AnimationPlayer>("AnimationPlayer");
         m_rayCast = GetNodeOrNull<RayCast2D>("RayCast2D");
 
         // The user explicitly requested to dynamically create a RayCast2D if one does not exist.
@@ -34,14 +36,10 @@ public partial class BaseBeamAttack : Node2D
             m_rayCast.Enabled = false;
         }
 
-        if (m_animatedSprite != null)
+        if (m_animationPlayer != null && m_animationPlayer.HasAnimation("Attack"))
         {
-            // Connect signals
-            m_animatedSprite.FrameChanged += OnFrameChanged;
-            m_animatedSprite.AnimationFinished += OnAnimationFinished;
-
             // Play the default animation
-            m_animatedSprite.Play();
+            m_animationPlayer.Play("Attack");
         }
     }
 
@@ -55,9 +53,7 @@ public partial class BaseBeamAttack : Node2D
         }
     }
 
-    protected virtual void OnFrameChanged() { }
-
-    protected virtual void OnAnimationFinished()
+    public virtual void OnAnimationFinished()
     {
         QueueFree();
     }
