@@ -4,15 +4,15 @@ using System;
 [Tool]
 public partial class HealthBarLvl : Control
 {
-    private int _level = 0;
+    private int m_level = 0;
 
     [Export]
     public int Level
     {
-        get => _level;
+        get => m_level;
         set
         {
-            _level = value;
+            m_level = value;
             UpdateSize();
         }
     }
@@ -27,34 +27,34 @@ public partial class HealthBarLvl : Control
     [Export] public float BaseHealth = 100f;
     [Export] public float HealthPerLevel = 25f;
 
-    private float _currentHealth;
+    private float m_currentHealth;
 
-    private Control _container = null!;
+    private Control m_container = null!;
 
     public override void _Ready()
     {
-        _container = GetNode<Control>("HBoxContainer");
+        m_container = GetNode<Control>("HBoxContainer");
         UpdateSize();
 
-        if (!Engine.IsEditorHint() && IslandSurvivor.Globals.ServiceRegistry.Instance != null && IslandSurvivor.Globals.ServiceRegistry.Instance.EventBus != null)
+        if (Engine.IsEditorHint() || IslandSurvivor.Globals.ServiceRegistry.Instance == null || IslandSurvivor.Globals.ServiceRegistry.Instance.EventBus == null)
+            return;
+
+        IslandSurvivor.Globals.ServiceRegistry.Instance.EventBus.Subscribe<Core.Events.LevelChangedEvent>(OnLevelChanged);
+        // Initialize Level based on current stat if it's already set
+        float currentLevel = IslandSurvivor.Globals.ServiceRegistry.Instance.StatTracker.GetCurrentValue(Core.Managers.StatType.Level);
+        if (currentLevel > 0)
         {
-            IslandSurvivor.Globals.ServiceRegistry.Instance.EventBus.Subscribe<Core.Events.LevelChangedEvent>(OnLevelChanged);
-            // Initialize Level based on current stat if it's already set
-            float currentLevel = IslandSurvivor.Globals.ServiceRegistry.Instance.StatTracker.GetCurrentValue(Core.Managers.StatType.Level);
-            if (currentLevel > 0)
-            {
-                Level = (int)currentLevel;
-            }
+            Level = (int)currentLevel;
         }
     }
 
     public override void _ExitTree()
     {
         base._ExitTree();
-        if (!Engine.IsEditorHint() && IslandSurvivor.Globals.ServiceRegistry.Instance != null && IslandSurvivor.Globals.ServiceRegistry.Instance.EventBus != null)
-        {
-            IslandSurvivor.Globals.ServiceRegistry.Instance.EventBus.Unsubscribe<Core.Events.LevelChangedEvent>(OnLevelChanged);
-        }
+        if (Engine.IsEditorHint() || IslandSurvivor.Globals.ServiceRegistry.Instance == null || IslandSurvivor.Globals.ServiceRegistry.Instance.EventBus == null)
+            return;
+
+        IslandSurvivor.Globals.ServiceRegistry.Instance.EventBus.Unsubscribe<Core.Events.LevelChangedEvent>(OnLevelChanged);
     }
 
     private void OnLevelChanged(Core.Events.LevelChangedEvent p_event)

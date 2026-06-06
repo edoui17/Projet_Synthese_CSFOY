@@ -84,16 +84,16 @@ public partial class ServiceRegistry : Node
 ```
 
 ### 1. Créer un Événement
-Pour créer un nouvel événement, définissez un record ou une classe implémentant `IEvent`. Ces objets doivent être placés dans le dossier `Src/Core/Events/`.
+Pour créer un nouvel événement, définissez un `record` ou une `class` implémentant `IEvent`. Ces objets doivent être placés dans le dossier `Src/Core/Events/`. Utilisez `record` pour des événements simples de transfert de données et `class` pour des événements nécessitant plus de logique interne (comme `LevelChangedEvent` ou `ExperienceGainedEvent`).
 
 ```csharp
 using Core.Interfaces;
 
-public record ResourceHarvestedEvent(string ResourceId, int Amount) : IEvent;
+public record MaterialDestroyedEvent(Core.Domain.ResourceItem Item, int MaterialQuantity) : IEvent;
 ```
 
 ### 2. S'abonner à un Événement (Subscribe)
-Un système intéressé par l'événement (ex: `StatsManager`) s'abonne via l'EventBus.
+Un système intéressé par l'événement s'abonne via l'EventBus.
 
 ```csharp
 public class StatsManager
@@ -103,30 +103,30 @@ public class StatsManager
     public StatsManager(IEventBus p_eventBus)
     {
         m_eventBus = p_eventBus;
-        m_eventBus.Subscribe<ResourceHarvestedEvent>(OnResourceHarvested);
+        m_eventBus.Subscribe<MaterialDestroyedEvent>(OnMaterialDestroyedEvent);
     }
 
-    private void OnResourceHarvested(ResourceHarvestedEvent p_event)
+    private void OnMaterialDestroyedEvent(MaterialDestroyedEvent p_event)
     {
         // Traiter l'événement
-        Console.WriteLine($"Récolté {p_event.Amount} de {p_event.ResourceId}");
+        Console.WriteLine($"Récolté {p_event.MaterialQuantity} de {p_event.Item.Id}");
     }
 }
 ```
 
 ### 3. Publier un Événement (Publish)
-Le système source (ex: `InventoryManager` ou `InteractionController`) publie l'événement lorsqu'une action se produit.
+Le système source publie l'événement lorsqu'une action se produit.
 
 ```csharp
 public class ResourceNode
 {
     private readonly IEventBus m_eventBus;
 
-    public void Harvest()
+    public void DestroyMaterial(Core.Domain.ResourceItem item, int quantity)
     {
-        // ... logique de récolte ...
+        // ... logique de destruction ...
 
-        m_eventBus.Publish(new ResourceHarvestedEvent("Wood", 5));
+        m_eventBus.Publish(new MaterialDestroyedEvent(item, quantity));
     }
 }
 ```
@@ -141,12 +141,12 @@ public class TemporalUI : Godot.Control
 
     public override void _Ready()
     {
-        m_eventBus.Subscribe<ResourceHarvestedEvent>(OnResourceHarvested);
+        m_eventBus.Subscribe<MaterialDestroyedEvent>(OnMaterialDestroyedEvent);
     }
 
     public override void _ExitTree()
     {
-        m_eventBus.Unsubscribe<ResourceHarvestedEvent>(OnResourceHarvested);
+        m_eventBus.Unsubscribe<MaterialDestroyedEvent>(OnMaterialDestroyedEvent);
     }
 }
 ```

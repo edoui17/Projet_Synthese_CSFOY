@@ -16,3 +16,9 @@
 ## 2026-06-02 - [Refactoring] Flattened Nested Ifs with Guard Clauses in ChaseState
 **Observation:** Deeply nested if-else statements were present in ChaseState `PhysicsUpdate` method, increasing cognitive load and hindering readability. Duplicate sprite flipping logic was also present.
 **Action:** Applied guard clauses (early returns) to flatten nesting and extracted common logic to improve readability according to Clean Code conventions.
+## 2026-06-03 - [Refactoring] Flattened Nested Ifs with Guard Clauses in Attack States
+**Observation:** Deeply nested if statements and duplicate logic were present in MeleeAttackState and RangedAttackState `Enter` methods.
+**Action:** Applied guard clauses (early returns) and extracted common target direction logic into `DetermineDirectionAndAnimation` helper methods to improve readability according to Clean Code conventions.
+## 2026-06-03 - [Refactoring] Flattened Nested Ifs with Guard Clauses in Attack States
+**Observation:** Deeply nested if statements and duplicate logic were present in MeleeAttackState and RangedAttackState `Enter` methods.
+**Action:** Applied guard clauses (early returns) and extracted common target direction logic into `DetermineDirectionAndAnimation` helper methods to improve readability according to Clean Code conventions.
