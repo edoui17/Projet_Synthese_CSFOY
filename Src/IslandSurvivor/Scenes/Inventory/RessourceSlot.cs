@@ -7,9 +7,9 @@ public partial class RessourceSlot : Control
     [Export] public Label AmountLabel = null!;
     [Export] public string ResourceName = "";
 
-    private int _lastAmount = -1;
-    private Tween _currentTween = null!;
-    private Tween _hoverTween = null!;
+    private int m_lastAmount = -1;
+    private Tween m_currentTween = null!;
+    private Tween m_hoverTween = null!;
 
     public override void _Ready()
     {
@@ -28,16 +28,16 @@ public partial class RessourceSlot : Control
         PivotOffset = Size / 2f;
         GrabFocus();
 
-        _hoverTween?.Kill();
-        _hoverTween = CreateTween();
-        _hoverTween.TweenProperty(this, "scale", new Vector2(1.05f, 1.05f), 0.1f);
+        m_hoverTween?.Kill();
+        m_hoverTween = CreateTween();
+        m_hoverTween.TweenProperty(this, "scale", new Vector2(1.05f, 1.05f), 0.1f);
     }
 
     private void OnHoverExited()
     {
-        _hoverTween?.Kill();
-        _hoverTween = CreateTween();
-        _hoverTween.TweenProperty(this, "scale", Vector2.One, 0.1f);
+        m_hoverTween?.Kill();
+        m_hoverTween = CreateTween();
+        m_hoverTween.TweenProperty(this, "scale", Vector2.One, 0.1f);
     }
 
     public void SetIcon(Texture2D texture)
@@ -50,21 +50,21 @@ public partial class RessourceSlot : Control
         AmountLabel.Text = amount.ToString();
         TooltipText = string.IsNullOrEmpty(ResourceName) ? $"Quantity: {amount}" : $"{ResourceName}\nQuantity: {amount}";
 
-        if (_lastAmount != -1 && amount != _lastAmount && IsInsideTree())
+        if (m_lastAmount != -1 && amount != m_lastAmount && IsInsideTree())
         {
-            _currentTween?.Kill();
-            _currentTween = CreateTween();
+            m_currentTween?.Kill();
+            m_currentTween = CreateTween();
 
             AmountLabel.PivotOffset = AmountLabel.Size / 2f;
 
-            Color highlightColor = amount > _lastAmount ? Colors.LimeGreen : Colors.IndianRed;
+            Color highlightColor = amount > m_lastAmount ? Colors.LimeGreen : Colors.IndianRed;
 
-            _currentTween.TweenProperty(AmountLabel, "scale", new Vector2(1.2f, 1.2f), 0.1f);
-            _currentTween.Parallel().TweenProperty(AmountLabel, "modulate", highlightColor, 0.1f);
-            _currentTween.TweenProperty(AmountLabel, "scale", Vector2.One, 0.2f);
-            _currentTween.Parallel().TweenProperty(AmountLabel, "modulate", Colors.White, 0.2f);
+            m_currentTween.TweenProperty(AmountLabel, "scale", new Vector2(1.2f, 1.2f), 0.1f);
+            m_currentTween.Parallel().TweenProperty(AmountLabel, "modulate", highlightColor, 0.1f);
+            m_currentTween.TweenProperty(AmountLabel, "scale", Vector2.One, 0.2f);
+            m_currentTween.Parallel().TweenProperty(AmountLabel, "modulate", Colors.White, 0.2f);
         }
 
-        _lastAmount = amount;
+        m_lastAmount = amount;
     }
 }
