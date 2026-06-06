@@ -5,6 +5,7 @@ Ce document explique comment l'inventaire est conçu dans IslandSurvivor, en res
 ## 1. La Couche Métier (Core)
 
 Le Core (`Src/Core`) contient la véritable logique de l'inventaire, sans dépendre des classes de Godot (`Node`, `Texture2D`, etc.). Cela signifie que l'inventaire pourrait théoriquement être utilisé dans un serveur distant ou dans un autre moteur de jeu sans modification.
+Pour plus de détails, référez-vous au guide du [InventoryManager](./InventoryManager.md).
 
 ### Les Modèles de Données
 Pour gérer l'inventaire, deux modèles principaux existent dans `Src/Core/Domain/` :
@@ -31,16 +32,17 @@ Pour que Godot puisse interagir avec `InventoryManager`, une classe spéciale `I
    - Cela lui permet de **survivre aux changements de scènes**. Si le joueur passe de la forêt à la mine, l'inventaire ne sera pas effacé car ce nœud global restera en vie.
 
 2. **Écouteur d'Événements et Injection de Dépendance** :
-   Dans `_Ready()`, `InventoryNode` récupère l'instance unique de `InventoryManager` et l'`EventBus` via le `ServiceRegistry`. Il s'abonne ensuite à l'événement `MaterialDestroyedEvent` via l'**EventBus**.
+   Dans `_Ready()`, `InventoryNode` récupère l'instance unique de `InventoryManager` via le `ServiceRegistry`. Au lieu de s'abonner directement à l'**EventBus**, il s'abonne aux signaux natifs de Godot traduits par le `SignalManager` (`SignalManager.Instance.MaterialDestroyed` et `SignalManager.Instance.ResourceSpent`).
 
 ### Le Cycle Complet
 1. Un joueur détruit un arbre dans Godot.
-2. Le script de l'arbre instancie un `ResourceItem` et publie un événement sur l'EventBus : `m_eventBus.Publish(new MaterialDestroyedEvent(item, 3))`.
-3. L'**EventBus** transmet cet événement à tous ses abonnés (ici l'`InventoryNode`).
-4. Le **InventoryNode** (Godot) reçoit l'événement.
-5. Il appelle `m_inventoryManager.AddMaterial(item, 3)` pour mettre à jour la logique Core.
-6. L'`InventoryManager` (Core) peut alors publier un `InventoryChangedEvent` pour indiquer qu'un objet a été ajouté.
-7. L'inventaire est à jour et prêt à être persisté via le [Persistence System](./Persistence_System.md).
+2. Le script de l'arbre instancie un `ResourceItem` et appelle `SignalManager.Instance.EmitMaterialDestroyed(...)`.
+3. Le `SignalManager` publie un événement `MaterialDestroyedEvent` sur l'**EventBus** pour que le Core puisse réagir.
+4. Simultanément, le `SignalManager` en tant qu'Autoload Godot écoute l'EventBus et réémet l'événement sous forme de signal natif Godot : `EmitSignal(SignalName.MaterialDestroyed, ...)`.
+5. Le **InventoryNode** (Godot) reçoit le signal natif `MaterialDestroyed`.
+6. Il appelle `m_inventoryManager.AddMaterial(item, quantity)` pour mettre à jour la logique Core.
+7. L'`InventoryManager` (Core) met à jour son état interne et peut alors publier un `InventoryChangedEvent` pour notifier l'UI que le stock a changé.
+8. L'inventaire est à jour et prêt à être persisté via le [Persistence System](./Persistence_System.md).
 
 ### Synchronisation (US 8.1)
 L'inventaire est automatiquement synchronisé avec l'API :
