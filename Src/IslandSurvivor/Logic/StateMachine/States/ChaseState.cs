@@ -8,6 +8,7 @@ public partial class ChaseState : State
     [ExportGroup("State Configuration")]
     [Export] public float ChaseSpeed { get; set; } = 120.0f;
     [Export] public float LoseInterestRange { get; set; } = 100.0f;
+    [Export] public float ChaseTimeout { get; set; } = 4.0f;
 
     [ExportGroup("State Animations")]
     [Export] public string AnimationName { get; set; } = "Moving";
@@ -16,6 +17,7 @@ public partial class ChaseState : State
     private AnimationPlayer? m_animationPlayer;
     private Sprite2D? m_sprite;
     private IslandSurvivor.Nodes.AttackController? m_attackController;
+    private float m_chaseTimer;
 
     public override void Initialize(StateMachine p_stateMachine, CharacterBody2D p_npcContext)
     {
@@ -46,6 +48,8 @@ public partial class ChaseState : State
     public override void Enter()
     {
         base.Enter();
+        m_chaseTimer = ChaseTimeout;
+
         if (m_animationPlayer != null)
         {
             if (m_animationPlayer.HasAnimation(AnimationName))
@@ -69,6 +73,14 @@ public partial class ChaseState : State
         if (NpcContext is not IslandSurvivor.Scenes.NPC.AggressiveNpcBase aggressiveNpc)
             return;
 
+        m_chaseTimer -= (float)p_delta;
+        if (m_chaseTimer <= 0)
+        {
+            aggressiveNpc.Velocity = Vector2.Zero;
+            CompleteState(StateExitReason.Timeout);
+            return;
+        }
+
         if (!aggressiveNpc.HasTargetAndLineOfSight())
         {
             aggressiveNpc.Velocity = Vector2.Zero;
@@ -90,25 +102,59 @@ public partial class ChaseState : State
         }
 
         bool isRanged = NpcContext is IslandSurvivor.Scenes.NPC.RangedAggressiveNpcBase;
-        float attackRange = isRanged ? aggressiveNpc.MaxAttackRange : aggressiveNpc.AttackRange;
+        bool isBoss = NpcContext is IslandSurvivor.Scenes.NPC.BossBase;
+        float attackRange = isRanged || isBoss ? aggressiveNpc.MaxAttackRange : aggressiveNpc.AttackRange;
 
         if (distSquared <= attackRange * attackRange)
         {
-            aggressiveNpc.Velocity = Vector2.Zero;
+            bool reachedTarget = false;
 
-            // Cached to prevent GetNode allocations in hot path
-            if (m_attackController != null && m_attackController.CanAttack)
+            if (isBoss)
             {
-                CompleteState(StateExitReason.TargetReached);
+                if (distSquared <= aggressiveNpc.MinAttackRange * aggressiveNpc.MinAttackRange)
+                {
+                    reachedTarget = true; // In melee range
+                }
+                else
+                {
+                    // In ranged zone. Only stop chasing if we can shoot.
+                    var shooter = NpcContext.GetNodeOrNull<IslandSurvivor.Nodes.Shooter>("Shooter");
+                    if (shooter != null && shooter.CanShoot)
+                    {
+                        reachedTarget = true;
+                    }
+                }
+            }
+            else if (isRanged)
+            {
+                if (distSquared <= aggressiveNpc.MinAttackRange * aggressiveNpc.MinAttackRange)
+                {
+                    reachedTarget = true;
+                }
+                else
+                {
+                    var shooter = NpcContext.GetNodeOrNull<IslandSurvivor.Nodes.Shooter>("Shooter");
+                    if (shooter != null && shooter.CanShoot)
+                    {
+                        reachedTarget = true;
+                    }
+                    else if (m_attackController != null && m_attackController.CanAttack)
+                    {
+                        reachedTarget = true;
+                    }
+                }
             }
             else
             {
-                if (m_animationPlayer != null && m_animationPlayer.HasAnimation("Idle"))
-                {
-                    m_animationPlayer.Play("Idle");
-                }
+                reachedTarget = true; // Melee
             }
-            return;
+
+            if (reachedTarget)
+            {
+                aggressiveNpc.Velocity = Vector2.Zero;
+                CompleteState(StateExitReason.TargetReached);
+                return;
+            }
         }
 
         if (m_animationPlayer != null && m_animationPlayer.HasAnimation(AnimationName))
