@@ -67,3 +67,7 @@ Implemented a triangular progression curve and a ProgressionManager to reward XP
 **Request:** Execute namespace flattening mapping across Core and IslandSurvivor projects according to strict architecture rules.
 **AI Contribution:** Applied the namespace modifications and updated using statements using regex across all .cs files to compile successfully.
 **Decision Reasoning:** To adhere to the N-Tier Architecture rules, grouping broad functional domains to avoid deep namespace flattening and collision while preserving separation of concerns.
+### 2026-06-06 - [US-Fix Reaper State Machine]
+**Request:** Fix Reaper NPC to correctly transition between Idle, Wander, Chase, Melee, and Ranged states, and clean up test logic.
+**AI Contribution:** Refactored GetCombatDecisionState to correctly route to Melee, Ranged, or Chase based on ranges and cooldowns. Removed old Input logic. Added animation suffix fallbacks to MeleeAttackState and RangedAttackState to support non-directional boss animations.
+**Decision Reasoning:** The old logic got stuck or made bad choices (like chasing when within ranged attack distance but ranged was on cooldown). The fallback logic prevents exceptions and animation freeze when directional animations aren't configured.
