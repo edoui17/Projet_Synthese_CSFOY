@@ -5,9 +5,7 @@
 [node name="BaseBeamAttack" type="Node2D"]
 script = ExtResource("1_base_beam")
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
-
-[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 
 [node name="RayCast2D" type="RayCast2D" parent="."]
 target_position = Vector2(0, 2000)

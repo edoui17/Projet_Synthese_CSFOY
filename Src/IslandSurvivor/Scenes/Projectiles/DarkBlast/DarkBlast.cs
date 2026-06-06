@@ -7,39 +7,44 @@ namespace IslandSurvivor.Scenes.Projectiles;
 
 public partial class DarkBlast : BaseAoEAttack
 {
-    [Export] public int WarningFrame { get; set; } = 4;
-    [Export] public int ExplosionStartFrame { get; set; } = 15;
-    [Export] public int ExplosionEndFrame { get; set; } = 23;
+    private bool m_isExploding = false;
 
-    protected override async void OnFrameChanged()
+    public async void PauseForWarning()
     {
-        if (m_animatedSprite == null || m_collisionShape == null) return;
+        if (m_animationPlayer == null) return;
 
-        int frame = m_animatedSprite.Frame;
+        m_isPausedForWarning = true;
+        m_animationPlayer.Pause();
 
-        if (frame == WarningFrame && !m_isPausedForWarning)
+        await ToSignal(GetTree().CreateTimer(WarningDuration), SceneTreeTimer.SignalName.Timeout);
+
+        if (IsInstanceValid(m_animationPlayer))
         {
-            m_isPausedForWarning = true;
-            m_animatedSprite.Pause();
-
-            await ToSignal(GetTree().CreateTimer(WarningDuration), SceneTreeTimer.SignalName.Timeout);
-
-            if (IsInstanceValid(m_animatedSprite))
-            {
-                m_animatedSprite.Play();
-            }
+            m_animationPlayer.Play();
         }
-        else if (frame == ExplosionStartFrame)
+    }
+
+    public void EnableExplosionCollision()
+    {
+        if (m_collisionShape != null)
         {
             m_collisionShape.SetDeferred(CollisionShape2D.PropertyName.Disabled, false);
+            m_isExploding = true;
+        }
+    }
+
+    public void DisableExplosionCollision()
+    {
+        if (m_collisionShape != null)
+        {
+            m_collisionShape.SetDeferred(CollisionShape2D.PropertyName.Disabled, true);
+            m_isExploding = false;
         }
     }
 
     protected override void OnBodyEntered(Node2D body)
     {
-        if (m_animatedSprite == null) return;
-
-        if (body.IsInGroup("Player") && m_animatedSprite.Frame >= ExplosionStartFrame && m_animatedSprite.Frame <= ExplosionEndFrame)
+        if (body.IsInGroup("Player") && m_isExploding)
         {
             if (body is IDamageable damageable)
             {

@@ -4,20 +4,28 @@
 [ext_resource type="Script" uid="uid://bqnic7m1npy33" path="res://Scenes/Projectiles/DarkScythe/DarkScythe.cs" id="2_byklq"]
 [ext_resource type="Texture2D" uid="uid://cd8iknqk3cdka" path="res://Assets/Corrupted/MagicAttacks/DarkScythe.png" id="3_s5lsp"]
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_ebia3"]
-atlas = ExtResource("3_s5lsp")
-region = Rect2(576, 0, 96, 96)
+[sub_resource type="Animation" id="Animation_scythe"]
+resource_name = "Attack"
+length = 1.0
+loop_mode = 1
+step = 1.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [6]
+}
 
-[sub_resource type="SpriteFrames" id="SpriteFrames_j8jeg"]
-animations = [{
-"frames": [{
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_ebia3")
-}],
-"loop": true,
-"name": &"Attack",
-"speed": 5.0
-}]
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_scythe"]
+_data = {
+"Attack": SubResource("Animation_scythe")
+}
 
 [node name="DarkScythe" unique_id=307395803 instance=ExtResource("1_base")]
 scale = Vector2(2.5, 2.5)
@@ -27,12 +35,18 @@ ReturnTime = 1.5
 SpinSpeed = 15.0
 DestroyOnImpact = false
 
-[node name="AnimatedSprite2D" parent="." index="0" unique_id=1598172784]
-sprite_frames = SubResource("SpriteFrames_j8jeg")
-animation = &"Attack"
-frame_progress = 1.0
+[node name="Sprite2D" parent="." index="0"]
+texture = ExtResource("3_s5lsp")
+hframes = 8
+vframes = 3
+frame = 6
 
-[node name="CollisionShape2D" parent="." index="1" unique_id=1182282185]
+[node name="AnimationPlayer" parent="." index="1"]
+libraries = {
+"": SubResource("AnimationLibrary_scythe")
+}
+
+[node name="CollisionShape2D" parent="." index="2"]
 position = Vector2(-16.800001, -28.400003)
 rotation = 1.0112159
 scale = Vector2(0.9999994, 0.9999994)
