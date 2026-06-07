@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://dpd7gmbxycgpe"]
+[gd_scene format=3 uid="uid://afe19c266aca4"]
 
 [ext_resource type="Script" uid="uid://xmagicattack123" path="res://Logic/StateMachine/States/MagicAttackState.cs" id="1_script"]
 

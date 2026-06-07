@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://xorbattack123"]
+[gd_scene format=3 uid="uid://c5834cbb48f84"]
 
 [ext_resource type="Script" uid="uid://xorbattack123" path="res://Logic/MagicSpells/OrbAttackSpell.cs" id="1_script"]
 
