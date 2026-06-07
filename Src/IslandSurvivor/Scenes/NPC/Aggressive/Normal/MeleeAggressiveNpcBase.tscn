@@ -4,6 +4,7 @@
 [ext_resource type="Script" uid="uid://c48csl8462qpf" path="res://Scenes/NPC/Aggressive/Normal/MeleeAggressiveNpcBase.cs" id="2_script"]
 [ext_resource type="PackedScene" uid="uid://cx6r1g1g1g1g1" path="res://Nodes/State/Combat/MeleeAttackState.tscn" id="state_MeleeAttackState"]
 
+
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_hitbox"]
 radius = 21.986078
 height = 70.16913
