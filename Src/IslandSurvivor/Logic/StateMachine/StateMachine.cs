@@ -137,6 +137,7 @@ public partial class StateMachine : State
 
             case StateConstants.MeleeAttackState:
             case StateConstants.RangedAttackState:
+            case StateConstants.MagicAttackState:
                 if (NpcContext is IslandSurvivor.Scenes.NPC.AggressiveNpcBase aggNpc)
                 {
                     var target = aggNpc.GetTarget();

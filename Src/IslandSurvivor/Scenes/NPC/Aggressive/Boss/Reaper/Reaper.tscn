@@ -7,6 +7,9 @@
 [ext_resource type="PackedScene" uid="uid://cx6r1g1g1g1g3" path="res://Nodes/Combat/Shooter.tscn" id="Shooter"]
 [ext_resource type="PackedScene" uid="uid://cx6r1g1g1g1g1" path="res://Nodes/State/Combat/MeleeAttackState.tscn" id="state_MeleeAttackState"]
 [ext_resource type="PackedScene" uid="uid://cx6r1g1g1g1g2" path="res://Nodes/State/Combat/RangedAttackState.tscn" id="state_RangedAttackState"]
+[ext_resource type="Script" uid="uid://xmagicattack123" path="res://Logic/StateMachine/States/MagicAttackState.cs" id="script_MagicAttackState"]
+[ext_resource type="Script" uid="uid://xorbattack123" path="res://Logic/MagicSpells/OrbAttackSpell.cs" id="script_OrbAttackSpell"]
+[ext_resource type="PackedScene" uid="uid://4ry1ef60r6ju" path="res://Scenes/Projectiles/OrbProjectile/OrbProjectile.tscn" id="scene_OrbProjectile"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_dp46e"]
 radius = 37.0
@@ -316,6 +319,15 @@ AttackAnimationName = "MeleeAttackNormal"
 
 [node name="RangedAttackState" parent="StateMachine" parent_id_path=PackedInt32Array(402971195) index="7" unique_id=1949935718 instance=ExtResource("state_RangedAttackState")]
 AttackAnimationName = "RangeAttackNormal"
+
+[node name="MagicAttackState" type="Node" parent="StateMachine" parent_id_path=PackedInt32Array(402971195) index="8" unique_id=987654321]
+script = ExtResource("script_MagicAttackState")
+AttackAnimationName = "RangeAttackOrb"
+
+[node name="OrbAttackSpell" type="Node2D" parent="StateMachine/MagicAttackState" unique_id=123456789]
+script = ExtResource("script_OrbAttackSpell")
+ProjectileScene = ExtResource("scene_OrbProjectile")
+Damage = 25.0
 
 [node name="Shooter" parent="." index="14" unique_id=295957321 instance=ExtResource("Shooter")]
 ProjectileScene = ExtResource("5_scythe")

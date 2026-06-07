@@ -1,3 +1,11 @@
+### 2024-06-07 - [Magic Attack Spelling Configuration Revision]
+**Request** | Allow probability weights for `MagicAttackState` spell node selection.
+**AI Contribution** | Added a `SelectionWeight` property directly to `MagicSpellNode` class and implemented a weighted selection algorithm inside `MagicAttackState.SelectRandomSpell()` instead of uniform random picking.
+**Decision Reasoning** | Extending the base component interface ensures any future spells inherently support probabilistic execution. Weighted selection handles zero-weights gracefully avoiding math edge cases.
+### 2024-06-07 - [Reaper Magic Attack System & Orb Projectile]
+**Request** | Implement an `OrbProjectile` with homing capabilities and a new `MagicAttackState` for the Reaper boss to execute diverse attack patterns (Single, Burst, Arc, Circle, Progressive Arc) natively delegating specific spell logic away from the main state.
+**AI Contribution** | Created `OrbProjectile.cs` with physics-based delayed homing logic utilizing `GetTree().GetNodesInGroup("Player")`. Implemented a new generic `MagicSpellNode` component base class. Created `OrbAttackSpell.cs` representing the specific orb mechanics configured to handle 5 distinct multi-shot patterns driven by internal timers. Introduced `MagicAttackState.cs` to uniformly interface between `StateMachine.cs`, `AttackController` (Animation synchronization), and underlying spells. Appended Godot scene nodes in `Reaper.tscn` to load `OrbAttackSpell` into `MagicAttackState`. Updated `Reaper.cs` decision logic to randomize 50/50 between physical ranged attacks and magic attacks.
+**Decision Reasoning** | Abstracting the execution logic of the magic attacks into separate `MagicSpellNode` components inside the `MagicAttackState` provides ultimate modularity; each spell (like `OrbAttackSpell`) manages its own patterns and timings independently without bloating the general state. Firing syncs seamlessly with Godot's existing animation track callbacks (`ExecuteAttackHit`).
 [Output truncated for brevity]
 
 e via the attacker's stats directly preserves the localized loot multiplier feature.
