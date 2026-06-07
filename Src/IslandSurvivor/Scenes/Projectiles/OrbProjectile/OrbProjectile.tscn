@@ -27,6 +27,9 @@ _data = {
 &"Attack": SubResource("Animation_orb")
 }
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_ohysu"]
+radius = 7.017834
+
 [node name="OrbProjectile" unique_id=595529148 instance=ExtResource("1_base")]
 scale = Vector2(2, 2)
 script = ExtResource("2_o73vl")
@@ -39,5 +42,5 @@ hframes = 8
 [node name="AnimationPlayer" parent="." index="1" unique_id=-1696794512]
 libraries/ = SubResource("AnimationLibrary_orb")
 
-[node name="CollisionShape2D" parent="." index="2" unique_id=1182282185]
-polygon = PackedVector2Array(-11.5, -0.5, -5, -3.5, -0.5, -6, 3, -3.5, 5, -1.5, 4, 3, 1, 5, -4, 3.5)
+[node name="CollisionShape2D" parent="." index="2" unique_id=49443908]
+shape = SubResource("CircleShape2D_ohysu")

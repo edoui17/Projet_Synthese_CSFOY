@@ -6,7 +6,6 @@
 
 [sub_resource type="Animation" id="Animation_arrow"]
 resource_name = "Attack"
-length = 1.0
 loop_mode = 1
 step = 1.0
 tracks/0/type = "value"
@@ -24,23 +23,25 @@ tracks/0/keys = {
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_arrow"]
 _data = {
-"Attack": SubResource("Animation_arrow")
+&"Attack": SubResource("Animation_arrow")
 }
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_wgjhf"]
+size = Vector2(37, 4)
 
 [node name="Arrow" unique_id=1758547188 instance=ExtResource("1_base")]
 collision_mask = 15
 script = ExtResource("2_qaq63")
 
-[node name="Sprite2D" parent="." index="0"]
+[node name="Sprite2D" parent="." index="0" unique_id=1598172784]
 position = Vector2(1, -2)
 scale = Vector2(0.6, 0.6)
 texture = ExtResource("3_aqxaj")
+vframes = 2
 
-[node name="AnimationPlayer" parent="." index="1"]
-libraries = {
-"": SubResource("AnimationLibrary_arrow")
-}
+[node name="AnimationPlayer" parent="." index="1" unique_id=-1696794512]
+libraries/ = SubResource("AnimationLibrary_arrow")
 
-[node name="CollisionShape2D" parent="." index="2"]
-position = Vector2(2.5, 0)
-polygon = PackedVector2Array(-18.5, -1, 13.5, -1, 13.5, 1, -18.5, 1)
+[node name="CollisionShape2D" parent="." index="2" unique_id=49443908]
+position = Vector2(1.5, 0)
+shape = SubResource("RectangleShape2D_wgjhf")
