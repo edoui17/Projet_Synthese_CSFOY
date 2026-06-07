@@ -7,7 +7,7 @@ public partial class OrbProjectile : BaseProjectile
 {
     [ExportGroup("Seeking Settings")]
     [Export] public float SeekingDelay { get; set; } = 1.0f;
-    [Export] public float DetectionRadius { get; set; } = 500.0f;
+    [Export] public float DetectionRadius { get; set; } = 200.0f;
     [Export] public float SeekingSpeedMultiplier { get; set; } = 1.5f;
 
     private float m_aliveTime = 0.0f;
