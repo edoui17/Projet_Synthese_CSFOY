@@ -33,6 +33,11 @@ radius = 7.017834
 [node name="OrbProjectile" unique_id=595529148 instance=ExtResource("1_base")]
 scale = Vector2(2, 2)
 script = ExtResource("2_o73vl")
+SeekingDelay = 1.0
+DetectionRadius = 500.0
+SeekingSpeedMultiplier = 1.5
+DefaultSpeed = 150.0
+LifeTime = 3.0
 
 [node name="Sprite2D" parent="." index="0" unique_id=1598172784]
 rotation = -0.8377581
