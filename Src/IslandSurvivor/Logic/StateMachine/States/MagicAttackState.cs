@@ -5,26 +5,14 @@ using IslandSurvivor.Logic.MagicSpells;
 using System.Collections.Generic;
 
 [GlobalClass]
-public partial class MagicAttackState : State
+public partial class MagicAttackState : AttackState
 {
-    [Export] public string AttackAnimationName { get; set; } = "Attack";
-
-    public override bool IsActionState => true;
-
-    private IslandSurvivor.Nodes.AttackController m_attackController = null!;
-    private Sprite2D m_sprite = null!;
-    private AnimationPlayer m_animationPlayer = null!;
-    private bool m_hasCompleted = false;
     private bool m_spellInProgress = false;
-
     private MagicSpellNode m_currentSpell = null!;
 
     public override void Initialize(StateMachine p_stateMachine, CharacterBody2D p_npcContext)
     {
         base.Initialize(p_stateMachine, p_npcContext);
-        m_attackController = NpcContext.GetNodeOrNull<IslandSurvivor.Nodes.AttackController>("AttackController");
-        m_sprite = NpcContext.GetNodeOrNull<Sprite2D>("Sprite2D");
-        m_animationPlayer = NpcContext.GetNodeOrNull<AnimationPlayer>("AnimationPlayer");
 
         // Connect spell finished signals for all child spells
         foreach (Node child in GetChildren())
@@ -39,23 +27,9 @@ public partial class MagicAttackState : State
     public override void Enter()
     {
         base.Enter();
-        m_hasCompleted = false;
         m_spellInProgress = false;
 
-        if (NpcContext is IslandSurvivor.Scenes.NPC.NpcBase npc)
-        {
-            npc.Velocity = Vector2.Zero;
-        }
-
-        if (m_attackController == null || !m_attackController.CanAttack)
-        {
-            if (!m_hasCompleted)
-            {
-                m_hasCompleted = true;
-                CompleteState(StateExitReason.Finished);
-            }
-            return;
-        }
+        if (m_hasCompleted) return;
 
         m_currentSpell = SelectRandomSpell();
         if (m_currentSpell == null)
@@ -117,58 +91,6 @@ public partial class MagicAttackState : State
         }
 
         return spells[^1]; // Fallback
-    }
-
-    private (string AnimSuffix, string Direction) DetermineDirectionAndAnimation()
-    {
-        string animSuffix = "_Side";
-        string direction = "Right";
-
-        if (NpcContext is IslandSurvivor.Scenes.NPC.AggressiveNpcBase aggNpc)
-        {
-            var target = aggNpc.GetTarget();
-            if (GodotObject.IsInstanceValid(target))
-            {
-                Vector2 safeDir = NpcContext.GlobalPosition.DirectionTo(target.GlobalPosition);
-                if (safeDir != Vector2.Zero)
-                {
-                    aggNpc.LockedDirection = safeDir;
-                }
-                Vector2 toTarget = aggNpc.LockedDirection;
-
-                if (System.Math.Abs(toTarget.Y) > System.Math.Abs(toTarget.X))
-                {
-                    if (toTarget.Y < 0)
-                    {
-                        animSuffix = "_Up";
-                        direction = "Up";
-                    }
-                    else
-                    {
-                        animSuffix = "_Down";
-                        direction = "Down";
-                    }
-                }
-                else
-                {
-                    animSuffix = "_Side";
-                    direction = toTarget.X < 0 ? "Left" : "Right";
-                    if (m_sprite != null)
-                    {
-                        m_sprite.FlipH = toTarget.X < 0;
-                    }
-                }
-
-                return (animSuffix, direction);
-            }
-        }
-
-        if (m_sprite != null)
-        {
-            direction = m_sprite.FlipH ? "Left" : "Right";
-        }
-
-        return (animSuffix, direction);
     }
 
     public override void Exit()
