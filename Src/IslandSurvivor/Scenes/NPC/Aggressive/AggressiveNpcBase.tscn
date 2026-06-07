@@ -12,6 +12,10 @@
 [ext_resource type="PackedScene" uid="uid://cwnlheloaytr2" path="res://Nodes/State/Combat/RecoveryState.tscn" id="state_RecoveryState"]
 [ext_resource type="PackedScene" uid="uid://dvpfx8vuoy433" path="res://Nodes/State/Movement/WanderState.tscn" id="state_WanderState"]
 [ext_resource type="PackedScene" uid="uid://dos0ijyia15w6" path="res://Nodes/State/Combat/WindUpState.tscn" id="state_WindUpState"]
+[ext_resource type="PackedScene" uid="uid://cx6r1g1g1g1g1" path="res://Nodes/State/Combat/MeleeAttackState.tscn" id="state_MeleeAttackState"]
+[ext_resource type="PackedScene" uid="uid://cx6r1g1g1g1g2" path="res://Nodes/State/Combat/RangedAttackState.tscn" id="state_RangedAttackState"]
+[ext_resource type="Script" uid="uid://xmagicattack123" path="res://Logic/StateMachine/States/MagicAttackState.cs" id="script_MagicAttackState"]
+[ext_resource type="Script" uid="uid://xorbattack123" path="res://Logic/MagicSpells/OrbAttackSpell.cs" id="script_OrbAttackSpell"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_base"]
 radius = 15.0
@@ -82,3 +86,15 @@ horizontal_alignment = 1
 [node name="RecoveryState" parent="StateMachine" parent_id_path=PackedInt32Array(402971195) index="4" unique_id=546139160 instance=ExtResource("state_RecoveryState")]
 
 [node name="DeathState" parent="StateMachine" parent_id_path=PackedInt32Array(402971195) index="5" unique_id=1073392512 instance=ExtResource("state_DeathState")]
+
+[node name="AttackState" type="Node" parent="StateMachine" parent_id_path=PackedInt32Array(402971195) index="6" unique_id=999912345]
+
+[node name="MeleeAttackState" parent="StateMachine/AttackState" index="0" unique_id=999912346 instance=ExtResource("state_MeleeAttackState")]
+
+[node name="RangedAttackState" parent="StateMachine/AttackState" index="1" unique_id=999912347 instance=ExtResource("state_RangedAttackState")]
+
+[node name="MagicAttackState" type="Node" parent="StateMachine/AttackState" index="2" unique_id=999912348]
+script = ExtResource("script_MagicAttackState")
+
+[node name="OrbAttackSpell" type="Node2D" parent="StateMachine/AttackState/MagicAttackState" index="0" unique_id=999912349]
+script = ExtResource("script_OrbAttackSpell")
