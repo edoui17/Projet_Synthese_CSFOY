@@ -15,7 +15,7 @@ public static class StateConstants
     public const string RecoveryState = "RecoveryState";
     public const string FleeState = "FleeState";
     public const string RepositionState = "RepositionState";
-    public const string GuardState = "GuardState";
+    public const string GuardingState = "GuardingState";
     public const string DeathState = "DeathState";
     public const string WanderState = "WanderState";
 
@@ -30,7 +30,7 @@ public static class StateConstants
     public static readonly StringName RecoveryStateName = new StringName(RecoveryState);
     public static readonly StringName FleeStateName = new StringName(FleeState);
     public static readonly StringName RepositionStateName = new StringName(RepositionState);
-    public static readonly StringName GuardStateName = new StringName(GuardState);
+    public static readonly StringName GuardingStateName = new StringName(GuardingState);
     public static readonly StringName DeathStateName = new StringName(DeathState);
     public static readonly StringName WanderStateName = new StringName(WanderState);
 }

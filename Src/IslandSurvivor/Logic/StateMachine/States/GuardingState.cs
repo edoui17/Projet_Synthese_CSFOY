@@ -2,8 +2,7 @@ namespace IslandSurvivor.Logic.StateMachine;
 
 using Godot;
 
-[GlobalClass]
-public partial class GuardState : State
+public partial class GuardingState : State
 {
     [ExportGroup("Guard Configuration")]
     [Export] public float GuardDuration { get; set; } = 1.0f;
@@ -107,11 +106,44 @@ public partial class GuardState : State
 
     public override void PhysicsUpdate(double p_delta)
     {
+        base.PhysicsUpdate(p_delta);
+
         m_guardTimer -= (float)p_delta;
 
         if (m_guardTimer <= 0)
         {
             CompleteState(StateExitReason.Finished);
+            return;
+        }
+
+        if (NpcContext is IslandSurvivor.Scenes.NPC.AggressiveNpcBase aggNpc)
+        {
+            var target = aggNpc.GetTarget();
+            if (target != null)
+            {
+                float distSq = NpcContext.GlobalPosition.DistanceSquaredTo(target.GlobalPosition);
+                float maxAttackSq = aggNpc.MaxAttackRange * aggNpc.MaxAttackRange;
+
+                // If the player goes out of combat zone, exit GuardingState
+                if (distSq > maxAttackSq)
+                {
+                    CompleteState(StateExitReason.Finished);
+                    return;
+                }
+
+                // Continuously face the player
+                bool isTargetLeft = target.GlobalPosition.X < NpcContext.GlobalPosition.X;
+                if (m_sprite != null)
+                {
+                    m_sprite.FlipH = isTargetLeft;
+                }
+
+                string guardDirectionStr = isTargetLeft ? "Left" : "Right";
+                if (NpcContext.HasMethod("SetGuardState"))
+                {
+                    NpcContext.Call("SetGuardState", true, guardDirectionStr, DamageMultiplier);
+                }
+            }
         }
     }
 }
