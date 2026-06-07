@@ -9,6 +9,7 @@ public static class StateConstants
     public const string ChaseState = "ChaseState";
     public const string MeleeAttackState = "MeleeAttackState";
     public const string RangedAttackState = "RangedAttackState";
+    public const string MagicAttackState = "MagicAttackState";
     public const string WindUpState = "WindUpState";
     public const string DashState = "DashState";
     public const string RecoveryState = "RecoveryState";
@@ -23,6 +24,7 @@ public static class StateConstants
     public static readonly StringName ChaseStateName = new StringName(ChaseState);
     public static readonly StringName MeleeAttackStateName = new StringName(MeleeAttackState);
     public static readonly StringName RangedAttackStateName = new StringName(RangedAttackState);
+    public static readonly StringName MagicAttackStateName = new StringName(MagicAttackState);
     public static readonly StringName WindUpStateName = new StringName(WindUpState);
     public static readonly StringName DashStateName = new StringName(DashState);
     public static readonly StringName RecoveryStateName = new StringName(RecoveryState);

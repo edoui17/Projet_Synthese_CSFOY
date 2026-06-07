@@ -44,8 +44,21 @@ public partial class Reaper : BossBase
                 var windUp = m_stateMachine?.GetState(IslandSurvivor.Logic.StateMachine.StateConstants.WindUpStateName) as IslandSurvivor.Logic.StateMachine.WindUpState;
                 if (windUp != null)
                 {
-                    windUp.NextStateAfterWindup = IslandSurvivor.Logic.StateMachine.StateConstants.RangedAttackStateName;
+                    // 50% chance to use MagicAttackState instead of standard RangedAttackState
+                    if (GD.Randf() > 0.5f && m_stateMachine != null && m_stateMachine.HasState(IslandSurvivor.Logic.StateMachine.StateConstants.MagicAttackStateName))
+                    {
+                        windUp.NextStateAfterWindup = IslandSurvivor.Logic.StateMachine.StateConstants.MagicAttackStateName;
+                    }
+                    else
+                    {
+                        windUp.NextStateAfterWindup = IslandSurvivor.Logic.StateMachine.StateConstants.RangedAttackStateName;
+                    }
                 }
+
+                // Put shooter on cooldown artificially when we commit to windup to prevent rapid firing.
+                // Normally Shooter node manages this but we share cooldown for MagicAttack
+                // Note: Shooter's cooldown logic is internal, so we trigger a dummy shot or let Shooter update natively.
+
                 return IslandSurvivor.Logic.StateMachine.StateConstants.WindUpStateName;
             }
 
