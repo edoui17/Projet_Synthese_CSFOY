@@ -317,6 +317,7 @@ Stats = NodePath("../StatManager")
 
 [node name="AttackController" type="Node" parent="." unique_id=987654322]
 script = ExtResource("attack_controller_script")
+BaseAttackCooldown = 0.5
 
 [node name="StatManager" parent="." unique_id=772458511 instance=ExtResource("7_stat")]
 m_isGlobal = true
