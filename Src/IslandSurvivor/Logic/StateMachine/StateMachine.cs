@@ -24,15 +24,7 @@ public partial class StateMachine : State
         base.Initialize(p_parentMachine, p_npcContext);
 
         m_states.Clear();
-        foreach (Node child in GetChildren())
-        {
-            if (child is State state)
-            {
-                m_states[state.Name] = state;
-                state.Initialize(this, p_npcContext);
-                state.StateFinished += OnStateFinished;
-            }
-        }
+        RegisterStatesRecursive(this, p_npcContext);
 
         if (InitialState != null && m_states.ContainsValue(InitialState))
         {
@@ -51,6 +43,22 @@ public partial class StateMachine : State
         if (NpcContext != null && Engine.IsEditorHint() == false)
         {
             GD.Print($"[Frame: {Engine.GetPhysicsFrames()}] [{NpcContext.Name}] [StateMachine] INITIALIZED. Total States: {m_states.Count}. Starting State: {m_currentState?.Name}");
+        }
+    }
+
+    private void RegisterStatesRecursive(Node p_node, CharacterBody2D p_npcContext)
+    {
+        foreach (Node child in p_node.GetChildren())
+        {
+            if (child is State state)
+            {
+                m_states[state.Name] = state;
+                state.Initialize(this, p_npcContext);
+                state.StateFinished += OnStateFinished;
+            }
+
+            // Recursively search children (for grouping nodes like AttackState)
+            RegisterStatesRecursive(child, p_npcContext);
         }
     }
 
