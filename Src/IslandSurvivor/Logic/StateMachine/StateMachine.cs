@@ -199,8 +199,8 @@ public partial class StateMachine : State
                 }
                 break;
 
-            case StateConstants.GuardState:
-                nextStateName = GetPostGuardState();
+            case StateConstants.GuardingState:
+                nextStateName = GetPostGuardingState();
                 break;
 
             case StateConstants.DeathState:
@@ -247,7 +247,7 @@ public partial class StateMachine : State
         }
     }
 
-    private StringName GetPostGuardState()
+    private StringName GetPostGuardingState()
     {
         if (NpcContext is not IslandSurvivor.Scenes.NPC.AggressiveNpcBase aggNpcGuard)
             return StateConstants.IdleStateName;

@@ -17,6 +17,7 @@ public partial class AggressiveNpcBase : NpcBase
     [Export] public string AttackSoundKey { get; set; } = string.Empty;
     [Export] public float AttackVolume { get; set; } = 1.0f;
 
+
     [ExportGroup("Melee Configuration")]
     [Export] public float AttackRange { get; set; } = 60.0f;
     [Export] public float GuardChance { get; set; } = 0.3f;
@@ -69,25 +70,81 @@ public partial class AggressiveNpcBase : NpcBase
         return GetCombatDecisionState(distanceSquared, attackRangeSquared);
     }
 
+
     protected virtual Godot.StringName GetCombatDecisionState(float distanceSquared, float attackRangeSquared)
     {
-        if (distanceSquared > attackRangeSquared)
+        if (m_stateMachine == null) return IslandSurvivor.Logic.StateMachine.StateConstants.IdleStateName;
+
+        float maxAttackRangeSquared = MaxAttackRange * MaxAttackRange;
+        float minAttackRangeSquared = MinAttackRange * MinAttackRange;
+
+        if (distanceSquared > maxAttackRangeSquared)
         {
             return IslandSurvivor.Logic.StateMachine.StateConstants.ChaseStateName;
         }
 
-        if (m_attackController != null && m_attackController.CanAttack)
+        if (distanceSquared <= minAttackRangeSquared)
         {
-            var windUp = m_stateMachine?.GetState(IslandSurvivor.Logic.StateMachine.StateConstants.WindUpStateName) as IslandSurvivor.Logic.StateMachine.WindUpState;
-            if (windUp != null)
+            if (m_stateMachine.HasState(IslandSurvivor.Logic.StateMachine.StateConstants.GuardingStateName) && CanGuard)
             {
-                // State routing is handled by specific NpcBase
+                if (GD.Randf() <= GuardChance)
+                {
+                    return IslandSurvivor.Logic.StateMachine.StateConstants.GuardingStateName;
+                }
             }
-            return IslandSurvivor.Logic.StateMachine.StateConstants.WindUpStateName;
+
+            if (m_stateMachine.HasState(IslandSurvivor.Logic.StateMachine.StateConstants.MeleeAttackStateName) && m_attackController != null && m_attackController.CanAttack)
+            {
+                var windUp = m_stateMachine.GetState(IslandSurvivor.Logic.StateMachine.StateConstants.WindUpStateName) as IslandSurvivor.Logic.StateMachine.WindUpState;
+                if (windUp != null)
+                {
+                    windUp.NextStateAfterWindup = IslandSurvivor.Logic.StateMachine.StateConstants.MeleeAttackStateName;
+                    return IslandSurvivor.Logic.StateMachine.StateConstants.WindUpStateName;
+                }
+            }
+        }
+        else if (distanceSquared > minAttackRangeSquared && distanceSquared <= maxAttackRangeSquared)
+        {
+            bool hasRanged = m_stateMachine.HasState(IslandSurvivor.Logic.StateMachine.StateConstants.RangedAttackStateName);
+            bool hasMagic = m_stateMachine.HasState(IslandSurvivor.Logic.StateMachine.StateConstants.MagicAttackStateName);
+
+            Godot.StringName? chosenState = null;
+
+            if (hasRanged && hasMagic)
+            {
+                chosenState = GD.Randf() > 0.5f ? IslandSurvivor.Logic.StateMachine.StateConstants.MagicAttackStateName : IslandSurvivor.Logic.StateMachine.StateConstants.RangedAttackStateName;
+            }
+            else if (hasRanged)
+            {
+                chosenState = IslandSurvivor.Logic.StateMachine.StateConstants.RangedAttackStateName;
+            }
+            else if (hasMagic)
+            {
+                chosenState = IslandSurvivor.Logic.StateMachine.StateConstants.MagicAttackStateName;
+            }
+
+            if (chosenState != null)
+            {
+                var shooter = GetNodeOrNull<IslandSurvivor.Nodes.Shooter>("Shooter");
+                // Attack Controller shared CanAttack logic check, or shooter check
+                bool canShoot = shooter != null ? shooter.CanShoot : true; // fallback if no shooter but has magic
+                bool canAttack = m_attackController != null ? m_attackController.CanAttack : true;
+
+                if (canShoot && canAttack)
+                {
+                    var windUp = m_stateMachine.GetState(IslandSurvivor.Logic.StateMachine.StateConstants.WindUpStateName) as IslandSurvivor.Logic.StateMachine.WindUpState;
+                    if (windUp != null)
+                    {
+                        windUp.NextStateAfterWindup = chosenState;
+                        return IslandSurvivor.Logic.StateMachine.StateConstants.WindUpStateName;
+                    }
+                }
+            }
         }
 
         return IslandSurvivor.Logic.StateMachine.StateConstants.IdleStateName;
     }
+
 
     public void SetGuardState(bool isGuarding, string direction, float multiplier)
     {
