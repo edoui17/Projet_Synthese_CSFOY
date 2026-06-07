@@ -14,8 +14,9 @@
 [ext_resource type="PackedScene" uid="uid://dos0ijyia15w6" path="res://Nodes/State/Combat/WindUpState.tscn" id="state_WindUpState"]
 [ext_resource type="PackedScene" uid="uid://cx6r1g1g1g1g1" path="res://Nodes/State/Combat/MeleeAttackState.tscn" id="state_MeleeAttackState"]
 [ext_resource type="PackedScene" uid="uid://cx6r1g1g1g1g2" path="res://Nodes/State/Combat/RangedAttackState.tscn" id="state_RangedAttackState"]
-[ext_resource type="Script" uid="uid://xmagicattack123" path="res://Logic/StateMachine/States/MagicAttackState.cs" id="script_MagicAttackState"]
-[ext_resource type="Script" uid="uid://xorbattack123" path="res://Logic/MagicSpells/OrbAttackSpell.cs" id="script_OrbAttackSpell"]
+[ext_resource type="Script" uid="uid://cblq0ch2i1326" path="res://Logic/StateMachine/States/MagicAttackState.cs" id="script_MagicAttackState"]
+[ext_resource type="Script" uid="uid://ib2qibqxdsji" path="res://Logic/MagicSpells/OrbAttackSpell.tscn" id="script_OrbAttackSpell"]
+
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_base"]
 radius = 15.0

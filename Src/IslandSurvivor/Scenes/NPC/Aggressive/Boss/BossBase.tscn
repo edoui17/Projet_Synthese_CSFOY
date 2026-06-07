@@ -4,6 +4,7 @@
 [ext_resource type="Script" uid="uid://b1py08fmiwthv" path="res://Scenes/NPC/Aggressive/Boss/BossBase.cs" id="2_script"]
 [ext_resource type="PackedScene" uid="uid://crca7kdilqogk" path="res://Scenes/Projectiles/Arrow/Arrow.tscn" id="3_arrow"]
 
+
 [node name="BossBase" unique_id=1362876555 instance=ExtResource("1_scene")]
 script = ExtResource("2_script")
 ProjectileScene = ExtResource("3_arrow")
