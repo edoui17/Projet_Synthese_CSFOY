@@ -183,7 +183,7 @@ public partial class StateMachine : State
                 break;
 
             case StateConstants.RecoveryState:
-                nextStateName = StateConstants.IdleStateName;
+                nextStateName = GetCombatDecisionState();
                 break;
 
             case StateConstants.FleeState:
