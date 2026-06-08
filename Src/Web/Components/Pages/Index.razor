@@ -6,10 +6,9 @@
 @rendermode InteractiveServer
 
 <style>
-    /* On force l'image à être un élément de bloc pour que la rotation fonctionne */
-    .spinning img {
-        animation: rotation 2s infinite linear;
-        display: block;
+    .spinning {
+        animation: rotation 1s infinite linear !important;
+        transform-origin: center center;
     }
 
     @@keyframes rotation {
@@ -43,11 +42,8 @@
             <input type="search" id="site-search" name="q" @bind="SearchQuery" @bind:event="oninput" placeholder="Chercher un joueur..." />
         </div>
         <div class="sortAndRefresh">
-            <button id="refreshButton"
-                    class="@(m_isRefreshing ? "spinning" : "")"
-                    @onclick="RefreshLeaderboard"
-                    disabled="@m_isRefreshing">
-                <img src="images/refreshbutton1.png" alt="Rafraîchir le classement">
+            <button id="refreshButton" @onclick="RefreshLeaderboard" disabled="@m_isRefreshing">
+                <img src="images/refreshbutton1.png" alt="Rafraîchir le classement" class="@(m_isRefreshing ? "spinning" : "")">
             </button>
             <div id="sortRank">
                 <select name="ranks" id="rank-select" @bind="SortCriteria">
@@ -114,7 +110,7 @@
     private string m_sortCriteria = "Level";
     private bool m_isRefreshing = false;
     private System.Timers.Timer? m_refreshTimer;
-    private const double REFRESH_INTERVAL = 5000; // 1 hour in milliseconds
+    private const double REFRESH_INTERVAL = 3600000; // 1 hour in milliseconds
 
     public string SearchQuery
     {
@@ -214,6 +210,8 @@
         m_isRefreshing = true;
         StateHasChanged();
 
+        await Task.Delay(500);//m_isRefreshing passe à true et immédiatement à false (à cause de la vitesse de l'appel API).Ajout d'un delai pour valider si l'animation se declanche.
+        
         try
         {
             m_players = await Http.GetFromJsonAsync<IEnumerable<PlayerLeaderboardEntry>>("api/player/leaderboard");
