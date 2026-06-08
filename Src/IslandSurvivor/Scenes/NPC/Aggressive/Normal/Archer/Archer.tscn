@@ -470,3 +470,6 @@ InitialState = NodePath("IdleState")
 
 [node name="ChaseState" parent="StateMachine" index="2" unique_id=1947301554]
 LoseInterestRange = 600.0
+
+[node name="ProjectileSpawnPosition" parent="." index="8"]
+position = Vector2(0, 5)
