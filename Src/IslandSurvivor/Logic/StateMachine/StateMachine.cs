@@ -280,6 +280,20 @@ public partial class StateMachine : State
 
     public State GetState(Godot.StringName stateName) => m_states.TryGetValue(stateName, out var state) ? state : null!;
 
+    public bool TryGetState<T>(out T state) where T : State
+    {
+        foreach (var s in m_states.Values)
+        {
+            if (s is T typedState)
+            {
+                state = typedState;
+                return true;
+            }
+        }
+        state = null!;
+        return false;
+    }
+
     public void ForceTransition(StringName p_targetStateName)
     {
         if (!m_states.ContainsKey(p_targetStateName)) return;

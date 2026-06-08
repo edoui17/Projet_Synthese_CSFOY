@@ -45,7 +45,10 @@ public partial class EnemyStatsHandler : Node
         if (GetParent() is IslandSurvivor.Scenes.NPC.AggressiveNpcBase aggressiveNpc)
         {
             newIdleSpeed = aggressiveNpc.IdleSpeed * p_threatScore;
-            newChaseSpeed = aggressiveNpc.ChaseSpeed * p_threatScore;
+            if (aggressiveNpc.GetNodeOrNull<IslandSurvivor.Logic.StateMachine.StateMachine>("StateMachine")?.TryGetState<IslandSurvivor.Logic.StateMachine.ChaseState>(out var chaseState) == true)
+            {
+                newChaseSpeed = chaseState.ChaseSpeed * p_threatScore;
+            }
         }
 
         if (m_isElite)
@@ -74,7 +77,10 @@ public partial class EnemyStatsHandler : Node
         if (GetParent() is IslandSurvivor.Scenes.NPC.AggressiveNpcBase aggressiveNpcFinal)
         {
             aggressiveNpcFinal.IdleSpeed = newIdleSpeed;
-            aggressiveNpcFinal.ChaseSpeed = newChaseSpeed;
+            if (aggressiveNpcFinal.GetNodeOrNull<IslandSurvivor.Logic.StateMachine.StateMachine>("StateMachine")?.TryGetState<IslandSurvivor.Logic.StateMachine.ChaseState>(out var chaseStateFinal) == true)
+            {
+                chaseStateFinal.ChaseSpeed = newChaseSpeed;
+            }
         }
 
         GD.Print($"[EnemyStatsHandler] {GetParent().Name} initialized. Threat: {p_threatScore:F2} | Elite: {p_isElite} | HP: {newMaxHealth:F1} | ATK: {newBaseAttack:F1}");

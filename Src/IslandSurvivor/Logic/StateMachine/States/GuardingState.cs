@@ -5,6 +5,7 @@ using Godot;
 public partial class GuardingState : State
 {
     [ExportGroup("Guard Configuration")]
+    [Export] public float GuardChance { get; set; } = 0.3f;
     [Export] public float GuardDuration { get; set; } = 1.0f;
     [Export] public float GuardCooldown { get; set; } = 5.0f;
     [Export] public float DamageMultiplier { get; set; } = 0.0f; // 0 means take 0 damage, 1 means full damage
@@ -122,7 +123,12 @@ public partial class GuardingState : State
             if (target != null)
             {
                 float distSq = NpcContext.GlobalPosition.DistanceSquaredTo(target.GlobalPosition);
-                float maxAttackSq = aggNpc.MaxAttackRange * aggNpc.MaxAttackRange;
+
+                float maxAttackRange = 350f;
+                if (StateMachine.TryGetState<RangedAttackState>(out var ranged)) maxAttackRange = ranged.MaxAttackRange;
+                if (StateMachine.TryGetState<MagicAttackState>(out var magic)) maxAttackRange = System.Math.Max(maxAttackRange, magic.MaxAttackRange);
+                float maxAttackSq = maxAttackRange * maxAttackRange;
+
 
                 // If the player goes out of combat zone, exit GuardingState
                 if (distSq > maxAttackSq)

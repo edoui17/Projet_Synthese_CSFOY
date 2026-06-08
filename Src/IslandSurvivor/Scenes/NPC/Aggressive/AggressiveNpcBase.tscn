@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://ebase12345"]
 
 [ext_resource type="PackedScene" uid="uid://npcbase12345" path="res://Scenes/NPC/NpcBase.tscn" id="1_scene"]
+[ext_resource type="Script" path="res://Src/IslandSurvivor/Logic/StateMachine/States/MovementState.cs" id="state_MovementState"]
 [ext_resource type="Script" uid="uid://c6hbk85k2al80" path="res://Scenes/NPC/Aggressive/AggressiveNpcBase.cs" id="2_script"]
 [ext_resource type="Script" uid="uid://bhrvrxhl1h86p" path="res://Nodes/Combat/AttackController.cs" id="4_attack"]
 [ext_resource type="Script" uid="uid://dho8qxm7k3p2q" path="res://Nodes/Combat/EnemyStatsHandler.cs" id="5_stats_handler"]
@@ -21,18 +22,12 @@ radius = 250.0
 
 [node name="AggressiveNpcBase" unique_id=635726557 instance=ExtResource("1_scene")]
 script = ExtResource("2_script")
-ChaseSpeed = 120.0
-StoppingDistance = 50.0
 LevelIndex = 1
 BaseXp = 10.0
 XpMultiplier = 0.5
 AttackSound = ExtResource("attack_stream")
 AttackSoundKey = ""
 AttackVolume = 1.0
-AttackRange = 60.0
-GuardChance = 0.3
-MinAttackRange = 80.0
-MaxAttackRange = 350.0
 HurtSound = ExtResource("hurt_stream")
 
 [node name="CollisionShape2D" parent="." index="1" unique_id=1322914286]
@@ -71,11 +66,14 @@ offset_bottom = -58.0
 text = "Lv. 1"
 horizontal_alignment = 1
 
-[node name="IdleState" parent="StateMachine" parent_id_path=PackedInt32Array(402971195) index="0" unique_id=354736185 instance=ExtResource("state_IdleState")]
+[node name="MovementState" type="Node" parent="StateMachine" index="0"]
+script = ExtResource("state_MovementState")
 
-[node name="WanderState" parent="StateMachine" parent_id_path=PackedInt32Array(402971195) index="1" unique_id=1820029102 instance=ExtResource("state_WanderState")]
+[node name="IdleState" parent="StateMachine/MovementState" index="0" unique_id=354736185 instance=ExtResource("state_IdleState")]
 
-[node name="ChaseState" parent="StateMachine" parent_id_path=PackedInt32Array(402971195) index="2" unique_id=1947301554 instance=ExtResource("state_ChaseState")]
+[node name="WanderState" parent="StateMachine/MovementState" index="1" unique_id=1820029102 instance=ExtResource("state_WanderState")]
+
+[node name="ChaseState" parent="StateMachine/MovementState" index="2" unique_id=1947301554 instance=ExtResource("state_ChaseState")]
 
 [node name="WindUpState" parent="StateMachine" parent_id_path=PackedInt32Array(402971195) index="3" unique_id=457069323 instance=ExtResource("state_WindUpState")]
 

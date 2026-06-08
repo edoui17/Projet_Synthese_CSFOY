@@ -654,13 +654,9 @@ _data = {
 
 [node name="Lancer" unique_id=1880312545 instance=ExtResource("1_gsctu")]
 script = ExtResource("1_x8y9z")
-DashThreshold = 100.0
-ChaseSpeed = 100.0
-StoppingDistance = 100.0
 BaseXp = 30.0
 XpMultiplier = 0.2
 AttackSoundKey = "Enemy_Swing_Default"
-GuardChance = 0.0
 HurtSound = ExtResource("3_u3wq2")
 
 [node name="Sprite2D" parent="." index="0" unique_id=1104255030]
@@ -702,9 +698,9 @@ shape = SubResource("CapsuleShape2D_lancer_hitbox")
 [node name="AnimationPlayer" parent="." index="13" unique_id=1869571986]
 libraries/ = SubResource("AnimationLibrary_4ud8o")
 
-[node name="ChaseState" parent="StateMachine" parent_id_path=PackedInt32Array(402971195) index="2" unique_id=1947301554]
+[node name="ChaseState" parent="StateMachine/MovementState" index="2" unique_id=1947301554]
 LoseInterestRange = 500.0
 
-[node name="DashState" parent="StateMachine" parent_id_path=PackedInt32Array(402971195) index="3" unique_id=28822031 instance=ExtResource("state_DashState")]
+[node name="DashState" parent="StateMachine/MovementState" index="3" unique_id=28822031 instance=ExtResource("state_DashState")]
 
-[node name="LancerRepositionState" parent="StateMachine" parent_id_path=PackedInt32Array(402971195) index="8" unique_id=1840744020 instance=ExtResource("state_LancerRepositionState")]
+[node name="LancerRepositionState" parent="StateMachine/MovementState" index="8" unique_id=1840744020 instance=ExtResource("state_LancerRepositionState")]

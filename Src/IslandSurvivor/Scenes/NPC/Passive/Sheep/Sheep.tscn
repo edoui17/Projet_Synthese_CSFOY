@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://mqagd60eodos"]
 
 [ext_resource type="PackedScene" uid="uid://df6gel801af1s" path="res://Scenes/NPC/Passive/PassiveNpcBase.tscn" id="1_scene"]
+[ext_resource type="Script" path="res://Src/IslandSurvivor/Logic/StateMachine/States/MovementState.cs" id="state_MovementState"]
 [ext_resource type="Script" uid="uid://fvn22w5rptq7" path="res://Scenes/NPC/Passive/Sheep/Sheep.cs" id="2_script"]
 [ext_resource type="Texture2D" uid="uid://yh2ufkt82mxm" path="res://Assets/TinySwords/Sprites/Sheep/HappySheep_All.png" id="6_dmdtk"]
 [ext_resource type="Animation" uid="uid://b8cryv3pvmoi0" path="res://Animation/Death_Ressource.res" id="7_m5ir2"]
@@ -314,12 +315,15 @@ MaxHealth = 30.0
 libraries/ = SubResource("AnimationLibrary_m5ir2")
 
 [node name="StateMachine" parent="." index="5" unique_id=402971195 node_paths=PackedStringArray("InitialState")]
-InitialState = NodePath("IdleState")
+InitialState = NodePath("MovementState/IdleState")
 
-[node name="IdleState" parent="StateMachine" index="0" unique_id=1763813046 instance=ExtResource("state_IdleState")]
+[node name="MovementState" type="Node" parent="StateMachine" index="0"]
+script = ExtResource("state_MovementState")
 
-[node name="FleeState" parent="StateMachine" index="1" unique_id=2056017599 instance=ExtResource("state_FleeState")]
+[node name="IdleState" parent="StateMachine/MovementState" index="0" unique_id=1763813046 instance=ExtResource("state_IdleState")]
+
+[node name="FleeState" parent="StateMachine/MovementState" index="1" unique_id=2056017599 instance=ExtResource("state_FleeState")]
 
 [node name="DeathState" parent="StateMachine" index="2" unique_id=537135978 instance=ExtResource("state_DeathState")]
 
-[node name="WanderState" parent="StateMachine" index="3" unique_id=227467050 instance=ExtResource("12_ayjqv")]
+[node name="WanderState" parent="StateMachine/MovementState" index="3" unique_id=227467050 instance=ExtResource("12_ayjqv")]

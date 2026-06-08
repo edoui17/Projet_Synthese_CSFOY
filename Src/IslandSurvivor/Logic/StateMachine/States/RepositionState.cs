@@ -3,9 +3,10 @@ namespace IslandSurvivor.Logic.StateMachine;
 using Godot;
 
 [GlobalClass]
-public partial class RepositionState : State
+public partial class RepositionState : MovementState
 {
     [ExportGroup("State Configuration")]
+    [Export] public float FleeSpeed { get; set; } = 120.0f;
     [Export] public float RepositionDuration { get; set; } = 1.5f;
 
     [ExportGroup("State Animations")]
@@ -67,23 +68,24 @@ public partial class RepositionState : State
 
         if (m_timer <= 0)
         {
-            NpcContext.Velocity = Vector2.Zero;
+            SetVelocity(Vector2.Zero);
             CompleteState(StateExitReason.Finished);
             return;
         }
 
         if (NpcContext is IslandSurvivor.Scenes.NPC.AggressiveNpcBase aggressiveNpc)
         {
-            float speed = aggressiveNpc.ChaseSpeed;
+            float speed = FleeSpeed;
             if (aggressiveNpc.MovementController != null)
             {
                 aggressiveNpc.MovementController.Move(m_repositionDirection, speed);
             }
             else
             {
-                aggressiveNpc.Velocity = m_repositionDirection * speed;
-                aggressiveNpc.MoveAndSlide();
+                SetVelocity(m_repositionDirection * speed);
             }
+
+            base.PhysicsUpdate(p_delta);
 
             if (m_sprite != null && m_repositionDirection.X != 0)
             {
@@ -102,7 +104,7 @@ public partial class RepositionState : State
                     if (m_collisionCount >= 3)
                     {
                         // Stuck in a corner or heavily hitting walls, stop repositioning
-                        NpcContext.Velocity = Vector2.Zero;
+                        SetVelocity(Vector2.Zero);
                         CompleteState(StateExitReason.Finished);
                         return;
                     }
@@ -119,12 +121,17 @@ public partial class RepositionState : State
             {
                 float distSquared = NpcContext.GlobalPosition.DistanceSquaredTo(target.GlobalPosition);
                 // Stop repositioning early if we are comfortably out of the minimum range (e.g., halfway to max range)
-                float idealRangeSquared = aggressiveNpc.MinAttackRange + (aggressiveNpc.MaxAttackRange - aggressiveNpc.MinAttackRange) / 2.0f;
+
+                float minRange = 80f;
+                float maxRange = 350f;
+                if (StateMachine.TryGetState<RangedAttackState>(out var rs)) maxRange = rs.MaxAttackRange;
+                float idealRangeSquared = minRange + (maxRange - minRange) / 2.0f;
+
                 idealRangeSquared *= idealRangeSquared;
 
                 if (distSquared >= idealRangeSquared)
                 {
-                    NpcContext.Velocity = Vector2.Zero;
+                    SetVelocity(Vector2.Zero);
                     CompleteState(StateExitReason.Finished);
                 }
             }

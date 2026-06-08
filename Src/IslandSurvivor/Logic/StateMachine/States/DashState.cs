@@ -3,9 +3,10 @@ namespace IslandSurvivor.Logic.StateMachine;
 using Godot;
 
 [GlobalClass]
-public partial class DashState : State
+public partial class DashState : MovementState
 {
     [ExportGroup("State Configuration")]
+    [Export] public float DashThreshold { get; set; } = 100.0f;
     [Export] public float DashSpeed { get; set; } = 400.0f;
     [Export] public float DashDuration { get; set; } = 0.5f;
     [Export] public float DashDamageMultiplier { get; set; } = 1.5f;
@@ -158,9 +159,10 @@ public partial class DashState : State
             }
             else
             {
-                npc.Velocity = m_dashDirection * DashSpeed;
-                npc.MoveAndSlide();
+                SetVelocity(m_dashDirection * DashSpeed);
             }
+
+            base.PhysicsUpdate(p_delta);
 
             int collisionCount = npc.GetSlideCollisionCount();
             if (collisionCount == 0) return;

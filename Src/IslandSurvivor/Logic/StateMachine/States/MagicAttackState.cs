@@ -7,6 +7,7 @@ using System.Collections.Generic;
 [GlobalClass]
 public partial class MagicAttackState : AttackState
 {
+    [Export] public float MaxAttackRange { get; set; } = 350.0f;
     private bool m_spellInProgress = false;
     private MagicSpellNode m_currentSpell = null!;
 

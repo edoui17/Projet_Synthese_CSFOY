@@ -3,7 +3,7 @@ namespace IslandSurvivor.Logic.StateMachine;
 using Godot;
 
 [GlobalClass]
-public partial class IdleState : State
+public partial class IdleState : MovementState
 {
     [ExportGroup("State Configuration")]
     [Export] public float WaitTime { get; set; } = 2.0f;
@@ -54,10 +54,7 @@ public partial class IdleState : State
             // Animation playing is handled by State/AnimationPlayer
         }
 
-        if (NpcContext is IslandSurvivor.Scenes.NPC.NpcBase npc)
-        {
-            npc.Velocity = Vector2.Zero;
-        }
+        SetVelocity(Vector2.Zero);
     }
 
     public override void Update(double p_delta)

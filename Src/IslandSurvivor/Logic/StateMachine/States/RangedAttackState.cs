@@ -5,6 +5,7 @@ using Godot;
 [GlobalClass]
 public partial class RangedAttackState : AttackState
 {
+    [Export] public float MaxAttackRange { get; set; } = 350.0f;
     private IslandSurvivor.Nodes.Shooter m_shooter = null!;
 
     public override void Initialize(StateMachine p_stateMachine, CharacterBody2D p_npcContext)
