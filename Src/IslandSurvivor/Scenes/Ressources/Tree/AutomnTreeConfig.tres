@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="ResourceSpawnConfig" format=3 uid="uid://bu2f7lmyby6cq"]
+
+[ext_resource type="PackedScene" uid="uid://d24ig3exgmn53" path="res://Scenes/Ressources/Tree/AutomnTree.tscn" id="1_scene"]
+[ext_resource type="Script" uid="uid://cqngfcqtgbwd1" path="res://Nodes/Zones/ResourceSpawnConfig.cs" id="2_script"]
+
+[resource]
+script = ExtResource("2_script")
+ResourceScene = ExtResource("1_scene")
+Weight = 8.0

@@ -2,16 +2,28 @@ using Godot;
 using System;
 using System.Collections.Generic;
 using Core.Interfaces;
+using Core.Utils;
+using IslandSurvivor.Utils;
+using IslandSurvivor.Utils.Logging;
 
 namespace IslandSurvivor.Nodes;
 
+/// <summary>
+/// [Gameplay][Spawning][Algorithme]
+/// Zone responsible for spawning and managing a specific number of resources using weighted probabilities.
+/// </summary>
 public partial class ResourceZone : Node2D, IResourcePopulator
 {
+    [ExportGroup("General Settings")]
     [Export] public int ResourceCount { get; set; } = 10;
+
+    [Export] public Godot.Collections.Array<ResourceSpawnConfig> ResourceConfigs { get; set; } = new();
+
+    [ExportGroup("Zone Mapping")]
     [Export] public Polygon2D SpawningArea { get; set; } = null!;
+    [Export] public TileMapLayer WaterTileMap { get; set; } = null!;
 
-    [Export] public Godot.Collections.Array<PackedScene> ResourceScenes { get; set; } = new();
-
+    [ExportGroup("Spawn Settings")]
     [Export] public float SafeZoneRadius { get; set; } = 150f;
     [Export] public Vector2 SafeZoneCenter { get; set; } = Vector2.Zero;
 
@@ -19,12 +31,10 @@ public partial class ResourceZone : Node2D, IResourcePopulator
 
     [Export] public float RespawnInterval { get; set; } = 30f;
 
-    [Export] public TileMapLayer WaterTileMap { get; set; } = null!;
-
     private readonly List<Node2D> m_activeResources = new();
     private float m_respawnTimer = 0f;
-    private Random m_random = new();
     private Rect2 m_cachedBounds;
+    private readonly IWeightedRandomSelector<ResourceSpawnConfig> m_weightedSelector = new WeightedRandomSelector<ResourceSpawnConfig>(new GodotRandomProvider(), new GodotLogger());
 
     public override void _Ready()
     {
@@ -64,9 +74,9 @@ public partial class ResourceZone : Node2D, IResourcePopulator
 
     public void Populate()
     {
-        if (ResourceScenes == null || ResourceScenes.Count == 0)
+        if (ResourceConfigs == null || ResourceConfigs.Count == 0)
         {
-            GD.PushWarning($"[ResourceZone] No ResourceScenes assigned for {Name}.");
+            GD.PushWarning($"[ResourceZone] No ResourceConfigs assigned for {Name}.");
             return;
         }
 
@@ -90,7 +100,8 @@ public partial class ResourceZone : Node2D, IResourcePopulator
 
     private bool TrySpawnOne()
     {
-        if (ResourceScenes == null || ResourceScenes.Count == 0) return false;
+        var config = m_weightedSelector.SelectRandom(ResourceConfigs);
+        if (config == null || config.ResourceScene == null) return false;
 
         Vector2 randomPoint = GenerateRandomPointInBounds();
 
@@ -102,15 +113,15 @@ public partial class ResourceZone : Node2D, IResourcePopulator
         if (IsOnWater(localPos)) return false;
         if (IsTooCloseToOtherResources(localPos)) return false;
 
-        SpawnResource(ResourceScenes[m_random.Next(ResourceScenes.Count)], localPos);
+        SpawnResource(config.ResourceScene, localPos);
         return true;
     }
 
     private Vector2 GenerateRandomPointInBounds()
     {
         return new Vector2(
-            (float)m_random.NextDouble() * m_cachedBounds.Size.X + m_cachedBounds.Position.X,
-            (float)m_random.NextDouble() * m_cachedBounds.Size.Y + m_cachedBounds.Position.Y
+            GD.Randf() * m_cachedBounds.Size.X + m_cachedBounds.Position.X,
+            GD.Randf() * m_cachedBounds.Size.Y + m_cachedBounds.Position.Y
         );
     }
 
