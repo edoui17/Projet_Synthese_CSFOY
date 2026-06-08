@@ -75,30 +75,12 @@ public partial class IdleState : State
                 var target = aggressiveNpc.GetTarget();
                 if (target != null)
                 {
-                    float distSquared = NpcContext.GlobalPosition.DistanceSquaredTo(target.GlobalPosition);
+                    Godot.StringName decisionState = aggressiveNpc.GetDecisionState(target);
 
-                    bool hasRanged = StateMachine.HasState(IslandSurvivor.Logic.StateMachine.StateConstants.RangedAttackStateName);
-                    bool hasMagic = StateMachine.HasState(IslandSurvivor.Logic.StateMachine.StateConstants.MagicAttackStateName);
-                    bool hasLongRangeAttacks = hasRanged || hasMagic;
-
-                    float checkRange = hasLongRangeAttacks ? aggressiveNpc.MaxAttackRange : aggressiveNpc.MinAttackRange;
-
-                    if (distSquared <= checkRange * checkRange)
-                    {
-                        // Cached to prevent GetNode allocations in hot path
-                        bool isAttackCooldownReady = m_attackController != null && m_attackController.CanAttack;
-
-                        // Let the StateMachine evaluate if it can guard or attack. We just notify that we are ready to transition.
-                        if (isAttackCooldownReady || m_timer <= 0)
-                        {
-                            m_hasCompleted = true;
-                            CompleteState(StateExitReason.CooldownFinished);
-                            return;
-                        }
-                    }
-                    else
+                    if (decisionState != StateConstants.IdleStateName)
                     {
                         m_hasCompleted = true;
+                        // We can reuse TargetDetected or Finished, StateMachine just pulls GetCombatDecisionState again
                         CompleteState(StateExitReason.TargetDetected);
                         return;
                     }
