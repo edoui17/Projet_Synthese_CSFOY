@@ -388,6 +388,12 @@ Pour tester l'écran de login dans l'écosystème complet :
 - **Animation Fallbacks:** Implemented an `AnimationPlayer.HasAnimation` fallback logic inside State nodes. If the required `AnimationName` isn't configured, it safely defaults to `FallbackAnimationName` (e.g. `"Error"`), avoiding game crashes when designers miss an animation setup.
 - **Centralized Visual State:** Moved sprite flipping (`FlipH`) logic out of individual behaviors and centralized it within the `MovementController.Move()` method, tying visual orientation directly to the physics vector.
 
+## 2026-05-31 - Resource Rarity System & Weighted Spawning
+- **Feature**: Refactored the `ResourceZone` to use a weighted probability system for resource selection, mirroring the `EnemySpawnZone` logic.
+- **Architecture**: Introduced `ResourceSpawnConfig` as a Godot `Resource` class implementing `IWeightedItem`. This enables the use of `WeightedRandomSelector` from the `Core` logic.
+- **Technical Detail**: Replaced the legacy `ResourceScenes` list (Array<PackedScene>) with `ResourceConfigs` (Array<ResourceSpawnConfig>). This transition was applied to all level scenes (Level1, 2, 3, 5), ensuring a data-driven approach to resource scarcity.
+- **Godot Quirk**: Migration of `.tscn` files required surgical replacement of `ExtResource` references to point to new `.tres` configuration files, maintaining scene integrity without needing manual reassignment in the editor.
+
 ## Session Lifecycle Management
 Discovered that without a dedicated Godot `WorldManager`, `Autoload`s effectively serve as lifecycle hooks. By attaching a single `SessionManager` autoload solely dedicated to listening for `SessionEnded`, we can isolate state-reset behavior away from the Main Menu, ensuring that navigation between menus doesn't inadvertently wipe state unless explicitly broadcasted.
 

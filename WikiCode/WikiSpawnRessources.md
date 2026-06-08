@@ -13,7 +13,8 @@ Le système suit une architecture N-Tier avec une approche "Interface First".
 - **`ResourceZone` (Node : Node2D)** : Définit une zone de peuplement.
     - Utilise un enfant **`Polygon2D`** (nommé "SpawningArea") pour définir la forme de la zone.
     - Gère une **Safe Zone** (Rayon et Centre) pour éviter le spawn sur le joueur.
-    - Utilise une liste de **`ResourceScenes`** configurables via l'inspecteur (Drag & Drop).
+    - Utilise une liste de **`ResourceConfigs`** (fichiers `.tres`) pour gérer la rareté via des poids.
+    - Utilise `WeightedRandomSelector` pour la sélection des ressources.
     - Vérifie la validité du spawn (pas dans l'eau, distance minimale entre ressources).
     - Gère le **Respawn** automatique via un timer configurable.
     - Force la couche de collision (Layer 5 : Ressource).
@@ -23,7 +24,7 @@ Le système suit une architecture N-Tier avec une approche "Interface First".
 | Paramètre | Description | Défaut |
 | :--- | :--- | :--- |
 | `ResourceCount` | Nombre maximum de ressources dans la zone. | 10 |
-| `ResourceScenes` | Liste de scènes `.tscn` à spawn (Drag & Drop depuis l'éditeur). | [] |
+| `ResourceConfigs` | Liste de `ResourceSpawnConfig` (`.tres`) définissant la scène et son poids (rareté). | [] |
 | `SafeZoneRadius` | Distance minimale du centre de sécurité. | 150f |
 | `SafeZoneCenter` | Position locale du centre de sécurité. | (0, 0) |
 | `MinDistanceBetweenResources` | Distance minimale entre deux ressources. | 50f |
@@ -42,8 +43,15 @@ Le système suit une architecture N-Tier avec une approche "Interface First".
 1. Créez un node `Node2D` et attachez-lui le script `ResourceZone.cs`.
 2. Ajoutez un enfant `Polygon2D` nommé **"SpawningArea"**.
 3. Dessinez la forme de la zone.
-4. Dans l'inspecteur, ajoutez des éléments à la liste **`ResourceScenes`** en y glissant des scènes de ressources (ex: `Rock.tscn`).
-5. (Optionnel) Assignez le `WaterTileMap` de votre scène pour activer la validation.
+4. Créez des fichiers de configuration de ressource (`.tres`) de type **`ResourceSpawnConfig`**.
+5. Configurez la scène (`ResourceScene`) et le poids (`Weight`) dans chaque fichier `.tres`.
+6. Dans l'inspecteur de la `ResourceZone`, ajoutez ces fichiers à la liste **`ResourceConfigs`**.
+7. (Optionnel) Assignez le `WaterTileMap` de votre scène pour activer la validation.
+
+### Gestion de la rareté
+La rareté est gérée par le champ `Weight` dans les fichiers `ResourceSpawnConfig` :
+- Un poids plus élevé augmente les chances d'apparition.
+- Exemple : Arbre (Weight: 10), Or (Weight: 1). L'arbre apparaîtra 10 fois plus souvent que l'or.
 
 ## Déclenchement
 Le peuplement initial est déclenché dans le `_Ready()`. Le système vérifie ensuite périodiquement (`RespawnInterval`) s'il doit faire réapparaître des ressources manquantes.

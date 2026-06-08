@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="ResourceSpawnConfig" format=3 uid="uid://cxtgf4stxibp1"]
+
+[ext_resource type="PackedScene" uid="uid://cs7lisiu7vc7y" path="res://Scenes/Ressources/Rock/Rock.tscn" id="1_scene"]
+[ext_resource type="Script" uid="uid://cqngfcqtgbwd1" path="res://Nodes/Zones/ResourceSpawnConfig.cs" id="2_script"]
+
+[resource]
+script = ExtResource("2_script")
+ResourceScene = ExtResource("1_scene")
+Weight = 5.0
