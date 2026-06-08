@@ -42,7 +42,7 @@ public partial class StateMachine : State
 
         if (NpcContext != null && Engine.IsEditorHint() == false)
         {
-            GD.Print($"[Frame: {Engine.GetPhysicsFrames()}] [{NpcContext.Name}] [StateMachine] INITIALIZED. Total States: {m_states.Count}. Starting State: {m_currentState?.Name}");
+            GD.PrintRich($"[color=magenta][STATE_MACHINE][/color] [color=cyan]{NpcContext.Name}[/color] : INITIALIZED. Total States: {m_states.Count}. Starting State: {m_currentState?.Name}");
         }
     }
 
@@ -231,7 +231,7 @@ public partial class StateMachine : State
         {
             if (NpcContext != null && Engine.IsEditorHint() == false)
             {
-                GD.Print($"[Frame: {Engine.GetPhysicsFrames()}] [{NpcContext.Name}] [StateMachine] TRANSITION: {p_sourceState.Name} -> {nextStateName}");
+                GD.PrintRich($"[color=magenta][STATE_MACHINE][/color] [color=cyan]{NpcContext.Name}[/color] : {p_sourceState.Name} -> {nextStateName}");
             }
 
             if (m_currentState?.Name == nextStateName)

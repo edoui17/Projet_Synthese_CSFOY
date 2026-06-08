@@ -75,10 +75,17 @@ public partial class AggressiveNpcBase : NpcBase
     {
         if (m_stateMachine == null) return IslandSurvivor.Logic.StateMachine.StateConstants.IdleStateName;
 
-        float maxAttackRangeSquared = MaxAttackRange * MaxAttackRange;
+        bool hasMelee = m_stateMachine.HasState(IslandSurvivor.Logic.StateMachine.StateConstants.MeleeAttackStateName);
+        bool hasRanged = m_stateMachine.HasState(IslandSurvivor.Logic.StateMachine.StateConstants.RangedAttackStateName);
+        bool hasMagic = m_stateMachine.HasState(IslandSurvivor.Logic.StateMachine.StateConstants.MagicAttackStateName);
+
+        bool hasLongRangeAttacks = hasRanged || hasMagic;
+
+        float effectiveMaxRange = hasLongRangeAttacks ? MaxAttackRange : MinAttackRange;
+        float effectiveMaxRangeSquared = effectiveMaxRange * effectiveMaxRange;
         float minAttackRangeSquared = MinAttackRange * MinAttackRange;
 
-        if (distanceSquared > maxAttackRangeSquared)
+        if (distanceSquared > effectiveMaxRangeSquared)
         {
             return IslandSurvivor.Logic.StateMachine.StateConstants.ChaseStateName;
         }
@@ -93,8 +100,10 @@ public partial class AggressiveNpcBase : NpcBase
                 }
             }
 
-            if (m_stateMachine.HasState(IslandSurvivor.Logic.StateMachine.StateConstants.MeleeAttackStateName) && m_attackController != null && m_attackController.CanAttack)
+            if (hasMelee && m_attackController != null)
             {
+                if (!m_attackController.CanAttack) return IslandSurvivor.Logic.StateMachine.StateConstants.IdleStateName;
+
                 var windUp = m_stateMachine.GetState(IslandSurvivor.Logic.StateMachine.StateConstants.WindUpStateName) as IslandSurvivor.Logic.StateMachine.WindUpState;
                 if (windUp != null)
                 {
@@ -103,11 +112,9 @@ public partial class AggressiveNpcBase : NpcBase
                 }
             }
         }
-        else if (distanceSquared > minAttackRangeSquared && distanceSquared <= maxAttackRangeSquared)
-        {
-            bool hasRanged = m_stateMachine.HasState(IslandSurvivor.Logic.StateMachine.StateConstants.RangedAttackStateName);
-            bool hasMagic = m_stateMachine.HasState(IslandSurvivor.Logic.StateMachine.StateConstants.MagicAttackStateName);
 
+        if (hasLongRangeAttacks && distanceSquared <= effectiveMaxRangeSquared)
+        {
             Godot.StringName? chosenState = null;
 
             if (hasRanged && hasMagic)
@@ -126,18 +133,16 @@ public partial class AggressiveNpcBase : NpcBase
             if (chosenState != null)
             {
                 var shooter = GetNodeOrNull<IslandSurvivor.Nodes.Shooter>("Shooter");
-                // Attack Controller shared CanAttack logic check, or shooter check
-                bool canShoot = shooter != null ? shooter.CanShoot : true; // fallback if no shooter but has magic
+                bool canShoot = shooter != null ? shooter.CanShoot : true;
                 bool canAttack = m_attackController != null ? m_attackController.CanAttack : true;
 
-                if (canShoot && canAttack)
+                if (!canShoot || !canAttack) return IslandSurvivor.Logic.StateMachine.StateConstants.IdleStateName;
+
+                var windUp = m_stateMachine.GetState(IslandSurvivor.Logic.StateMachine.StateConstants.WindUpStateName) as IslandSurvivor.Logic.StateMachine.WindUpState;
+                if (windUp != null)
                 {
-                    var windUp = m_stateMachine.GetState(IslandSurvivor.Logic.StateMachine.StateConstants.WindUpStateName) as IslandSurvivor.Logic.StateMachine.WindUpState;
-                    if (windUp != null)
-                    {
-                        windUp.NextStateAfterWindup = chosenState;
-                        return IslandSurvivor.Logic.StateMachine.StateConstants.WindUpStateName;
-                    }
+                    windUp.NextStateAfterWindup = chosenState;
+                    return IslandSurvivor.Logic.StateMachine.StateConstants.WindUpStateName;
                 }
             }
         }
