@@ -7,20 +7,15 @@
 
 <style>
     .spinning {
-        display: inline-block;
-        vertical-align: middle;
-        animation: rotation 2s infinite linear;
-    }
-
-    #refreshButton img {
-        width: 32px;
-        height: 32px;
+        animation: rotation 1s infinite linear !important;
+        transform-origin: center center;
     }
 
     @@keyframes rotation {
         from {
             transform: rotate(0deg);
         }
+
         to {
             transform: rotate(359deg);
         }
@@ -214,6 +209,8 @@
 
         m_isRefreshing = true;
         StateHasChanged();
+
+        await Task.Delay(500); // Ajout d'un délai pour garantir le rendu de l'animation CSS avant l'appel API
 
         try
         {
