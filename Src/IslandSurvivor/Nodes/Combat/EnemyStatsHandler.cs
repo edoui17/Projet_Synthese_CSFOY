@@ -44,7 +44,11 @@ public partial class EnemyStatsHandler : Node
 
         if (GetParent() is IslandSurvivor.Scenes.NPC.AggressiveNpcBase aggressiveNpc)
         {
-            newIdleSpeed = aggressiveNpc.IdleSpeed * p_threatScore;
+            var stateMachine = aggressiveNpc.GetNodeOrNull<IslandSurvivor.Logic.StateMachine.StateMachine>("StateMachine");
+            if (stateMachine != null && stateMachine.TryGetState<IslandSurvivor.Logic.StateMachine.IdleState>(out var idleState))
+            {
+                newIdleSpeed = idleState.IdleSpeed * p_threatScore;
+            }
             if (aggressiveNpc.GetNodeOrNull<IslandSurvivor.Logic.StateMachine.StateMachine>("StateMachine")?.TryGetState<IslandSurvivor.Logic.StateMachine.ChaseState>(out var chaseState) == true)
             {
                 newChaseSpeed = chaseState.ChaseSpeed * p_threatScore;
@@ -76,7 +80,11 @@ public partial class EnemyStatsHandler : Node
 
         if (GetParent() is IslandSurvivor.Scenes.NPC.AggressiveNpcBase aggressiveNpcFinal)
         {
-            aggressiveNpcFinal.IdleSpeed = newIdleSpeed;
+            var stateMachineFinal = aggressiveNpcFinal.GetNodeOrNull<IslandSurvivor.Logic.StateMachine.StateMachine>("StateMachine");
+            if (stateMachineFinal != null && stateMachineFinal.TryGetState<IslandSurvivor.Logic.StateMachine.IdleState>(out var idleStateFinal))
+            {
+                idleStateFinal.IdleSpeed = newIdleSpeed;
+            }
             if (aggressiveNpcFinal.GetNodeOrNull<IslandSurvivor.Logic.StateMachine.StateMachine>("StateMachine")?.TryGetState<IslandSurvivor.Logic.StateMachine.ChaseState>(out var chaseStateFinal) == true)
             {
                 chaseStateFinal.ChaseSpeed = newChaseSpeed;

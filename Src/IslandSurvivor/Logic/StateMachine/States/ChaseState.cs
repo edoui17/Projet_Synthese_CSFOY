@@ -18,6 +18,7 @@ public partial class ChaseState : MovementState
     private Sprite2D? m_sprite;
     private IslandSurvivor.Nodes.AttackController? m_attackController;
     private float m_chaseTimer;
+    private bool m_hasCompleted = false;
 
     public override void Initialize(StateMachine p_stateMachine, CharacterBody2D p_npcContext)
     {
@@ -49,6 +50,7 @@ public partial class ChaseState : MovementState
     {
         base.Enter();
         m_chaseTimer = ChaseTimeout;
+        m_hasCompleted = false;
 
         if (m_animationPlayer != null)
         {
@@ -72,6 +74,8 @@ public partial class ChaseState : MovementState
     {
         if (NpcContext is not IslandSurvivor.Scenes.NPC.AggressiveNpcBase aggressiveNpc)
             return;
+
+        if (m_hasCompleted) return;
 
         m_chaseTimer -= (float)p_delta;
         if (m_chaseTimer <= 0)
@@ -103,13 +107,20 @@ public partial class ChaseState : MovementState
 
         if (StateMachine.TryGetState<DashState>(out var dashState))
         {
-            if (distSquared <= dashState.DashThreshold * dashState.DashThreshold)
+            if (distSquared <= dashState.DashThreshold * dashState.DashThreshold &&
+                distSquared >= dashState.MinDashDistance * dashState.MinDashDistance &&
+                dashState.CanDash())
             {
-                if (m_attackController != null && m_attackController.CanAttack)
+                if (StateMachine.HasState(StateConstants.RepositionStateName))
                 {
-                    if (StateMachine.HasState(StateConstants.RepositionStateName)) StateMachine.ForceTransition(StateConstants.RepositionStateName); else StateMachine.ForceTransition(StateConstants.DashStateName);
-                    return;
+                    StateMachine.ForceTransition(StateConstants.RepositionStateName);
                 }
+                else
+                {
+                    m_hasCompleted = true;
+                    StateMachine.ForceTransition(StateConstants.DashStateName);
+                }
+                return;
             }
         }
 

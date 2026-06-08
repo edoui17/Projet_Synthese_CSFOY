@@ -6,10 +6,12 @@ using Godot;
 public partial class DashState : MovementState
 {
     [ExportGroup("State Configuration")]
-    [Export] public float DashThreshold { get; set; } = 100.0f;
+    [Export] public float DashThreshold { get; set; } = 250.0f;
+    [Export] public float MinDashDistance { get; set; } = 120.0f;
     [Export] public float DashSpeed { get; set; } = 400.0f;
     [Export] public float DashDuration { get; set; } = 0.5f;
     [Export] public float DashDamageMultiplier { get; set; } = 1.5f;
+    [Export] public float DashCooldown { get; set; } = 3.0f;
 
     [ExportGroup("State Animations")]
     [Export] public string AnimationName { get; set; } = "Dash";
@@ -23,6 +25,9 @@ public partial class DashState : MovementState
     private bool m_hasDealtDashDamage = false;
     private float m_timer;
     private Vector2 m_dashDirection = Vector2.Zero;
+    private float m_currentCooldown = 0f;
+
+    public bool CanDash() => m_currentCooldown <= 0;
 
     public override void Initialize(StateMachine p_stateMachine, CharacterBody2D p_npcContext)
     {
@@ -118,9 +123,16 @@ public partial class DashState : MovementState
         m_attackController.TryAttack(direction);
     }
 
+    public override void Update(double p_delta)
+    {
+        base.Update(p_delta);
+        if (m_currentCooldown > 0) m_currentCooldown -= (float)p_delta;
+    }
+
     public override void Exit()
     {
         base.Exit();
+        m_currentCooldown = DashCooldown;
 
         // Reset damage multiplier
         if (m_attackController != null && m_attackController.Stats != null)
