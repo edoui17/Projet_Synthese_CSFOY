@@ -703,4 +703,4 @@ LoseInterestRange = 500.0
 
 [node name="DashState" parent="StateMachine/MovementState" index="3" unique_id=28822031 instance=ExtResource("state_DashState")]
 
-[node name="LancerRepositionState" parent="StateMachine/MovementState" index="8" unique_id=1840744020 instance=ExtResource("state_LancerRepositionState")]
+[node name="LancerRepositionState" parent="StateMachine/MovementState" index="4" unique_id=1840744020 instance=ExtResource("state_LancerRepositionState")]

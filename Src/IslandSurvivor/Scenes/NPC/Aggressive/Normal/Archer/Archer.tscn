@@ -7,7 +7,6 @@
 [ext_resource type="Animation" uid="uid://bjuop45u4ndx5" path="res://Animation/Error.res" id="6_dd3ir"]
 [ext_resource type="Animation" uid="uid://d0h1sx4b0jesm" path="res://Animation/Death_NPC.res" id="7_vfr0a"]
 
-
 [sub_resource type="CircleShape2D" id="CircleShape2D_arch"]
 radius = 300.0
 
@@ -440,8 +439,6 @@ _data = {
 [node name="Archer" unique_id=61408674 instance=ExtResource("1_scene")]
 script = ExtResource("2_script")
 AttackAnimationName = "Attack"
-ChaseSpeed = 100.0
-StoppingDistance = 40.0
 BaseXp = 30.0
 XpMultiplier = 0.2
 AttackSoundKey = "Enemy_Swing_Default"
@@ -462,14 +459,8 @@ shape = SubResource("CircleShape2D_arch")
 [node name="AttackController" parent="." index="6" unique_id=1292425161]
 BaseAttackCooldown = 1.5
 
-[node name="AnimationPlayer" parent="." index="12" unique_id=1869571986]
-libraries/ = SubResource("AnimationLibrary_do8kw")
-
-[node name="StateMachine" parent="." index="13" unique_id=402971195 node_paths=PackedStringArray("InitialState")]
-InitialState = NodePath("IdleState")
-
-[node name="ChaseState" parent="StateMachine" index="2" unique_id=1947301554]
-LoseInterestRange = 600.0
-
 [node name="ProjectileSpawnPosition" parent="." index="8"]
 position = Vector2(0, 5)
+
+[node name="AnimationPlayer" parent="." index="12" unique_id=1869571986]
+libraries/ = SubResource("AnimationLibrary_do8kw")
