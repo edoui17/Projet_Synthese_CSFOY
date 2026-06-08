@@ -314,16 +314,16 @@ libraries/ = SubResource("AnimationLibrary_biphk")
 [node name="ChaseState" parent="StateMachine" parent_id_path=PackedInt32Array(402971195) index="2" unique_id=1947301554]
 LoseInterestRange = 1250.0
 
-[node name="MeleeAttackState" parent="StateMachine/AttackState" parent_id_path=PackedInt32Array(999912345) index="0" unique_id=999912346]
+[node name="MeleeAttackState" parent="StateMachine/AttackState" index="0" instance=ExtResource("state_MeleeAttackState")]
 AttackAnimationName = "MeleeAttackNormal"
 
-[node name="RangedAttackState" parent="StateMachine/AttackState" parent_id_path=PackedInt32Array(999912345) index="1" unique_id=999912347]
+[node name="RangedAttackState" parent="StateMachine/AttackState" index="1" instance=ExtResource("state_RangedAttackState")]
 AttackAnimationName = "RangeAttackNormal"
 
-[node name="MagicAttackState" parent="StateMachine/AttackState" parent_id_path=PackedInt32Array(999912345) index="2" unique_id=999912348]
+[node name="MagicAttackState" parent="StateMachine/AttackState" index="2" instance=ExtResource("script_MagicAttackState")]
 AttackAnimationName = "RangeAttackOrb"
 
-[node name="OrbAttackSpell" parent="StateMachine/AttackState/MagicAttackState" index="0" unique_id=999912349]
+[node name="OrbAttackSpell" parent="StateMachine/AttackState/MagicAttackState" index="0" instance=ExtResource("script_OrbAttackSpell")]
 ProjectileScene = ExtResource("scene_OrbProjectile")
 
 [node name="Shooter" parent="." index="14" unique_id=295957321 instance=ExtResource("Shooter")]
