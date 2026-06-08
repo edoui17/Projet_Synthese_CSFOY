@@ -1,0 +1,40 @@
+--- ./Src/IslandSurvivor/Logic/StateMachine/States/RecoveryState.cs
++++ ./Src/IslandSurvivor/Logic/StateMachine/States/RecoveryState.cs
+@@ -14,6 +14,7 @@
+
+     private AnimationPlayer m_animationPlayer = null!;
+     private float m_timer;
++    private bool m_hasCompleted = false;
+
+     public override void Initialize(StateMachine p_stateMachine, CharacterBody2D p_npcContext)
+     {
+@@ -25,6 +26,7 @@
+     {
+         base.Enter();
+         m_timer = RecoveryDuration;
++        m_hasCompleted = false;
+
+         if (NpcContext is IslandSurvivor.Scenes.NPC.NpcBase npc)
+         {
+@@ -48,9 +50,19 @@
+     {
+         m_timer -= (float)p_delta;
+
+-        if (m_timer <= 0)
++        if (m_timer <= 0 && !m_hasCompleted)
+         {
+-            CompleteState(StateExitReason.Finished);
++            if (StateMachine.TryGetState<GuardingState>(out var guardState))
++            {
++                if (Godot.GD.Randf() <= guardState.GuardChance)
++                {
++                    m_hasCompleted = true;
++                    StateMachine.ForceTransition(guardState.Name);
++                    return;
++                }
++            }
++
++            CompleteState(StateExitReason.Finished);
+         }
+     }
+ }

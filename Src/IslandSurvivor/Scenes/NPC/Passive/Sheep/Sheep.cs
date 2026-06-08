@@ -20,7 +20,10 @@ public partial class Sheep : PassiveNpcBase
     public override void _Ready()
     {
         base._Ready();
-        IdleSpeed = 30.0f;
+        if (m_stateMachine != null && m_stateMachine.TryGetState<IslandSurvivor.Logic.StateMachine.IdleState>(out var idleState))
+        {
+            idleState.IdleSpeed = 30.0f;
+        }
 
         // Initialize default keys if not set
         if (string.IsNullOrEmpty(HurtSoundKey)) HurtSoundKey = "Sheep_Hurt";

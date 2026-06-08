@@ -25,9 +25,6 @@ public partial class DashState : MovementState
     private bool m_hasDealtDashDamage = false;
     private float m_timer;
     private Vector2 m_dashDirection = Vector2.Zero;
-    private float m_currentCooldown = 0f;
-
-    public bool CanDash() => m_currentCooldown <= 0;
 
     public override void Initialize(StateMachine p_stateMachine, CharacterBody2D p_npcContext)
     {

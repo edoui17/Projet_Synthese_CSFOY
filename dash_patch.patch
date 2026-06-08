@@ -1,0 +1,19 @@
+--- ./Src/IslandSurvivor/Logic/StateMachine/States/DashState.cs
++++ ./Src/IslandSurvivor/Logic/StateMachine/States/DashState.cs
+@@ -124,10 +124,17 @@
+         m_attackController.TryAttack(direction);
+     }
+
++    public override void Update(double p_delta)
++    {
++        base.Update(p_delta);
++        if (m_currentCooldown > 0) m_currentCooldown -= (float)p_delta;
++    }
++
+     public override void Exit()
+     {
+         base.Exit();
++        m_currentCooldown = DashCooldown;
+
+         // Reset damage multiplier
+         if (m_attackController != null && m_attackController.Stats != null)

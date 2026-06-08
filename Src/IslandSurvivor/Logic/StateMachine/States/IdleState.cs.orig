@@ -8,7 +8,6 @@ public partial class IdleState : MovementState
     [ExportGroup("State Configuration")]
     [Export] public float WaitTime { get; set; } = 2.0f;
     [Export] public float WanderCooldown { get; set; } = 3.0f;
-    [Export] public float IdleSpeed { get; set; } = 50.0f;
 
     [ExportGroup("State Animations")]
     [Export] public string AnimationName { get; set; } = "Idle";
@@ -75,10 +74,11 @@ public partial class IdleState : MovementState
                 {
                     Godot.StringName decisionState = aggressiveNpc.GetDecisionState(target);
 
-                    if (!string.IsNullOrEmpty(decisionState) && decisionState != this.Name)
+                    if (decisionState != StateConstants.IdleStateName)
                     {
                         m_hasCompleted = true;
-                        StateMachine.ForceTransition(decisionState);
+                        // We can reuse TargetDetected or Finished, StateMachine just pulls GetCombatDecisionState again
+                        CompleteState(StateExitReason.TargetDetected);
                         return;
                     }
                 }

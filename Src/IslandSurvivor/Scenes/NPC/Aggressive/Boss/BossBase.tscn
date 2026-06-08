@@ -11,7 +11,6 @@ ProjectileScene = ExtResource("3_arrow")
 LevelIndex = 1
 BaseXp = 500.0
 XpMultiplier = 0.2
-IdleSpeed = 40.0
 
 [node name="HitboxAreaRight" type="Area2D" parent="." index="7" unique_id=1487526117]
 collision_layer = 0

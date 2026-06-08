@@ -10,7 +10,6 @@ using IslandSurvivor.Nodes;
 public partial class NpcBase : CharacterBody2D, INpc, IDamageable
 {
     [Export] public string NpcType { get; set; } = "NPC";
-    [Export] public float IdleSpeed { get; set; } = 50.0f;
 
     [Export] public StatManager Stats { get; set; } = null!;
 
