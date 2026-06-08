@@ -75,75 +75,100 @@ public partial class AggressiveNpcBase : NpcBase
     {
         if (m_stateMachine == null) return IslandSurvivor.Logic.StateMachine.StateConstants.IdleStateName;
 
-        bool hasMelee = m_stateMachine.HasState(IslandSurvivor.Logic.StateMachine.StateConstants.MeleeAttackStateName);
         bool hasRanged = m_stateMachine.HasState(IslandSurvivor.Logic.StateMachine.StateConstants.RangedAttackStateName);
         bool hasMagic = m_stateMachine.HasState(IslandSurvivor.Logic.StateMachine.StateConstants.MagicAttackStateName);
-
         bool hasLongRangeAttacks = hasRanged || hasMagic;
 
-        float effectiveMaxRange = hasLongRangeAttacks ? MaxAttackRange : MinAttackRange;
-        float effectiveMaxRangeSquared = effectiveMaxRange * effectiveMaxRange;
+        float maxAttackRangeSquared = MaxAttackRange * MaxAttackRange;
         float minAttackRangeSquared = MinAttackRange * MinAttackRange;
 
-        if (distanceSquared > effectiveMaxRangeSquared)
+        if (distanceSquared > maxAttackRangeSquared)
+        {
+            return EvaluateOutOfRange();
+        }
+
+        if (distanceSquared > minAttackRangeSquared)
+        {
+            return EvaluateDistanceZone(hasLongRangeAttacks, hasRanged, hasMagic);
+        }
+
+        return EvaluateMeleeZone();
+    }
+
+    private Godot.StringName EvaluateOutOfRange()
+    {
+        return IslandSurvivor.Logic.StateMachine.StateConstants.ChaseStateName;
+    }
+
+    private Godot.StringName EvaluateDistanceZone(bool hasLongRangeAttacks, bool hasRanged, bool hasMagic)
+    {
+        if (!hasLongRangeAttacks)
         {
             return IslandSurvivor.Logic.StateMachine.StateConstants.ChaseStateName;
         }
 
-        if (distanceSquared <= minAttackRangeSquared)
+        Godot.StringName? chosenState = null;
+
+        if (hasRanged && hasMagic)
         {
-            if (m_stateMachine.HasState(IslandSurvivor.Logic.StateMachine.StateConstants.GuardingStateName) && CanGuard)
-            {
-                if (GD.Randf() <= GuardChance)
-                {
-                    return IslandSurvivor.Logic.StateMachine.StateConstants.GuardingStateName;
-                }
-            }
-
-            if (hasMelee && m_attackController != null)
-            {
-                if (!m_attackController.CanAttack) return IslandSurvivor.Logic.StateMachine.StateConstants.IdleStateName;
-
-                var windUp = m_stateMachine.GetState(IslandSurvivor.Logic.StateMachine.StateConstants.WindUpStateName) as IslandSurvivor.Logic.StateMachine.WindUpState;
-                if (windUp != null)
-                {
-                    windUp.NextStateAfterWindup = IslandSurvivor.Logic.StateMachine.StateConstants.MeleeAttackStateName;
-                    return IslandSurvivor.Logic.StateMachine.StateConstants.WindUpStateName;
-                }
-            }
+            chosenState = GD.Randf() > 0.5f ? IslandSurvivor.Logic.StateMachine.StateConstants.MagicAttackStateName : IslandSurvivor.Logic.StateMachine.StateConstants.RangedAttackStateName;
+        }
+        else if (hasRanged)
+        {
+            chosenState = IslandSurvivor.Logic.StateMachine.StateConstants.RangedAttackStateName;
+        }
+        else if (hasMagic)
+        {
+            chosenState = IslandSurvivor.Logic.StateMachine.StateConstants.MagicAttackStateName;
         }
 
-        if (hasLongRangeAttacks && distanceSquared <= effectiveMaxRangeSquared)
+        if (chosenState != null)
         {
-            Godot.StringName? chosenState = null;
+            var shooter = GetNodeOrNull<IslandSurvivor.Nodes.Shooter>("Shooter");
+            bool canShoot = shooter == null || shooter.CanShoot;
+            bool canAttack = m_attackController == null || m_attackController.CanAttack;
 
-            if (hasRanged && hasMagic)
+            if (canShoot && canAttack)
             {
-                chosenState = GD.Randf() > 0.5f ? IslandSurvivor.Logic.StateMachine.StateConstants.MagicAttackStateName : IslandSurvivor.Logic.StateMachine.StateConstants.RangedAttackStateName;
-            }
-            else if (hasRanged)
-            {
-                chosenState = IslandSurvivor.Logic.StateMachine.StateConstants.RangedAttackStateName;
-            }
-            else if (hasMagic)
-            {
-                chosenState = IslandSurvivor.Logic.StateMachine.StateConstants.MagicAttackStateName;
-            }
-
-            if (chosenState != null)
-            {
-                var shooter = GetNodeOrNull<IslandSurvivor.Nodes.Shooter>("Shooter");
-                bool canShoot = shooter != null ? shooter.CanShoot : true;
-                bool canAttack = m_attackController != null ? m_attackController.CanAttack : true;
-
-                if (!canShoot || !canAttack) return IslandSurvivor.Logic.StateMachine.StateConstants.IdleStateName;
-
-                var windUp = m_stateMachine.GetState(IslandSurvivor.Logic.StateMachine.StateConstants.WindUpStateName) as IslandSurvivor.Logic.StateMachine.WindUpState;
+                var windUp = m_stateMachine?.GetState(IslandSurvivor.Logic.StateMachine.StateConstants.WindUpStateName) as IslandSurvivor.Logic.StateMachine.WindUpState;
                 if (windUp != null)
                 {
                     windUp.NextStateAfterWindup = chosenState;
                     return IslandSurvivor.Logic.StateMachine.StateConstants.WindUpStateName;
                 }
+            }
+        }
+
+        if (m_stateMachine != null && m_stateMachine.HasState(IslandSurvivor.Logic.StateMachine.StateConstants.GuardingStateName) && CanGuard)
+        {
+            if (GD.Randf() <= GuardChance)
+            {
+                return IslandSurvivor.Logic.StateMachine.StateConstants.GuardingStateName;
+            }
+        }
+
+        return IslandSurvivor.Logic.StateMachine.StateConstants.IdleStateName;
+    }
+
+    private Godot.StringName EvaluateMeleeZone()
+    {
+        bool hasMelee = m_stateMachine != null && m_stateMachine.HasState(IslandSurvivor.Logic.StateMachine.StateConstants.MeleeAttackStateName);
+
+        if (hasMelee && m_attackController != null && m_attackController.CanAttack)
+        {
+            var windUp = m_stateMachine?.GetState(IslandSurvivor.Logic.StateMachine.StateConstants.WindUpStateName) as IslandSurvivor.Logic.StateMachine.WindUpState;
+            if (windUp != null)
+            {
+                windUp.NextStateAfterWindup = IslandSurvivor.Logic.StateMachine.StateConstants.MeleeAttackStateName;
+                return IslandSurvivor.Logic.StateMachine.StateConstants.WindUpStateName;
+            }
+        }
+
+        if (m_stateMachine != null && m_stateMachine.HasState(IslandSurvivor.Logic.StateMachine.StateConstants.GuardingStateName) && CanGuard)
+        {
+            if (GD.Randf() <= GuardChance)
+            {
+                return IslandSurvivor.Logic.StateMachine.StateConstants.GuardingStateName;
             }
         }
 
