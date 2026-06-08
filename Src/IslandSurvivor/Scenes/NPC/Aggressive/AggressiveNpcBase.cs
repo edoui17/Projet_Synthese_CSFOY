@@ -92,6 +92,20 @@ public partial class AggressiveNpcBase : NpcBase
             return EvaluateDistanceZone(hasLongRangeAttacks, hasRanged, hasMagic);
         }
 
+        bool hasMelee = m_stateMachine.HasState(IslandSurvivor.Logic.StateMachine.StateConstants.MeleeAttackStateName);
+        if (!hasMelee)
+        {
+            if (m_stateMachine.HasState(IslandSurvivor.Logic.StateMachine.StateConstants.RepositionStateName))
+            {
+                return IslandSurvivor.Logic.StateMachine.StateConstants.RepositionStateName;
+            }
+            if (m_stateMachine.HasState(IslandSurvivor.Logic.StateMachine.StateConstants.FleeStateName))
+            {
+                return IslandSurvivor.Logic.StateMachine.StateConstants.FleeStateName;
+            }
+            return IslandSurvivor.Logic.StateMachine.StateConstants.ChaseStateName;
+        }
+
         return EvaluateMeleeZone();
     }
 
