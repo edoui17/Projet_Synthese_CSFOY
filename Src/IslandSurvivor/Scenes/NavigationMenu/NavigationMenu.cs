@@ -12,6 +12,41 @@ public partial class NavigationMenu : Control
     private VBoxContainer m_destinationsContainer = null!;
     private INavigationService m_navigationService = null!;
     private IReadOnlyList<IslandDestination> m_currentOptions = null!;
+    private Button m_closeBtn = null!;
+
+    private void SetupButtonJuice(Button p_btn)
+    {
+        if (p_btn == null) return;
+
+        p_btn.FocusMode = FocusModeEnum.All;
+        p_btn.MouseDefaultCursorShape = CursorShape.PointingHand;
+
+        p_btn.MouseEntered += () => p_btn.GrabFocus();
+
+        p_btn.FocusEntered += () =>
+        {
+            if (p_btn.HasMeta("tween"))
+            {
+                p_btn.GetMeta("tween").As<Tween>()?.Kill();
+            }
+            Tween tween = CreateTween();
+            p_btn.SetMeta("tween", tween);
+            p_btn.PivotOffset = p_btn.Size / 2f;
+            tween.TweenProperty(p_btn, "scale", new Vector2(1.05f, 1.05f), 0.1f);
+        };
+
+        p_btn.FocusExited += () =>
+        {
+            if (p_btn.HasMeta("tween"))
+            {
+                p_btn.GetMeta("tween").As<Tween>()?.Kill();
+            }
+            Tween tween = CreateTween();
+            p_btn.SetMeta("tween", tween);
+            p_btn.PivotOffset = p_btn.Size / 2f;
+            tween.TweenProperty(p_btn, "scale", new Vector2(1.0f, 1.0f), 0.1f);
+        };
+    }
 
     private Node2D? FindPlayer(Node? parent)
     {
@@ -30,6 +65,9 @@ public partial class NavigationMenu : Control
         m_navigationService = Globals.ServiceRegistry.Instance.NavigationService;
 
         m_destinationsContainer = GetNode<VBoxContainer>("PanelContainer/VBoxContainer/DestinationsContainer");
+        m_closeBtn = GetNode<Button>("PanelContainer/VBoxContainer/CloseBtn");
+
+        SetupButtonJuice(m_closeBtn);
 
         // Hide by default
         Visible = false;
@@ -67,6 +105,7 @@ public partial class NavigationMenu : Control
         }
 
         bool isHome = IsPlayerHome();
+        List<Button> newButtons = new List<Button>();
 
         if (isHome)
         {
@@ -89,7 +128,9 @@ public partial class NavigationMenu : Control
                 IslandDestination destCopy = destination;
                 btn.Pressed += () => OnDestinationSelected(destCopy);
 
+                SetupButtonJuice(btn);
                 m_destinationsContainer.AddChild(btn);
+                newButtons.Add(btn);
             }
 
             // Add Boss Island Option at the bottom
@@ -115,13 +156,16 @@ public partial class NavigationMenu : Control
                 );
 
                 bossBtn.Pressed += () => OnDestinationSelected(bossDestination);
+                SetupButtonJuice(bossBtn);
+                m_destinationsContainer.AddChild(bossBtn);
+                newButtons.Add(bossBtn);
             }
             else
             {
                 bossBtn.Text = $"Boss Island (Locked - Level {bossRequirement} required)";
                 bossBtn.Disabled = true;
+                m_destinationsContainer.AddChild(bossBtn);
             }
-            m_destinationsContainer.AddChild(bossBtn);
         }
         else
         {
@@ -129,7 +173,27 @@ public partial class NavigationMenu : Control
             var homeBtn = new Button();
             homeBtn.Text = "Return Home";
             homeBtn.Pressed += () => OnDestinationSelected(IslandDestination.HomeIsland);
+            SetupButtonJuice(homeBtn);
             m_destinationsContainer.AddChild(homeBtn);
+            newButtons.Add(homeBtn);
+        }
+
+        // Setup Focus loops
+        newButtons.Add(m_closeBtn); // Include the close button in the loop
+
+        if (newButtons.Count > 0)
+        {
+            for (int i = 0; i < newButtons.Count; i++)
+            {
+                var prevBtn = newButtons[i == 0 ? newButtons.Count - 1 : i - 1];
+                var nextBtn = newButtons[(i + 1) % newButtons.Count];
+
+                newButtons[i].FocusNeighborTop = prevBtn.GetPath();
+                newButtons[i].FocusNeighborBottom = nextBtn.GetPath();
+            }
+
+            // Grab focus on the first newly generated interactable button
+            newButtons[0].GrabFocus();
         }
     }
 

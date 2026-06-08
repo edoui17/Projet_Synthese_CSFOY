@@ -32,85 +32,86 @@ public partial class RangedAttackState : State
             npc.Velocity = Vector2.Zero;
         }
 
-        if (m_shooter != null && m_shooter.CanShoot && m_attackController != null && m_attackController.CanAttack)
-        {
-            string animSuffix = "_Side";
-            string direction = "Right";
-            bool handledTargetDirection = false;
-
-            if (NpcContext is IslandSurvivor.Scenes.NPC.AggressiveNpcBase aggNpc)
-            {
-                var target = aggNpc.GetTarget();
-                if (GodotObject.IsInstanceValid(target))
-                {
-                    // Lock direction toward target immediately to prevent jitter during attack animation
-                    Vector2 safeDir = NpcContext.GlobalPosition.DirectionTo(target.GlobalPosition);
-                    if (safeDir != Vector2.Zero)
-                    {
-                        aggNpc.LockedDirection = safeDir;
-                    }
-                    Vector2 toTarget = aggNpc.LockedDirection;
-
-                    if (System.Math.Abs(toTarget.Y) > System.Math.Abs(toTarget.X))
-                    {
-                        if (toTarget.Y < 0)
-                        {
-                            animSuffix = "_Up";
-                            direction = "Up";
-                        }
-                        else
-                        {
-                            animSuffix = "_Down";
-                            direction = "Down";
-                        }
-                    }
-                    else
-                    {
-                        animSuffix = "_Side";
-                        direction = toTarget.X < 0 ? "Left" : "Right";
-                        if (m_sprite != null)
-                        {
-                            m_sprite.FlipH = toTarget.X < 0;
-                        }
-                    }
-
-                    handledTargetDirection = true;
-                }
-            }
-
-            if (!handledTargetDirection)
-            {
-                // Fallback for non-aggressive NPCs or missing target
-                if (m_sprite != null)
-                {
-                    direction = m_sprite.FlipH ? "Left" : "Right";
-                }
-            }
-
-            string fullAnimName = $"{AttackAnimationName}{animSuffix}";
-
-            if (AttackAnimationName.EndsWith("_Side") || AttackAnimationName.EndsWith("_Up") || AttackAnimationName.EndsWith("_Down"))
-            {
-                fullAnimName = AttackAnimationName;
-            }
-
-            var callable = new Callable(this, nameof(OnAttackActionTriggered));
-            if (!m_attackController.IsConnected(IslandSurvivor.Nodes.AttackController.SignalName.AttackActionTriggered, callable))
-            {
-                m_attackController.Connect(IslandSurvivor.Nodes.AttackController.SignalName.AttackActionTriggered, callable);
-            }
-
-            m_attackController.SetAttackAnimation(fullAnimName);
-            m_attackController.TryAttack(direction);
-        }
-        else
+        if (m_shooter == null || !m_shooter.CanShoot || m_attackController == null || !m_attackController.CanAttack)
         {
             if (!m_hasCompleted)
             {
                 m_hasCompleted = true;
                 CompleteState(StateExitReason.Finished);
             }
+            return;
         }
+
+        var (animSuffix, direction) = DetermineDirectionAndAnimation();
+        string fullAnimName = $"{AttackAnimationName}{animSuffix}";
+
+        if (AttackAnimationName.EndsWith("_Side") || AttackAnimationName.EndsWith("_Up") || AttackAnimationName.EndsWith("_Down"))
+        {
+            fullAnimName = AttackAnimationName;
+        }
+
+        var callable = new Callable(this, nameof(OnAttackActionTriggered));
+        if (!m_attackController.IsConnected(IslandSurvivor.Nodes.AttackController.SignalName.AttackActionTriggered, callable))
+        {
+            m_attackController.Connect(IslandSurvivor.Nodes.AttackController.SignalName.AttackActionTriggered, callable);
+        }
+
+        m_attackController.SetAttackAnimation(fullAnimName);
+        m_attackController.TryAttack(direction);
+    }
+
+    private (string AnimSuffix, string Direction) DetermineDirectionAndAnimation()
+    {
+        string animSuffix = "_Side";
+        string direction = "Right";
+
+        if (NpcContext is IslandSurvivor.Scenes.NPC.AggressiveNpcBase aggNpc)
+        {
+            var target = aggNpc.GetTarget();
+            if (GodotObject.IsInstanceValid(target))
+            {
+                // Lock direction toward target immediately to prevent jitter during attack animation
+                Vector2 safeDir = NpcContext.GlobalPosition.DirectionTo(target.GlobalPosition);
+                if (safeDir != Vector2.Zero)
+                {
+                    aggNpc.LockedDirection = safeDir;
+                }
+                Vector2 toTarget = aggNpc.LockedDirection;
+
+                if (System.Math.Abs(toTarget.Y) > System.Math.Abs(toTarget.X))
+                {
+                    if (toTarget.Y < 0)
+                    {
+                        animSuffix = "_Up";
+                        direction = "Up";
+                    }
+                    else
+                    {
+                        animSuffix = "_Down";
+                        direction = "Down";
+                    }
+                }
+                else
+                {
+                    animSuffix = "_Side";
+                    direction = toTarget.X < 0 ? "Left" : "Right";
+                    if (m_sprite != null)
+                    {
+                        m_sprite.FlipH = toTarget.X < 0;
+                    }
+                }
+
+                return (animSuffix, direction);
+            }
+        }
+
+        // Fallback for non-aggressive NPCs or missing target
+        if (m_sprite != null)
+        {
+            direction = m_sprite.FlipH ? "Left" : "Right";
+        }
+
+        return (animSuffix, direction);
     }
 
     public override void Exit()
@@ -130,18 +131,17 @@ public partial class RangedAttackState : State
     {
         if (m_hasCompleted) return;
 
-        if (m_attackController != null)
-        {
-            if (!m_attackController.IsAttacking)
-            {
-                m_hasCompleted = true;
-                Callable.From(() => CompleteState(StateExitReason.Finished)).CallDeferred();
-            }
-        }
-        else
+        if (m_attackController == null)
         {
             m_hasCompleted = true;
             CompleteState(StateExitReason.Finished);
+            return;
+        }
+
+        if (!m_attackController.IsAttacking)
+        {
+            m_hasCompleted = true;
+            Callable.From(() => CompleteState(StateExitReason.Finished)).CallDeferred();
         }
     }
 
