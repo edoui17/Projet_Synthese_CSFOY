@@ -7,7 +7,6 @@
 [ext_resource type="PackedScene" uid="uid://ca8u8dmqxyiib" path="res://Nodes/State/Movement/RepositionState.tscn" id="state_RepositionState"]
 [ext_resource type="PackedScene" uid="uid://cx6r1g1g1g1g2" path="res://Nodes/State/Combat/RangedAttackState.tscn" id="state_RangedAttackState"]
 
-
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_hitbox_ranged"]
 radius = 21.986078
 height = 70.16913
@@ -34,4 +33,3 @@ SpawnPosition = NodePath("../ProjectileSpawnPosition")
 [node name="StateMachine" parent="." index="10"]
 
 [node name="RepositionState" parent="StateMachine" index="7" instance=ExtResource("state_RepositionState")]
-[node name="RangedAttackState" parent="StateMachine" index="4" instance=ExtResource("state_RangedAttackState")]

@@ -314,19 +314,6 @@ libraries/ = SubResource("AnimationLibrary_biphk")
 [node name="ChaseState" parent="StateMachine" parent_id_path=PackedInt32Array(402971195) index="2" unique_id=1947301554]
 LoseInterestRange = 1250.0
 
-[node name="MeleeAttackState" parent="StateMachine" parent_id_path=PackedInt32Array(402971195) index="6" unique_id=1002124802 instance=ExtResource("state_MeleeAttackState")]
-AttackAnimationName = "MeleeAttackNormal"
-
-[node name="RangedAttackState" parent="StateMachine" parent_id_path=PackedInt32Array(402971195) index="7" unique_id=1949935718 instance=ExtResource("state_RangedAttackState")]
-AttackAnimationName = "RangeAttackNormal"
-
-[node name="MagicAttackState" parent="StateMachine" parent_id_path=PackedInt32Array(402971195) index="8" unique_id=987654321 instance=ExtResource("script_MagicAttackState")]
-AttackAnimationName = "RangeAttackOrb"
-
-[node name="OrbAttackSpell" parent="StateMachine/MagicAttackState" index="0" unique_id=123456789 instance=ExtResource("script_OrbAttackSpell")]
-ProjectileScene = ExtResource("scene_OrbProjectile")
-Damage = 25.0
-
 [node name="MeleeAttackState" parent="StateMachine/AttackState" parent_id_path=PackedInt32Array(999912345) index="0" unique_id=999912346]
 AttackAnimationName = "MeleeAttackNormal"
 

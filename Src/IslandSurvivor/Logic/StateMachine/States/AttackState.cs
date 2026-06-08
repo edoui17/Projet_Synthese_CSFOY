@@ -95,6 +95,21 @@ public partial class AttackState : State
         return (animSuffix, direction);
     }
 
+    public override void Exit()
+    {
+        base.Exit();
+
+        if (NpcContext is IslandSurvivor.Scenes.NPC.AggressiveNpcBase aggNpc)
+        {
+            aggNpc.LockedDirection = Vector2.Zero;
+        }
+
+        if (m_attackController != null && m_attackController.IsAttacking)
+        {
+            m_attackController.CancelAttack();
+        }
+    }
+
     public override void Update(double p_delta)
     {
         if (m_hasCompleted) return;
