@@ -1,7 +1,26 @@
 @page "/"
 @using Core.Domain
+@using System.Timers
+@implements IDisposable
 @inject HttpClient Http
 @rendermode InteractiveServer
+
+<style>
+    .spinning {
+        animation: rotation 1s infinite linear !important;
+        transform-origin: center center;
+    }
+
+    @@keyframes rotation {
+        from {
+            transform: rotate(0deg);
+        }
+
+        to {
+            transform: rotate(359deg);
+        }
+    }
+</style>
 
 <header>
     <nav id="navbar">
@@ -23,8 +42,8 @@
             <input type="search" id="site-search" name="q" @bind="SearchQuery" @bind:event="oninput" placeholder="Chercher un joueur..." />
         </div>
         <div class="sortAndRefresh">
-            <button id="refreshButton" @onclick="RefreshLeaderboard">
-                <img src="images/refreshbutton1.png" alt="Rafraîchir le classement">
+            <button id="refreshButton" @onclick="RefreshLeaderboard" disabled="@m_isRefreshing">
+                <img src="images/refreshbutton1.png" alt="Rafraîchir le classement" class="@(m_isRefreshing ? "spinning" : "")">
             </button>
             <div id="sortRank">
                 <select name="ranks" id="rank-select" @bind="SortCriteria">
@@ -89,6 +108,9 @@
     private IEnumerable<PlayerLeaderboardEntry>? m_players;
     private string m_searchQuery = string.Empty;
     private string m_sortCriteria = "Level";
+    private bool m_isRefreshing = false;
+    private System.Timers.Timer? m_refreshTimer;
+    private const double REFRESH_INTERVAL = 3600000; // 1 hour in milliseconds
 
     public string SearchQuery
     {
@@ -96,7 +118,6 @@
         set
         {
             m_searchQuery = value;
-            // Update happens automatically due to @bind:event="oninput"
         }
     }
 
@@ -106,7 +127,6 @@
         set
         {
             m_sortCriteria = value;
-            // Update happens automatically when selection changes
         }
     }
 
@@ -157,28 +177,41 @@
         };
     }
 
-    
     protected override async Task OnInitializedAsync()
     {
         await LoadLeaderboardAsync();
+        StartRefreshTimer();
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    private void StartRefreshTimer()
     {
-        if (firstRender)
-        {
-            await LoadLeaderboardAsync();
-            StateHasChanged();
-        }
+        m_refreshTimer?.Dispose();
+        m_refreshTimer = new System.Timers.Timer(REFRESH_INTERVAL);
+        m_refreshTimer.Elapsed += async (sender, e) => await InvokeAsync(async () => await LoadLeaderboardAsync());
+        m_refreshTimer.AutoReset = true;
+        m_refreshTimer.Enabled = true;
+    }
+
+    public void Dispose()
+    {
+        m_refreshTimer?.Dispose();
     }
 
     private async Task RefreshLeaderboard()
     {
+        StartRefreshTimer(); // Reset timer to avoid double refresh
         await LoadLeaderboardAsync();
     }
 
     private async Task LoadLeaderboardAsync()
     {
+        if (m_isRefreshing) return;
+
+        m_isRefreshing = true;
+        StateHasChanged();
+
+        await Task.Delay(500); // Ajout d'un délai pour garantir le rendu de l'animation CSS avant l'appel API
+
         try
         {
             m_players = await Http.GetFromJsonAsync<IEnumerable<PlayerLeaderboardEntry>>("api/player/leaderboard");
@@ -186,7 +219,12 @@
         catch (Exception ex)
         {
             Console.WriteLine($"Error fetching leaderboard: {ex.Message}");
-            m_players = new List<PlayerLeaderboardEntry>();
+            m_players ??= new List<PlayerLeaderboardEntry>();
+        }
+        finally
+        {
+            m_isRefreshing = false;
+            StateHasChanged();
         }
     }
 }
