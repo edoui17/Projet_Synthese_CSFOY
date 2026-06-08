@@ -77,7 +77,7 @@ public partial class IdleState : State
                 {
                     float distSquared = NpcContext.GlobalPosition.DistanceSquaredTo(target.GlobalPosition);
                     bool isRanged = NpcContext is IslandSurvivor.Scenes.NPC.RangedAggressiveNpcBase;
-                    float checkRange = isRanged ? ((IslandSurvivor.Scenes.NPC.AggressiveNpcBase)NpcContext).MaxAttackRange : ((IslandSurvivor.Scenes.NPC.AggressiveNpcBase)NpcContext).AttackRange;
+                    float checkRange = isRanged ? aggressiveNpc.MaxAttackRange : aggressiveNpc.AttackRange;
 
                     if (distSquared <= checkRange * checkRange)
                     {

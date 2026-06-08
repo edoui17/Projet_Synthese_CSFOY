@@ -8,41 +8,38 @@ namespace IslandSurvivor.Scenes;
 
 public partial class TestProjectilesScene : Node2D
 {
-    private PackedScene _darkBlastScene = null!;
-    private PackedScene _evilEyeScene = null!;
-    private PackedScene _arrowScene = null!;
-    private PackedScene _orbScene = null!;
-    private PackedScene _scytheScene = null!;
+    private PackedScene m_darkBlastScene = null!;
+    private PackedScene m_evilEyeScene = null!;
+    private PackedScene m_arrowScene = null!;
+    private PackedScene m_orbScene = null!;
+    private PackedScene m_scytheScene = null!;
 
-    private Node2D _player = null!;
-    private Timer _loopTimer = null!;
+    private Node2D m_player = null!;
+    private Timer m_loopTimer = null!;
 
     public override void _Ready()
     {
         base._Ready();
 
-        _player = GetNodeOrNull<Node2D>("Player");
-        if (_player != null)
+        m_player = GetNodeOrNull<Node2D>("Player");
+        if (m_player != null && m_player.HasMethod("SetHealth"))
         {
-            if (_player.HasMethod("SetHealth"))
-            {
-                _player.Call("SetHealth", 5000);
-            }
+            m_player.Call("SetHealth", 5000);
         }
 
         // Load projectile scenes
-        _darkBlastScene = GD.Load<PackedScene>("res://Scenes/Projectiles/DarkBlast/DarkBlast.tscn");
-        _evilEyeScene = GD.Load<PackedScene>("res://Scenes/Projectiles/EvilEye/EvilEye.tscn");
-        _arrowScene = GD.Load<PackedScene>("res://Scenes/Projectiles/Arrow/Arrow.tscn");
-        _orbScene = GD.Load<PackedScene>("res://Scenes/Projectiles/OrbProjectile/OrbProjectile.tscn");
-        _scytheScene = GD.Load<PackedScene>("res://Scenes/Projectiles/DarkScythe/DarkScythe.tscn");
+        m_darkBlastScene = GD.Load<PackedScene>("res://Scenes/Projectiles/DarkBlast/DarkBlast.tscn");
+        m_evilEyeScene = GD.Load<PackedScene>("res://Scenes/Projectiles/EvilEye/EvilEye.tscn");
+        m_arrowScene = GD.Load<PackedScene>("res://Scenes/Projectiles/Arrow/Arrow.tscn");
+        m_orbScene = GD.Load<PackedScene>("res://Scenes/Projectiles/OrbProjectile/OrbProjectile.tscn");
+        m_scytheScene = GD.Load<PackedScene>("res://Scenes/Projectiles/DarkScythe/DarkScythe.tscn");
 
         // Start looping
-        _loopTimer = new Timer();
-        _loopTimer.WaitTime = 4.0f; // Wait 4 seconds between spawns
-        _loopTimer.Autostart = true;
-        _loopTimer.Timeout += SpawnAttacks;
-        AddChild(_loopTimer);
+        m_loopTimer = new Timer();
+        m_loopTimer.WaitTime = 4.0f; // Wait 4 seconds between spawns
+        m_loopTimer.Autostart = true;
+        m_loopTimer.Timeout += SpawnAttacks;
+        AddChild(m_loopTimer);
 
         // Initial spawn
         SpawnAttacks();
@@ -50,24 +47,24 @@ public partial class TestProjectilesScene : Node2D
 
     private void SpawnAttacks()
     {
-        if (_player == null) return;
+        if (m_player == null) return;
 
         // Spawn DarkBlast
-        if (_darkBlastScene != null)
+        if (m_darkBlastScene != null)
         {
-            var darkBlast = _darkBlastScene.Instantiate<Node2D>();
+            var darkBlast = m_darkBlastScene.Instantiate<Node2D>();
             darkBlast.GlobalPosition = new Vector2(200, 300);
             AddChild(darkBlast);
         }
 
         // Spawn EvilEye
-        if (_evilEyeScene != null)
+        if (m_evilEyeScene != null)
         {
-            var evilEye = _evilEyeScene.Instantiate<EvilEye>();
+            var evilEye = m_evilEyeScene.Instantiate<EvilEye>();
             evilEye.GlobalPosition = new Vector2(800, 300);
             AddChild(evilEye);
 
-            evilEye.Initialize(_player);
+            evilEye.Initialize(m_player);
         }
 
         // Spawn Projectiles shooting straight down
@@ -76,25 +73,25 @@ public partial class TestProjectilesScene : Node2D
         Vector2 spawnScythe = new Vector2(600, 100);
         Vector2 downwardDirection = Vector2.Down;
 
-        if (_arrowScene != null)
+        if (m_arrowScene != null)
         {
-            var arrow = _arrowScene.Instantiate<BaseProjectile>();
+            var arrow = m_arrowScene.Instantiate<BaseProjectile>();
             AddChild(arrow);
             arrow.Initialize(spawnArrow, downwardDirection, 10, this);
             arrow.Fire();
         }
 
-        if (_orbScene != null)
+        if (m_orbScene != null)
         {
-            var orb = _orbScene.Instantiate<BaseProjectile>();
+            var orb = m_orbScene.Instantiate<BaseProjectile>();
             AddChild(orb);
             orb.Initialize(spawnOrb, downwardDirection, 15, this);
             orb.Fire();
         }
 
-        if (_scytheScene != null)
+        if (m_scytheScene != null)
         {
-            var scythe = _scytheScene.Instantiate<BaseProjectile>();
+            var scythe = m_scytheScene.Instantiate<BaseProjectile>();
             AddChild(scythe);
             scythe.Initialize(spawnScythe, downwardDirection, 20, this);
             scythe.Fire();

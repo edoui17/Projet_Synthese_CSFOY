@@ -42,46 +42,36 @@ public partial class Shooter : Node2D
         if (!CanShoot || ProjectileScene == null) return;
 
         Node projectileNode = ProjectileScene.Instantiate();
-        if (projectileNode is IProjectile projectile)
+        if (projectileNode is not IProjectile projectile)
         {
-            Vector2 direction = Vector2.Right;
-            Vector2 startPosition = GlobalPosition;
-            if (SpawnPosition != null)
+            projectileNode.QueueFree();
+            m_cooldownTimer = Cooldown;
+            return;
+        }
+
+        Vector2 direction = Vector2.Right;
+        Vector2 startPosition = SpawnPosition != null ? SpawnPosition.GlobalPosition : GlobalPosition;
+        float damageAmount = 10.0f;
+        object shooterRef = m_owner ?? this;
+
+        if (m_owner is IslandSurvivor.Scenes.NPC.AggressiveNpcBase aggNpc)
+        {
+            var target = aggNpc.GetTarget();
+            if (GodotObject.IsInstanceValid(target))
             {
-                startPosition = SpawnPosition.GlobalPosition;
-            }
-
-            if (m_owner is IslandSurvivor.Scenes.NPC.AggressiveNpcBase aggNpc)
-            {
-                var target = aggNpc.GetTarget();
-                if (GodotObject.IsInstanceValid(target))
-                {
-                    direction = (target.GlobalPosition - startPosition).Normalized();
-                }
-                else
-                {
-                    direction = aggNpc.LockedDirection != Vector2.Zero ? aggNpc.LockedDirection : Vector2.Right;
-                }
-
-                float damageAmount = aggNpc.Stats?.BaseAttackValue ?? 10.0f;
-
-                Vector2 directionNumerics = new Vector2(direction.X, direction.Y);
-                Vector2 startPositionNumerics = new Vector2(startPosition.X, startPosition.Y);
-
-                projectile.Initialize(startPositionNumerics, directionNumerics, damageAmount, m_owner);
-                GetTree().CurrentScene.AddChild(projectileNode);
-                projectile.Fire();
+                direction = (target.GlobalPosition - startPosition).Normalized();
             }
             else
             {
-                // Fallback if not AggressiveNpcBase
-                Vector2 directionNumerics = new Vector2(direction.X, direction.Y);
-                Vector2 startPositionNumerics = new Vector2(startPosition.X, startPosition.Y);
-                projectile.Initialize(startPositionNumerics, directionNumerics, 10.0f, m_owner ?? this);
-                GetTree().CurrentScene.AddChild(projectileNode);
-                projectile.Fire();
+                direction = aggNpc.LockedDirection != Vector2.Zero ? aggNpc.LockedDirection : Vector2.Right;
             }
+
+            damageAmount = aggNpc.Stats?.BaseAttackValue ?? 10.0f;
         }
+
+        projectile.Initialize(startPosition, direction, damageAmount, shooterRef);
+        GetTree().CurrentScene.AddChild(projectileNode);
+        projectile.Fire();
 
         m_cooldownTimer = Cooldown;
     }
