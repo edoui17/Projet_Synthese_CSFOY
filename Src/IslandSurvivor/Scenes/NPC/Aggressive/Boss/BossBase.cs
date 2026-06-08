@@ -50,7 +50,7 @@ public partial class BossBase : AggressiveNpcBase
         float baseDamage = Stats.BaseAttackValue * scalingFactor;
 
         IdleSpeed *= scalingFactor;
-        ChaseSpeed *= scalingFactor;
+        if (m_stateMachine != null && m_stateMachine.TryGetState<IslandSurvivor.Logic.StateMachine.ChaseState>(out var chaseState)) chaseState.ChaseSpeed *= scalingFactor;
 
         Stats.MaxHealth = maxHealth;
         Stats.SetCurrentValue(Core.Managers.StatType.Health, maxHealth);

@@ -3,7 +3,7 @@ namespace IslandSurvivor.Logic.StateMachine;
 using Godot;
 
 [GlobalClass]
-public partial class ChaseState : State
+public partial class ChaseState : MovementState
 {
     [ExportGroup("State Configuration")]
     [Export] public float ChaseSpeed { get; set; } = 120.0f;
@@ -76,14 +76,14 @@ public partial class ChaseState : State
         m_chaseTimer -= (float)p_delta;
         if (m_chaseTimer <= 0)
         {
-            aggressiveNpc.Velocity = Vector2.Zero;
+            SetVelocity(Vector2.Zero);
             CompleteState(StateExitReason.Timeout);
             return;
         }
 
         if (!aggressiveNpc.HasTargetAndLineOfSight())
         {
-            aggressiveNpc.Velocity = Vector2.Zero;
+            SetVelocity(Vector2.Zero);
             CompleteState(StateExitReason.TargetLost);
             return;
         }
@@ -96,14 +96,40 @@ public partial class ChaseState : State
 
         if (distSquared > LoseInterestRange * LoseInterestRange)
         {
-            aggressiveNpc.Velocity = Vector2.Zero;
+            SetVelocity(Vector2.Zero);
             CompleteState(StateExitReason.TargetLost);
             return;
         }
 
-        bool isRanged = NpcContext is IslandSurvivor.Scenes.NPC.RangedAggressiveNpcBase;
+        if (StateMachine.TryGetState<DashState>(out var dashState))
+        {
+            if (distSquared <= dashState.DashThreshold * dashState.DashThreshold)
+            {
+                if (m_attackController != null && m_attackController.CanAttack)
+                {
+                    if (StateMachine.HasState(StateConstants.RepositionStateName)) StateMachine.ForceTransition(StateConstants.RepositionStateName); else StateMachine.ForceTransition(StateConstants.DashStateName);
+                    return;
+                }
+            }
+        }
+
+        float minAttackRange = 80.0f;
+        float attackRange = 0f;
+        if (StateMachine.TryGetState<MeleeAttackState>(out var meleeState))
+        {
+            attackRange = meleeState.AttackRange;
+        }
+        if (StateMachine.TryGetState<RangedAttackState>(out var rangedState))
+        {
+            attackRange = Mathf.Max(attackRange, rangedState.MaxAttackRange);
+        }
+        if (StateMachine.TryGetState<MagicAttackState>(out var magicState))
+        {
+            attackRange = Mathf.Max(attackRange, magicState.MaxAttackRange);
+        }
+        bool isRanged = StateMachine.TryGetState<RangedAttackState>(out _) || StateMachine.TryGetState<MagicAttackState>(out _);
+
         bool isBoss = NpcContext is IslandSurvivor.Scenes.NPC.BossBase;
-        float attackRange = isRanged || isBoss ? aggressiveNpc.MaxAttackRange : aggressiveNpc.AttackRange;
 
         if (distSquared <= attackRange * attackRange)
         {
@@ -111,7 +137,7 @@ public partial class ChaseState : State
 
             if (isBoss)
             {
-                if (distSquared <= aggressiveNpc.MinAttackRange * aggressiveNpc.MinAttackRange)
+                if (distSquared <= minAttackRange * minAttackRange)
                 {
                     reachedTarget = true; // In melee range
                 }
@@ -127,7 +153,7 @@ public partial class ChaseState : State
             }
             else if (isRanged)
             {
-                if (distSquared <= aggressiveNpc.MinAttackRange * aggressiveNpc.MinAttackRange)
+                if (distSquared <= minAttackRange * minAttackRange)
                 {
                     reachedTarget = true;
                 }
@@ -151,7 +177,7 @@ public partial class ChaseState : State
 
             if (reachedTarget)
             {
-                aggressiveNpc.Velocity = Vector2.Zero;
+                SetVelocity(Vector2.Zero);
                 CompleteState(StateExitReason.TargetReached);
                 return;
             }
@@ -170,9 +196,10 @@ public partial class ChaseState : State
         }
         else
         {
-            aggressiveNpc.Velocity = direction * ChaseSpeed;
-            aggressiveNpc.MoveAndSlide();
+            SetVelocity(direction * ChaseSpeed);
         }
+
+        base.PhysicsUpdate(p_delta);
 
         if (m_sprite != null && direction.X != 0)
         {

@@ -30,9 +30,9 @@ position = Vector2(15, 0)
 ProjectileScene = ExtResource("3_arrow")
 SpawnPosition = NodePath("../ProjectileSpawnPosition")
 
-[node name="StateMachine" parent="." index="10"]
 
-[node name="RepositionState" parent="StateMachine" index="7" instance=ExtResource("state_RepositionState")]
-[node name="AttackState" parent="StateMachine" index="6"]
+
+[node name="RepositionState" parent="StateMachine/MovementState" index="7" instance=ExtResource("state_RepositionState")]
+
 
 [node name="RangedAttackState" parent="StateMachine/AttackState" index="0" instance=ExtResource("state_RangedAttackState")]

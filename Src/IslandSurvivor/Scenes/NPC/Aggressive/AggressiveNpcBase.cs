@@ -6,8 +6,6 @@ using IslandSurvivor.Globals;
 
 public partial class AggressiveNpcBase : NpcBase
 {
-    [Export] public float ChaseSpeed { get; set; } = 120.0f;
-    [Export] public float StoppingDistance { get; set; } = 50.0f;
     [Export] public int LevelIndex { get; set; } = 1;
     [Export] public float BaseXp { get; set; } = 10.0f;
     [Export] public float XpMultiplier { get; set; } = 0.5f;
@@ -19,12 +17,7 @@ public partial class AggressiveNpcBase : NpcBase
 
 
     [ExportGroup("Melee Configuration")]
-    [Export] public float AttackRange { get; set; } = 60.0f;
-    [Export] public float GuardChance { get; set; } = 0.3f;
 
-    [ExportGroup("Ranged Configuration")]
-    [Export] public float MinAttackRange { get; set; } = 80.0f;
-    [Export] public float MaxAttackRange { get; set; } = 350.0f;
 
     protected Node2D? m_targetPlayer;
 
@@ -49,15 +42,11 @@ public partial class AggressiveNpcBase : NpcBase
         {
             if (m_stateMachine != null)
             {
-                if (m_stateMachine.HasState(IslandSurvivor.Logic.StateMachine.StateConstants.IdleStateName))
+                if (m_stateMachine.TryGetState<IslandSurvivor.Logic.StateMachine.IdleState>(out var idleState))
                 {
-                    var idleStateNode = m_stateMachine.GetState(IslandSurvivor.Logic.StateMachine.StateConstants.IdleStateName);
-                    if (idleStateNode is IslandSurvivor.Logic.StateMachine.IdleState idleState)
+                    if (idleState.IsWanderCooldownElapsed && m_stateMachine.HasState(IslandSurvivor.Logic.StateMachine.StateConstants.WanderStateName))
                     {
-                        if (idleState.IsWanderCooldownElapsed && m_stateMachine.HasState(IslandSurvivor.Logic.StateMachine.StateConstants.WanderStateName))
-                        {
-                            return IslandSurvivor.Logic.StateMachine.StateConstants.WanderStateName;
-                        }
+                        return IslandSurvivor.Logic.StateMachine.StateConstants.WanderStateName;
                     }
                 }
             }
@@ -65,13 +54,23 @@ public partial class AggressiveNpcBase : NpcBase
         }
 
         float distanceSquared = GlobalPosition.DistanceSquaredTo(target.GlobalPosition);
-        float attackRangeSquared = AttackRange * AttackRange;
+
+        float attackRange = 0f;
+        if (m_stateMachine != null)
+        {
+            if (m_stateMachine.TryGetState<IslandSurvivor.Logic.StateMachine.MeleeAttackState>(out var meleeState))
+            {
+                attackRange = meleeState.AttackRange;
+            }
+        }
+
+        float attackRangeSquared = attackRange * attackRange;
 
         return GetCombatDecisionState(distanceSquared, attackRangeSquared);
     }
 
 
-    protected virtual Godot.StringName GetCombatDecisionState(float distanceSquared, float attackRangeSquared)
+    protected Godot.StringName GetCombatDecisionState(float distanceSquared, float attackRangeSquared)
     {
         if (m_stateMachine == null) return IslandSurvivor.Logic.StateMachine.StateConstants.IdleStateName;
 
@@ -79,10 +78,25 @@ public partial class AggressiveNpcBase : NpcBase
         bool hasMagic = m_stateMachine.HasState(IslandSurvivor.Logic.StateMachine.StateConstants.MagicAttackStateName);
         bool hasLongRangeAttacks = hasRanged || hasMagic;
 
-        float maxAttackRangeSquared = MaxAttackRange * MaxAttackRange;
-        float minAttackRangeSquared = MinAttackRange * MinAttackRange;
+        float maxAttackRange = 0f;
+        if (m_stateMachine.TryGetState<IslandSurvivor.Logic.StateMachine.RangedAttackState>(out var rangedState))
+        {
+            maxAttackRange = Mathf.Max(maxAttackRange, rangedState.MaxAttackRange);
+        }
+        if (m_stateMachine.TryGetState<IslandSurvivor.Logic.StateMachine.MagicAttackState>(out var magicState))
+        {
+            maxAttackRange = Mathf.Max(maxAttackRange, magicState.MaxAttackRange);
+        }
 
-        if (distanceSquared > maxAttackRangeSquared)
+        float maxAttackRangeSquared = maxAttackRange * maxAttackRange;
+
+        float minAttackRangeSquared = attackRangeSquared > 0 ? attackRangeSquared : (80.0f * 80.0f); // Default 80 if no melee
+
+        if (distanceSquared > maxAttackRangeSquared && hasLongRangeAttacks)
+        {
+            return EvaluateOutOfRange();
+        }
+        else if (distanceSquared > attackRangeSquared && !hasLongRangeAttacks)
         {
             return EvaluateOutOfRange();
         }
@@ -155,7 +169,7 @@ public partial class AggressiveNpcBase : NpcBase
 
         if (m_stateMachine != null && m_stateMachine.HasState(IslandSurvivor.Logic.StateMachine.StateConstants.GuardingStateName) && CanGuard)
         {
-            if (GD.Randf() <= GuardChance)
+            if (GD.Randf() <= 0.3f)
             {
                 return IslandSurvivor.Logic.StateMachine.StateConstants.GuardingStateName;
             }
@@ -178,9 +192,9 @@ public partial class AggressiveNpcBase : NpcBase
             }
         }
 
-        if (m_stateMachine != null && m_stateMachine.HasState(IslandSurvivor.Logic.StateMachine.StateConstants.GuardingStateName) && CanGuard)
+        if (m_stateMachine != null && m_stateMachine.TryGetState<IslandSurvivor.Logic.StateMachine.GuardingState>(out var guardState) && CanGuard)
         {
-            if (GD.Randf() <= GuardChance)
+            if (GD.Randf() <= guardState.GuardChance)
             {
                 return IslandSurvivor.Logic.StateMachine.StateConstants.GuardingStateName;
             }
