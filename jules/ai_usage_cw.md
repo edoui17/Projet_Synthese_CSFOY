@@ -174,3 +174,9 @@
 | **Request** | **AI Contribution** | **Decision Reasoning** |
 | :--- | :--- | :--- |
 | **Correctifs US 11.0.2.**<br>- Corriger le blocage sur l'écran de chargement après login.<br>- Distinguer les erreurs 401 (identifiants) des erreurs réseau/503. | **1. API Refactoring**: Modified `ApiService.LoginAsync` to propagate network exceptions while returning null only for 401 Unauthorized.<br>**2. UI/UX Logic**: Updated `LoginScreen.cs` to catch these exceptions and display "Serveur API indisponible" in red.<br>**3. Initialization Flow**: Changed the successful login redirection to call `GameManager.InitializeGameAsync()`, ensuring the full boot sequence (sync, profile loading) is executed. | **Flow Integrity**: Calling the initialization method instead of just changing the scene ensures that the global state machine is properly updated and gameplay data is synchronized. **Diagnostic Accuracy**: Propagating HTTP exceptions (excluding 401) allows the UI to provide truthful feedback to the player about the server's state. |
+
+### 2026-06-08 - [Task 10.1.7 : Implémenter l'actualisation du classement]
+
+| **Request** | **AI Contribution** | **Decision Reasoning** |
+| :--- | :--- | :--- |
+| **Task 10.1.7: Implémenter l'actualisation du classement.**<br>- Implement manual and automatic refresh (1h).<br>- Include x-Session-Token in headers.<br>- Show loading spinner (rotating icon) during refresh. | **1. UI/UX Logic**: Updated `Index.razor` with specific `1s` rotation CSS and `Task.Delay(500)` in `LoadLeaderboardAsync`.<br>**2. Background Processing**: Implemented `System.Timers.Timer` (REFRESH_INTERVAL = 3600000) with `InvokeAsync(StateHasChanged)` and `IDisposable` for cleanup.<br>**3. API Integration**: Centralized logic in `LoadLeaderboardAsync` with clean state management. | **Stabilized Animation**: Adding a deliberate delay ensures the CSS transition for the spinning icon is rendered by the browser before the blocking async HTTP call starts. |
