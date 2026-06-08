@@ -3,11 +3,12 @@
 [ext_resource type="PackedScene" uid="uid://cax2j3b2g36d" path="res://Scenes/Level/LevelBase.tscn" id="1_base"]
 [ext_resource type="PackedScene" uid="uid://dcghy8ygomn7y" path="res://Scenes/Map/Map1/Map1.tscn" id="2_map"]
 [ext_resource type="PackedScene" uid="uid://dq4dear1g8mq2" path="res://Scenes/Portal/Portal.tscn" id="3_portal"]
+[ext_resource type="Script" uid="uid://cqngfcqtgbwd1" path="res://Nodes/Zones/ResourceSpawnConfig.cs" id="4_35vrn"]
 [ext_resource type="Script" uid="uid://6dd3lksu804t" path="res://Nodes/Zones/ResourceZone.cs" id="4_tree"]
-[ext_resource type="Resource" path="res://Scenes/Ressources/Tree/AutomnTreeConfig.tres" id="5_automn"]
+[ext_resource type="Resource" uid="uid://bu2f7lmyby6cq" path="res://Scenes/Ressources/Tree/AutomnTreeConfig.tres" id="5_automn"]
 [ext_resource type="Resource" path="res://Scenes/Ressources/Tree/ConiferTreeConfig.tres" id="6_conifer"]
-[ext_resource type="Resource" path="res://Scenes/Ressources/Rock/RockConfig.tres" id="7_rock"]
-[ext_resource type="Resource" path="res://Scenes/Ressources/Gold/GoldConfig.tres" id="8_gold"]
+[ext_resource type="Resource" uid="uid://cxtgf4stxibp1" path="res://Scenes/Ressources/Rock/RockConfig.tres" id="7_rock"]
+[ext_resource type="Resource" uid="uid://birnix0p66pta" path="res://Scenes/Ressources/Gold/GoldConfig.tres" id="8_gold"]
 [ext_resource type="Resource" path="res://Scenes/NPC/Passive/Sheep/SheepConfig.tres" id="9_sheep"]
 [ext_resource type="Script" uid="uid://b2pgcq5bf17ym" path="res://Nodes/Zones/EnemySpawnZone.cs" id="10_enemy_script"]
 [ext_resource type="Script" uid="uid://cbbphk4jiuhm5" path="res://Nodes/Zones/EnemySpawnConfig.cs" id="10_wyksf"]
@@ -27,7 +28,7 @@ position = Vector2(38, -25)
 position = Vector2(0, 1)
 script = ExtResource("4_tree")
 ResourceCount = 50
-ResourceConfigs = Array[Resource]([ExtResource("5_automn"), ExtResource("6_conifer"), ExtResource("7_rock"), ExtResource("8_gold"), ExtResource("9_sheep")])
+ResourceConfigs = Array[ExtResource("4_35vrn")]([ExtResource("8_gold"), ExtResource("7_rock"), ExtResource("9_sheep"), ExtResource("5_automn"), ExtResource("6_conifer")])
 SpawningArea = NodePath("SpawningArea")
 
 [node name="SpawningArea" type="Polygon2D" parent="ResourceZone" index="0" unique_id=687902949]
