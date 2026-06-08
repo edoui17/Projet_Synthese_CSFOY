@@ -76,9 +76,12 @@ public partial class IdleState : State
                 if (target != null)
                 {
                     float distSquared = NpcContext.GlobalPosition.DistanceSquaredTo(target.GlobalPosition);
-                    bool isRanged = NpcContext is IslandSurvivor.Scenes.NPC.RangedAggressiveNpcBase;
-                    bool isBoss = NpcContext is IslandSurvivor.Scenes.NPC.BossBase;
-                    float checkRange = isRanged || isBoss ? aggressiveNpc.MaxAttackRange : aggressiveNpc.AttackRange;
+
+                    bool hasRanged = StateMachine.HasState(IslandSurvivor.Logic.StateMachine.StateConstants.RangedAttackStateName);
+                    bool hasMagic = StateMachine.HasState(IslandSurvivor.Logic.StateMachine.StateConstants.MagicAttackStateName);
+                    bool hasLongRangeAttacks = hasRanged || hasMagic;
+
+                    float checkRange = hasLongRangeAttacks ? aggressiveNpc.MaxAttackRange : aggressiveNpc.MinAttackRange;
 
                     if (distSquared <= checkRange * checkRange)
                     {
