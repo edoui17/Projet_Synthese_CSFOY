@@ -382,11 +382,23 @@ Pour tester l'écran de login dans l'écosystème complet :
 ### 2026-05-23 - [Correctif] US 11.0.2 : Résolution du blocage de synchronisation et Distinction des erreurs
 - **Bug Fix (Sync Loop)**: Correction d'un problème où le changement direct de scène vers `LoadingScreen.tscn` après le login ne déclenchait pas l'initialisation du `GameManager`. Désormais, `LoginScreen` appelle explicitement `GameManager.InitializeGameAsync()` en cas de succès, garantissant le lancement de la routine de synchronisation du profil.
 - **Bug Fix (Error Handling)**: Refonte de `ApiService.LoginAsync` pour ne plus avaler les `HttpRequestException`. L'API lève désormais une exception pour les erreurs 5xx (serveur) ou réseau, permettant au client d'afficher "Serveur API indisponible" au lieu de "Identifiants invalides" (réservé au code 401).
+## 2026-06-08 - US 10.1.7 : Web Leaderboard Manual & Auto Refresh
+- **Refresh Strategy**: Implemented both manual and automatic (1h interval) refresh logic in the Blazor `Index.razor` page.
+- **Timer Management**: Used `System.Timers.Timer` with explicit `IDisposable` implementation with REFRESH_INTERVAL = 3600000.
+- **UX Feedback**: Introduced a `m_isRefreshing` state that disables the refresh button and applies a CSS-based rotation animation (`.spinning`) to the `<img>` element.
+- **Technical Note**: Used `InvokeAsync(StateHasChanged)` for UI updates. Added `Task.Delay(500)` in `LoadLeaderboardAsync` to ensure the CSS animation starts before the API call.
+
 ## 2026-05-30 - US 20.0.6 : Godot Node-Based State Machine Architecture
 - **Composition over Inheritance:** Replaced monolithic C# `_PhysicsProcess` controllers with Godot nodes using a strict Composition pattern. The `StateMachine` (parent) orchestrates `State` (child) nodes (e.g., `IdleState`, `ChaseState`), allowing designers to mix-and-match logic directly in the Inspector.
 - **Node Injection without Destruction:** Refactored complex Godot scenes (`.tscn`) to replace `AnimatedSprite2D` with `Sprite2D` and `AnimationPlayer`. Modified scenes via controlled script injection to preserve legacy scene configurations, avoiding destructive text-replacements on complex resources like `SpriteFrames`.
 - **Animation Fallbacks:** Implemented an `AnimationPlayer.HasAnimation` fallback logic inside State nodes. If the required `AnimationName` isn't configured, it safely defaults to `FallbackAnimationName` (e.g. `"Error"`), avoiding game crashes when designers miss an animation setup.
 - **Centralized Visual State:** Moved sprite flipping (`FlipH`) logic out of individual behaviors and centralized it within the `MovementController.Move()` method, tying visual orientation directly to the physics vector.
+
+## 2026-05-31 - Resource Rarity System & Weighted Spawning
+- **Feature**: Refactored the `ResourceZone` to use a weighted probability system for resource selection, mirroring the `EnemySpawnZone` logic.
+- **Architecture**: Introduced `ResourceSpawnConfig` as a Godot `Resource` class implementing `IWeightedItem`. This enables the use of `WeightedRandomSelector` from the `Core` logic.
+- **Technical Detail**: Replaced the legacy `ResourceScenes` list (Array<PackedScene>) with `ResourceConfigs` (Array<ResourceSpawnConfig>). This transition was applied to all level scenes (Level1, 2, 3, 5), ensuring a data-driven approach to resource scarcity.
+- **Godot Quirk**: Migration of `.tscn` files required surgical replacement of `ExtResource` references to point to new `.tres` configuration files, maintaining scene integrity without needing manual reassignment in the editor.
 
 ## Session Lifecycle Management
 Discovered that without a dedicated Godot `WorldManager`, `Autoload`s effectively serve as lifecycle hooks. By attaching a single `SessionManager` autoload solely dedicated to listening for `SessionEnded`, we can isolate state-reset behavior away from the Main Menu, ensuring that navigation between menus doesn't inadvertently wipe state unless explicitly broadcasted.
