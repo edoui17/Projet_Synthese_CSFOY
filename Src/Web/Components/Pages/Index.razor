@@ -47,13 +47,13 @@
             </button>
             <div id="sortRank">
                 <select name="ranks" id="rank-select" @bind="SortCriteria">
-                <option value="Level">Level</option>
-                <option value="Temps">Temps</option>
-                <option value="Vie">Vie</option>
-                <option value="Chance">Chance</option>
-                <option value="Attaque">Attaque</option>
-                <option value="Vitesse">Vitesse</option>
-                <option value="No stat">No stat</option>
+                    <option value="Level">Level</option>
+                    <option value="Temps">Temps</option>
+                    <option value="Vie">Vie</option>
+                    <option value="Chance">Chance</option>
+                    <option value="Attaque">Attaque</option>
+                    <option value="Vitesse">Vitesse</option>
+                    <option value="No stat">No stat</option>
                 </select>
             </div>
         </div>
@@ -210,7 +210,9 @@
         m_isRefreshing = true;
         StateHasChanged();
 
+
         await Task.Delay(500); // Ajout d'un délai pour garantir le rendu de l'animation CSS avant l'appel API
+
 
         try
         {
