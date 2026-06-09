@@ -10,7 +10,6 @@ L'objectif principal de ce travail est de présenter une solution logicielle com
 
 Le projet adopte une architecture en couches (N-Tier) permettant une modularité et une scalabilité optimale. Cette structure facilite le partage de la logique métier entre le client de jeu (Godot) et les outils d'administration (Web/API).
 
-![Architecture de Développement](Images/DiagrammeArchitectureDeveloppement.jpg)
 
 ### Découpage de la solution :
 *   **Core (Noyau)** : Bibliothèque de classes pure .NET contenant les interfaces, les modèles de domaine et la logique métier. Totalement découplé du moteur de jeu.
@@ -19,7 +18,6 @@ Le projet adopte une architecture en couches (N-Tier) permettant une modularité
 *   **Infrastructure** : Couche de persistance utilisant Entity Framework Core (SQL Server) et implémentant les patterns d'accès aux données.
 *   **Web (Dashboard)** : Application Blazor permettant la visualisation des statistiques et la gestion administrative.
 
-![Architecture de Production](Images/DiagrammeArchitectureProduction.jpg)
 
 ---
 
@@ -36,9 +34,9 @@ Le système utilise un `EventBus` personnalisé au sein du projet Core, couplé 
 ### Machine à États (State Machine)
 L'intelligence artificielle des NPCs (Passifs et Hostiles) est gérée par une machine à états robuste. Chaque comportement (Idle, Chase, Flee, Attack) est encapsulé dans une classe distincte, facilitant l'ajout de nouveaux comportements et garantissant une transition fluide entre les états.
 
-![Gameplay - Attaque Archer](Images/archerAttack.gif)
-![Gameplay - Attaque Guerrier](Images/WarriorAttack.gif)
-![Gameplay - Attaque Lancier](Images/lancerAttack.gif)
+![Gameplay - Attaque Archer](Images/archerAttack.gif|300)
+![Gameplay - Attaque Guerrier](Images/WarriorAttack.gif|300)
+![Gameplay - Attaque Lancier](Images/lancerAttack.gif|300)
 
 ---
 
