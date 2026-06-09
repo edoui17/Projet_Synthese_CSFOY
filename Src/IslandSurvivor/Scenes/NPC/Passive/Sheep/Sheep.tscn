@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://mqagd60eodos"]
 
 [ext_resource type="PackedScene" uid="uid://df6gel801af1s" path="res://Scenes/NPC/Passive/PassiveNpcBase.tscn" id="1_scene"]
-[ext_resource type="Script" uid="uid://dgargw81rnw0d" path="res://Logic/StateMachine/States/MovementState.cs" id="state_MovementState"]
+[ext_resource type="Script" uid="uid://dgargw81rnw0d" path="res://Logic/StateMachine/States/Movement/MovementState.cs" id="state_MovementState"]
 [ext_resource type="Script" uid="uid://fvn22w5rptq7" path="res://Scenes/NPC/Passive/Sheep/Sheep.cs" id="2_script"]
 [ext_resource type="Texture2D" uid="uid://yh2ufkt82mxm" path="res://Assets/TinySwords/Sprites/Sheep/HappySheep_All.png" id="6_dmdtk"]
 [ext_resource type="Animation" uid="uid://b8cryv3pvmoi0" path="res://Animation/Death_Ressource.res" id="7_m5ir2"]

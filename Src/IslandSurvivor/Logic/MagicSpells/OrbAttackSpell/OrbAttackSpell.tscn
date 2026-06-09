@@ -1,0 +1,7 @@
+[gd_scene format=3 uid="uid://c5834cbb48f84"]
+
+[ext_resource type="Script" uid="uid://ib2qibqxdsji" path="res://Logic/MagicSpells/OrbAttackSpell/OrbAttackSpell.cs" id="1_script"]
+
+
+[node name="OrbAttackSpell" type="Node2D"]
+script = ExtResource("1_script")

@@ -6,7 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://c3qpgtamtdyll" path="res://Scenes/Projectiles/DarkScythe/DarkScythe.tscn" id="5_scythe"]
 [ext_resource type="PackedScene" uid="uid://4ry1ef60r6ju" path="res://Scenes/Projectiles/OrbProjectile/OrbProjectile.tscn" id="scene_OrbProjectile"]
 [ext_resource type="PackedScene" uid="uid://fe2ac266aca4" path="res://Nodes/State/Combat/MagicAttackState.tscn" id="script_MagicAttackState"]
-[ext_resource type="PackedScene" uid="uid://c5834cbb48f84" path="res://Logic/MagicSpells/OrbAttackSpell.tscn" id="script_OrbAttackSpell"]
+[ext_resource type="PackedScene" uid="uid://c5834cbb48f84" path="res://Logic/MagicSpells/OrbAttackSpell/OrbAttackSpell.tscn" id="script_OrbAttackSpell"]
 [ext_resource type="PackedScene" uid="uid://cx6r1g1g1g1g3" path="res://Nodes/Combat/Shooter.tscn" id="Shooter"]
 [ext_resource type="PackedScene" uid="uid://cx6r1g1g1g1g1" path="res://Nodes/State/Combat/MeleeAttackState.tscn" id="state_MeleeAttackState"]
 [ext_resource type="PackedScene" uid="uid://cx6r1g1g1g1g2" path="res://Nodes/State/Combat/RangedAttackState.tscn" id="state_RangedAttackState"]

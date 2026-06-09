@@ -7,7 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://1vfvwh0ekjt0" path="res://Assets/TinySwords/Sprites/Warrior/Blue/Warrior_Blue.png" id="5_pxe8l"]
 [ext_resource type="Animation" uid="uid://d0h1sx4b0jesm" path="res://Animation/Death_NPC.res" id="6_miyan"]
 [ext_resource type="Animation" uid="uid://bjuop45u4ndx5" path="res://Animation/Error.res" id="7_se8nt"]
-[ext_resource type="Script" uid="uid://dagp7d34l7a53" path="res://Logic/StateMachine/States/GuardingState.cs" id="state_GuardingState"]
+[ext_resource type="Script" uid="uid://dagp7d34l7a53" path="res://Logic/StateMachine/States/Combat/Defence/GuardingState.cs" id="state_GuardingState"]
 
 [sub_resource type="Animation" id="Animation_rm504"]
 resource_name = "Attack_Down"
