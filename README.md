@@ -35,9 +35,9 @@ Le système utilise un `EventBus` personnalisé au sein du projet Core, couplé 
 L'intelligence artificielle des NPCs (Passifs et Hostiles) est gérée par une machine à états robuste. Chaque comportement (Idle, Chase, Flee, Attack) est encapsulé dans une classe distincte, facilitant l'ajout de nouveaux comportements et garantissant une transition fluide entre les états.
 
 <p align="center">
-  <img src="Images/archerAttack.gif" width="200" alt="Gameplay - Attaque Archer" />
+  <img src="Images/archerAttack.gif" width="225" alt="Gameplay - Attaque Archer" />
   <img src="Images/WarriorAttack.gif" width="250" alt="Gameplay - Attaque Guerrier" />
-  <img src="Images/lancerAttack.gif" width="200" alt="Gameplay - Attaque Lancier" />
+  <img src="Images/lancerAttack.gif" width="225" alt="Gameplay - Attaque Lancier" />
 </p>
 
 ---
