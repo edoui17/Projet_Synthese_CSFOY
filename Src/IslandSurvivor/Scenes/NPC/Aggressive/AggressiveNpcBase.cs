@@ -15,6 +15,8 @@ public partial class AggressiveNpcBase : NpcBase
     [Export] public string AttackSoundKey { get; set; } = string.Empty;
     [Export] public float AttackVolume { get; set; } = 1.0f;
 
+    [ExportGroup("Detection Configuration")]
+    [Export] public float DetectionRadius { get; set; } = 250.0f;
 
     [ExportGroup("Melee Configuration")]
 
@@ -22,7 +24,6 @@ public partial class AggressiveNpcBase : NpcBase
     protected Node2D? m_targetPlayer;
 
     protected IslandSurvivor.Nodes.AttackController? m_attackController;
-    protected Area2D? m_detectionArea;
     protected RayCast2D? m_lineOfSightRay;
     protected Sprite2D? m_sprite;
     protected AnimationPlayer? m_animationPlayer;
@@ -245,16 +246,7 @@ public partial class AggressiveNpcBase : NpcBase
             m_attackController.AttackActionTriggered += PlayAttackSound;
         }
 
-        m_detectionArea = GetNodeOrNull<Area2D>("DetectionArea");
-        if (m_detectionArea == null)
-        {
-            GD.PrintErr($"{Name} node requires an Area2D child node named 'DetectionArea'.");
-        }
-        else
-        {
-            m_detectionArea.BodyEntered += OnDetectionAreaBodyEntered;
-            m_detectionArea.BodyExited += OnDetectionAreaBodyExited;
-        }
+        m_targetPlayer = GetTree().GetFirstNodeInGroup("Player") as Node2D;
 
         m_lineOfSightRay = GetNodeOrNull<RayCast2D>("LineOfSightRay");
         if (m_lineOfSightRay == null)
@@ -324,7 +316,7 @@ public partial class AggressiveNpcBase : NpcBase
         m_animationPlayer?.Play(p_animName);
     }
 
-    protected virtual bool CheckLineOfSight()
+    public virtual bool CheckLineOfSight()
     {
         if (m_targetPlayer == null || m_lineOfSightRay == null) return false;
 
@@ -342,22 +334,6 @@ public partial class AggressiveNpcBase : NpcBase
             return false;
         }
         return true;
-    }
-
-    protected virtual void OnDetectionAreaBodyEntered(Node2D p_body)
-    {
-        if (p_body.IsInGroup("Player") || p_body.Name == "Player")
-        {
-            m_targetPlayer = p_body;
-        }
-    }
-
-    protected virtual void OnDetectionAreaBodyExited(Node2D p_body)
-    {
-        if (p_body == m_targetPlayer)
-        {
-            m_targetPlayer = null;
-        }
     }
 
     protected void PlayAttackSound()

@@ -27,21 +27,12 @@ public partial class ChaseState : MovementState
         m_sprite = NpcContext.GetNodeOrNull<Sprite2D>("Sprite2D");
         m_attackController = NpcContext.GetNodeOrNull<IslandSurvivor.Nodes.AttackController>("AttackController");
 
-        if (NpcContext != null)
+        if (NpcContext is IslandSurvivor.Scenes.NPC.AggressiveNpcBase aggressiveNpc)
         {
-            Area2D? detectionArea = NpcContext.GetNodeOrNull<Area2D>("DetectionArea");
-            if (detectionArea != null)
+            if (LoseInterestRange <= aggressiveNpc.DetectionRadius)
             {
-                var collisionShape = detectionArea.GetNodeOrNull<CollisionShape2D>("CollisionShape2D");
-                if (collisionShape != null && collisionShape.Shape is CircleShape2D circleShape)
-                {
-                    float detectionRadius = circleShape.Radius;
-                    if (LoseInterestRange <= detectionRadius)
-                    {
-                        GD.PushWarning($"[{NpcContext.Name}] LoseInterestRange ({LoseInterestRange}) is too small compared to DetectionRadius ({detectionRadius})! Auto-adjusting to prevent logic loops.");
-                        LoseInterestRange = detectionRadius * 2.0f;
-                    }
-                }
+                GD.PushWarning($"[{NpcContext.Name}] LoseInterestRange ({LoseInterestRange}) is too small compared to DetectionRadius ({aggressiveNpc.DetectionRadius})! Auto-adjusting to prevent logic loops.");
+                LoseInterestRange = aggressiveNpc.DetectionRadius * 2.0f;
             }
         }
     }
@@ -85,16 +76,13 @@ public partial class ChaseState : MovementState
             return;
         }
 
-        if (!aggressiveNpc.HasTargetAndLineOfSight())
+        var target = aggressiveNpc.GetTarget();
+        if (target == null || !aggressiveNpc.CheckLineOfSight())
         {
             SetVelocity(Vector2.Zero);
             CompleteState(StateExitReason.TargetLost);
             return;
         }
-
-        var target = aggressiveNpc.GetTarget();
-        if (target == null)
-            return;
 
         float distSquared = NpcContext.GlobalPosition.DistanceSquaredTo(target.GlobalPosition);
 

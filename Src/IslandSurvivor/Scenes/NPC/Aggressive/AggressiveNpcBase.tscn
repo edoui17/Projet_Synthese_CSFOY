@@ -17,9 +17,6 @@
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_base"]
 radius = 15.0
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_det"]
-radius = 250.0
-
 [node name="AggressiveNpcBase" unique_id=635726557 instance=ExtResource("1_scene")]
 script = ExtResource("2_script")
 LevelIndex = 1
@@ -43,15 +40,6 @@ Stats = NodePath("../StatManager")
 
 [node name="LineOfSightRay" type="RayCast2D" parent="." index="4" unique_id=461332043]
 collision_mask = 5
-
-[node name="DetectionArea" type="Area2D" parent="." index="5" unique_id=423904877]
-light_mask = 5
-collision_layer = 5
-collision_mask = 5
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="DetectionArea" index="0" unique_id=1152940949]
-position = Vector2(1, 1)
-shape = SubResource("CircleShape2D_det")
 
 [node name="AttackController" type="Node" parent="." index="6" unique_id=1292425161]
 script = ExtResource("4_attack")
