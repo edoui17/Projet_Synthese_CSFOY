@@ -92,12 +92,17 @@ public partial class WanderState : MovementState
 
         if (NpcContext is IslandSurvivor.Scenes.NPC.AggressiveNpcBase aggressiveNpc)
         {
-            if (aggressiveNpc.HasTargetAndLineOfSight())
+            var target = aggressiveNpc.GetTarget();
+            if (target != null)
             {
-                m_hasCompleted = true;
-                aggressiveNpc.Velocity = Vector2.Zero;
-                CompleteState(StateExitReason.TargetDetected);
-                return;
+                float distSquared = NpcContext.GlobalPosition.DistanceSquaredTo(target.GlobalPosition);
+                if (distSquared <= aggressiveNpc.DetectionRadius * aggressiveNpc.DetectionRadius && aggressiveNpc.CheckLineOfSight())
+                {
+                    m_hasCompleted = true;
+                    aggressiveNpc.Velocity = Vector2.Zero;
+                    CompleteState(StateExitReason.TargetDetected);
+                    return;
+                }
             }
         }
 
