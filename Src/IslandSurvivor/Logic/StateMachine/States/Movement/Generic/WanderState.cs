@@ -13,7 +13,6 @@ public partial class WanderState : MovementState
 
     [ExportGroup("State Animations")]
     [Export] public string AnimationName { get; set; } = "Moving";
-    [Export] public string FallbackAnimationName { get; set; } = "Error";
 
     private Vector2 m_spawnPosition;
     private bool m_isSpawnPositionSet = false;

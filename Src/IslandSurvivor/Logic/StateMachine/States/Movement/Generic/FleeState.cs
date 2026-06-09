@@ -11,7 +11,6 @@ public partial class FleeState : MovementState
 
     [ExportGroup("State Animations")]
     [Export] public string AnimationName { get; set; } = "Flee";
-    [Export] public string FallbackAnimationName { get; set; } = "Error";
 
     private AnimationPlayer m_animationPlayer = null!;
     private Sprite2D? m_sprite;

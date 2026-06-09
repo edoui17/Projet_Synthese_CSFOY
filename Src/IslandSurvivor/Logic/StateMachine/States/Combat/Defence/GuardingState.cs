@@ -12,7 +12,6 @@ public partial class GuardingState : State
 
     [ExportGroup("Guard Animations")]
     [Export] public string GuardAnimationName { get; set; } = "Guard";
-    [Export] public string FallbackAnimationName { get; set; } = "Idle";
 
     private AnimationPlayer m_animationPlayer = null!;
     private Sprite2D m_sprite = null!;

@@ -5,6 +5,7 @@ using Godot;
 [GlobalClass]
 public partial class MeleeAttackState : AttackState
 {
+    [Export] public string AttackAnimationName { get; set; } = "Attack";
     [Export] public float AttackRange { get; set; } = 60.0f;
     public override void Enter()
     {
