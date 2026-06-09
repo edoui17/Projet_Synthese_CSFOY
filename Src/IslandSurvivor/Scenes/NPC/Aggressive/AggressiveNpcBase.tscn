@@ -25,14 +25,12 @@ XpMultiplier = 0.5
 AttackSound = ExtResource("attack_stream")
 AttackSoundKey = ""
 AttackVolume = 1.0
+DetectionRadius = 250.0
 HurtSound = ExtResource("hurt_stream")
 
-[node name="CollisionShape2D" parent="." index="1" unique_id=1322914286]
+[node name="CollisionShape2D" parent="." index="2" unique_id=1322914286]
 position = Vector2(-2, 1)
 shape = SubResource("CapsuleShape2D_base")
-
-[node name="StatManager" parent="." index="2" unique_id=990476419]
-MaxHealth = 50.0
 
 [node name="EnemyStatsHandler" type="Node" parent="." index="3" unique_id=1822921740 node_paths=PackedStringArray("Stats")]
 script = ExtResource("5_stats_handler")
@@ -40,15 +38,6 @@ Stats = NodePath("../StatManager")
 
 [node name="LineOfSightRay" type="RayCast2D" parent="." index="4" unique_id=461332043]
 collision_mask = 5
-
-[node name="AttackController" type="Node" parent="." index="6" unique_id=1292425161]
-script = ExtResource("4_attack")
-BaseAttackCooldown = 2.0
-Faction = 2
-
-[node name="CollisionShape2D" parent="." index="4" unique_id=1322914286]
-position = Vector2(-2, 1)
-shape = SubResource("CapsuleShape2D_base")
 
 [node name="StatManager" parent="." index="5" unique_id=990476419]
 MaxHealth = 50.0
@@ -61,16 +50,12 @@ offset_bottom = -58.0
 text = "Lv. 1"
 horizontal_alignment = 1
 
-[node name="EnemyStatsHandler" type="Node" parent="." index="7" unique_id=1822921740 node_paths=PackedStringArray("Stats")]
-script = ExtResource("5_stats_handler")
-Stats = NodePath("../StatManager")
-
-[node name="AttackController" type="Node" parent="." index="8" unique_id=1292425161]
+[node name="AttackController" type="Node" parent="." index="7" unique_id=1292425161]
 script = ExtResource("4_attack")
 BaseAttackCooldown = 2.0
 Faction = 2
 
-[node name="StateMachine" parent="." index="10" unique_id=402971195 node_paths=PackedStringArray("InitialState")]
+[node name="StateMachine" parent="." index="9" unique_id=402971195 node_paths=PackedStringArray("InitialState")]
 InitialState = NodePath("MovementState/IdleState")
 
 [node name="MovementState" type="Node" parent="StateMachine" index="0" unique_id=350433986]

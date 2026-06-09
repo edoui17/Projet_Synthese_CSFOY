@@ -442,12 +442,6 @@ _data = {
 &"RESET": SubResource("Animation_miyan")
 }
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_e1oyk"]
-radius = 250.0
-
-[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_v2bfp"]
-radius = 15.0
-
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_e1oyk"]
 radius = 21.986078
 height = 70.16913
@@ -467,10 +461,6 @@ frame = 2
 
 [node name="AnimationPlayer" parent="." index="1" unique_id=1869571986]
 libraries/ = SubResource("AnimationLibrary_kuixf")
-
-[node name="CollisionShape2D" parent="HitboxAreaRight" index="0"]
-position = Vector2(37, 5)
-shape = SubResource("CapsuleShape2D_e1oyk")
 
 [node name="CollisionShape2D" parent="HitboxAreaLeft" parent_id_path=PackedInt32Array(786365911) index="0" unique_id=502821999]
 position = Vector2(30.000004, 6)

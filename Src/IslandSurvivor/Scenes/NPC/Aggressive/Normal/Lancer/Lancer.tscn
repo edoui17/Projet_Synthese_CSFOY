@@ -637,9 +637,6 @@ _data = {
 &"RESET": SubResource("Animation_sw6gv")
 }
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_lancer_detection"]
-radius = 400.0
-
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_hesqx"]
 radius = 18.01414
 height = 131.89413
@@ -667,11 +664,7 @@ frame = 2
 [node name="AnimationPlayer" parent="." index="1" unique_id=1869571986]
 libraries/ = SubResource("AnimationLibrary_4ud8o")
 
-[node name="StatManager" parent="." index="2" unique_id=990476419]
-MaxHealth = 40.0
-BaseSpeedValue = 200.0
-
-[node name="CollisionShape2D" parent="HitboxAreaUp" index="0"]
+[node name="CollisionShape2D" parent="HitboxAreaUp" parent_id_path=PackedInt32Array(132251275) index="0" unique_id=237488674]
 rotation = 3.1259809
 shape = SubResource("CapsuleShape2D_hesqx")
 

@@ -263,13 +263,6 @@ _data = {
 &"RangeAttackOrb": SubResource("Animation_yyit3")
 }
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_dp46e"]
-radius = 602.0407
-
-[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_dp46e"]
-radius = 37.0
-height = 128.0
-
 [node name="Reaper" unique_id=495261644 instance=ExtResource("1_t3tbm")]
 script = ExtResource("3_reaper_script")
 NormalAttackAnimationName = "MeleeAttackNormal"
@@ -284,10 +277,6 @@ vframes = 6
 
 [node name="AnimationPlayer" parent="." index="1" unique_id=1869571986]
 libraries/ = SubResource("AnimationLibrary_biphk")
-
-[node name="StatManager" parent="." index="2" unique_id=990476419]
-MaxHealth = 250.0
-BaseAttackValue = 50.0
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="HitboxAreaRight" parent_id_path=PackedInt32Array(1487526117) index="0" unique_id=1491598165]
 polygon = PackedVector2Array(45, -96, 93, -61, 113, -13, 116, 44, 98, 74, 45, 74)
