@@ -35,9 +35,9 @@ Le système utilise un `EventBus` personnalisé au sein du projet Core, couplé 
 L'intelligence artificielle des NPCs (Passifs et Hostiles) est gérée par une machine à états robuste. Chaque comportement (Idle, Chase, Flee, Attack) est encapsulé dans une classe distincte, facilitant l'ajout de nouveaux comportements et garantissant une transition fluide entre les états.
 
 <p align="center">
-  <img src="Images/archerAttack.gif" width="225" alt="Gameplay - Attaque Archer" />
+  <img src="Images/archerAttack.gif" width="220" alt="Gameplay - Attaque Archer" />
   <img src="Images/WarriorAttack.gif" width="250" alt="Gameplay - Attaque Guerrier" />
-  <img src="Images/lancerAttack.gif" width="225" alt="Gameplay - Attaque Lancier" />
+  <img src="Images/lancerAttack.gif" width="220" alt="Gameplay - Attaque Lancier" />
 </p>
 
 ---
@@ -60,11 +60,15 @@ Ce projet a été réalisé en adoptant une approche moderne de "Développeur Au
 
 ## Aperçu visuel du projet
 
-### Environnement et Interface
-Le jeu propose des mondes générés de manière procédurale avec une gestion fine de l'élévation et du climat.
-
+### Environnement et
+Ici est montre une des carte qui sera possible de jouer 
 
   <img src="Images/Level3.png" width="500" alt="Gameplay - Niveau 3" />
+  
+
+### Interface
+Voici un petit apercus de notre site web pour afficher le score des joueurs 
+
   <img src="Images/ScoreBord.png" width="500" alt="Gameplay - Tableau des scores" />
 
 ---
