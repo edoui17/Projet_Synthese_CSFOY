@@ -3,14 +3,14 @@ namespace IslandSurvivor.Logic.StateMachine;
 using Godot;
 
 [GlobalClass]
-public partial class FleeState : State
+public partial class FleeState : MovementState
 {
     [ExportGroup("State Configuration")]
+    [Export] public float FleeSpeed { get; set; } = 120.0f;
     [Export] public float FleeDuration { get; set; } = 3.0f;
 
     [ExportGroup("State Animations")]
     [Export] public string AnimationName { get; set; } = "Flee";
-    [Export] public string FallbackAnimationName { get; set; } = "Error";
 
     private AnimationPlayer m_animationPlayer = null!;
     private Sprite2D? m_sprite;
@@ -67,13 +67,14 @@ public partial class FleeState : State
         {
             if (passive.MovementController != null)
             {
-                passive.MovementController.Move(m_fleeDirection, passive.FleeSpeed);
+                passive.MovementController.Move(m_fleeDirection, FleeSpeed);
             }
             else
             {
-                passive.Velocity = m_fleeDirection * passive.FleeSpeed;
-                passive.MoveAndSlide();
+                SetVelocity(m_fleeDirection * FleeSpeed);
             }
+
+            base.PhysicsUpdate(p_delta);
 
             if (m_sprite != null && m_fleeDirection.X != 0)
             {

@@ -2,24 +2,22 @@ namespace IslandSurvivor.Logic.StateMachine;
 
 using Godot;
 
-[GlobalClass]
-public partial class RangedAttackState : State
+public partial class AttackState : State
 {
-    [Export] public string AttackAnimationName { get; set; } = "Attack";
 
     public override bool IsActionState => true;
 
-    private IslandSurvivor.Nodes.Shooter m_shooter = null!;
-    private IslandSurvivor.Nodes.AttackController m_attackController = null!;
-    private Sprite2D m_sprite = null!;
-    private bool m_hasCompleted = false;
+    protected IslandSurvivor.Nodes.AttackController m_attackController = null!;
+    protected Sprite2D m_sprite = null!;
+    protected AnimationPlayer m_animationPlayer = null!;
+    protected bool m_hasCompleted = false;
 
     public override void Initialize(StateMachine p_stateMachine, CharacterBody2D p_npcContext)
     {
         base.Initialize(p_stateMachine, p_npcContext);
-        m_shooter = NpcContext.GetNodeOrNull<IslandSurvivor.Nodes.Shooter>("Shooter");
         m_attackController = NpcContext.GetNodeOrNull<IslandSurvivor.Nodes.AttackController>("AttackController");
         m_sprite = NpcContext.GetNodeOrNull<Sprite2D>("Sprite2D");
+        m_animationPlayer = NpcContext.GetNodeOrNull<AnimationPlayer>("AnimationPlayer");
     }
 
     public override void Enter()
@@ -32,35 +30,17 @@ public partial class RangedAttackState : State
             npc.Velocity = Vector2.Zero;
         }
 
-        if (m_shooter == null || !m_shooter.CanShoot || m_attackController == null || !m_attackController.CanAttack)
+        if (m_attackController == null || !m_attackController.CanAttack)
         {
             if (!m_hasCompleted)
             {
                 m_hasCompleted = true;
                 CompleteState(StateExitReason.Finished);
             }
-            return;
         }
-
-        var (animSuffix, direction) = DetermineDirectionAndAnimation();
-        string fullAnimName = $"{AttackAnimationName}{animSuffix}";
-
-        if (AttackAnimationName.EndsWith("_Side") || AttackAnimationName.EndsWith("_Up") || AttackAnimationName.EndsWith("_Down"))
-        {
-            fullAnimName = AttackAnimationName;
-        }
-
-        var callable = new Callable(this, nameof(OnAttackActionTriggered));
-        if (!m_attackController.IsConnected(IslandSurvivor.Nodes.AttackController.SignalName.AttackActionTriggered, callable))
-        {
-            m_attackController.Connect(IslandSurvivor.Nodes.AttackController.SignalName.AttackActionTriggered, callable);
-        }
-
-        m_attackController.SetAttackAnimation(fullAnimName);
-        m_attackController.TryAttack(direction);
     }
 
-    private (string AnimSuffix, string Direction) DetermineDirectionAndAnimation()
+    protected (string AnimSuffix, string Direction) DetermineDirectionAndAnimation()
     {
         string animSuffix = "_Side";
         string direction = "Right";
@@ -117,13 +97,15 @@ public partial class RangedAttackState : State
     public override void Exit()
     {
         base.Exit();
-        if (m_attackController != null)
+
+        if (NpcContext is IslandSurvivor.Scenes.NPC.AggressiveNpcBase aggNpc)
         {
-            var callable = new Callable(this, nameof(OnAttackActionTriggered));
-            if (m_attackController.IsConnected(IslandSurvivor.Nodes.AttackController.SignalName.AttackActionTriggered, callable))
-            {
-                m_attackController.Disconnect(IslandSurvivor.Nodes.AttackController.SignalName.AttackActionTriggered, callable);
-            }
+            aggNpc.LockedDirection = Vector2.Zero;
+        }
+
+        if (m_attackController != null && m_attackController.IsAttacking)
+        {
+            m_attackController.CancelAttack();
         }
     }
 
@@ -138,23 +120,11 @@ public partial class RangedAttackState : State
             return;
         }
 
+        // Safety check: complete if controller is NOT attacking
         if (!m_attackController.IsAttacking)
         {
             m_hasCompleted = true;
             Callable.From(() => CompleteState(StateExitReason.Finished)).CallDeferred();
-        }
-    }
-
-    private void OnAttackActionTriggered()
-    {
-        ExecuteShoot();
-    }
-
-    public void ExecuteShoot()
-    {
-        if (m_shooter != null)
-        {
-            m_shooter.Shoot();
         }
     }
 }

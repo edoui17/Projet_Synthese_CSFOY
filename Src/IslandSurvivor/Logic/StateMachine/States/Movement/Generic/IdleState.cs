@@ -3,15 +3,15 @@ namespace IslandSurvivor.Logic.StateMachine;
 using Godot;
 
 [GlobalClass]
-public partial class IdleState : State
+public partial class IdleState : MovementState
 {
     [ExportGroup("State Configuration")]
     [Export] public float WaitTime { get; set; } = 2.0f;
     [Export] public float WanderCooldown { get; set; } = 3.0f;
+    [Export] public float IdleSpeed { get; set; } = 50.0f;
 
     [ExportGroup("State Animations")]
     [Export] public string AnimationName { get; set; } = "Idle";
-    [Export] public string FallbackAnimationName { get; set; } = "Error";
 
     private float m_timer;
     private float m_wanderTimer;
@@ -54,10 +54,7 @@ public partial class IdleState : State
             // Animation playing is handled by State/AnimationPlayer
         }
 
-        if (NpcContext is IslandSurvivor.Scenes.NPC.NpcBase npc)
-        {
-            npc.Velocity = Vector2.Zero;
-        }
+        SetVelocity(Vector2.Zero);
     }
 
     public override void Update(double p_delta)
@@ -70,32 +67,18 @@ public partial class IdleState : State
 
         if (NpcContext is IslandSurvivor.Scenes.NPC.AggressiveNpcBase aggressiveNpc)
         {
-            if (aggressiveNpc.HasTargetAndLineOfSight())
+            var target = aggressiveNpc.GetTarget();
+            if (target != null)
             {
-                var target = aggressiveNpc.GetTarget();
-                if (target != null)
+                float distSquared = NpcContext.GlobalPosition.DistanceSquaredTo(target.GlobalPosition);
+                if (distSquared <= aggressiveNpc.DetectionRadius * aggressiveNpc.DetectionRadius && aggressiveNpc.CheckLineOfSight())
                 {
-                    float distSquared = NpcContext.GlobalPosition.DistanceSquaredTo(target.GlobalPosition);
-                    bool isRanged = NpcContext is IslandSurvivor.Scenes.NPC.RangedAggressiveNpcBase;
-                    float checkRange = isRanged ? aggressiveNpc.MaxAttackRange : aggressiveNpc.AttackRange;
+                    Godot.StringName decisionState = aggressiveNpc.GetDecisionState(target);
 
-                    if (distSquared <= checkRange * checkRange)
-                    {
-                        // Cached to prevent GetNode allocations in hot path
-                        bool isAttackCooldownReady = m_attackController != null && m_attackController.CanAttack;
-
-                        // Let the StateMachine evaluate if it can guard or attack. We just notify that we are ready to transition.
-                        if (isAttackCooldownReady || m_timer <= 0)
-                        {
-                            m_hasCompleted = true;
-                            CompleteState(StateExitReason.CooldownFinished);
-                            return;
-                        }
-                    }
-                    else
+                    if (!string.IsNullOrEmpty(decisionState) && decisionState != this.Name)
                     {
                         m_hasCompleted = true;
-                        CompleteState(StateExitReason.TargetDetected);
+                        StateMachine.ForceTransition(decisionState);
                         return;
                     }
                 }

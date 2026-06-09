@@ -413,3 +413,7 @@ Additionally, when implementing `ResetStats` on `StatTracker`, it's critical to 
 ## 2026-05-29 - Architecture Namespace Flattening
 **Observation:** The codebase namespaces were too deep, leading to massive collision zones or unnecessarily long names. The user provided a specific mapping for flattening namespaces in the Core and IslandSurvivor projects.
 **Action:** Applied the regex replacements for namespaces across Core and IslandSurvivor. Kept Infrastructure, Web, and API intact per instructions.
+
+## 2024-06-07 - Refactored Npc Combat State Management
+**Discovery**: Combat decision states were deeply hardcoded and duplicated across subclasses of `AggressiveNpcBase`.
+**Action**: Promoted a central decision-making process into `AggressiveNpcBase.cs`. It now iterates over `m_stateMachine.HasState` allowing Godot editor-driven design. Extracted shared orientation calculation into a new `AttackState` base class. Migrated `GuardState` to a true continuous tracking `GuardingState`.

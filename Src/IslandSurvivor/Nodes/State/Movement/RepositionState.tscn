@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://c111reposition"]
+[gd_scene format=3 uid="uid://ca8u8dmqxyiib"]
 
-[ext_resource type="Script" path="res://Logic/StateMachine/States/RepositionState.cs" id="1_4n2g3"]
+[ext_resource type="Script" uid="uid://bgwy0nyuwk7e5" path="res://Logic/StateMachine/States/Movement/Generic/RepositionState.cs" id="1_4n2g3"]
+
 
 [node name="RepositionState" type="Node"]
 script = ExtResource("1_4n2g3")

@@ -8,5 +8,6 @@ public enum StateExitReason
     TargetDetected,
     CooldownFinished,
     Interrupted,
-    CollisionDetected
+    CollisionDetected,
+    Timeout
 }
