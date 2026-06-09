@@ -4,7 +4,6 @@ using Godot;
 
 public partial class AttackState : State
 {
-    [Export] public string AttackAnimationName { get; set; } = "Attack";
 
     public override bool IsActionState => true;
 

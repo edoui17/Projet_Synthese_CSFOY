@@ -11,7 +11,6 @@ public partial class WindUpState : State
 
     [ExportGroup("State Animations")]
     [Export] public string AnimationName { get; set; } = "WindUp";
-    [Export] public string FallbackAnimationName { get; set; } = "Idle";
 
     public override bool IsActionState => true;
 

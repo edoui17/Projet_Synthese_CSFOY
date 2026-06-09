@@ -15,7 +15,6 @@ public partial class DashState : MovementState
 
     [ExportGroup("State Animations")]
     [Export] public string AnimationName { get; set; } = "Dash";
-    [Export] public string FallbackAnimationName { get; set; } = "Moving";
 
     public override bool IsActionState => true;
 

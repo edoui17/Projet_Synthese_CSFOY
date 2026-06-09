@@ -12,7 +12,6 @@ public partial class IdleState : MovementState
 
     [ExportGroup("State Animations")]
     [Export] public string AnimationName { get; set; } = "Idle";
-    [Export] public string FallbackAnimationName { get; set; } = "Error";
 
     private float m_timer;
     private float m_wanderTimer;

@@ -5,9 +5,6 @@ using IslandSurvivor.Logic;
 
 public partial class BossBase : AggressiveNpcBase
 {
-    [ExportGroup("Animations")]
-    [Export] public string MeleeAttackAnimationName { get; set; } = "Attack_Melee";
-    [Export] public string RangedAttackAnimationName { get; set; } = "Attack_Ranged";
 
     protected Area2D? m_hitboxAreaRight;
     protected Area2D? m_hitboxAreaLeft;

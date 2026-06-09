@@ -6,8 +6,6 @@ using IslandSurvivor.Globals;
 
 public partial class RangedAggressiveNpcBase : AggressiveNpcBase
 {
-    [ExportGroup("Animations")]
-    [Export] public string AttackAnimationName { get; set; } = "Attack";
 
 
     public override void _Ready()

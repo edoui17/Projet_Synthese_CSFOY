@@ -11,6 +11,9 @@ public partial class State : Node
     public StateMachine StateMachine { get; protected set; } = null!;
     public CharacterBody2D NpcContext { get; protected set; } = null!;
 
+    [ExportGroup("State Animations")]
+    [Export] public string FallbackAnimationName { get; set; } = "Idle";
+
     public virtual bool IsActionState => false;
 
     public virtual void Initialize(StateMachine p_stateMachine, CharacterBody2D p_npcContext)
