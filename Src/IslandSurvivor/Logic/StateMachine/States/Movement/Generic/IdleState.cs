@@ -68,10 +68,11 @@ public partial class IdleState : MovementState
 
         if (NpcContext is IslandSurvivor.Scenes.NPC.AggressiveNpcBase aggressiveNpc)
         {
-            if (aggressiveNpc.HasTargetAndLineOfSight())
+            var target = aggressiveNpc.GetTarget();
+            if (target != null)
             {
-                var target = aggressiveNpc.GetTarget();
-                if (target != null)
+                float distSquared = NpcContext.GlobalPosition.DistanceSquaredTo(target.GlobalPosition);
+                if (distSquared <= aggressiveNpc.DetectionRadius * aggressiveNpc.DetectionRadius && aggressiveNpc.CheckLineOfSight())
                 {
                     Godot.StringName decisionState = aggressiveNpc.GetDecisionState(target);
 

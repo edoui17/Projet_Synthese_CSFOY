@@ -285,16 +285,9 @@ vframes = 6
 [node name="AnimationPlayer" parent="." index="1" unique_id=1869571986]
 libraries/ = SubResource("AnimationLibrary_biphk")
 
-[node name="DetectionArea" parent="." index="2" unique_id=423904877]
-visible = false
-
-[node name="CollisionShape2D" parent="DetectionArea" index="0" unique_id=1152940949]
-shape = SubResource("CircleShape2D_dp46e")
-
-[node name="CollisionShape2D" parent="." index="4" unique_id=1322914286]
-visible = false
-position = Vector2(-4, -6)
-shape = SubResource("CapsuleShape2D_dp46e")
+[node name="StatManager" parent="." index="2" unique_id=990476419]
+MaxHealth = 250.0
+BaseAttackValue = 50.0
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="HitboxAreaRight" parent_id_path=PackedInt32Array(1487526117) index="0" unique_id=1491598165]
 polygon = PackedVector2Array(45, -96, 93, -61, 113, -13, 116, 44, 98, 74, 45, 74)

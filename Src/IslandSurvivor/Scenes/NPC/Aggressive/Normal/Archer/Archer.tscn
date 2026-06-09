@@ -453,9 +453,6 @@ vframes = 7
 [node name="StatManager" parent="." index="2" unique_id=990476419]
 BaseAttackValue = 15.0
 
-[node name="CollisionShape2D" parent="DetectionArea" parent_id_path=PackedInt32Array(423904877) index="0" unique_id=1152940949]
-shape = SubResource("CircleShape2D_arch")
-
 [node name="AttackController" parent="." index="6" unique_id=1292425161]
 BaseAttackCooldown = 1.5
 
