@@ -14,11 +14,11 @@
 [ext_resource type="PackedScene" uid="uid://dvpfx8vuoy433" path="res://Nodes/State/Movement/WanderState.tscn" id="state_WanderState"]
 [ext_resource type="PackedScene" uid="uid://dos0ijyia15w6" path="res://Nodes/State/Combat/WindUpState.tscn" id="state_WindUpState"]
 
-[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_base"]
-radius = 15.0
-
 [sub_resource type="CircleShape2D" id="CircleShape2D_det"]
 radius = 250.0
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_base"]
+radius = 15.0
 
 [node name="AggressiveNpcBase" unique_id=635726557 instance=ExtResource("1_scene")]
 script = ExtResource("2_script")
@@ -30,21 +30,7 @@ AttackSoundKey = ""
 AttackVolume = 1.0
 HurtSound = ExtResource("hurt_stream")
 
-[node name="CollisionShape2D" parent="." index="1" unique_id=1322914286]
-position = Vector2(-2, 1)
-shape = SubResource("CapsuleShape2D_base")
-
-[node name="StatManager" parent="." index="2" unique_id=990476419]
-MaxHealth = 50.0
-
-[node name="EnemyStatsHandler" type="Node" parent="." index="3" unique_id=1822921740 node_paths=PackedStringArray("Stats")]
-script = ExtResource("5_stats_handler")
-Stats = NodePath("../StatManager")
-
-[node name="LineOfSightRay" type="RayCast2D" parent="." index="4" unique_id=461332043]
-collision_mask = 5
-
-[node name="DetectionArea" type="Area2D" parent="." index="5" unique_id=423904877]
+[node name="DetectionArea" type="Area2D" parent="." index="2" unique_id=423904877]
 light_mask = 5
 collision_layer = 5
 collision_mask = 5
@@ -53,18 +39,32 @@ collision_mask = 5
 position = Vector2(1, 1)
 shape = SubResource("CircleShape2D_det")
 
-[node name="AttackController" type="Node" parent="." index="6" unique_id=1292425161]
-script = ExtResource("4_attack")
-BaseAttackCooldown = 2.0
-Faction = 2
+[node name="LineOfSightRay" type="RayCast2D" parent="." index="3" unique_id=461332043]
+collision_mask = 5
 
-[node name="LevelLabel" type="Label" parent="." index="8" unique_id=987690368]
+[node name="CollisionShape2D" parent="." index="4" unique_id=1322914286]
+position = Vector2(-2, 1)
+shape = SubResource("CapsuleShape2D_base")
+
+[node name="StatManager" parent="." index="5" unique_id=990476419]
+MaxHealth = 50.0
+
+[node name="LevelLabel" type="Label" parent="." index="6" unique_id=987690368]
 offset_left = -23.0
 offset_top = -84.0
 offset_right = 20.0
 offset_bottom = -58.0
 text = "Lv. 1"
 horizontal_alignment = 1
+
+[node name="EnemyStatsHandler" type="Node" parent="." index="7" unique_id=1822921740 node_paths=PackedStringArray("Stats")]
+script = ExtResource("5_stats_handler")
+Stats = NodePath("../StatManager")
+
+[node name="AttackController" type="Node" parent="." index="8" unique_id=1292425161]
+script = ExtResource("4_attack")
+BaseAttackCooldown = 2.0
+Faction = 2
 
 [node name="StateMachine" parent="." index="10" unique_id=402971195 node_paths=PackedStringArray("InitialState")]
 InitialState = NodePath("MovementState/IdleState")
@@ -80,8 +80,8 @@ script = ExtResource("state_MovementState")
 
 [node name="WindUpState" parent="StateMachine" index="1" unique_id=457069323 instance=ExtResource("state_WindUpState")]
 
-[node name="RecoveryState" parent="StateMachine" index="2" unique_id=546139160 instance=ExtResource("state_RecoveryState")]
+[node name="AttackState" type="Node" parent="StateMachine" index="2" unique_id=999912345]
 
-[node name="DeathState" parent="StateMachine" index="3" unique_id=1073392512 instance=ExtResource("state_DeathState")]
+[node name="RecoveryState" parent="StateMachine" index="3" unique_id=546139160 instance=ExtResource("state_RecoveryState")]
 
-[node name="AttackState" type="Node" parent="StateMachine" index="4" unique_id=999912345]
+[node name="DeathState" parent="StateMachine" index="4" unique_id=1073392512 instance=ExtResource("state_DeathState")]

@@ -9,17 +9,6 @@
 [ext_resource type="Animation" uid="uid://bjuop45u4ndx5" path="res://Animation/Error.res" id="7_se8nt"]
 [ext_resource type="Script" uid="uid://dagp7d34l7a53" path="res://Logic/StateMachine/States/GuardingState.cs" id="state_GuardingState"]
 
-
-[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_v2bfp"]
-radius = 15.0
-
-[sub_resource type="CircleShape2D" id="CircleShape2D_e1oyk"]
-radius = 250.0
-
-[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_e1oyk"]
-radius = 21.986078
-height = 70.16913
-
 [sub_resource type="Animation" id="Animation_rm504"]
 resource_name = "Attack_Down"
 length = 0.6
@@ -453,10 +442,18 @@ _data = {
 &"RESET": SubResource("Animation_miyan")
 }
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_e1oyk"]
+radius = 250.0
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_v2bfp"]
+radius = 15.0
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_e1oyk"]
+radius = 21.986078
+height = 70.16913
+
 [node name="Soldier" unique_id=666187867 instance=ExtResource("1_scene")]
 script = ExtResource("1_j7env")
-ChaseSpeed = 100.0
-StoppingDistance = 40.0
 BaseXp = 30.0
 XpMultiplier = 0.2
 AttackSoundKey = "Enemy_Swing_Default"
@@ -468,34 +465,27 @@ hframes = 6
 vframes = 8
 frame = 2
 
-[node name="CollisionShape2D" parent="." index="1" unique_id=1322914286]
-position = Vector2(-2.0000005, 1)
-scale = Vector2(0.99999994, 0.99999994)
-shape = SubResource("CapsuleShape2D_v2bfp")
+[node name="AnimationPlayer" parent="." index="1" unique_id=1869571986]
+libraries/ = SubResource("AnimationLibrary_kuixf")
 
-[node name="DetectionArea" parent="." index="5" unique_id=423904877]
+[node name="DetectionArea" parent="." index="2" unique_id=423904877]
 visible = false
 
 [node name="CollisionShape2D" parent="DetectionArea" index="0" unique_id=1152940949]
 shape = SubResource("CircleShape2D_e1oyk")
 
-[node name="CollisionShape2D" parent="HitboxAreaRight" index="0"]
-position = Vector2(37, 5)
-shape = SubResource("CapsuleShape2D_e1oyk")
+[node name="CollisionShape2D" parent="." index="4" unique_id=1322914286]
+position = Vector2(-2.0000005, 1)
+scale = Vector2(0.99999994, 0.99999994)
+shape = SubResource("CapsuleShape2D_v2bfp")
 
-[node name="CollisionShape2D" parent="HitboxAreaLeft" index="0"]
+[node name="CollisionShape2D" parent="HitboxAreaLeft" parent_id_path=PackedInt32Array(786365911) index="0" unique_id=502821999]
 position = Vector2(30.000004, 6)
 shape = SubResource("CapsuleShape2D_e1oyk")
 
-[node name="AnimationPlayer" parent="." index="13" unique_id=1869571986]
-libraries/ = SubResource("AnimationLibrary_kuixf")
-
-[node name="WanderState" parent="StateMachine" parent_id_path=PackedInt32Array(402971195) index="1" unique_id=1820029102]
-WanderRadius = 400.0
-WanderSpeed = 75.0
-
-[node name="ChaseState" parent="StateMachine" parent_id_path=PackedInt32Array(402971195) index="2" unique_id=1947301554]
-LoseInterestRange = 500.0
+[node name="CollisionShape2D" parent="HitboxAreaRight" parent_id_path=PackedInt32Array(1998366871) index="0" unique_id=944317827]
+position = Vector2(37, 5)
+shape = SubResource("CapsuleShape2D_e1oyk")
 
 [node name="GuardingState" type="Node" parent="StateMachine" parent_id_path=PackedInt32Array(402971195) index="4" unique_id=987654321]
 script = ExtResource("state_GuardingState")

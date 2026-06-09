@@ -2,25 +2,22 @@
 
 [ext_resource type="PackedScene" uid="uid://ebase12345" path="res://Scenes/NPC/Aggressive/AggressiveNpcBase.tscn" id="1_scene"]
 [ext_resource type="Script" uid="uid://b1py08fmiwthv" path="res://Scenes/NPC/Aggressive/Boss/BossBase.cs" id="2_script"]
-[ext_resource type="PackedScene" uid="uid://crca7kdilqogk" path="res://Scenes/Projectiles/Arrow/Arrow.tscn" id="3_arrow"]
-
 
 [node name="BossBase" unique_id=1362876555 instance=ExtResource("1_scene")]
 script = ExtResource("2_script")
-ProjectileScene = ExtResource("3_arrow")
-LevelIndex = 1
+MeleeAttackAnimationName = "Attack_Melee"
+RangedAttackAnimationName = "Attack_Ranged"
 BaseXp = 500.0
 XpMultiplier = 0.2
 
-[node name="HitboxAreaRight" type="Area2D" parent="." index="7" unique_id=1487526117]
+[node name="HitboxAreaRight" type="Area2D" parent="." index="5" unique_id=1487526117]
 collision_layer = 0
 collision_mask = 4
 
-[node name="HitboxAreaLeft" type="Area2D" parent="." index="8" unique_id=912344583]
+[node name="HitboxAreaLeft" type="Area2D" parent="." index="6" unique_id=912344583]
 position = Vector2(-80, 0)
 collision_layer = 0
 collision_mask = 4
 
-[node name="ProjectileSpawnPosition" type="Marker2D" parent="." index="9" unique_id=460746087]
+[node name="ProjectileSpawnPosition" type="Marker2D" parent="." index="7" unique_id=460746087]
 position = Vector2(0, -20)
-

@@ -8,47 +8,44 @@
 radius = 21.986078
 height = 70.16913
 
-[node name="MeleeAggressiveNpcBase" instance=ExtResource("1_scene")]
+[node name="MeleeAggressiveNpcBase" unique_id=1836006529 instance=ExtResource("1_scene")]
 script = ExtResource("2_script")
 
-[node name="HitboxAreaUp" type="Area2D" parent="." index="7"]
+[node name="HitboxAreaUp" type="Area2D" parent="." index="5" unique_id=132251275]
 collision_layer = 0
 collision_mask = 4
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxAreaUp" index="0"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxAreaUp" index="0" unique_id=237488674]
 position = Vector2(0.99999976, -48)
 rotation = 1.5352188
 shape = SubResource("CapsuleShape2D_hitbox")
 
-[node name="HitboxAreaDown" type="Area2D" parent="." index="8"]
+[node name="HitboxAreaDown" type="Area2D" parent="." index="6" unique_id=2072481507]
 collision_layer = 0
 collision_mask = 4
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxAreaDown" index="0"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxAreaDown" index="0" unique_id=467292049]
 position = Vector2(1, 38)
 rotation = 1.5352188
 shape = SubResource("CapsuleShape2D_hitbox")
 
-[node name="HitboxAreaRight" type="Area2D" parent="." index="9"]
-collision_layer = 0
-collision_mask = 4
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxAreaRight" index="0"]
-position = Vector2(30, 6)
-rotation = 1.5352188
-shape = SubResource("CapsuleShape2D_hitbox")
-
-[node name="HitboxAreaLeft" type="Area2D" parent="." index="10"]
+[node name="HitboxAreaLeft" type="Area2D" parent="." index="7" unique_id=786365911]
 position = Vector2(-68, 0)
 collision_layer = 0
 collision_mask = 4
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxAreaLeft" index="0"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxAreaLeft" index="0" unique_id=502821999]
 position = Vector2(30, 6)
 rotation = 1.5352188
 shape = SubResource("CapsuleShape2D_hitbox")
-[node name="StateMachine" parent="." index="10"]
 
-[node name="AttackState" parent="StateMachine" index="6"]
+[node name="HitboxAreaRight" type="Area2D" parent="." index="8" unique_id=1998366871]
+collision_layer = 0
+collision_mask = 4
 
-[node name="MeleeAttackState" parent="StateMachine/AttackState" index="0" instance=ExtResource("state_MeleeAttackState")]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxAreaRight" index="0" unique_id=944317827]
+position = Vector2(30, 6)
+rotation = 1.5352188
+shape = SubResource("CapsuleShape2D_hitbox")
+
+[node name="MeleeAttackState" parent="StateMachine/AttackState" parent_id_path=PackedInt32Array(999912345) index="0" unique_id=997093121 instance=ExtResource("state_MeleeAttackState")]

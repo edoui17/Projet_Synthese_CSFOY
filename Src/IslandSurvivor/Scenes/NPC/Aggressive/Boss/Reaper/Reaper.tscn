@@ -11,13 +11,6 @@
 [ext_resource type="PackedScene" uid="uid://cx6r1g1g1g1g1" path="res://Nodes/State/Combat/MeleeAttackState.tscn" id="state_MeleeAttackState"]
 [ext_resource type="PackedScene" uid="uid://cx6r1g1g1g1g2" path="res://Nodes/State/Combat/RangedAttackState.tscn" id="state_RangedAttackState"]
 
-[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_dp46e"]
-radius = 37.0
-height = 128.0
-
-[sub_resource type="CircleShape2D" id="CircleShape2D_dp46e"]
-radius = 602.0407
-
 [sub_resource type="Animation" id="Animation_fr3sl"]
 resource_name = "Death"
 step = 0.1
@@ -270,11 +263,17 @@ _data = {
 &"RangeAttackOrb": SubResource("Animation_yyit3")
 }
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_dp46e"]
+radius = 602.0407
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_dp46e"]
+radius = 37.0
+height = 128.0
+
 [node name="Reaper" unique_id=495261644 instance=ExtResource("1_t3tbm")]
 script = ExtResource("3_reaper_script")
 NormalAttackAnimationName = "MeleeAttackNormal"
 EnragedAttackAnimationName = "MeleeAttackEnraged"
-MeleeAttackAnimationName = "Attack_Melee"
 RangedAttackAnimationName = "ScytheThrow"
 
 [node name="Sprite2D" parent="." index="0" unique_id=1104255030]
@@ -283,35 +282,39 @@ texture = ExtResource("3_lthjc")
 hframes = 10
 vframes = 6
 
-[node name="CollisionShape2D" parent="." index="1" unique_id=1322914286]
-visible = false
-position = Vector2(-4, -6)
-shape = SubResource("CapsuleShape2D_dp46e")
+[node name="AnimationPlayer" parent="." index="1" unique_id=1869571986]
+libraries/ = SubResource("AnimationLibrary_biphk")
 
-[node name="StatManager" parent="." index="2" unique_id=990476419]
-MaxHealth = 250.0
-BaseAttackValue = 50.0
-
-[node name="DetectionArea" parent="." index="5" unique_id=423904877]
+[node name="DetectionArea" parent="." index="2" unique_id=423904877]
 visible = false
 
 [node name="CollisionShape2D" parent="DetectionArea" index="0" unique_id=1152940949]
 shape = SubResource("CircleShape2D_dp46e")
 
+[node name="CollisionShape2D" parent="." index="4" unique_id=1322914286]
+visible = false
+position = Vector2(-4, -6)
+shape = SubResource("CapsuleShape2D_dp46e")
+
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="HitboxAreaRight" parent_id_path=PackedInt32Array(1487526117) index="0" unique_id=1491598165]
 polygon = PackedVector2Array(45, -96, 93, -61, 113, -13, 116, 44, 98, 74, 45, 74)
 
-[node name="HitboxAreaLeft" parent="." index="8" unique_id=912344583]
+[node name="HitboxAreaLeft" parent="." index="6" unique_id=912344583]
 position = Vector2(-2, 0)
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="HitboxAreaLeft" index="0" unique_id=1087917700]
 scale = Vector2(-1, 1)
 polygon = PackedVector2Array(45, -96, 93, -61, 113, -13, 116, 44, 98, 74, 45, 74)
 
-[node name="AnimationPlayer" parent="." index="12" unique_id=1869571986]
-libraries/ = SubResource("AnimationLibrary_biphk")
+[node name="StatManager" parent="." index="8" unique_id=990476419]
+MaxHealth = 250.0
+BaseAttackValue = 50.0
 
-[node name="ChaseState" parent="StateMachine/MovementState" index="2" unique_id=1947301554]
+[node name="Shooter" parent="." index="9" unique_id=295957321 instance=ExtResource("Shooter")]
+ProjectileScene = ExtResource("5_scythe")
+Cooldown = 4.0
+
+[node name="ChaseState" parent="StateMachine/MovementState" parent_id_path=PackedInt32Array(350433986) index="2" unique_id=1947301554]
 LoseInterestRange = 600.0
 
 [node name="MeleeAttackState" parent="StateMachine/AttackState" parent_id_path=PackedInt32Array(999912345) index="0" unique_id=326755845 instance=ExtResource("state_MeleeAttackState")]
@@ -325,7 +328,3 @@ AttackAnimationName = "RangeAttackOrb"
 
 [node name="OrbAttackSpell" parent="StateMachine/AttackState/MagicAttackState" index="0" unique_id=1500057583 instance=ExtResource("script_OrbAttackSpell")]
 ProjectileScene = ExtResource("scene_OrbProjectile")
-
-[node name="Shooter" parent="." index="14" unique_id=295957321 instance=ExtResource("Shooter")]
-ProjectileScene = ExtResource("5_scythe")
-Cooldown = 4.0
