@@ -10,7 +10,6 @@ public partial class RecoveryState : State
 
     [ExportGroup("State Animations")]
     [Export] public string AnimationName { get; set; } = "Idle";
-    [Export] public string FallbackAnimationName { get; set; } = "Idle";
 
     public override bool IsActionState => true;
 

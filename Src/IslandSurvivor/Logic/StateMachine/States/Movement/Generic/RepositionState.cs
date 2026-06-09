@@ -11,7 +11,6 @@ public partial class RepositionState : MovementState
 
     [ExportGroup("State Animations")]
     [Export] public string AnimationName { get; set; } = "Moving";
-    [Export] public string FallbackAnimationName { get; set; } = "Error";
 
     private AnimationPlayer? m_animationPlayer;
     private Sprite2D? m_sprite;
