@@ -37,6 +37,11 @@ public partial class Shooter : Node2D
         }
     }
 
+    public void StartCooldown()
+    {
+        m_cooldownTimer = Cooldown;
+    }
+
     public void Shoot()
     {
         if (!CanShoot || ProjectileScene == null) return;

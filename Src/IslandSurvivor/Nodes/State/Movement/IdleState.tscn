@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://hc3bvry1wnv6e"]
+[gd_scene format=3 uid="uid://dhogbp2sdg1fm"]
 
-[ext_resource type="Script" uid="uid://fmooizascx1s5" path="res://Logic/StateMachine/States/IdleState.cs" id="1_script"]
+[ext_resource type="Script" uid="uid://braswxdjrq52e" path="res://Logic/StateMachine/States/Movement/Generic/IdleState.cs" id="1_script"]
+
 
 [node name="IdleState" type="Node"]
 script = ExtResource("1_script")

@@ -9,7 +9,6 @@ public partial class DarkScythe : BaseProjectile
     private float m_flightTime = 0.0f;
 
     [Export] public float ReturnTime { get; set; } = 1.5f;
-    [Export] public float SpinSpeed { get; set; } = 15.0f;
 
     private Vector2 m_originalPosition;
 
@@ -22,6 +21,9 @@ public partial class DarkScythe : BaseProjectile
     {
         base.Initialize(p_startPosition, p_direction, p_damage, p_shooter);
         m_originalPosition = new Vector2(p_startPosition.X, p_startPosition.Y);
+
+        // Reset rotation because it's handled by AnimationPlayer, overriding BaseProjectile's angle.
+        Rotation = 0;
 
         // Ensure scythe lives long enough to return. Timeout as safety
         if (LifeTime < ReturnTime * 2.5f)
@@ -36,9 +38,6 @@ public partial class DarkScythe : BaseProjectile
         if (!m_isFired) return;
 
         m_flightTime += (float)p_delta;
-
-        // Spin the scythe
-        Rotation += SpinSpeed * (float)p_delta;
 
         if (m_flightTime >= ReturnTime && !m_isReturning)
         {

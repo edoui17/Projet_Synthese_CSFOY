@@ -24,15 +24,7 @@ public partial class StateMachine : State
         base.Initialize(p_parentMachine, p_npcContext);
 
         m_states.Clear();
-        foreach (Node child in GetChildren())
-        {
-            if (child is State state)
-            {
-                m_states[state.Name] = state;
-                state.Initialize(this, p_npcContext);
-                state.StateFinished += OnStateFinished;
-            }
-        }
+        RegisterStatesRecursive(this, p_npcContext);
 
         if (InitialState != null && m_states.ContainsValue(InitialState))
         {
@@ -50,7 +42,23 @@ public partial class StateMachine : State
 
         if (NpcContext != null && Engine.IsEditorHint() == false)
         {
-            GD.Print($"[Frame: {Engine.GetPhysicsFrames()}] [{NpcContext.Name}] [StateMachine] INITIALIZED. Total States: {m_states.Count}. Starting State: {m_currentState?.Name}");
+            GD.PrintRich($"[color=magenta][STATE_MACHINE][/color] [color=cyan]{NpcContext.Name}[/color] : INITIALIZED. Total States: {m_states.Count}. Starting State: {m_currentState?.Name}");
+        }
+    }
+
+    private void RegisterStatesRecursive(Node p_node, CharacterBody2D p_npcContext)
+    {
+        foreach (Node child in p_node.GetChildren())
+        {
+            if (child is State state)
+            {
+                m_states[state.Name] = state;
+                state.Initialize(this, p_npcContext);
+                state.StateFinished += OnStateFinished;
+            }
+
+            // Recursively search children (for grouping nodes like AttackState)
+            RegisterStatesRecursive(child, p_npcContext);
         }
     }
 
@@ -114,6 +122,10 @@ public partial class StateMachine : State
                 {
                     nextStateName = GetCombatDecisionState();
                 }
+                else if (p_reason == StateExitReason.Timeout)
+                {
+                    nextStateName = StateConstants.IdleStateName;
+                }
                 break;
 
             case StateConstants.ChaseState:
@@ -125,10 +137,15 @@ public partial class StateMachine : State
                 {
                     nextStateName = GetCombatDecisionState();
                 }
+                else if (p_reason == StateExitReason.Timeout)
+                {
+                    nextStateName = StateConstants.IdleStateName;
+                }
                 break;
 
             case StateConstants.MeleeAttackState:
             case StateConstants.RangedAttackState:
+            case StateConstants.MagicAttackState:
                 if (NpcContext is IslandSurvivor.Scenes.NPC.AggressiveNpcBase aggNpc)
                 {
                     var target = aggNpc.GetTarget();
@@ -166,7 +183,7 @@ public partial class StateMachine : State
                 break;
 
             case StateConstants.RecoveryState:
-                nextStateName = StateConstants.IdleStateName;
+                nextStateName = GetCombatDecisionState();
                 break;
 
             case StateConstants.FleeState:
@@ -190,8 +207,8 @@ public partial class StateMachine : State
                 }
                 break;
 
-            case StateConstants.GuardState:
-                nextStateName = GetPostGuardState();
+            case StateConstants.GuardingState:
+                nextStateName = GetPostGuardingState();
                 break;
 
             case StateConstants.DeathState:
@@ -214,7 +231,7 @@ public partial class StateMachine : State
         {
             if (NpcContext != null && Engine.IsEditorHint() == false)
             {
-                GD.Print($"[Frame: {Engine.GetPhysicsFrames()}] [{NpcContext.Name}] [StateMachine] TRANSITION: {p_sourceState.Name} -> {nextStateName}");
+                GD.PrintRich($"[color=magenta][STATE_MACHINE][/color] [color=cyan]{NpcContext.Name}[/color] : {p_sourceState.Name} -> {nextStateName}");
             }
 
             if (m_currentState?.Name == nextStateName)
@@ -238,7 +255,7 @@ public partial class StateMachine : State
         }
     }
 
-    private StringName GetPostGuardState()
+    private StringName GetPostGuardingState()
     {
         if (NpcContext is not IslandSurvivor.Scenes.NPC.AggressiveNpcBase aggNpcGuard)
             return StateConstants.IdleStateName;
@@ -262,6 +279,20 @@ public partial class StateMachine : State
     public bool HasState(Godot.StringName stateName) => m_states.ContainsKey(stateName);
 
     public State GetState(Godot.StringName stateName) => m_states.TryGetValue(stateName, out var state) ? state : null!;
+
+    public bool TryGetState<T>(out T state) where T : State
+    {
+        foreach (var s in m_states.Values)
+        {
+            if (s is T typedState)
+            {
+                state = typedState;
+                return true;
+            }
+        }
+        state = null!;
+        return false;
+    }
 
     public void ForceTransition(StringName p_targetStateName)
     {

@@ -7,7 +7,6 @@ public partial class DeathState : State
 {
     [ExportGroup("State Animations")]
     [Export] public string AnimationName { get; set; } = "Death";
-    [Export] public string FallbackAnimationName { get; set; } = "Error";
 
     private AnimationPlayer m_animationPlayer = null!;
 

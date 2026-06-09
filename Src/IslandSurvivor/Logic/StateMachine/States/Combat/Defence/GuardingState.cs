@@ -2,17 +2,16 @@ namespace IslandSurvivor.Logic.StateMachine;
 
 using Godot;
 
-[GlobalClass]
-public partial class GuardState : State
+public partial class GuardingState : State
 {
     [ExportGroup("Guard Configuration")]
+    [Export] public float GuardChance { get; set; } = 0.3f;
     [Export] public float GuardDuration { get; set; } = 1.0f;
     [Export] public float GuardCooldown { get; set; } = 5.0f;
     [Export] public float DamageMultiplier { get; set; } = 0.0f; // 0 means take 0 damage, 1 means full damage
 
     [ExportGroup("Guard Animations")]
     [Export] public string GuardAnimationName { get; set; } = "Guard";
-    [Export] public string FallbackAnimationName { get; set; } = "Idle";
 
     private AnimationPlayer m_animationPlayer = null!;
     private Sprite2D m_sprite = null!;
@@ -107,11 +106,49 @@ public partial class GuardState : State
 
     public override void PhysicsUpdate(double p_delta)
     {
+        base.PhysicsUpdate(p_delta);
+
         m_guardTimer -= (float)p_delta;
 
         if (m_guardTimer <= 0)
         {
             CompleteState(StateExitReason.Finished);
+            return;
+        }
+
+        if (NpcContext is IslandSurvivor.Scenes.NPC.AggressiveNpcBase aggNpc)
+        {
+            var target = aggNpc.GetTarget();
+            if (target != null)
+            {
+                float distSq = NpcContext.GlobalPosition.DistanceSquaredTo(target.GlobalPosition);
+
+                float maxAttackRange = 350f;
+                if (StateMachine.TryGetState<RangedAttackState>(out var ranged)) maxAttackRange = ranged.MaxAttackRange;
+                if (StateMachine.TryGetState<MagicAttackState>(out var magic)) maxAttackRange = System.Math.Max(maxAttackRange, magic.MaxAttackRange);
+                float maxAttackSq = maxAttackRange * maxAttackRange;
+
+
+                // If the player goes out of combat zone, exit GuardingState
+                if (distSq > maxAttackSq)
+                {
+                    CompleteState(StateExitReason.Finished);
+                    return;
+                }
+
+                // Continuously face the player
+                bool isTargetLeft = target.GlobalPosition.X < NpcContext.GlobalPosition.X;
+                if (m_sprite != null)
+                {
+                    m_sprite.FlipH = isTargetLeft;
+                }
+
+                string guardDirectionStr = isTargetLeft ? "Left" : "Right";
+                if (NpcContext.HasMethod("SetGuardState"))
+                {
+                    NpcContext.Call("SetGuardState", true, guardDirectionStr, DamageMultiplier);
+                }
+            }
         }
     }
 }

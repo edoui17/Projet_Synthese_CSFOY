@@ -9,12 +9,13 @@ public static class StateConstants
     public const string ChaseState = "ChaseState";
     public const string MeleeAttackState = "MeleeAttackState";
     public const string RangedAttackState = "RangedAttackState";
+    public const string MagicAttackState = "MagicAttackState";
     public const string WindUpState = "WindUpState";
     public const string DashState = "DashState";
     public const string RecoveryState = "RecoveryState";
     public const string FleeState = "FleeState";
     public const string RepositionState = "RepositionState";
-    public const string GuardState = "GuardState";
+    public const string GuardingState = "GuardingState";
     public const string DeathState = "DeathState";
     public const string WanderState = "WanderState";
 
@@ -23,12 +24,13 @@ public static class StateConstants
     public static readonly StringName ChaseStateName = new StringName(ChaseState);
     public static readonly StringName MeleeAttackStateName = new StringName(MeleeAttackState);
     public static readonly StringName RangedAttackStateName = new StringName(RangedAttackState);
+    public static readonly StringName MagicAttackStateName = new StringName(MagicAttackState);
     public static readonly StringName WindUpStateName = new StringName(WindUpState);
     public static readonly StringName DashStateName = new StringName(DashState);
     public static readonly StringName RecoveryStateName = new StringName(RecoveryState);
     public static readonly StringName FleeStateName = new StringName(FleeState);
     public static readonly StringName RepositionStateName = new StringName(RepositionState);
-    public static readonly StringName GuardStateName = new StringName(GuardState);
+    public static readonly StringName GuardingStateName = new StringName(GuardingState);
     public static readonly StringName DeathStateName = new StringName(DeathState);
     public static readonly StringName WanderStateName = new StringName(WanderState);
 }

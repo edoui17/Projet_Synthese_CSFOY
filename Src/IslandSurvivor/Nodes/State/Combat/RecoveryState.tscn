@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://knhcnif6felbl"]
+[gd_scene format=3 uid="uid://cwnlheloaytr2"]
 
-[ext_resource type="Script" uid="uid://hwmeyugrfpt54" path="res://Logic/StateMachine/States/RecoveryState.cs" id="1_script"]
+[ext_resource type="Script" uid="uid://d17jesjiuiyfd" path="res://Logic/StateMachine/States/Pacing/RecoveryState.cs" id="1_script"]
+
 
 [node name="RecoveryState" type="Node"]
 script = ExtResource("1_script")

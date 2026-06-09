@@ -1,3 +1,11 @@
+### 2024-06-07 - [Magic Attack Spelling Configuration Revision]
+**Request** | Allow probability weights for `MagicAttackState` spell node selection.
+**AI Contribution** | Added a `SelectionWeight` property directly to `MagicSpellNode` class and implemented a weighted selection algorithm inside `MagicAttackState.SelectRandomSpell()` instead of uniform random picking.
+**Decision Reasoning** | Extending the base component interface ensures any future spells inherently support probabilistic execution. Weighted selection handles zero-weights gracefully avoiding math edge cases.
+### 2024-06-07 - [Reaper Magic Attack System & Orb Projectile]
+**Request** | Implement an `OrbProjectile` with homing capabilities and a new `MagicAttackState` for the Reaper boss to execute diverse attack patterns (Single, Burst, Arc, Circle, Progressive Arc) natively delegating specific spell logic away from the main state.
+**AI Contribution** | Created `OrbProjectile.cs` with physics-based delayed homing logic utilizing `GetTree().GetNodesInGroup("Player")`. Implemented a new generic `MagicSpellNode` component base class. Created `OrbAttackSpell.cs` representing the specific orb mechanics configured to handle 5 distinct multi-shot patterns driven by internal timers. Introduced `MagicAttackState.cs` to uniformly interface between `StateMachine.cs`, `AttackController` (Animation synchronization), and underlying spells. Appended Godot scene nodes in `Reaper.tscn` to load `OrbAttackSpell` into `MagicAttackState`. Updated `Reaper.cs` decision logic to randomize 50/50 between physical ranged attacks and magic attacks.
+**Decision Reasoning** | Abstracting the execution logic of the magic attacks into separate `MagicSpellNode` components inside the `MagicAttackState` provides ultimate modularity; each spell (like `OrbAttackSpell`) manages its own patterns and timings independently without bloating the general state. Firing syncs seamlessly with Godot's existing animation track callbacks (`ExecuteAttackHit`).
 [Output truncated for brevity]
 
 e via the attacker's stats directly preserves the localized loot multiplier feature.
@@ -67,3 +75,37 @@ Implemented a triangular progression curve and a ProgressionManager to reward XP
 **Request:** Execute namespace flattening mapping across Core and IslandSurvivor projects according to strict architecture rules.
 **AI Contribution:** Applied the namespace modifications and updated using statements using regex across all .cs files to compile successfully.
 **Decision Reasoning:** To adhere to the N-Tier Architecture rules, grouping broad functional domains to avoid deep namespace flattening and collision while preserving separation of concerns.
+### 2026-06-06 - [US-Fix Reaper State Machine]
+**Request:** Fix Reaper NPC to correctly transition between Idle, Wander, Chase, Melee, and Ranged states, and clean up test logic.
+**AI Contribution:** Refactored GetCombatDecisionState to correctly route to Melee, Ranged, or Chase based on ranges and cooldowns. Removed old Input logic. Added animation suffix fallbacks to MeleeAttackState and RangedAttackState to support non-directional boss animations.
+**Decision Reasoning:** The old logic got stuck or made bad choices (like chasing when within ranged attack distance but ranged was on cooldown). The fallback logic prevents exceptions and animation freeze when directional animations aren't configured.
+### 2026-06-06 - [US-Fix Reaper State Machine Animation Loop]
+**Request:** Fix the Reaper boss getting stuck in infinite attack animations, failing to trigger ranged attack projectiles, and resolving a logic loop warning about `LoseInterestRange` versus `DetectionRadius`.
+**AI Contribution:** Disabled `loop_mode = 1` on the Godot `RangeAttackNormal` animation in `Reaper.tscn` allowing it to naturally complete. Appended explicit Method Tracks invoking `ExecuteAttackHit` on the `AttackController` via the `AnimationPlayer` to successfully fire Godot signals/spawn projectiles at the correct impact frames for `MeleeAttackNormal` (0.5s), `RangeAttackNormal` (0.4s), and `RangeAttackOrb` (0.5s). Adjusted the specific `ChaseState` override for `LoseInterestRange` to 1250 to explicitly outscale the `DetectionRadius` (602).
+**Decision Reasoning:** The State Machine operates based on completion signals from the `AttackController` and the `AnimationPlayer`. Animations set to loop indefinitely never trigger these completion hooks, breaking the execution cycle. Using Method Tracks directly on the timeline adheres to Godot's best practices, allowing the visual sync to drive the backend combat hits directly.
+### 2024-05-18 - Reaper AI Boss Combat Logic Fix
+| Request | AI Contribution | Decision Reasoning |
+| :--- | :--- | :--- |
+| Implement proactive range-check, chase timeout, and attack cooldown checks for Reaper Boss. | Added `Timeout` to `StateExitReason`, updated `ChaseState` with a timeout timer and fixed range checks to release when in melee or when a valid attack is available. | Removing `CanAttack` constraint from `ChaseState` allows the `StateMachine` to safely transition the boss to `IdleState` while attacks are on cooldown instead of running in place. Range checks were updated to properly distinguish Melee and Ranged phases for `BossBase` classes. |
+### 2024-05-18 - Reaper AI Boss Combat Logic Fix (Code Review Follow-up)
+| Request | AI Contribution | Decision Reasoning |
+| :--- | :--- | :--- |
+| Ensure Reaper properly routes to IdleState when both attacks are on cooldown. | Updated `Reaper.cs` `GetCombatDecisionState` logic to return `IdleStateName` when in ranged range and both the `Shooter` and `AttackController` are on cooldown. | Code review highlighted that `ChaseState` successfully exits with `TargetReached` now, but without updating `Reaper.cs` to return `IdleStateName` on cooldown, the State Machine would instantly transition back to `ChaseState`, creating an infinite rapid transition loop. Returning `IdleState` properly resolves this. |
+### 2026-06-06 - [Dark Scythe Animation Rotation Update]
+| **Request** | Remove hardcoded programmatic rotation from Dark Scythe script since it's now handled by the animation, while preserving the sprite flip functionality. |
+| **AI Contribution** | Removed `SpinSpeed` export property and manual `Rotation += ...` manipulation from `DarkScythe.cs`'s `_PhysicsProcess`. Added `Rotation = 0;` to `Initialize` to clear the base rotation logic from `BaseProjectile`, allowing the `AnimationPlayer` to smoothly handle the visual rotation without conflict. Left the `FlipH` implicitly unaffected, as the `BaseProjectile` does not interfere with the sprite flip. |
+| **Decision Reasoning** | Overriding `Rotation = 0;` prevents the parent class `BaseProjectile` from statically orienting the projectile toward its trajectory, which previously clashed with the AnimationPlayer trying to rotate the root node dynamically. Removing the export property cleans up dead configuration variables. |
+
+### 2024-06-07 - [Refactoring de l'AttackState (Architecture Hiérarchique)]
+**Request**: Refactoriser la structure des états d'attaque pour introduire une classe de base `AttackState` avec sous-états `MeleeAttackState`, `RangedAttackState`, `MagicAttackState` et intégrer le `GuardingState` tout en centralisant la décision dans `AggressiveNpcBase`.
+**AI Contribution**:
+1. Created `AttackState.cs` inheriting from `State` to centralize duplicated attack target orientation and configuration.
+2. Refactored `MeleeAttackState`, `RangedAttackState`, and `MagicAttackState` to inherit from `AttackState`.
+3. Renamed `GuardState.cs` to `GuardingState.cs`, updated it to face the player, and correctly exit when out of range.
+4. Centralized `GetCombatDecisionState()` in `AggressiveNpcBase.cs` to dynamically evaluate states based on `m_stateMachine.HasState` capabilities, deprecating overrides in child NPCs.
+5. Removed redundant implementations from `MeleeAggressiveNpcBase`, `RangedAggressiveNpcBase`, `Lancer`, and `Reaper`.
+**Decision Reasoning**: Generalization forces clean separation of concerns where child nodes determine capabilities instead of hardcoded C# routing. Implementing states strictly correctly as Nodes enables designers to construct bosses freely by adding states to the StateMachine tree without rewriting routing code.
+### 2026-06-07 - [Fix state machine lock and optimize combat flow]
+**Request** | Fix the Reaper boss getting stuck in `IdleState` after one attack by preventing loop transitions and optimizing cooldown behaviors.
+**AI Contribution** | Removed `loop_mode = 1` implicit defaults from combat animations directly via `Reaper.tscn`. Updated `StateMachine.cs`'s `RecoveryState` exit logic to query `GetCombatDecisionState()` instead of defaulting directly to `IdleState`. Updated `IdleState.cs` to correctly process range checks via `MaxAttackRange` for `BossBase` classes (like the Reaper) in addition to Ranged classes.
+**Decision Reasoning** | Hardcoding the exit transition of `RecoveryState` to `IdleState` forced the NPC to incorrectly wait even if another attack or a chase was valid. Failing to consider `BossBase` ranges inside `IdleState` prevented the Reaper from properly re-initiating combat. Fixing these issues created a fluid combat cycle where the Reaper tracks the player and seamlessly attacks or repositions.

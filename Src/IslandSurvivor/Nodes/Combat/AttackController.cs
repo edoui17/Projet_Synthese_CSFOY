@@ -206,6 +206,7 @@ public partial class AttackController : Node
     private void EndAttack()
     {
         IsAttacking = false;
+        m_cooldownTimer = BaseAttackCooldown;
 
         // Safety check: ensure we don't access a freed object
         if (GodotObject.IsInstanceValid(m_currentActiveArea))

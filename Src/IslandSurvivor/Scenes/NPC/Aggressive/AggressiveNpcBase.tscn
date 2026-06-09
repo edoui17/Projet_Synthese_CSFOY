@@ -9,6 +9,7 @@
 [ext_resource type="PackedScene" uid="uid://6ct74ht3u7xs" path="res://Nodes/State/Movement/ChaseState.tscn" id="state_ChaseState"]
 [ext_resource type="PackedScene" uid="uid://c5fchvpan65ig" path="res://Nodes/State/Core/DeathState.tscn" id="state_DeathState"]
 [ext_resource type="PackedScene" uid="uid://dhogbp2sdg1fm" path="res://Nodes/State/Movement/IdleState.tscn" id="state_IdleState"]
+[ext_resource type="Script" uid="uid://dgargw81rnw0d" path="res://Logic/StateMachine/States/Movement/MovementState.cs" id="state_MovementState"]
 [ext_resource type="PackedScene" uid="uid://cwnlheloaytr2" path="res://Nodes/State/Combat/RecoveryState.tscn" id="state_RecoveryState"]
 [ext_resource type="PackedScene" uid="uid://dvpfx8vuoy433" path="res://Nodes/State/Movement/WanderState.tscn" id="state_WanderState"]
 [ext_resource type="PackedScene" uid="uid://dos0ijyia15w6" path="res://Nodes/State/Combat/WindUpState.tscn" id="state_WindUpState"]
@@ -16,31 +17,20 @@
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_base"]
 radius = 15.0
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_det"]
-radius = 250.0
-
 [node name="AggressiveNpcBase" unique_id=635726557 instance=ExtResource("1_scene")]
 script = ExtResource("2_script")
-ChaseSpeed = 120.0
-StoppingDistance = 50.0
 LevelIndex = 1
 BaseXp = 10.0
 XpMultiplier = 0.5
 AttackSound = ExtResource("attack_stream")
 AttackSoundKey = ""
 AttackVolume = 1.0
-AttackRange = 60.0
-GuardChance = 0.3
-MinAttackRange = 80.0
-MaxAttackRange = 350.0
+DetectionRadius = 250.0
 HurtSound = ExtResource("hurt_stream")
 
-[node name="CollisionShape2D" parent="." index="1" unique_id=1322914286]
+[node name="CollisionShape2D" parent="." index="2" unique_id=1322914286]
 position = Vector2(-2, 1)
 shape = SubResource("CapsuleShape2D_base")
-
-[node name="StatManager" parent="." index="2" unique_id=990476419]
-MaxHealth = 50.0
 
 [node name="EnemyStatsHandler" type="Node" parent="." index="3" unique_id=1822921740 node_paths=PackedStringArray("Stats")]
 script = ExtResource("5_stats_handler")
@@ -49,21 +39,10 @@ Stats = NodePath("../StatManager")
 [node name="LineOfSightRay" type="RayCast2D" parent="." index="4" unique_id=461332043]
 collision_mask = 5
 
-[node name="DetectionArea" type="Area2D" parent="." index="5" unique_id=423904877]
-light_mask = 5
-collision_layer = 5
-collision_mask = 5
+[node name="StatManager" parent="." index="5" unique_id=990476419]
+MaxHealth = 50.0
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="DetectionArea" index="0" unique_id=1152940949]
-position = Vector2(1, 1)
-shape = SubResource("CircleShape2D_det")
-
-[node name="AttackController" type="Node" parent="." index="6" unique_id=1292425161]
-script = ExtResource("4_attack")
-BaseAttackCooldown = 2.0
-Faction = 2
-
-[node name="LevelLabel" type="Label" parent="." index="8" unique_id=987690368]
+[node name="LevelLabel" type="Label" parent="." index="6" unique_id=987690368]
 offset_left = -23.0
 offset_top = -84.0
 offset_right = 20.0
@@ -71,14 +50,27 @@ offset_bottom = -58.0
 text = "Lv. 1"
 horizontal_alignment = 1
 
-[node name="IdleState" parent="StateMachine" parent_id_path=PackedInt32Array(402971195) index="0" unique_id=354736185 instance=ExtResource("state_IdleState")]
+[node name="AttackController" type="Node" parent="." index="7" unique_id=1292425161]
+script = ExtResource("4_attack")
+BaseAttackCooldown = 2.0
+Faction = 2
 
-[node name="WanderState" parent="StateMachine" parent_id_path=PackedInt32Array(402971195) index="1" unique_id=1820029102 instance=ExtResource("state_WanderState")]
+[node name="StateMachine" parent="." index="9" unique_id=402971195 node_paths=PackedStringArray("InitialState")]
+InitialState = NodePath("MovementState/IdleState")
 
-[node name="ChaseState" parent="StateMachine" parent_id_path=PackedInt32Array(402971195) index="2" unique_id=1947301554 instance=ExtResource("state_ChaseState")]
+[node name="MovementState" type="Node" parent="StateMachine" index="0" unique_id=350433986]
+script = ExtResource("state_MovementState")
 
-[node name="WindUpState" parent="StateMachine" parent_id_path=PackedInt32Array(402971195) index="3" unique_id=457069323 instance=ExtResource("state_WindUpState")]
+[node name="IdleState" parent="StateMachine/MovementState" index="0" unique_id=354736185 instance=ExtResource("state_IdleState")]
 
-[node name="RecoveryState" parent="StateMachine" parent_id_path=PackedInt32Array(402971195) index="4" unique_id=546139160 instance=ExtResource("state_RecoveryState")]
+[node name="WanderState" parent="StateMachine/MovementState" index="1" unique_id=1820029102 instance=ExtResource("state_WanderState")]
 
-[node name="DeathState" parent="StateMachine" parent_id_path=PackedInt32Array(402971195) index="5" unique_id=1073392512 instance=ExtResource("state_DeathState")]
+[node name="ChaseState" parent="StateMachine/MovementState" index="2" unique_id=1947301554 instance=ExtResource("state_ChaseState")]
+
+[node name="WindUpState" parent="StateMachine" index="1" unique_id=457069323 instance=ExtResource("state_WindUpState")]
+
+[node name="AttackState" type="Node" parent="StateMachine" index="2" unique_id=999912345]
+
+[node name="RecoveryState" parent="StateMachine" index="3" unique_id=546139160 instance=ExtResource("state_RecoveryState")]
+
+[node name="DeathState" parent="StateMachine" index="4" unique_id=1073392512 instance=ExtResource("state_DeathState")]

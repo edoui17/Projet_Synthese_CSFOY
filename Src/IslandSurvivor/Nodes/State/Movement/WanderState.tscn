@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://5xki3ncmne9fg"]
+[gd_scene format=3 uid="uid://dvpfx8vuoy433"]
 
-[ext_resource type="Script" uid="uid://a866a9c1b5164" path="res://Logic/StateMachine/States/WanderState.cs" id="1_script"]
+[ext_resource type="Script" uid="uid://866bac1b5164" path="res://Logic/StateMachine/States/Movement/Generic/WanderState.cs" id="1_script"]
+
 
 [node name="WanderState" type="Node"]
 script = ExtResource("1_script")

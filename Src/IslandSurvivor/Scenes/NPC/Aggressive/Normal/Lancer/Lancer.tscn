@@ -13,21 +13,6 @@
 [ext_resource type="PackedScene" uid="uid://kixynppgp4mb" path="res://Nodes/State/Combat/DashState.tscn" id="state_DashState"]
 [ext_resource type="PackedScene" uid="uid://cax25d4b5ex2y" path="res://Nodes/State/Movement/LancerRepositionState.tscn" id="state_LancerRepositionState"]
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_lancer_detection"]
-radius = 400.0
-
-[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_hesqx"]
-radius = 18.01414
-height = 131.89413
-
-[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_sw6gv"]
-radius = 14.0408535
-height = 107.76402
-
-[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_lancer_hitbox"]
-radius = 16.999716
-height = 120.0
-
 [sub_resource type="Animation" id="Animation_focae"]
 resource_name = "Attack_Down"
 length = 0.5
@@ -652,59 +637,59 @@ _data = {
 &"RESET": SubResource("Animation_sw6gv")
 }
 
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_hesqx"]
+radius = 18.01414
+height = 131.89413
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_sw6gv"]
+radius = 14.0408535
+height = 107.76402
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_lancer_hitbox"]
+radius = 16.999716
+height = 120.0
+
 [node name="Lancer" unique_id=1880312545 instance=ExtResource("1_gsctu")]
 script = ExtResource("1_x8y9z")
-DashThreshold = 100.0
-ChaseSpeed = 100.0
-StoppingDistance = 100.0
 BaseXp = 30.0
 XpMultiplier = 0.2
 AttackSoundKey = "Enemy_Swing_Default"
-GuardChance = 0.0
 HurtSound = ExtResource("3_u3wq2")
 
 [node name="Sprite2D" parent="." index="0" unique_id=1104255030]
-texture = ExtResource("3_qp1c1")
-hframes = 6
+texture = ExtResource("3_vdtxd")
+hframes = 3
+frame = 2
 
-[node name="CollisionShape2D" parent="." index="1" unique_id=1322914286]
-visible = false
+[node name="AnimationPlayer" parent="." index="1" unique_id=1869571986]
+libraries/ = SubResource("AnimationLibrary_4ud8o")
 
-[node name="StatManager" parent="." index="2" unique_id=990476419]
-MaxHealth = 40.0
-BaseSpeedValue = 200.0
-
-[node name="DetectionArea" parent="." index="5" unique_id=423904877]
-visible = false
-
-[node name="CollisionShape2D" parent="DetectionArea" index="0" unique_id=1152940949]
-shape = SubResource("CircleShape2D_lancer_detection")
-
-[node name="CollisionShape2D" parent="HitboxAreaUp" index="0"]
+[node name="CollisionShape2D" parent="HitboxAreaUp" parent_id_path=PackedInt32Array(132251275) index="0" unique_id=237488674]
 rotation = 3.1259809
 shape = SubResource("CapsuleShape2D_hesqx")
 
-[node name="CollisionShape2D" parent="HitboxAreaDown" index="0"]
+[node name="CollisionShape2D" parent="HitboxAreaDown" parent_id_path=PackedInt32Array(2072481507) index="0" unique_id=467292049]
 position = Vector2(-1, 80)
 rotation = 0.014080614
 shape = SubResource("CapsuleShape2D_sw6gv")
 
-[node name="CollisionShape2D" parent="HitboxAreaRight" index="0"]
-position = Vector2(73.000015, 14.000002)
-rotation = 1.567259
-shape = SubResource("CapsuleShape2D_lancer_hitbox")
-
-[node name="CollisionShape2D" parent="HitboxAreaLeft" index="0"]
+[node name="CollisionShape2D" parent="HitboxAreaLeft" parent_id_path=PackedInt32Array(786365911) index="0" unique_id=502821999]
 position = Vector2(-4.9999847, 12)
 rotation = 1.5765897
 shape = SubResource("CapsuleShape2D_lancer_hitbox")
 
-[node name="AnimationPlayer" parent="." index="13" unique_id=1869571986]
-libraries/ = SubResource("AnimationLibrary_4ud8o")
+[node name="CollisionShape2D" parent="HitboxAreaRight" parent_id_path=PackedInt32Array(1998366871) index="0" unique_id=944317827]
+position = Vector2(73.000015, 14.000002)
+rotation = 1.567259
+shape = SubResource("CapsuleShape2D_lancer_hitbox")
 
-[node name="ChaseState" parent="StateMachine" parent_id_path=PackedInt32Array(402971195) index="2" unique_id=1947301554]
+[node name="StatManager" parent="." index="9" unique_id=990476419]
+MaxHealth = 40.0
+BaseSpeedValue = 200.0
+
+[node name="ChaseState" parent="StateMachine/MovementState" parent_id_path=PackedInt32Array(350433986) index="2" unique_id=1947301554]
 LoseInterestRange = 500.0
 
-[node name="DashState" parent="StateMachine" parent_id_path=PackedInt32Array(402971195) index="3" unique_id=28822031 instance=ExtResource("state_DashState")]
+[node name="LancerRepositionState" parent="StateMachine/MovementState" parent_id_path=PackedInt32Array(350433986) index="3" unique_id=1840744020 instance=ExtResource("state_LancerRepositionState")]
 
-[node name="LancerRepositionState" parent="StateMachine" parent_id_path=PackedInt32Array(402971195) index="8" unique_id=1840744020 instance=ExtResource("state_LancerRepositionState")]
+[node name="DashState" parent="StateMachine/MovementState" parent_id_path=PackedInt32Array(350433986) index="4" unique_id=28822031 instance=ExtResource("state_DashState")]
