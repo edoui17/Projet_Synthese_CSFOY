@@ -34,9 +34,11 @@ Le système utilise un `EventBus` personnalisé au sein du projet Core, couplé 
 ### Machine à États (State Machine)
 L'intelligence artificielle des NPCs (Passifs et Hostiles) est gérée par une machine à états robuste. Chaque comportement (Idle, Chase, Flee, Attack) est encapsulé dans une classe distincte, facilitant l'ajout de nouveaux comportements et garantissant une transition fluide entre les états.
 
-<img src="Images/archerAttack.gif" width="300" alt="Gameplay - Attaque Archer" />
-<img src="Images/WarriorAttack.gif" width="300" alt="Gameplay - Attaque Guerrier" />
-<img src="Images/lancerAttack.gif" width="300" alt="Gameplay - Attaque Lancier" />
+<p align="center">
+  <img src="Images/archerAttack.gif" width="250" alt="Gameplay - Attaque Archer" />
+  <img src="Images/WarriorAttack.gif" width="250" alt="Gameplay - Attaque Guerrier" />
+  <img src="Images/lancerAttack.gif" width="250" alt="Gameplay - Attaque Lancier" />
+</p>
 
 ---
 
@@ -47,9 +49,12 @@ Ce projet a été réalisé en adoptant une approche moderne de "Développeur Au
 *   **Analyse de Contraintes** : Utilisation de l'IA pour valider la conformité aux principes SOLID et à l'architecture N-Tier.
 *   **Productivité Accrue** : Accélération du développement des modules répétitifs (boilerplate) pour se concentrer sur les algorithmes complexes de génération procédurale.
 *   **Documentation Dynamique** : Tenue rigoureuse de journaux d'utilisation de l'IA (`jules/ai_usage_*.md`) pour tracer les décisions techniques et les contributions de l'assistant.
+  
+<p align="center">
+  <img src="Images/warriorRun.gif" width="300" alt="Gameplay -  Course Guerrier" />
+  <img src="Images/sheepAnimation.gif" width="300" alt="Gameplay - Animation mouttons" />
+</p>
 
-![Gameplay - Course Guerrier](Images/warriorRun.gif)
-![Gameplay - Animation Mouton](Images/sheepAnimation.gif)
 
 ---
 
@@ -58,8 +63,9 @@ Ce projet a été réalisé en adoptant une approche moderne de "Développeur Au
 ### Environnement et Interface
 Le jeu propose des mondes générés de manière procédurale avec une gestion fine de l'élévation et du climat.
 
-![Niveau 3](Images/Level3.png)
-![Tableau des scores](Images/ScoreBord.png)
+
+  <img src="Images/Level3.png" width="500" alt="Gameplay - Niveau 3" />
+  <img src="Images/ScoreBord.png" width="500" alt="Gameplay - Tableau des scores" />
 
 ---
 
