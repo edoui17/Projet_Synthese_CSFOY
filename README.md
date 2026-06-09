@@ -3,6 +3,7 @@
 IslandSurvivor est un projet de jeu vidéo de survie ambitieux, conçu autour d'une architecture logicielle moderne et robuste. Ce projet démontre l'application de principes d'ingénierie logicielle avancés dans un contexte de développement de jeu vidéo (Godot) et de systèmes distribués (.NET).
 
 L'objectif principal de ce travail est de présenter une solution logicielle complète, de la logique métier pure à l'interface utilisateur temps réel, tout en maintenant une séparation stricte des responsabilités et une testabilité maximale.
+(Projet encore en cours)
 
 ---
 
