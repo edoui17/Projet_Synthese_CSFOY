@@ -1,110 +1,123 @@
 # IslandSurvivor
 
-Bienvenue dans le projet **IslandSurvivor**. Il s'agit d'un projet de jeu vidéo de survie intégrant une architecture moderne en couches (N-Tier) pour la collecte et l'affichage de statistiques en temps intéractif.
+IslandSurvivor est un projet de jeu vidéo de survie ambitieux, conçu autour d'une architecture logicielle moderne et robuste. Ce projet démontre l'application de principes d'ingénierie logicielle avancés dans un contexte de développement de jeu vidéo (Godot) et de systèmes distribués (.NET).
+
+L'objectif principal de ce travail est de présenter une solution logicielle complète, de la logique métier pure à l'interface utilisateur temps réel, tout en maintenant une séparation stricte des responsabilités et une testabilité maximale.
 
 ---
 
-## Architecture de la Solution
+## Architecture Technique (N-Tier)
 
-Le projet est structuré pour maximiser le partage de code entre le client de jeu et les services web, garantissant une cohérence des données.
+Le projet adopte une architecture en couches (N-Tier) permettant une modularité et une scalabilité optimale. Cette structure facilite le partage de la logique métier entre le client de jeu (Godot) et les outils d'administration (Web/API).
 
+![Architecture de Développement](Images/DiagrammeArchitectureDeveloppement.jpg)
 
+### Découpage de la solution :
+*   **Core (Noyau)** : Bibliothèque de classes pure .NET contenant les interfaces, les modèles de domaine et la logique métier. Totalement découplé du moteur de jeu.
+*   **IslandSurvivor (Client)** : Interface de jeu développée sous Godot 4.x (.NET), gérant le rendu, les entrées utilisateur et les retours sensoriels.
+*   **API (Backend)** : Service ASP.NET Core Web API assurant la persistance des données et la communication entre le client et la base de données.
+*   **Infrastructure** : Couche de persistance utilisant Entity Framework Core (SQL Server) et implémentant les patterns d'accès aux données.
+*   **Web (Dashboard)** : Application Blazor permettant la visualisation des statistiques et la gestion administrative.
 
-### Organisation des dossiers
-* **`/Src`** : Contient tous les projets de production.
-    * `IslandSurvivor` : Le client de jeu (Godot 4.x .NET).
-    * `API` : Backend ASP.NET Core pour la gestion des données.
-    * `Core` : Bibliothèque de classes partagée (Modèles et Logique).
-    * `Infrastructure` : Persistance SQL avec Entity Framework Core.
-    * `Web` : Dashboard de statistiques (Blazor).
-* **`/Tests`** : Projets de tests unitaires et d'intégration (xUnit).
-* **`/Convention`** : Normes de codage et guides de style du projet.
-* **`/WikiCode`** : Documentation technique détaillée.
+![Architecture de Production](Images/DiagrammeArchitectureProduction.jpg)
 
 ---
 
-## Technologies utilisées
+## Design Patterns & Qualités Logicielles
 
-* **Moteur de jeu :** Godot 4.6.1 (C# / .NET 8)
-* **Backend :** ASP.NET Core Web API
-* **Frontend Web :** Blazor Web App
-* **Base de données :** SQL Server (EF Core)
-* **Tests :** xUnit
-* **IDE :** Visual Studio 2022
+Afin de garantir un code maintenable et professionnel, plusieurs patrons de conception (design patterns) ont été rigoureusement appliqués :
 
----
+### Repository Pattern
+L'accès aux données est centralisé via des dépôts (Repositories), isolant la logique métier des détails d'implémentation de la persistance (EF Core). Cela permet de changer de source de données ou de simuler des données pour les tests sans modifier le reste du système.
 
-##  Nomenclature complète des Tags
+### Architecture Orientée Événements (Event-Driven)
+Le système utilise un `EventBus` personnalisé au sein du projet Core, couplé à un `SignalManager` dans Godot. Cette approche permet un couplage faible entre les systèmes : par exemple, la destruction d'une ressource déclenche un événement intercepté de manière asynchrone par l'inventaire, les statistiques et le système audio sans que ces modules ne se connaissent directement.
 
-###  Gameplay & Monde
-* **`Gameplay`** : Utilisé pour toutes les mécaniques de jeu actives (mouvement, récolte, combat).
-* **`Mouvement`** : Spécifique à la locomotion du personnage et aux contrôles de déplacement.
-* **`Interaction`** : Concerne le système de détection (Triggers) et l'activation d'objets dans le monde.
-* **`Map`** : Tout ce qui touche à l'environnement, aux niveaux et aux îles.
-* **`Procedural`** : Identifie les algorithmes de génération aléatoire de terrain.
-* **`Spawning`** : Logique d'apparition dynamique des ressources et des entités sur la carte.
-* **`Navigation`** : Gestion des transitions entre les scènes et du voyage entre les îles.
+### Machine à États (State Machine)
+L'intelligence artificielle des NPCs (Passifs et Hostiles) est gérée par une machine à états robuste. Chaque comportement (Idle, Chase, Flee, Attack) est encapsulé dans une classe distincte, facilitant l'ajout de nouveaux comportements et garantissant une transition fluide entre les états.
 
-###  Systèmes & Données
-* **`Statistique`** : Calculs des points de vie (PV), de la force et des modificateurs de progression.
-* **`Ressource`** : Logique de collecte (Ajout) et de dépense (Améliorations/Déblocages).
-* **`Score`** : Système de points, calcul du High Score et préparation pour les classements.
-* **`Système`** : Architecture logicielle globale, gestionnaires (Managers) et persistance des données.
-* **`Algorithme`** : Tâches nécessitant une logique mathématique complexe (Génération, Distribution).
-
-###  Interface & Contrôles
-* **`UI`** : (User Interface) Tous les éléments graphiques, boutons et fenêtres.
-* **`ATH`** : (Affichage Tête Haute) Éléments de l'interface visibles en jeu (Barres de vie, compteurs).
-* **`Menu`** : Navigation dans les écrans hors-jeu (Principal, Pause, Gestion).
-* **`Input`** : Gestion des entrées utilisateur (Clavier, Souris, Manette).
-* **`Physique`** : Tout ce qui implique les collisions (Collider2D) et les interactions avec le moteur physique.
+![Gameplay - Attaque Archer](Images/archerAttack.gif)
+![Gameplay - Attaque Guerrier](Images/WarriorAttack.gif)
+![Gameplay - Attaque Lancier](Images/lancerAttack.gif)
 
 ---
 
-## Stratégie de Qualité (CI/CD Ready)
+## Méthodologie & Développement Augmenté par l'IA
 
-Pour assurer la stabilité du projet, nous appliquons une approche de **tests automatisés** :
-1. **Tests Unitaires** : Validation de la logique mathématique et des règles métier dans le projet `Core`.
-2. **Tests d'Intégration** : Vérification des flux de données entre l'API et la base de données SQL.
-3. **Architecture Partagée** : L'utilisation du projet `Core` empêche toute divergence de modèle entre le Jeu et le Web.
+Ce projet a été réalisé en adoptant une approche moderne de "Développeur Augmenté". En tant qu'utilisateurs avancés d'agents IA, nous avons intégré l'IA non seulement pour la génération de code, mais aussi comme partenaire d'analyse et de révision architecturale.
+
+*   **Analyse de Contraintes** : Utilisation de l'IA pour valider la conformité aux principes SOLID et à l'architecture N-Tier.
+*   **Productivité Accrue** : Accélération du développement des modules répétitifs (boilerplate) pour se concentrer sur les algorithmes complexes de génération procédurale.
+*   **Documentation Dynamique** : Tenue rigoureuse de journaux d'utilisation de l'IA (`jules/ai_usage_*.md`) pour tracer les décisions techniques et les contributions de l'assistant.
+
+![Gameplay - Course Guerrier](Images/warriorRun.gif)
+![Gameplay - Animation Mouton](Images/sheepAnimation.gif)
 
 ---
 
-## Installation et Lancement
+## Aperçu visuel du projet
+
+### Environnement et Interface
+Le jeu propose des mondes générés de manière procédurale avec une gestion fine de l'élévation et du climat.
+
+![Niveau 3](Images/Level3.png)
+![Tableau des scores](Images/ScoreBord.png)
+
+---
+
+## Stratégie de Qualité & CI/CD
+
+La fiabilité de la solution est assurée par une stratégie de tests rigoureuse et une automatisation complète via Azure DevOps :
+
+*   **Tests Unitaires** : Validation de la logique métier et des algorithmes dans le projet `Core`.
+*   **Tests d'Intégration** : Vérification des flux de données entre l'API ASP.NET Core et la base de données SQL Server.
+*   **Pipeline CI/CD** : Un pipeline YAML automatise la restauration, la compilation de la solution globale, l'exécution des tests et l'exportation "headless" du client Godot pour Windows.
+
+---
+
+## Technologies Utilisées
+
+*   **Moteur de jeu** : Godot 4.6.1 (.NET 8.0 / 9.0)
+*   **Langage** : C# (Nullable Reference Types activés)
+*   **Backend** : ASP.NET Core Web API
+*   **Frontend Web** : Blazor Web App
+*   **Base de données** : SQL Server / Entity Framework Core
+*   **Tests** : xUnit (Unitaires et Intégration)
+*   **Outils** : Visual Studio 2022, Git, Agents IA
+
+---
+
+## Installation et Configuration
 
 ### Prérequis
-* Visual Studio 2022 (avec la charge de travail .NET)
-* Godot 4.x (Version .NET)
-* SDK .NET 8.0+
+*   Visual Studio 2022
+*   SDK .NET 8.0 et .NET 9.0
+*   Godot 4.x (version .NET)
 
-### Étapes
-1. Cloner le dépôt.
-2. Ouvrir `ProjetJeu.sln` dans Visual Studio 2022.
-3. Restaurer les packages NuGet.
-4. Appliquer les migrations SQL :
-   `Update-Database -Project Infrastructure`
-5. Lancer la solution (Projets de démarrage multiples : API + Web).
-6. Ouvrir Godot pour lancer le client `IslandSurvivor`.
+### Procédure
+1.  Cloner le dépôt.
+2.  Ouvrir la solution `ProjetJeu.sln` dans Visual Studio.
+3.  Restaurer les dépendances NuGet.
+4.  Appliquer les migrations de base de données :
+    `Update-Database -Project Infrastructure`
+5.  Lancer les projets de démarrage (API et Web).
+6.  Lancer le projet `IslandSurvivor` via l'éditeur Godot.
 
 ---
 
-## Auteur
-**Kevin Houle** - Étudiant en programmation au Cégep de Sainte-Foy.<br>
-**Edouard Couture** - Étudiant en programmation au Cégep de Sainte-Foy.<br>
-**Antoine Masson** - Étudiant en programmation au Cégep de Sainte-Foy.<br>
-**Delphine Martin** - Étudiante en programmation au Cégep de Sainte-Foy.<br>
-**Charles-Phillipe Warren** - Étudiant en programmation au Cégep de Sainte-Foy.
+## Démonstration Vidéo
+
+Pour visualiser le comportement des IA et les interactions physiques en jeu, vous pouvez consulter la séquence de poursuite :
+[Visionner la séquence de poursuite (MP4)](Images/chasingSequence.mp4)
+
 ---
 
-## Technical Information: NPC Entities
+## Auteurs
 
-In IslandSurvivor, NPCs are separated into two distinct types logically:
-* **Passive** (e.g., Sheep)
-* **Hostile** (e.g., Enemies)
+Ce projet est le résultat d'un effort collaboratif par des étudiants passionnés en programmation au Cégep de Sainte-Foy :
 
-### Sheep (Passive) & Resource Looting
-The Sheep is a passive entity that roams the island idly. When it takes damage from the player or any node, its `SheepController.cs` logic triggers a "Flee" state, which makes it move faster in the opposite direction of the attacker.
-
-Upon death, the loot (Meat) is distributed **directly to the global inventory system**. The Sheep uses the `SignalManager.Instance.EmitMaterialDestroyed(...)` method to send the `ResourceItem` data (amount and type) up to the Godot Event Bus. The `InventoryNode` automatically detects this signal and processes the loot, meaning there is no loose drop left on the floor.
-
-(Addendum): The Sheep loot generation verifies if the attacker was the Player (via group check "Player") before instantiating and adding exactly 1 meat item, thus preventing the economy from breaking due to environmental deaths or non-player damage. Additionally, NavigationAgent2D has been wired up to compute valid velocities ensuring safe obstacle avoidance.
+*   **Kevin Houle**
+*   **Edouard Couture**
+*   **Antoine Masson**
+*   **Delphine Martin**
+*   **Charles-Phillipe Warren**
