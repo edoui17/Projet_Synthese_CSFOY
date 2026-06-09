@@ -34,9 +34,9 @@ Le système utilise un `EventBus` personnalisé au sein du projet Core, couplé 
 ### Machine à États (State Machine)
 L'intelligence artificielle des NPCs (Passifs et Hostiles) est gérée par une machine à états robuste. Chaque comportement (Idle, Chase, Flee, Attack) est encapsulé dans une classe distincte, facilitant l'ajout de nouveaux comportements et garantissant une transition fluide entre les états.
 
-![Gameplay - Attaque Archer](Images/archerAttack.gif|300)
-![Gameplay - Attaque Guerrier](Images/WarriorAttack.gif|300)
-![Gameplay - Attaque Lancier](Images/lancerAttack.gif|300)
+![Gameplay - Attaque Archer](Images/archerAttack.gif)
+![Gameplay - Attaque Guerrier](Images/WarriorAttack.gif)
+![Gameplay - Attaque Lancier](Images/lancerAttack.gif)
 
 ---
 
