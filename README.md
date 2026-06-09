@@ -61,7 +61,7 @@ Ce projet a été réalisé en adoptant une approche moderne de "Développeur Au
 
 ## Aperçu visuel du projet
 
-### Environnement et
+### Environnement
 Ici est montre une des carte qui sera possible de jouer 
 
   <img src="Images/Level3.png" width="500" alt="Gameplay - Niveau 3" />
