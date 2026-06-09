@@ -4,33 +4,33 @@
 [ext_resource type="Script" uid="uid://bbrba0kvch7b6" path="res://Scenes/NPC/Aggressive/Normal/RangedAggressiveNpcBase.cs" id="2_script"]
 [ext_resource type="PackedScene" uid="uid://crca7kdilqogk" path="res://Scenes/Projectiles/Arrow/Arrow.tscn" id="3_arrow"]
 [ext_resource type="PackedScene" uid="uid://cx6r1g1g1g1g3" path="res://Nodes/Combat/Shooter.tscn" id="Shooter"]
-[ext_resource type="PackedScene" uid="uid://ca8u8dmqxyiib" path="res://Nodes/State/Movement/RepositionState.tscn" id="state_RepositionState"]
 [ext_resource type="PackedScene" uid="uid://cx6r1g1g1g1g2" path="res://Nodes/State/Combat/RangedAttackState.tscn" id="state_RangedAttackState"]
+[ext_resource type="PackedScene" uid="uid://ca8u8dmqxyiib" path="res://Nodes/State/Movement/RepositionState.tscn" id="state_RepositionState"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_hitbox_ranged"]
 radius = 21.986078
 height = 70.16913
 
-[node name="RangedAggressiveNpcBase" instance=ExtResource("1_scene")]
+[node name="RangedAggressiveNpcBase" unique_id=1076911080 instance=ExtResource("1_scene")]
 script = ExtResource("2_script")
+AttackAnimationName = "Attack"
 
-[node name="HitboxArea" type="Area2D" parent="." index="7"]
+[node name="HitboxArea" type="Area2D" parent="." index="5" unique_id=838013320]
 collision_layer = 0
 collision_mask = 4
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxArea" index="0"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxArea" index="0" unique_id=1067581971]
 position = Vector2(30, 6)
 rotation = 1.5352188
 shape = SubResource("CapsuleShape2D_hitbox_ranged")
 
-[node name="ProjectileSpawnPosition" type="Marker2D" parent="." index="8"]
+[node name="ProjectileSpawnPosition" type="Marker2D" parent="." index="6" unique_id=721747122]
 position = Vector2(15, 0)
 
-[node name="Shooter" parent="." index="9" instance=ExtResource("Shooter")]
+[node name="Shooter" parent="." index="9" unique_id=181858644 instance=ExtResource("Shooter")]
 ProjectileScene = ExtResource("3_arrow")
 SpawnPosition = NodePath("../ProjectileSpawnPosition")
 
-[node name="StateMachine" parent="." index="10"]
+[node name="RepositionState" parent="StateMachine/MovementState" parent_id_path=PackedInt32Array(350433986) index="3" unique_id=54288072 instance=ExtResource("state_RepositionState")]
 
-[node name="RepositionState" parent="StateMachine" index="7" instance=ExtResource("state_RepositionState")]
-[node name="RangedAttackState" parent="StateMachine" index="4" instance=ExtResource("state_RangedAttackState")]
+[node name="RangedAttackState" parent="StateMachine/AttackState" parent_id_path=PackedInt32Array(999912345) index="0" unique_id=1619939969 instance=ExtResource("state_RangedAttackState")]

@@ -5,7 +5,6 @@ using IslandSurvivor.Logic;
 
 public partial class PassiveNpcBase : NpcBase
 {
-    [Export] public float FleeSpeed { get; set; } = 120.0f;
 
     public override Godot.StringName GetDecisionState(Node2D target)
     {

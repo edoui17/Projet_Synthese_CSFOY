@@ -7,10 +7,7 @@ namespace IslandSurvivor.Scenes.Projectiles;
 
 public partial class EvilEye : BaseBeamAttack
 {
-    [Export] public int LaserHitGroundFrame { get; set; } = 10;
-    [Export] public int SweepStartFrame { get; set; } = 13;
-    [Export] public int SweepEndFrame { get; set; } = 18;
-    [Export] public int ClosingEyeFrame { get; set; } = 21;
+    private bool m_isSweeping = false;
 
     public override void _Ready()
     {
@@ -22,30 +19,29 @@ public partial class EvilEye : BaseBeamAttack
         }
     }
 
-    protected override void OnFrameChanged()
+    public void OnLaserHitGround()
     {
-        if (m_animatedSprite == null || m_rayCast == null) return;
+        if (m_rayCast == null) return;
+        m_rayCast.Enabled = true;
+        m_hasHitPlayer = false;
+    }
 
-        int frame = m_animatedSprite.Frame;
+    public void SetSweeping(bool p_isSweeping)
+    {
+        m_isSweeping = p_isSweeping;
+    }
 
-        if (frame == LaserHitGroundFrame)
-        {
-            m_rayCast.Enabled = true;
-            m_hasHitPlayer = false;
-        }
-        else if (frame == ClosingEyeFrame)
-        {
-            m_rayCast.Enabled = false;
-        }
+    public void OnClosingEye()
+    {
+        if (m_rayCast == null) return;
+        m_rayCast.Enabled = false;
     }
 
     public override void _PhysicsProcess(double delta)
     {
-        if (m_animatedSprite == null || !m_animatedSprite.IsPlaying() || m_rayCast == null) return;
+        if (m_animationPlayer == null || !m_animationPlayer.IsPlaying() || m_rayCast == null) return;
 
-        int frame = m_animatedSprite.Frame;
-
-        if (frame >= SweepStartFrame && frame <= SweepEndFrame)
+        if (m_isSweeping)
         {
             m_rayCast.Rotation -= SweepSpeed * (float)delta;
         }

@@ -317,11 +317,12 @@ Stats = NodePath("../StatManager")
 
 [node name="AttackController" type="Node" parent="." unique_id=987654322]
 script = ExtResource("attack_controller_script")
+BaseAttackCooldown = 0.5
 
 [node name="StatManager" parent="." unique_id=772458511 instance=ExtResource("7_stat")]
 m_isGlobal = true
 EntityType = 0
-MaxHealth = 5.0
+MaxHealth = 1000.0
 BaseSpeedValue = 400.0
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=238914161]

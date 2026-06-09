@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://tvkbwxbyaqie4"]
+[gd_scene format=3 uid="uid://kixynppgp4mb"]
 
-[ext_resource type="Script" uid="uid://so6vbbn1qkq2w" path="res://Logic/StateMachine/States/DashState.cs" id="1_script"]
+[ext_resource type="Script" uid="uid://c8kew2y1hq81u" path="res://Logic/StateMachine/States/Movement/Generic/DashState.cs" id="1_script"]
+
 
 [node name="DashState" type="Node"]
 script = ExtResource("1_script")

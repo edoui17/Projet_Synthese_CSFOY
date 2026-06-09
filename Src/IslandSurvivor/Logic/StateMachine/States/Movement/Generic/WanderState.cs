@@ -4,7 +4,7 @@ using System;
 using Godot;
 
 [GlobalClass]
-public partial class WanderState : State
+public partial class WanderState : MovementState
 {
     [ExportGroup("State Configuration")]
     [Export] public float WanderRadius { get; set; } = 100.0f;
@@ -13,7 +13,6 @@ public partial class WanderState : State
 
     [ExportGroup("State Animations")]
     [Export] public string AnimationName { get; set; } = "Moving";
-    [Export] public string FallbackAnimationName { get; set; } = "Error";
 
     private Vector2 m_spawnPosition;
     private bool m_isSpawnPositionSet = false;
@@ -92,12 +91,17 @@ public partial class WanderState : State
 
         if (NpcContext is IslandSurvivor.Scenes.NPC.AggressiveNpcBase aggressiveNpc)
         {
-            if (aggressiveNpc.HasTargetAndLineOfSight())
+            var target = aggressiveNpc.GetTarget();
+            if (target != null)
             {
-                m_hasCompleted = true;
-                aggressiveNpc.Velocity = Vector2.Zero;
-                CompleteState(StateExitReason.TargetDetected);
-                return;
+                float distSquared = NpcContext.GlobalPosition.DistanceSquaredTo(target.GlobalPosition);
+                if (distSquared <= aggressiveNpc.DetectionRadius * aggressiveNpc.DetectionRadius && aggressiveNpc.CheckLineOfSight())
+                {
+                    m_hasCompleted = true;
+                    aggressiveNpc.Velocity = Vector2.Zero;
+                    CompleteState(StateExitReason.TargetDetected);
+                    return;
+                }
             }
         }
 
@@ -107,10 +111,7 @@ public partial class WanderState : State
         if (distanceToTargetSquared <= completionThreshold * completionThreshold)
         {
             m_hasCompleted = true;
-            if (NpcContext is IslandSurvivor.Scenes.NPC.NpcBase npcBaseComplete)
-            {
-                npcBaseComplete.Velocity = Vector2.Zero;
-            }
+            SetVelocity(Vector2.Zero);
             CompleteState(StateExitReason.Finished);
             return;
         }
@@ -130,8 +131,7 @@ public partial class WanderState : State
             }
             else
             {
-                npcBase.Velocity = direction * WanderSpeed;
-                npcBase.MoveAndSlide();
+                SetVelocity(direction * WanderSpeed);
 
                 if (m_sprite != null && direction.X != 0)
                 {
@@ -146,18 +146,16 @@ public partial class WanderState : State
             m_isStuck = true;
             m_stuckTimer = StuckWaitTime;
 
-            if (NpcContext is IslandSurvivor.Scenes.NPC.NpcBase npcBaseCollision)
+            SetVelocity(Vector2.Zero);
+            if (m_animationPlayer != null && m_animationPlayer.HasAnimation("Idle"))
             {
-                npcBaseCollision.Velocity = Vector2.Zero;
-                if (m_animationPlayer != null && m_animationPlayer.HasAnimation("Idle"))
-                {
-                    m_animationPlayer.Play("Idle"); // Or just stop current animation.
-                }
-                else if (m_animationPlayer != null)
-                {
-                    m_animationPlayer.Stop();
-                }
+                m_animationPlayer.Play("Idle");
+            }
+            else if (m_animationPlayer != null)
+            {
+                m_animationPlayer.Stop();
             }
         }
+        base.PhysicsUpdate(p_delta);
     }
 }

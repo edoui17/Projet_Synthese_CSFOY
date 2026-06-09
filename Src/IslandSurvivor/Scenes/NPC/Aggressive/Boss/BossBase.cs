@@ -5,27 +5,10 @@ using IslandSurvivor.Logic;
 
 public partial class BossBase : AggressiveNpcBase
 {
-    [ExportGroup("Animations")]
-    [Export] public string MeleeAttackAnimationName { get; set; } = "Attack_Melee";
-    [Export] public string RangedAttackAnimationName { get; set; } = "Attack_Ranged";
 
     protected Area2D? m_hitboxAreaRight;
     protected Area2D? m_hitboxAreaLeft;
 
-    protected override Godot.StringName GetCombatDecisionState(float distanceSquared, float attackRangeSquared)
-    {
-        // Future boss phases and AoE cooldown logic will be injected here.
-        var state = base.GetCombatDecisionState(distanceSquared, attackRangeSquared);
-        if (state == IslandSurvivor.Logic.StateMachine.StateConstants.WindUpStateName)
-        {
-            var windUp = m_stateMachine?.GetState(IslandSurvivor.Logic.StateMachine.StateConstants.WindUpStateName) as IslandSurvivor.Logic.StateMachine.WindUpState;
-            if (windUp != null)
-            {
-                windUp.NextStateAfterWindup = IslandSurvivor.Logic.StateMachine.StateConstants.MeleeAttackStateName;
-            }
-        }
-        return state;
-    }
 
     public override void _Ready()
     {
@@ -63,8 +46,12 @@ public partial class BossBase : AggressiveNpcBase
         float maxHealth = Stats.MaxHealth * scalingFactor;
         float baseDamage = Stats.BaseAttackValue * scalingFactor;
 
-        IdleSpeed *= scalingFactor;
-        ChaseSpeed *= scalingFactor;
+        if (m_stateMachine != null && m_stateMachine.TryGetState<IslandSurvivor.Logic.StateMachine.IdleState>(out var idleState))
+        {
+            idleState.IdleSpeed *= scalingFactor;
+        }
+
+        if (m_stateMachine != null && m_stateMachine.TryGetState<IslandSurvivor.Logic.StateMachine.ChaseState>(out var chaseState)) chaseState.ChaseSpeed *= scalingFactor;
 
         Stats.MaxHealth = maxHealth;
         Stats.SetCurrentValue(Core.Managers.StatType.Health, maxHealth);

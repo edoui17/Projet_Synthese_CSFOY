@@ -4,37 +4,49 @@
 [ext_resource type="Script" uid="uid://dd153s4oxkqlg" path="res://Scenes/Projectiles/OrbProjectile/OrbProjectile.cs" id="2_o73vl"]
 [ext_resource type="Texture2D" uid="uid://nkyhcbltbf5e" path="res://Assets/Corrupted/Bat/Projectile.png" id="3_ohysu"]
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_cdr6x"]
-atlas = ExtResource("3_ohysu")
-region = Rect2(0, 0, 32, 32)
+[sub_resource type="Animation" id="Animation_orb"]
+resource_name = "Attack"
+length = 0.666667
+loop_mode = 1
+step = 0.1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.333333),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [0, 1]
+}
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_gl7d5"]
-atlas = ExtResource("3_ohysu")
-region = Rect2(32, 0, 32, 32)
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_orb"]
+_data = {
+&"Attack": SubResource("Animation_orb")
+}
 
-[sub_resource type="SpriteFrames" id="SpriteFrames_jifwq"]
-animations = [{
-"frames": [{
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_cdr6x")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_gl7d5")
-}],
-"loop": true,
-"name": &"Attack",
-"speed": 3.0
-}]
+[sub_resource type="CircleShape2D" id="CircleShape2D_ohysu"]
+radius = 7.017834
 
 [node name="OrbProjectile" unique_id=595529148 instance=ExtResource("1_base")]
 scale = Vector2(2, 2)
+collision_mask = 15
 script = ExtResource("2_o73vl")
+SeekingDelay = 2.0
+DetectionRadius = 200.0
+SeekingSpeedMultiplier = 1.5
+DefaultSpeed = 150.0
+LifeTime = 3.0
 
-[node name="AnimatedSprite2D" parent="." index="0" unique_id=1598172784]
+[node name="Sprite2D" parent="." index="0" unique_id=1598172784]
 rotation = -0.8377581
-sprite_frames = SubResource("SpriteFrames_jifwq")
-animation = &"Attack"
-autoplay = "Attack"
+texture = ExtResource("3_ohysu")
+hframes = 8
 
-[node name="CollisionShape2D" parent="." index="1" unique_id=1182282185]
-polygon = PackedVector2Array(-11.5, -0.5, -5, -3.5, -0.5, -6, 3, -3.5, 5, -1.5, 4, 3, 1, 5, -4, 3.5)
+[node name="AnimationPlayer" parent="." index="1" unique_id=-1696794512]
+libraries/ = SubResource("AnimationLibrary_orb")
+
+[node name="CollisionShape2D" parent="." index="2" unique_id=49443908]
+shape = SubResource("CircleShape2D_ohysu")

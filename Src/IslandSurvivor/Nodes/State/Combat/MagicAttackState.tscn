@@ -1,0 +1,7 @@
+[gd_scene format=3 uid="uid://fe2ac266aca4"]
+
+[ext_resource type="Script" uid="uid://dpd7gmbxycgpe" path="res://Logic/StateMachine/States/Combat/Attack/MagicAttackState.cs" id="1_script"]
+
+
+[node name="MagicAttackState" type="Node"]
+script = ExtResource("1_script")
